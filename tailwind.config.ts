@@ -1,0 +1,97 @@
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  daisyui: {
+    themes: [],
+  },
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      backgroundImage: {
+        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
+        "gradient-conic":
+          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      },
+      colors: {
+        primary: {
+          "50": "#F4FAF0",
+          "100": "#E3F2DA",
+          "200": "#C7E5B4",
+          "300": "#ACD98F",
+          "400": "#90CC69",
+          "500": "#74BF44",
+          "600": "#5D9936",
+          "700": "#467329",
+          "800": "#2E4C1B",
+          "900": "#17260E",
+        },
+        neutral: {
+          "50": "#F4FAF0",
+          "100": "#F5F5F5",
+          "200": "#E5E5E5",
+          "300": "#D4D4D4",
+          "400": "#A3A3A3",
+          "500": "#737373",
+          "600": "#525252",
+          "700": "#404040",
+          "800": "#262626",
+          "900": "#171717",
+        },
+        success: {
+          "50": "#EFFBF2",
+          "100": "#DEF6E5",
+          "200": "#BDEDCB",
+          "300": "#9DE5B1",
+          "400": "#7CDC97",
+          "500": "#5BD37D",
+          "600": "#49A964",
+          "700": "#377F4B",
+          "800": "#245432",
+          "900": "#122A19",
+        },
+        info: {
+          "50": "#EBF3FF",
+          "100": "#D2E3FE",
+          "200": "#A6C8FE",
+          "300": "#79ACFD",
+          "400": "#4D91FD",
+          "500": "#2075FC",
+          "600": "#1A5ECA",
+          "700": "#134697",
+          "800": "#0D2F65",
+          "900": "#061732",
+        },
+        warning: {
+          "50": "#FFF8EB",
+          "100": "#FFF0D0",
+          "200": "#FFE1A2",
+          "300": "#FFD373",
+          "400": "#FFC445",
+          "500": "#FFB516",
+          "600": "#CC9112",
+          "700": "#996D0D",
+          "800": "#664809",
+          "900": "#332404",
+        },
+        danger: {
+          "50": "#FFF1F0",
+          "100": "#FFE3E1",
+          "200": "#FFC7C4",
+          "300": "#FFACA6",
+          "400": "#FF9089",
+          "500": "#FF746B",
+          "600": "#CC5D56",
+          "700": "#994640",
+          "800": "#662E2B",
+          "900": "#331715",
+        },
+      },
+    },
+  },
+  plugins: [require("daisyui")],
+};
+export default config;
