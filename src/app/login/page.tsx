@@ -1,8 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import Input from "@/components/Input";
-import { Button } from "flowbite-react";
 
 export default function page() {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
@@ -16,6 +14,7 @@ export default function page() {
             height="32"
             src={"/images/LoginPage/HeraldLogo.png"}
             alt="HeraldLogo"
+            className="h-auto w-auto"
           />
           <div className="text-2xl ">
             <span className="text-primary-600"> Herald </span>
@@ -60,7 +59,6 @@ export default function page() {
                 width={"20"}
                 height={"20"}
                 alt="passwordLogo"
-                className="h-5 w-5"
               />
               <input
                 type="password"
@@ -87,23 +85,8 @@ export default function page() {
             </label>
           </div>
 
-          <label className="relative mb-5 inline-flex cursor-pointer items-center">
-            <input type="checkbox" value="" className="peer sr-only" />
-            <div className="peer h-5 w-9 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:peer-focus:ring-blue-800"></div>
-            <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
-              Small toggle
-            </span>
-          </label>
-
           <button className="btn w-full rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
             Login
-          </button>
-
-          <button
-            type="button"
-            className="mb-2 mr-2 rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-          >
-            Green
           </button>
         </div>
       </div>
