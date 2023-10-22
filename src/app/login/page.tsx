@@ -23,7 +23,7 @@ export default function page() {
         </div>
 
         {/* Title  */}
-        <div className="flex h-20 w-52 flex-col items-center gap-2 px-4 py-2 ">
+        <div className="flex h-20 w-auto flex-col items-center gap-2 px-4 py-2 ">
           <h1 className="text-2xl font-bold">Login</h1>
           <h4 className=" text-neutral-500">Login to your account</h4>
         </div>
