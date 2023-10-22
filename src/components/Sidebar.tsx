@@ -26,7 +26,7 @@ export default function Sidebar() {
           Calendar
         </div>
 
-        <div className="w-full">
+        <div className="flex w-full flex-col gap-3">
           {sidebarItems.map((item, i) => (
             <button
               onClick={() => console.log("clicked")}
