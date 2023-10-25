@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import format from "date-fns/format";
 import parse from "date-fns/parse";
@@ -10,15 +10,9 @@ import DatePicker, { CalendarContainer } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import US_LocaleData from "date-fns/locale/en-US";
 import { AiOutlinePlus } from "react-icons/ai";
+import AddEventModal from "@/components/AddEventModal";
 
-type eventType = {
-  title: string;
-  allDay?: boolean;
-  start: Date | null;
-  end: Date | null;
-};
-
-//data that defines the format of the calendar component.
+//data that defines the format of date and time for the calendar component.
 const locales = {
   "en-US": US_LocaleData,
 };
@@ -34,7 +28,6 @@ const localizer = dateFnsLocalizer({
 const events: eventType[] = [
   {
     title: "Big Meeting",
-    allDay: true,
     start: new Date(2023, 10, 22),
     end: new Date(2023, 10, 23),
   },
@@ -50,49 +43,32 @@ const events: eventType[] = [
   },
 ];
 export default function page() {
-  const [newEvent, setNewEvent] = useState<eventType>({
-    title: "",
-    start: null,
-    end: null,
-  });
-  const [allEvents, setAllEvents] = useState(events);
+  const [allEvents, setAllEvents] = useState<eventType[]>(events);
 
-  function handleAddEvent() {
-    setAllEvents([...allEvents, newEvent]);
-  }
+  useEffect(() => {
+    console.log("allEvents", allEvents);
+  }, [allEvents]);
   return (
     <div>
       <h1>Calendar</h1>
       <h2>Add new event</h2>
 
       <div>
-        <input
-          type="text"
-          placeholder="Add Title"
-          // style={{ width: "20%", marginRight: "10px" }}
-          value={newEvent.title}
-          onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-        />
-        <DatePicker
-          placeholderText="StartDate"
-          // style={{ marginRight: "10px" }}
-          selected={newEvent.start}
-          onChange={(start) => setNewEvent({ ...newEvent, start })}
-        />
-        <DatePicker
-          placeholderText="EndDate"
-          // style={{ marginRight: "10px" }}
-          selected={newEvent.end}
-          onChange={(end) => setNewEvent({ ...newEvent, end })}
-        />
         <button
           className="btn btn-sm
-           relative flex h-8  rounded bg-primary-600 text-sm font-medium text-primary-50"
-          onClick={handleAddEvent}
+           relative flex h-8 rounded border-none bg-primary-600 text-sm font-medium text-primary-50 outline-none hover:bg-primary-400"
+          onClick={() => {
+            const modal_3 = document.getElementById(
+              "my_modal_3",
+            ) as HTMLDialogElement;
+            modal_3.showModal();
+          }}
         >
           <AiOutlinePlus className="h-4 w-4 text-primary-50" />
           Add Event
         </button>
+
+        <AddEventModal allEvents={allEvents} setAllEvents={setAllEvents} />
       </div>
       <Calendar
         localizer={localizer}
