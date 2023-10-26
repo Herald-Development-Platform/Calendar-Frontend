@@ -5,12 +5,15 @@ import format from "date-fns/format";
 import parse from "date-fns/parse";
 import startOfWeek from "date-fns/startOfWeek";
 import getDay from "date-fns/getDay";
-import "react-big-calendar/lib/css/react-big-calendar.css";
+// import "react-big-calendar/lib/css/react-big-calendar.css";
+import "react-big-calendar/lib/sass/styles.scss";
+// import "./react-big-calendar.css";
 import DatePicker, { CalendarContainer } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import US_LocaleData from "date-fns/locale/en-US";
 import { AiOutlinePlus } from "react-icons/ai";
 import AddEventModal from "@/components/AddEventModal";
+import UpcommingEvents from "@/components/UpcommingEvents";
 
 //data that defines the format of date and time for the calendar component.
 const locales = {
@@ -49,7 +52,7 @@ export default function page() {
     console.log("allEvents", allEvents);
   }, [allEvents]);
   return (
-    <div>
+    <div className="w-full">
       <h1>Calendar</h1>
       <h2>Add new event</h2>
 
@@ -70,13 +73,16 @@ export default function page() {
 
         <AddEventModal allEvents={allEvents} setAllEvents={setAllEvents} />
       </div>
-      <Calendar
-        localizer={localizer}
-        events={allEvents}
-        startAccessor={"start"}
-        endAccessor={"end"}
-        style={{ height: 500, margin: "50px" }}
-      />
+      <div className="relative flex max-w-full justify-between">
+        <Calendar
+          localizer={localizer}
+          events={allEvents}
+          startAccessor={"start"}
+          endAccessor={"end"}
+          style={{ height: 625, width: 770, margin: "50px" }}
+        />
+        <UpcommingEvents />
+      </div>
     </div>
   );
 }

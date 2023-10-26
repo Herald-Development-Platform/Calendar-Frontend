@@ -18,7 +18,8 @@
     "react-datepicker": "^4.21.0",
     "react-dom": "^18",
     "react-icons": "^4.11.0",
-    "react-time-input": "^1.0.1"
+    "react-time-input": "^1.0.1",
+    "sass": "^1.69.5"
   },
   "devDependencies": {
     "@types/node": "^20",
