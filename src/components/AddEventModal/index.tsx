@@ -16,6 +16,7 @@ import { LiaHourglassEndSolid, LiaHourglassStartSolid } from "react-icons/lia";
 import format from "date-fns/format";
 import US_LocaleData from "date-fns/locale/en-US";
 import { DateRange } from "react-big-calendar";
+import { AiOutlinePlus } from "react-icons/ai";
 
 const colors = [
   "#9852F4",
@@ -31,8 +32,8 @@ export default function AddEventModal({
   setAllEvents,
   allEvents,
 }: {
-  setAllEvents: Dispatch<SetStateAction<eventType[]>>;
-  allEvents: eventType[];
+  setAllEvents: Dispatch<SetStateAction<eventType[]>> | {};
+  allEvents: eventType[] | {};
 }) {
   const [selectedDate, setSelectedDate] = useState<Date | null>();
 
@@ -75,6 +76,19 @@ export default function AddEventModal({
   }, [newEvent]);
   return (
     <>
+      <button
+        className="btn btn-sm
+           relative flex h-8 rounded border-none bg-primary-600 text-sm font-medium text-primary-50 outline-none hover:bg-primary-400"
+        onClick={() => {
+          const modal_3 = document.getElementById(
+            "my_modal_3",
+          ) as HTMLDialogElement;
+          modal_3.showModal();
+        }}
+      >
+        <AiOutlinePlus className="h-4 w-4 text-primary-50" />
+        Add Event
+      </button>
       <dialog id="my_modal_3" className="modal">
         <div className="min-w-xl modal-box relative flex max-w-2xl flex-col gap-10 overflow-y-auto  p-8 text-lg text-neutral-600">
           {/* Heading  */}
