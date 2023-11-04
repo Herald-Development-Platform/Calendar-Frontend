@@ -12,7 +12,7 @@ export default function TimeSelector({
 
   useEffect(() => {
     setDateAndTime({ hours, minutes, type });
-  }, [hours, minutes]);
+  }, [hours, minutes, setDateAndTime, type]);
 
   return (
     <>

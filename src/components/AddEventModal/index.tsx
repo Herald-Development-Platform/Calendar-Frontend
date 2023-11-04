@@ -50,7 +50,7 @@ export default function AddEventModal({
   });
 
   function handleAddEvent() {
-    setAllEvents([...allEvents, newEvent]);
+    // setAllEvents([...allEvents, newEvent]);
   }
 
   const setDateAndTime = ({ hours, minutes, type }: setDateAndTimeTypes) => {

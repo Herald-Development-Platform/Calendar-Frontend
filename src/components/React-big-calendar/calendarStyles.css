@@ -50,3 +50,22 @@ border-left: 0px solid #ddd;
 .rbc-month-header .rbc-header{
     color: #525252;
 }
+
+.rbc-month-row .rbc-row-bg .rbc-day-bg:not(.rbc-today, .rbc-off-range-bg):hover{
+    background-color: #f5f5f5;
+}
+/* .rbc-row-content{
+    height: 100%;
+} */
+/* .rbc-row{
+    height: 117px;
+} */
+/* .rbc-row, .rbc-date-cell{} */
+/* calendar button  */
+.rbc-row-bg .rbc-day-bg:focus{
+    border:green;
+}
+
+.rbc-selected-cell{
+    background-color: black;
+}

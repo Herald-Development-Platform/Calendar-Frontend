@@ -2,8 +2,10 @@
 import React, {
   Dispatch,
   SetStateAction,
+  useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
@@ -17,6 +19,7 @@ import "./react-big-calendar.css";
 // import "react-datepicker/dist/react-datepicker.css";
 import US_LocaleData from "date-fns/locale/en-US";
 import "./calendarStyles.css";
+import moment from "moment";
 
 //data that defines the format of date and time for the calendar component.
 const locales = {
@@ -66,6 +69,29 @@ export default function ReactBigCalendar({
     [],
   );
 
+  // const slotPropGetter = useCallback(
+  //   (date: any) => ({
+  //     className: "slotDefault",
+  //     ...(moment(date).hour() < 8 && {
+  //       style: {
+  //         backgroundColor: "powderblue",
+  //         color: "black",
+  //       },
+  //     }),
+  //     ...(moment(date).hour() > 12 && {
+  //       style: {
+  //         backgroundColor: "darkgreen",
+  //         color: "white",
+  //       },
+  //     }),
+  //   }),
+  //   [],
+  // );
+
+  const onDrillDown = (date: Date) => {
+    console.log("drilled downed", date);
+  };
+
   const [allEvents, setAllEvents] = useState<eventType[]>(events);
 
   useEffect(() => {
@@ -82,6 +108,11 @@ export default function ReactBigCalendar({
         style={{ height: 625, width: 770, margin: "50px" }}
         toolbar={false}
         formats={formats}
+        // drilldownView={null}
+        // selectable
+        // onSelectSlot={onSelectSlot}
+        // slotPropGetter={slotPropGetter}
+        onDrillDown={onDrillDown}
       />
     </div>
   );
