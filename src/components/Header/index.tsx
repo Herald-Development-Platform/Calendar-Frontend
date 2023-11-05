@@ -6,24 +6,40 @@ import AddEventModal from "../AddEventModal";
 import { HiOutlineBell } from "react-icons/hi";
 import Image from "next/image";
 import { addMonths, subMonths } from "date-fns";
+import FullCalendar from "@fullcalendar/react";
+import { RefObject } from "@fullcalendar/core/preact.js";
 
 export default function Header({
   date,
   setDate,
+  calendarRef,
 }: {
   date: Date;
   setDate: Dispatch<SetStateAction<Date>>;
+  calendarRef: RefObject<FullCalendar | null>;
 }) {
   const handleNext = () => {
-    const newDate = addMonths(date, 1);
-    console.log("newDate", newDate);
-    setDate(newDate);
+    // const newDate = addMonths(date, 1);
+    // console.log("newDate", newDate);
+    // setDate(newDate);
+    if (calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi();
+      calendarApi.next();
+    }
   };
   const handlePrevious = () => {
-    setDate(subMonths(date, 1));
+    // setDate(subMonths(date, 1));
+    if (calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi();
+      calendarApi.prev();
+    }
   };
   const handleToday = () => {
-    setDate(new Date());
+    // setDate(new Date());
+    if (calendarRef.current) {
+      const calendarApi = calendarRef.current.getApi();
+      calendarApi.today();
+    }
   };
 
   return (
