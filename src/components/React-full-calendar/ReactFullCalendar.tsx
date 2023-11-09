@@ -1,11 +1,11 @@
 import React, { useRef } from "react";
-import FullCalendar, { prev } from "@fullcalendar/react";
+import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import Calendar from "@fullcalendar/core";
 
 export default class DemoApp extends React.Component {
   render() {
-    const calendar = useRef();
+    // const calendar = useRef();
     return (
       <div className="h-full w-full">
         <button

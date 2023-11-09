@@ -11,6 +11,9 @@ dependencies:
   '@fullcalendar/daygrid':
     specifier: ^6.1.9
     version: 6.1.9(@fullcalendar/core@6.1.9)
+  '@fullcalendar/interaction':
+    specifier: ^6.1.9
+    version: 6.1.9(@fullcalendar/core@6.1.9)
   '@fullcalendar/react':
     specifier: ^6.1.9
     version: 6.1.9(@fullcalendar/core@6.1.9)(react-dom@18.2.0)(react@18.2.0)
@@ -206,6 +209,14 @@ packages:
 
   /@fullcalendar/daygrid@6.1.9(@fullcalendar/core@6.1.9):
     resolution: {integrity: sha512-o/6joH/7lmVHXAkbaa/tUbzWYnGp/LgfdiFyYPkqQbjKEeivNZWF1WhHqFbhx0zbFONSHtrvkjY2bjr+Ef2quQ==}
+    peerDependencies:
+      '@fullcalendar/core': ~6.1.9
+    dependencies:
+      '@fullcalendar/core': 6.1.9
+    dev: false
+
+  /@fullcalendar/interaction@6.1.9(@fullcalendar/core@6.1.9):
+    resolution: {integrity: sha512-I3FGnv0kKZpIwujg3HllbKrciNjTqeTYy3oJG226oAn7lV6wnrrDYMmuGmA0jPJAGN46HKrQqKN7ItxQRDec4Q==}
     peerDependencies:
       '@fullcalendar/core': ~6.1.9
     dependencies:

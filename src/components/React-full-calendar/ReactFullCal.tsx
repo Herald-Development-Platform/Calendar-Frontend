@@ -1,8 +1,10 @@
-import React, { LegacyRef, useRef } from "react";
+import React from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
 import Calendar from "@fullcalendar/core";
 import { RefObject } from "@fullcalendar/core/preact.js";
+import { AiOutlineConsoleSql } from "react-icons/ai";
 
 export default function ReactFullCal({
   calendarRef,
@@ -19,7 +21,7 @@ export default function ReactFullCal({
     <div className="h-full w-full">
       <FullCalendar
         ref={calendarRef}
-        plugins={[dayGridPlugin]}
+        plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         events={[
           {
@@ -28,6 +30,10 @@ export default function ReactFullCal({
           },
         ]}
         headerToolbar={false}
+        selectable={true}
+        dateClick={(dateClickInfo) => {
+          alert("clicked date: " + dateClickInfo.dateStr);
+        }}
       />
     </div>
   );
