@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext } from "react";
+import { createContext, useState } from "react";
 
 export const Context = createContext({});
 
@@ -9,5 +9,17 @@ export default function ContextProvider({
 }: {
   children: React.ReactNode;
 }) {
-  return <Context.Provider value={"dark"}>{children}</Context.Provider>;
+  const [events, setEvents] = useState<eventType[]>([
+    {
+      title: "event1",
+      start: new Date(),
+      end: new Date(),
+    },
+  ]);
+  console.log("context events", events);
+  return (
+    <Context.Provider value={{ events, setEvents }}>
+      {children}
+    </Context.Provider>
+  );
 }

@@ -19,23 +19,18 @@ export default function Header({
   calendarRef: RefObject<FullCalendar | null>;
 }) {
   const handleNext = () => {
-    // const newDate = addMonths(date, 1);
-    // console.log("newDate", newDate);
-    // setDate(newDate);
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
       calendarApi.next();
     }
   };
   const handlePrevious = () => {
-    // setDate(subMonths(date, 1));
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
       calendarApi.prev();
     }
   };
   const handleToday = () => {
-    // setDate(new Date());
     if (calendarRef.current) {
       const calendarApi = calendarRef.current.getApi();
       calendarApi.today();
@@ -80,10 +75,13 @@ export default function Header({
 
         {/* month and addEventModal  */}
         <div className="flex w-56 items-center justify-between text-sm font-medium">
-          <select className="h-8 w-24 max-w-xs rounded border border-neutral-300 bg-transparent text-neutral-500 focus:outline-none  ">
-            <option selected>Month</option>
-            <option>Week</option>
-            <option>Year</option>
+          <select
+            className="h-8 w-24 max-w-xs rounded border border-neutral-300 bg-transparent text-neutral-500 focus:outline-none"
+            defaultValue={"month"}
+          >
+            <option value={"month"}>Month</option>
+            <option value={"week"}>Week</option>
+            <option value={"year"}>Year</option>
           </select>
           <AddEventModal allEvents={{}} setAllEvents={{}} />
         </div>
@@ -112,7 +110,7 @@ export default function Header({
             width={32}
             height={32}
           />
-          <p className="font-medium text-neutral-600 ">Samip M.</p>
+          <p className="font-medium text-neutral-600 ">Samip Maharjan</p>
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import Image from "next/image";
 import React, {
   Dispatch,
   SetStateAction,
+  useContext,
   useEffect,
   useRef,
   useState,
@@ -17,6 +18,7 @@ import format from "date-fns/format";
 import US_LocaleData from "date-fns/locale/en-US";
 import { DateRange } from "react-big-calendar";
 import { AiOutlinePlus } from "react-icons/ai";
+import { Context } from "@/app/ContextProvider";
 
 const colors = [
   "#9852F4",
@@ -35,6 +37,7 @@ export default function AddEventModal({
   setAllEvents: Dispatch<SetStateAction<eventType[]>> | {};
   allEvents: eventType[] | {};
 }) {
+  const { setEvents, events } = useContext(Context);
   const [selectedDate, setSelectedDate] = useState<Date | null>();
 
   const [newEvent, setNewEvent] = useState<eventType>({
@@ -43,18 +46,32 @@ export default function AddEventModal({
     end: null,
     color: undefined,
     duration: 0,
-    location: undefined,
+    location: "",
     description: undefined,
     departments: undefined,
-    notes: undefined,
+    notes: "",
   });
 
   function handleAddEvent() {
     // setAllEvents([...allEvents, newEvent]);
+    console.log("handle add event ", newEvent);
+    setEvents([...events, newEvent]);
+    setNewEvent({
+      title: "",
+      start: null,
+      end: null,
+      color: undefined,
+      duration: 0,
+      location: "",
+      description: undefined,
+      departments: undefined,
+      notes: "",
+    });
   }
 
   const setDateAndTime = ({ hours, minutes, type }: setDateAndTimeTypes) => {
     if (selectedDate) {
+      console.log("selected date in setdateandtime function:", selectedDate);
       const date = format(selectedDate, "yyyy-MM-dd", {
         locale: US_LocaleData,
       });
@@ -72,8 +89,9 @@ export default function AddEventModal({
   };
 
   useEffect(() => {
-    console.log("newevent", newEvent);
-  }, [newEvent]);
+    console.log("render");
+  }, []);
+
   return (
     <>
       <button
@@ -130,7 +148,7 @@ export default function AddEventModal({
                 className="h-10 w-full rounded border-[1px] border-neutral-300 text-neutral-900 outline-none focus:border-primary-600"
                 onChange={(datePicked) => {
                   setSelectedDate(datePicked);
-                  console.log("selectedDate", selectedDate);
+                  console.log("selectedDate", datePicked);
                 }}
                 value={
                   selectedDate
@@ -208,6 +226,7 @@ export default function AddEventModal({
                         accentColor: Color,
                       }}
                       checked={Color == newEvent.color}
+                      readOnly
                     />
                     <input
                       name={"color"}
@@ -252,13 +271,16 @@ export default function AddEventModal({
             {/* Departments section  */}
             <div className="">
               Departments <br />
-              <select className="select select-bordered h-10 w-full  rounded border-[1px] border-neutral-300 text-neutral-900 focus:border-primary-600 focus:outline-none">
-                <option disabled selected>
+              <select
+                className="select select-bordered h-10 w-full  rounded border-[1px] border-neutral-300 text-neutral-900 focus:border-primary-600 focus:outline-none"
+                defaultValue={""}
+              >
+                <option disabled value={""}>
                   Choose the departments
                 </option>
-                <option>IT</option>
-                <option>RTE</option>
-                <option>Student Services</option>
+                <option value={"IT"}>IT</option>
+                <option value={"RTE"}>RTE</option>
+                <option value={"student-services"}>Student Services</option>
               </select>
             </div>
 
