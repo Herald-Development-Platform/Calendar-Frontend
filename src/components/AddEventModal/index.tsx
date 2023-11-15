@@ -30,15 +30,9 @@ const colors = [
   "#6647FF",
 ];
 
-export default function AddEventModal({
-  setAllEvents,
-  allEvents,
-}: {
-  setAllEvents: Dispatch<SetStateAction<eventType[]>> | {};
-  allEvents: eventType[] | {};
-}) {
+export default function AddEventModal() {
   const { setEvents, events } = useContext(Context);
-  const [selectedDate, setSelectedDate] = useState<Date | null>();
+  const [pickedDate, setPickedDate] = useState<Date | null>();
 
   const [newEvent, setNewEvent] = useState<eventType>({
     title: "",
@@ -53,7 +47,6 @@ export default function AddEventModal({
   });
 
   function handleAddEvent() {
-    // setAllEvents([...allEvents, newEvent]);
     console.log("handle add event ", newEvent);
     setEvents([...events, newEvent]);
     setNewEvent({
@@ -70,9 +63,9 @@ export default function AddEventModal({
   }
 
   const setDateAndTime = ({ hours, minutes, type }: setDateAndTimeTypes) => {
-    if (selectedDate) {
-      console.log("selected date in setdateandtime function:", selectedDate);
-      const date = format(selectedDate, "yyyy-MM-dd", {
+    if (pickedDate) {
+      console.log("selected date in setdateandtime function:", pickedDate);
+      const date = format(pickedDate, "yyyy-MM-dd", {
         locale: US_LocaleData,
       });
 
@@ -147,12 +140,12 @@ export default function AddEventModal({
               <Datepicker
                 className="h-10 w-full rounded border-[1px] border-neutral-300 text-neutral-900 outline-none focus:border-primary-600"
                 onChange={(datePicked) => {
-                  setSelectedDate(datePicked);
-                  console.log("selectedDate", datePicked);
+                  setPickedDate(datePicked);
+                  console.log("PickedDate", datePicked);
                 }}
                 value={
-                  selectedDate
-                    ? format(selectedDate, "EEEE, dd MMMM", {
+                  pickedDate
+                    ? format(pickedDate, "EEEE, dd MMMM", {
                         locale: US_LocaleData,
                       })
                     : undefined

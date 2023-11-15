@@ -12,6 +12,7 @@ export default function TimeSelector({
 
   useEffect(() => {
     setDateAndTime({ hours, minutes, type });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hours, minutes]);
 
   return (

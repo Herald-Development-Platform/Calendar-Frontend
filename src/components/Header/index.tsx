@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useContext, useEffect } from "react";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { TbCalendarEvent } from "react-icons/tb";
 import format from "date-fns/format";
@@ -8,33 +8,35 @@ import Image from "next/image";
 import { addMonths, subMonths } from "date-fns";
 import FullCalendar from "@fullcalendar/react";
 import { RefObject } from "@fullcalendar/core/preact.js";
+import { CalendarApi } from "@fullcalendar/core/index.js";
+import { Context } from "@/app/ContextProvider";
 
 export default function Header({
-  date,
-  setDate,
-  calendarRef,
+  // date,
+  setDate, // calendarRef,
 }: {
-  date: Date;
+  // date: Date;
   setDate: Dispatch<SetStateAction<Date>>;
-  calendarRef: RefObject<FullCalendar | null>;
 }) {
+  const { calendarRef, selectedDate } = useContext(Context);
+
+  const date = selectedDate ? selectedDate : new Date();
+
+  useEffect(() => {
+    console.log("calendarRef from header component", calendarRef.current);
+    console.log("selectedDate header:", selectedDate);
+  }, [calendarRef.current, date]);
+
+  const calendarApi = calendarRef?.current?.getApi();
+
   const handleNext = () => {
-    if (calendarRef.current) {
-      const calendarApi = calendarRef.current.getApi();
-      calendarApi.next();
-    }
+    calendarApi?.next();
   };
   const handlePrevious = () => {
-    if (calendarRef.current) {
-      const calendarApi = calendarRef.current.getApi();
-      calendarApi.prev();
-    }
+    calendarApi?.prev();
   };
   const handleToday = () => {
-    if (calendarRef.current) {
-      const calendarApi = calendarRef.current.getApi();
-      calendarApi.today();
-    }
+    calendarApi?.today();
   };
 
   return (
@@ -65,6 +67,8 @@ export default function Header({
               <TbCalendarEvent className="h-6 w-6 text-neutral-500" />
             </button>
           </div>
+
+          {/* Selected date display */}
           <div className="">
             <h6 className="text-2xl font-bold">
               {format(date, "MMMM d', '")}
@@ -83,7 +87,7 @@ export default function Header({
             <option value={"week"}>Week</option>
             <option value={"year"}>Year</option>
           </select>
-          <AddEventModal allEvents={{}} setAllEvents={{}} />
+          <AddEventModal />
         </div>
       </div>
 

@@ -19,36 +19,6 @@ import ReactBigCalendar from "@/components/React-big-calendar";
 import ReactFullCalendar from "@/components/React-full-calendar";
 import FullCalendar from "@fullcalendar/react";
 
-//data that defines the format of date and time for the calendar component.
-// const locales = {
-//   "en-US": US_LocaleData,
-// };
-
-// const localizer = dateFnsLocalizer({
-//   format,
-//   parse,
-//   startOfWeek,
-//   getDay,
-//   locales,
-// });
-
-// const events: eventType[] = [
-//   {
-//     title: "Big Meeting",
-//     start: new Date(2023, 10, 22),
-//     end: new Date(2023, 10, 23),
-//   },
-//   {
-//     title: "event",
-//     start: new Date(2023, 10, 22),
-//     end: new Date(2023, 10, 24),
-//   },
-//   {
-//     title: "Important Lecture",
-//     start: new Date(2023, 11, 22),
-//     end: new Date(2023, 11, 23),
-//   },
-// ];
 export default function page() {
   const [date, setDate] = useState(new Date());
 
@@ -57,13 +27,11 @@ export default function page() {
   return (
     <div className="h-full w-full">
       <div className="w-full">
-        <Header date={date} setDate={setDate} calendarRef={calendarRef} />
+        <Header date={date} setDate={setDate} />
       </div>
 
       <div className=" flex h-full w-full justify-between">
-        {/* <ReactBigCalendar date={date} setDate={setDate} /> */}
-        <ReactFullCalendar calendarRef={calendarRef} />
-
+        <ReactFullCalendar />
         <UpcommingEvents />
       </div>
     </div>

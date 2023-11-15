@@ -1,3 +1,31 @@
-.fc-highlight{
-    background-color: ;
+:root{
+    --fc-highlight-color: #f4faf0;
+    --fc-daygrid-event-dot-width: 8px
 }
+
+.fc .fc-highlight{
+    /* background-color: #f4faf0; */
+    border: 1.2px solid green;
+}
+
+.fc-event.fc-daygrid-dot-event{
+    height: 16px;
+}
+
+.fc-daygrid-event-dot {
+    height: 100%;
+    border-width: calc(var(--fc-daygrid-event-dot-width)/3) ;
+    border-style: solid;
+    border-color: var(--fc-event-border-color);
+    border-radius: 2%;
+    box-sizing: content-box;
+    margin: 0px 4px;
+    width: 0px;
+}
+
+/* .fc .fc-daygrid-event-harness {
+    position: relative;
+    border-width: 0px 0px 0px 3px;
+    border-style: solid;
+    border-color: var(--fc-event-border-color);
+} */
