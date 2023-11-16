@@ -1,16 +1,28 @@
 "use client";
 import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { IoIosSearch } from "react-icons/io";
+import { AiOutlineHome } from "react-icons/ai";
+
 export default function Sidebar() {
+  const currentRoute = usePathname();
+
+  const highlightedStyles =
+    "flex h-11 w-full items-center gap-2 rounded px-3 text-neutral-500 bg-primary-100 text-primary-700";
+  const nonHighlightedStyles =
+    "flex h-11 w-full items-center gap-2 rounded px-3 text-neutral-500";
+
   const sidebarItems = [
     {
       name: "Home",
-      iconLocation: "/images/Sidebar/Home.png",
-      iconAlternative: "HomeIcon",
+      icon: <AiOutlineHome />,
+      navigation: "/",
     },
     {
       name: "Search",
-      iconLocation: "/images/Sidebar/Search.png",
-      iconAlternative: "SearchIcon",
+      icon: <IoIosSearch />,
+      navigation: "/search",
     },
   ];
   return (
@@ -28,20 +40,20 @@ export default function Sidebar() {
 
         <div className="flex w-full flex-col gap-3">
           {sidebarItems.map((item, i) => (
-            <button
+            <Link
               onClick={() => console.log("clicked")}
-              className="flex h-11 w-full items-center gap-2 rounded px-3 text-neutral-500 focus:bg-primary-100"
+              href={item.navigation}
+              className={
+                currentRoute == item.navigation
+                  ? highlightedStyles
+                  : nonHighlightedStyles
+              }
+              // className="text-primary-700"
               key={i}
             >
-              <Image
-                width={"18"}
-                height={"18"}
-                className="h-[18px] w-[18px]"
-                src={item.iconLocation}
-                alt={item.iconAlternative}
-              />
+              <span className="text-2xl">{item.icon}</span>
               <span>{item.name}</span>
-            </button>
+            </Link>
           ))}
         </div>
       </div>

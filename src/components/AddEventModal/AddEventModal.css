@@ -1,0 +1,9 @@
+/* to not display scrollbar in modal comopnent */
+.min-w-xl.modal-box.relative.flex.max-w-2xl.flex-col.gap-10.overflow-y-auto.p-8.text-lg.text-neutral-600::-webkit-scrollbar{
+ display: none;
+}
+.min-w-xl.modal-box.relative.flex.max-w-2xl.flex-col.gap-10.overflow-y-auto.p-8.text-lg.text-neutral-600::-webkit-scrollbar{
+    -ms-overflow-style: none; /* for Internet Explorer, Edge */
+    scrollbar-width: none; /* for Firefox */
+    overflow-y: scroll; 
+}

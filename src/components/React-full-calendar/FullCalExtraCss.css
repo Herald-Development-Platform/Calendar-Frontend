@@ -29,3 +29,43 @@
     border-style: solid;
     border-color: var(--fc-event-border-color);
 } */
+
+
+/* Day Header and cell border sytles */
+.customStylesDayHeader{
+    font-weight: 500;
+    color: #525252;
+    border-width: 0px;
+    padding-bottom: 15px;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+    border: 0px solid var(--fc-border-color);
+}
+ .fc-theme-standard th {
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-color: var(--fc-border-color);
+    /* padding-bottom: 15px; */
+
+}
+
+
+.fc-theme-standard td{
+    border: 1px solid var(--fc-border-color);
+}
+.fc-daygrid-body.fc-daygrid-body-unbalanced{
+    border-width: 0px 0 0 1px;
+    border-style: solid;
+    border-color: var(--fc-border-color);
+} 
+/* .fc-scrollgrid-section.fc-scrollgrid-section-header th{
+    padding-bottom: 15px;
+}  */
+/* fc-col-header-cell fc-day fc-day-sun customStylesDayHeader */
+.fc-col-header-cell .fc-scrollgrid-sync-inner{
+    padding-bottom: 13px;
+}
+.customStylesDayCells:hover{
+    background-color: #f5f5f5;
+}

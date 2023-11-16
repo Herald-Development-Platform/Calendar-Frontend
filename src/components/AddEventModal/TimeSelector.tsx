@@ -1,6 +1,6 @@
 import React, { SetStateAction, useEffect, useState } from "react";
 
-export default function TimeSelector({
+export function TimeSelector({
   setDateAndTime,
   type,
 }: {
