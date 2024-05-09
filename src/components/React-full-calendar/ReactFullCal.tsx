@@ -10,8 +10,7 @@ import { baseUrl } from "@/services/baseUrl";
 import { getCookie } from "@/hooks/CookieHooks";
 
 export default function ReactFullCal() {
-  const { events, setEvents, calendarRef, setSelectedDate } =
-    useContext(Context);
+  const { calendarRef } = useContext(Context);
 
   const { data: eventsData } = useQuery({
     queryKey: ["Events"],
@@ -32,12 +31,12 @@ export default function ReactFullCal() {
         events={eventsData?.data}
         headerToolbar={false}
         selectable={true}
-        dateClick={(dateClickInfo) => {
-          setSelectedDate(dateClickInfo.date);
-        }}
-        unselect={(arg: DateUnselectArg) => {
-          setSelectedDate(undefined);
-        }}
+        // dateClick={(dateClickInfo) => {
+        //   setSelectedDate(dateClickInfo.date);
+        // }}
+        // unselect={(arg: DateUnselectArg) => {
+        //   setSelectedDate(undefined);
+        // }}
         displayEventTime={false}
         dayHeaderClassNames={"customStylesDayHeader"}
         dayCellClassNames={"customStylesDayCells"}

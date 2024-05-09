@@ -20,7 +20,7 @@ export interface ContextType {
   calendarApi: CalendarApi | undefined;
 }
 
-export const Context = createContext<ContextType>({});
+export const Context = createContext<any>({});
 // const calendarRef = createRef(undefined);
 
 export default function ContextProvider({

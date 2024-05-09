@@ -15,7 +15,7 @@ export default function Page() {
     register,
     setValue,
     reset,
-    formState: { error },
+    // formState: { error },
     getValues,
     handleSubmit,
   } = useForm<any>();
