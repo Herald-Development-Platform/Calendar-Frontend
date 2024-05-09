@@ -25,10 +25,7 @@ export default function UpcommingEvents() {
             borderColor: "#9747FF",
           }}
         >
-          <h1 className=" font-medium">Devcorps Meeting</h1>
-          <p className="text-sm font-medium text-neutral-600">
-            04:00 pm - 06:00 pm
-          </p>
+          
         </div>
       </div>
     </div>

@@ -118,7 +118,7 @@ export function HomeHeader() {
             width={32}
             height={32}
           />
-          <p className="font-medium text-neutral-600 ">Samip Maharjan</p>
+          <p className="font-medium text-neutral-600 "></p>
         </div>
       </div>
     </div>
