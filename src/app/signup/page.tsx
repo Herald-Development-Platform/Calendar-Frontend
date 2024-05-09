@@ -1,16 +1,16 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import React, { useState } from "react";
 import Image from "next/image";
-import { useForm } from "react-hook-form";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { baseUrl } from "@/services/baseUrl";
+import { useForm } from "react-hook-form";
+import { ROLES } from "@/constants/role";
+import { DEPARTMENTS } from "@/constants/departments";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import * as CookieHooks from "@/hooks/CookieHooks";
 
-export default function Page() {
-  const [rememberMe, setRememberMe] = useState<boolean>(false);
-
-  const router = useRouter();
+export default function page() {
   const {
     register,
     setValue,
@@ -20,8 +20,10 @@ export default function Page() {
     handleSubmit,
   } = useForm<any>();
 
-  const loginUser = (payload: any) => {
-    fetch(`${baseUrl}/login`, {
+  const router = useRouter();
+
+  const registerUser = (payload: any) => {
+    fetch(`${baseUrl}/register`, {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
@@ -33,15 +35,14 @@ export default function Page() {
         if (!data.success) {
           throw Error(data || "Something went wrong");
         }
-        CookieHooks.setCookie("token", data.data, 1);
+        router.push("/login");
         toast.success(data.message || "Successfully registered user.");
-        router.push("/");
       })
       .catch((err) => toast.error(err.message || "Something went wrong"));
   };
   return (
     <>
-      <div className="mx-auto my-[182px] flex h-[660px] w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 font-medium">
+      <div className="mx-auto my-[182px] flex w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 pb-10 font-medium">
         {/* Logo  */}
         <div className="flex -translate-y-1/2 transform items-center justify-between gap-2 bg-[#FFFFFF]">
           <Image
@@ -59,15 +60,35 @@ export default function Page() {
 
         {/* Title  */}
         <div className="flex h-20 w-auto flex-col items-center gap-2 px-4 py-2 ">
-          <h1 className="text-2xl font-bold">Login</h1>
-          <h4 className=" text-neutral-500">Login to your account</h4>
+          <h1 className="text-2xl font-bold">Register</h1>
+          <h4 className=" text-neutral-500">Register your account</h4>
         </div>
 
         {/* Form  */}
         <form
-          onSubmit={handleSubmit(loginUser)}
+          onSubmit={handleSubmit(registerUser)}
           className="flex flex-col gap-8"
         >
+          <label htmlFor="username">
+            Name
+            <br />
+            <div className="flex h-[52px] w-[430px] items-center gap-2 rounded-[4px] bg-neutral-100 px-4 ">
+              <Image
+                src={"/images/LoginPage/EmailLogo.png"}
+                width={"20"}
+                height={"20"}
+                alt="emailLogo"
+                className="h-[20px]"
+              />
+              <input
+                type="username"
+                className="w-full bg-neutral-100  font-normal text-neutral-500 outline-none"
+                placeholder="Enter your username."
+                id="username"
+                {...register("username", { required: "Username is required" })}
+              />
+            </div>
+          </label>
           <label htmlFor="email">
             Email
             <br />
@@ -88,7 +109,6 @@ export default function Page() {
               />
             </div>
           </label>
-
           <label htmlFor="password">
             Password
             <br />
@@ -108,8 +128,46 @@ export default function Page() {
               />
             </div>
           </label>
+          <label htmlFor="role">
+            Role
+            <br />
+            <div className="flex h-[52px] w-[430px] items-center gap-2 rounded-[4px] bg-neutral-100 ">
+              <select
+                {...register("role", { required: "Pick a Role" })}
+                className="select w-full  bg-neutral-100 outline-none ring-0"
+              >
+                <option disabled selected>
+                  Pick your role
+                </option>
+                {Object.values(ROLES).map((role, i) => (
+                  <option key={role} value={role}>
+                    {role}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </label>
+          <label htmlFor="role">
+            Department
+            <br />
+            <div className="flex h-[52px] w-[430px] items-center gap-2 rounded-[4px] bg-neutral-100">
+              <select
+                {...register("department", { required: "Pick a Department" })}
+                className="select w-full  bg-neutral-100"
+              >
+                <option disabled selected>
+                  Pick your department
+                </option>
+                {Object.values(DEPARTMENTS).map((department, i) => (
+                  <option key={department} value={department}>
+                    {department}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </label>
 
-          <div className="relative bottom-2 flex h-9 w-auto flex-row items-center gap-3">
+          {/* <div className="relative bottom-2 flex h-9 w-auto flex-row items-center gap-3">
             <input
               type="checkbox"
               className="toggle-primary-600 toggle toggle-xs checked:bg-primary-600"
@@ -123,16 +181,9 @@ export default function Page() {
             >
               <span className="">Remember me</span>
             </label>
-          </div>
-
+          </div> */}
           <button className="btn w-full rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
-            Login
-          </button>
-          <button
-            onClick={() => router.push("/signup")}
-            className="btn w-full rounded-[4px] bg-primary-50  text-sm  hover:bg-primary-100"
-          >
-            Register New Account
+            Register
           </button>
         </form>
       </div>

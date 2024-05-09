@@ -18,9 +18,14 @@ import format from "date-fns/format";
 import US_LocaleData from "date-fns/locale/en-US";
 import { DateRange } from "react-big-calendar";
 import { AiOutlinePlus } from "react-icons/ai";
-import { Context } from "@/app/ContextProvider";
+import { Context } from "@/app/clientWrappers/ContextProvider";
 import "./AddEventModal.css";
-
+import { baseUrl } from "@/services/baseUrl";
+import * as CookieHooks from "@/hooks/CookieHooks";
+import { useGetCookieByName } from "@/hooks/CookieHooks";
+import { DEPARTMENTS } from "@/constants/departments";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 const colors = [
   "#9852F4",
   "#F0BA16",
@@ -35,6 +40,10 @@ export default function AddEventModal() {
   const { setEvents, events } = useContext(Context);
   const [pickedDate, setPickedDate] = useState<Date | null>();
 
+  const queryClient = useQueryClient();
+
+  const token = useGetCookieByName("token");
+
   const [newEvent, setNewEvent] = useState<eventType>({
     title: "",
     start: null,
@@ -43,24 +52,60 @@ export default function AddEventModal() {
     duration: 0,
     location: "",
     description: undefined,
-    departments: undefined,
+    department: undefined,
     notes: "",
+  });
+
+  const { mutate: postNewEvent } = useMutation({
+    mutationFn: (payload: any) =>
+      fetch(`${baseUrl}/event`, {
+        method: "POST",
+        body: JSON.stringify(newEvent),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }).then((res) => res.json()),
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ["Events"] });
+      toast.success(`${res.message}`);
+      setNewEvent({
+        title: "",
+        start: null,
+        end: null,
+        color: undefined,
+        duration: 0,
+        location: "",
+        description: undefined,
+        department: undefined,
+        notes: "",
+      });
+    },
   });
 
   function handleAddEvent() {
     console.log("handle add event ", newEvent);
     setEvents([...events, newEvent]);
-    setNewEvent({
-      title: "",
-      start: null,
-      end: null,
-      color: undefined,
-      duration: 0,
-      location: "",
-      description: undefined,
-      departments: undefined,
-      notes: "",
-    });
+    postNewEvent(newEvent);
+    // setNewEvent({
+    //   title: "",
+    //   start: null,
+    //   end: null,
+    //   color: undefined,
+    //   duration: 0,
+    //   location: "",
+    //   description: undefined,
+    //   department: undefined,
+    //   notes: "",
+    // });
+    // fetch(`${baseUrl}/event`, {
+    //   method: "POST",
+    //   body: JSON.stringify(newEvent),
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    // });
   }
 
   const setDateAndTime = ({ hours, minutes, type }: setDateAndTimeTypes) => {
@@ -264,13 +309,21 @@ export default function AddEventModal() {
               <select
                 className="select select-bordered h-10 w-full  rounded border-[1px] border-neutral-300 text-neutral-900 focus:border-primary-600 focus:outline-none"
                 defaultValue={""}
+                onChange={(e) =>
+                  setNewEvent((prev) => ({
+                    ...prev,
+                    department: e.target.value,
+                  }))
+                }
               >
                 <option disabled value={""}>
                   Choose the departments
                 </option>
-                <option value={"IT"}>IT</option>
-                <option value={"RTE"}>RTE</option>
-                <option value={"student-services"}>Student Services</option>
+                {Object.values(DEPARTMENTS).map((department) => (
+                  <option key={department} value={department}>
+                    {department}
+                  </option>
+                ))}
               </select>
             </div>
 

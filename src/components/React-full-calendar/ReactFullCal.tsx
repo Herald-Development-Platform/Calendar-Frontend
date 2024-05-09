@@ -3,20 +3,33 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import Calendar, { DateUnselectArg } from "@fullcalendar/core";
-import { Context, ContextType } from "@/app/ContextProvider";
+import { Context, ContextType } from "@/app/clientWrappers/ContextProvider";
 import "./FullCalExtraCss.css";
+import { useQuery } from "@tanstack/react-query";
+import { baseUrl } from "@/services/baseUrl";
+import { getCookie } from "@/hooks/CookieHooks";
 
 export default function ReactFullCal() {
   const { events, setEvents, calendarRef, setSelectedDate } =
     useContext(Context);
 
+  const { data: eventsData } = useQuery({
+    queryKey: ["Events"],
+    queryFn: () =>
+      fetch(`${baseUrl}/event`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${getCookie("token")}`,
+        },
+      }).then((res) => res.json()),
+  });
   return (
     <div className="h-full w-full">
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
-        events={events}
+        events={eventsData?.data}
         headerToolbar={false}
         selectable={true}
         dateClick={(dateClickInfo) => {

@@ -5,7 +5,7 @@ import format from "date-fns/format";
 import AddEventModal from "../AddEventModal";
 import { HiOutlineBell } from "react-icons/hi";
 import Image from "next/image";
-import { Context } from "@/app/ContextProvider";
+import { Context } from "@/app/clientWrappers/ContextProvider";
 import { CalendarApi } from "@fullcalendar/core/index.js";
 
 export function HomeHeader() {

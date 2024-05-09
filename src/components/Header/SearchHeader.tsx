@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from "react";
 import { HiOutlineBell } from "react-icons/hi";
 import Image from "next/image";
-import { Context } from "@/app/ContextProvider";
+import { Context } from "@/app/clientWrappers/ContextProvider";
 import { IoIosSearch } from "react-icons/io";
 
 export function SearchHeader() {

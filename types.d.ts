@@ -6,7 +6,7 @@ interface eventType {
   duration?: number;
   location?: string;
   description?: string;
-  departments?: string[];
+  department?: string;
   notes?: string;
 }
 
