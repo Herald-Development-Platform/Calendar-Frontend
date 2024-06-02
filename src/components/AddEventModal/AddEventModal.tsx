@@ -56,32 +56,6 @@ export default function AddEventModal() {
     notes: "",
   });
 
-  // const { mutate: postNewEvent } = useMutation({
-  //   mutationFn: (payload: any) =>
-  //     fetch(`${baseUrl}/event`, {
-  //       method: "POST",
-  //       body: JSON.stringify(newEvent),
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //     }).then((res) => res.json()),
-  //   onSuccess: (res) => {
-  //     queryClient.invalidateQueries({ queryKey: ["Events"] });
-  //     toast.success(`${res.message}`);
-  //     setNewEvent({
-  //       title: "",
-  //       start: null,
-  //       end: null,
-  //       color: undefined,
-  //       duration: 0,
-  //       location: "",
-  //       description: undefined,
-  //       department: undefined,
-  //       notes: "",
-  //     });
-  //   },
-  // });
   const { mutate: postNewEvent } = useMutation({
     mutationFn: postEvents,
     onSuccess: (res) => {
@@ -105,25 +79,6 @@ export default function AddEventModal() {
     console.log("handle add event ", newEvent);
     // setEvents([...events, newEvent]);
     postNewEvent(newEvent);
-    // setNewEvent({
-    //   title: "",
-    //   start: null,
-    //   end: null,
-    //   color: undefined,
-    //   duration: 0,
-    //   location: "",
-    //   description: undefined,
-    //   department: undefined,
-    //   notes: "",
-    // });
-    // fetch(`${baseUrl}/event`, {
-    //   method: "POST",
-    //   body: JSON.stringify(newEvent),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: `Bearer ${token}`,
-    //   },
-    // });
   }
 
   const setDateAndTime = ({ hours, minutes, type }: setDateAndTimeTypes) => {

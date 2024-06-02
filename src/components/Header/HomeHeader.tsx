@@ -18,6 +18,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { IoMdArrowDropdown } from "react-icons/io";
 import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
+import Endpoints from "@/services/API_ENDPOINTS";
 
 export function HomeHeader() {
   const [redner, setredner] = useState<number>(1);
@@ -26,6 +28,7 @@ export function HomeHeader() {
   const { calendarRef, selectedDate } = useContext(Context);
   console.log("calREf", calendarRef);
 
+  const router = useRouter();
   const date = selectedDate ? selectedDate : new Date();
 
   // useEffect(() => {
@@ -145,7 +148,7 @@ export function HomeHeader() {
               className="flex gap-2"
               onClick={() => {
                 Cookies.remove("token");
-                router;
+                router.push(Endpoints.login);
               }}
             >
               <span className="text-xl">

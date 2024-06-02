@@ -2,10 +2,12 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
-import { baseUrl } from "@/services/baseUrl";
+import { Axios, baseUrl } from "@/services/baseUrl";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import * as CookieHooks from "@/hooks/CookieHooks";
+import axios from "axios";
+import Link from "next/link";
 
 export default function Page() {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
@@ -41,9 +43,9 @@ export default function Page() {
   };
   return (
     <>
-      <div className="mx-auto my-[182px] flex h-[660px] w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 font-medium">
+      <div className="relative mx-auto my-[80px] flex h-auto w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 pb-[84px] pt-12 font-medium">
         {/* Logo  */}
-        <div className="flex -translate-y-1/2 transform items-center justify-between gap-2 bg-[#FFFFFF]">
+        <div className="absolute top-0 flex -translate-y-1/2 transform items-center justify-between gap-2 bg-[#FFFFFF] px-3">
           <Image
             width="32"
             height="32"
@@ -58,7 +60,7 @@ export default function Page() {
         </div>
 
         {/* Title  */}
-        <div className="flex h-20 w-auto flex-col items-center gap-2 px-4 py-2 ">
+        <div className="flex h-20 w-auto flex-col items-center gap-[6px] px-4  ">
           <h1 className="text-2xl font-bold">Login</h1>
           <h4 className=" text-neutral-500">Login to your account</h4>
         </div>
@@ -71,7 +73,7 @@ export default function Page() {
           <label htmlFor="email">
             Email
             <br />
-            <div className="flex h-[52px] w-[430px] items-center gap-2 rounded-[4px] bg-neutral-100 px-4 ">
+            <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4 ">
               <Image
                 src={"/images/LoginPage/EmailLogo.png"}
                 width={"20"}
@@ -92,7 +94,7 @@ export default function Page() {
           <label htmlFor="password">
             Password
             <br />
-            <div className="flex h-[52px] w-[430px] items-center gap-2 rounded-[4px] bg-neutral-100 px-4">
+            <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4">
               <Image
                 src={"/images/LoginPage/PasswordLogo.png"}
                 width={"20"}
@@ -102,7 +104,7 @@ export default function Page() {
               <input
                 type="password"
                 id="password"
-                className="w-full bg-neutral-100  font-normal text-neutral-500 outline-none "
+                className="w-full bg-neutral-100 font-normal text-neutral-500 outline-none "
                 placeholder="Enter your college id."
                 {...register("password", { required: "Password is required" })}
               />
@@ -124,16 +126,34 @@ export default function Page() {
               <span className="">Remember me</span>
             </label>
           </div>
+          <div className="space-y-4">
+            <button className="btn w-full rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
+              Login
+            </button>
+            <Link
+              href={`${baseUrl}/googleAuth`}
+              // onClick={() => {
+              //   Axios.get("/googleAuth");
+              // }}
+              className="btn w-full rounded-[4px] bg-primary-50  text-sm  hover:bg-primary-100"
+              type="button"
+            >
+              <Image
+                src={"/images/LoginPage/GoogleIcon.png"}
+                width={24}
+                height={24}
+                alt="GoogleIcon"
+              ></Image>{" "}
+              Continue With Google
+            </Link>
 
-          <button className="btn w-full rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
-            Login
-          </button>
-          <button
-            onClick={() => router.push("/signup")}
-            className="btn w-full rounded-[4px] bg-primary-50  text-sm  hover:bg-primary-100"
-          >
-            Register New Account
-          </button>
+            <button
+              onClick={() => router.push("/signup")}
+              className="btn w-full rounded-[4px] bg-primary-50  text-sm  hover:bg-primary-100"
+            >
+              Register New Account
+            </button>
+          </div>
         </form>
       </div>
     </>

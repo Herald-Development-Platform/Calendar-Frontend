@@ -8,23 +8,14 @@ import "./FullCalExtraCss.css";
 import { useQuery } from "@tanstack/react-query";
 import { Axios, baseUrl } from "@/services/baseUrl";
 import { getCookie } from "@/hooks/CookieHooks";
+import Endpoints from "@/services/API_ENDPOINTS";
 
 export default function ReactFullCal() {
   const { calendarRef } = useContext(Context);
 
-  // const { data: eventsData } = useQuery({
-  //   queryKey: ["Events"],
-  //   queryFn: () =>
-  //     fetch(`${baseUrl}/event`, {
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${getCookie("token")}`,
-  //       },
-  //     }).then((res) => res.json()),
-  // });
   const { data: eventsData } = useQuery({
     queryKey: ["Events"],
-    queryFn: () => Axios.get("/event"),
+    queryFn: () => Axios.get(Endpoints.event),
   });
   console.log("eventsData", eventsData);
   return (
