@@ -8,6 +8,7 @@ interface eventType {
   description?: string;
   department?: string;
   notes?: string;
+  _id?: string;
 }
 
 type setDateAndTimeTypes = {

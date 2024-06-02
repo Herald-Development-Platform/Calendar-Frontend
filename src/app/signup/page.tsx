@@ -40,6 +40,7 @@ export default function page() {
       })
       .catch((err) => toast.error(err.message || "Something went wrong"));
   };
+
   return (
     <>
       <div className="mx-auto my-[182px] flex w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 pb-10 font-medium">

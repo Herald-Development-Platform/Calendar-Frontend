@@ -20,12 +20,13 @@ import { DateRange } from "react-big-calendar";
 import { AiOutlinePlus } from "react-icons/ai";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import "./AddEventModal.css";
-import { baseUrl } from "@/services/baseUrl";
+import { Axios, baseUrl } from "@/services/baseUrl";
 import * as CookieHooks from "@/hooks/CookieHooks";
 import { useGetCookieByName } from "@/hooks/CookieHooks";
 import { DEPARTMENTS } from "@/constants/departments";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { postEvents } from "@/services/api/eventsApi";
 const colors = [
   "#9852F4",
   "#F0BA16",
@@ -55,19 +56,37 @@ export default function AddEventModal() {
     notes: "",
   });
 
+  // const { mutate: postNewEvent } = useMutation({
+  //   mutationFn: (payload: any) =>
+  //     fetch(`${baseUrl}/event`, {
+  //       method: "POST",
+  //       body: JSON.stringify(newEvent),
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     }).then((res) => res.json()),
+  //   onSuccess: (res) => {
+  //     queryClient.invalidateQueries({ queryKey: ["Events"] });
+  //     toast.success(`${res.message}`);
+  //     setNewEvent({
+  //       title: "",
+  //       start: null,
+  //       end: null,
+  //       color: undefined,
+  //       duration: 0,
+  //       location: "",
+  //       description: undefined,
+  //       department: undefined,
+  //       notes: "",
+  //     });
+  //   },
+  // });
   const { mutate: postNewEvent } = useMutation({
-    mutationFn: (payload: any) =>
-      fetch(`${baseUrl}/event`, {
-        method: "POST",
-        body: JSON.stringify(newEvent),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }).then((res) => res.json()),
+    mutationFn: postEvents,
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["Events"] });
-      toast.success(`${res.message}`);
+      toast.success(`${res?.data?.success}`);
       setNewEvent({
         title: "",
         start: null,

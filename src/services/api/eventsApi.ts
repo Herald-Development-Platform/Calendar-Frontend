@@ -1,23 +1,7 @@
 import { getCookie } from "@/hooks/CookieHooks";
-import { baseUrl } from "../baseUrl";
+import { Axios, baseUrl } from "../baseUrl";
 import Cookies from "js-cookie";
 
-const postEvent1 = (payload: any) =>
-  fetch(`${baseUrl}/event`, {
-    method: "POST",
-    body: JSON.stringify(payload),
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${Cookies.get("token")}`,
-    },
-  }).then((res) => res.json());
+export const getEvents = () => Axios.get("/event");
 
-const postEvent = (payload: any) =>
-  fetch(`${baseUrl}/event`, {
-    method: "POST",
-    body: JSON.stringify(payload),
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${Cookies.get("token")}`,
-    },
-  }).then((res) => res.json());
+export const postEvents = (payload: any) => Axios.post("/event", payload);

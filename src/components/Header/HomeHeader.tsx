@@ -1,3 +1,4 @@
+import { CiLogout } from "react-icons/ci";
 import React, { useContext, useEffect, useState } from "react";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { TbCalendarEvent } from "react-icons/tb";
@@ -7,12 +8,23 @@ import { HiOutlineBell } from "react-icons/hi";
 import Image from "next/image";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import { CalendarApi } from "@fullcalendar/core/index.js";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { IoMdArrowDropdown } from "react-icons/io";
+import Cookies from "js-cookie";
 
 export function HomeHeader() {
+  const [redner, setredner] = useState<number>(1);
+  const [calendarApi, setCalendarApi] = useState<CalendarApi>();
+
   const { calendarRef, selectedDate } = useContext(Context);
   console.log("calREf", calendarRef);
-
-  const [redner, setredner] = useState<number>(1);
 
   const date = selectedDate ? selectedDate : new Date();
 
@@ -20,7 +32,6 @@ export function HomeHeader() {
   //   console.log("calendarRef from header component", calendarRef);
   //   console.log("selectedDate header:", selectedDate);
   // }, [calendarRef, selectedDate]);
-  const [calendarApi, setCalendarApi] = useState<CalendarApi>();
 
   // sets value of calendarAPI as soon as calRef loads.
   useEffect(() => {
@@ -41,7 +52,7 @@ export function HomeHeader() {
   };
 
   return (
-    <div className="ml-8 mt-8 flex h-12 w-[95%] justify-between">
+    <div className="ml-8 mr-16 mt-8 flex h-12 w-auto justify-between">
       {/* <button onClick={() => setredner(redner + 1)}>
         redner asdfjlksadfj;
       </button> */}
@@ -110,16 +121,40 @@ export function HomeHeader() {
             </li>
           </ul>
         </details>
-        <div className="flex items-center ">
-          <Image
-            className="h-8 w-8 rounded-full"
-            alt={"profile pic"}
-            src={"/images/Sidebar/HelpIcon.png"}
-            width={32}
-            height={32}
-          />
-          <p className="font-medium text-neutral-600 "></p>
-        </div>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex items-center gap-2">
+            <div className="flex items-center ">
+              <Image
+                className="h-8 w-8 rounded-full"
+                alt={"profile pic"}
+                src={"/images/Sidebar/HelpIcon.png"}
+                width={32}
+                height={32}
+              />
+              <p className="font-medium text-neutral-600 "></p>
+            </div>
+            Open <IoMdArrowDropdown />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>My Profile</DropdownMenuLabel>
+            <DropdownMenuItem>Billing</DropdownMenuItem>
+            <DropdownMenuItem>Team</DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="flex gap-2"
+              onClick={() => {
+                Cookies.remove("token");
+                router;
+              }}
+            >
+              <span className="text-xl">
+                <CiLogout />
+              </span>
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
