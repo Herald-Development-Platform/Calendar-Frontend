@@ -37,7 +37,6 @@ const colors = [
 ];
 
 export default function AddEventModal() {
-  // const { setEvents, events } = useContext(Context);
   const [pickedDate, setPickedDate] = useState<Date | null>();
 
   const queryClient = useQueryClient();
