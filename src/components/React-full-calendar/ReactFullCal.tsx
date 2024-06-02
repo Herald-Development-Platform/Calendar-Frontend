@@ -6,21 +6,25 @@ import Calendar, { DateUnselectArg } from "@fullcalendar/core";
 import { Context, ContextType } from "@/app/clientWrappers/ContextProvider";
 import "./FullCalExtraCss.css";
 import { useQuery } from "@tanstack/react-query";
-import { baseUrl } from "@/services/baseUrl";
+import { Axios, baseUrl } from "@/services/baseUrl";
 import { getCookie } from "@/hooks/CookieHooks";
 
 export default function ReactFullCal() {
   const { calendarRef } = useContext(Context);
 
+  // const { data: eventsData } = useQuery({
+  //   queryKey: ["Events"],
+  //   queryFn: () =>
+  //     fetch(`${baseUrl}/event`, {
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${getCookie("token")}`,
+  //       },
+  //     }).then((res) => res.json()),
+  // });
   const { data: eventsData } = useQuery({
     queryKey: ["Events"],
-    queryFn: () =>
-      fetch(`${baseUrl}/event`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getCookie("token")}`,
-        },
-      }).then((res) => res.json()),
+    queryFn: () => Axios.get("/event"),
   });
   return (
     <div className="h-full w-full">

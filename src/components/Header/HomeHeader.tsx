@@ -82,7 +82,7 @@ export function HomeHeader() {
         </div>
 
         {/* month and addEventModal  */}
-        <div className="flex w-56 items-center justify-between text-sm font-medium">
+        <div className="flex w-56 items-center justify-between gap-3 text-sm font-medium">
           <select
             className="h-8 w-24 max-w-xs rounded border border-neutral-300 bg-transparent text-neutral-500 focus:outline-none"
             defaultValue={"month"}

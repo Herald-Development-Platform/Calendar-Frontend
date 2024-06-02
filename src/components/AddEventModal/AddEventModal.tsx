@@ -130,7 +130,7 @@ export default function AddEventModal() {
     <>
       <button
         className="btn btn-sm
-           relative flex h-8 rounded border-none bg-primary-600 text-sm font-medium text-primary-50 outline-none hover:bg-primary-400"
+           relative flex h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
         onClick={() => {
           const modal_3 = document.getElementById(
             "my_modal_3",
@@ -138,7 +138,7 @@ export default function AddEventModal() {
           modal_3.showModal();
         }}
       >
-        <AiOutlinePlus className="h-4 w-4 text-primary-50" />
+        <AiOutlinePlus className="h-4 w-4 font-bold text-primary-50" />
         Add Event
       </button>
       <dialog id="my_modal_3" className="modal">
