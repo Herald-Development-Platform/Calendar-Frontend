@@ -26,13 +26,14 @@ export default function ReactFullCal() {
     queryKey: ["Events"],
     queryFn: () => Axios.get("/event"),
   });
+  console.log("eventsData", eventsData);
   return (
     <div className="h-full w-full">
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
-        events={eventsData?.data}
+        events={eventsData?.data?.data}
         headerToolbar={false}
         selectable={true}
         // dateClick={(dateClickInfo) => {

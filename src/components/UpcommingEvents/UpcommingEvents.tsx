@@ -24,9 +24,7 @@ export default function UpcommingEvents() {
             borderWidth: "0 0 0 4px",
             borderColor: "#9747FF",
           }}
-        >
-          
-        </div>
+        ></div>
       </div>
     </div>
   );
