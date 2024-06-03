@@ -20,6 +20,7 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Endpoints from "@/services/API_ENDPOINTS";
+import { decryptJwtPayload } from "@/lib/utils";
 
 export function HomeHeader() {
   const [redner, setredner] = useState<number>(1);
@@ -27,6 +28,10 @@ export function HomeHeader() {
 
   const { calendarRef, selectedDate } = useContext(Context);
   console.log("calREf", calendarRef);
+
+  const token = Cookies.get("token");
+  const userData = token ? decryptJwtPayload(token) : null;
+  console.log("userData", userData);
 
   const router = useRouter();
   const date = selectedDate ? selectedDate : new Date();
@@ -137,7 +142,7 @@ export function HomeHeader() {
               />
               <p className="font-medium text-neutral-600 "></p>
             </div>
-            Open <IoMdArrowDropdown />
+            {userData?.username} <IoMdArrowDropdown />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>My Profile</DropdownMenuLabel>
@@ -148,7 +153,7 @@ export function HomeHeader() {
               className="flex gap-2"
               onClick={() => {
                 Cookies.remove("token");
-                router.push(Endpoints.login);
+                router.push("/login");
               }}
             >
               <span className="text-xl">
@@ -162,3 +167,10 @@ export function HomeHeader() {
     </div>
   );
 }
+
+// function decodeJwt(token: string) {
+//   const base64Url = token.split(".")[1];
+//   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+//   const jsonPayload = base64UrlDecode(base64);
+//   return JSON.parse(jsonPayload);
+// }

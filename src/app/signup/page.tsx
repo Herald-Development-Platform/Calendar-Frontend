@@ -23,7 +23,7 @@ export default function page() {
   const router = useRouter();
 
   const registerUser = (payload: any) => {
-    fetch(`${baseUrl}/register`, {
+    fetch(`${baseUrl}/admin/register`, {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {

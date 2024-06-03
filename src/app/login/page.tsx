@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { Axios, baseUrl } from "@/services/baseUrl";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import * as CookieHooks from "@/hooks/CookieHooks";
 import axios from "axios";
 import Link from "next/link";
@@ -33,7 +33,9 @@ export default function Page() {
       .then((res) => res.json())
       .then((data) => {
         if (!data.success) {
-          throw Error(data || "Something went wrong");
+          toast.error(data.message || "Something went wrong.");
+          // throw Error(data || "Something went wrong");
+          return;
         }
         CookieHooks.setCookie("token", data.data, 1);
         toast.success(data.message || "Successfully registered user.");
@@ -43,6 +45,7 @@ export default function Page() {
   };
   return (
     <>
+      <Toaster />
       <div className="relative mx-auto my-[80px] flex h-auto w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 pb-[84px] pt-12 font-medium">
         {/* Logo  */}
         <div className="absolute top-0 flex -translate-y-1/2 transform items-center justify-between gap-2 bg-[#FFFFFF] px-3">
