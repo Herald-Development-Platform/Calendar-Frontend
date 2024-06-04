@@ -23,7 +23,7 @@ export default function page() {
   const router = useRouter();
 
   const registerUser = (payload: any) => {
-    fetch(`${baseUrl}/admin/register`, {
+    fetch(`${baseUrl}/register`, {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
@@ -35,8 +35,10 @@ export default function page() {
         if (!data.success) {
           throw Error(data || "Something went wrong");
         }
-        router.push("/login");
         toast.success(data.message || "Successfully registered user.");
+        setTimeout(() => {
+          router.push(`/otp?email=${payload.email}`);
+        }, 1000);
       })
       .catch((err) => toast.error(err.message || "Something went wrong"));
   };
@@ -124,47 +126,9 @@ export default function page() {
                 type="password"
                 id="password"
                 className="w-full bg-neutral-100  font-normal text-neutral-500 outline-none "
-                placeholder="Enter your college id."
+                placeholder="Enter your password."
                 {...register("password", { required: "Password is required" })}
               />
-            </div>
-          </label>
-          <label htmlFor="role">
-            Role
-            <br />
-            <div className="flex h-[52px] w-[430px] items-center gap-2 rounded-[4px] bg-neutral-100 ">
-              <select
-                {...register("role", { required: "Pick a Role" })}
-                className="select w-full  bg-neutral-100 outline-none ring-0"
-              >
-                <option disabled selected>
-                  Pick your role
-                </option>
-                {Object.values(ROLES).map((role, i) => (
-                  <option key={role} value={role}>
-                    {role}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </label>
-          <label htmlFor="role">
-            Department
-            <br />
-            <div className="flex h-[52px] w-[430px] items-center gap-2 rounded-[4px] bg-neutral-100">
-              <select
-                {...register("department", { required: "Pick a Department" })}
-                className="select w-full  bg-neutral-100"
-              >
-                <option disabled selected>
-                  Pick your department
-                </option>
-                {Object.values(DEPARTMENTS).map((department, i) => (
-                  <option key={department} value={department}>
-                    {department}
-                  </option>
-                ))}
-              </select>
             </div>
           </label>
 

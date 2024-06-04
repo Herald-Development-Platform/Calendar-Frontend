@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { Axios, baseUrl } from "@/services/baseUrl";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import * as CookieHooks from "@/hooks/CookieHooks";
 import axios from "axios";
@@ -22,16 +22,30 @@ export default function Page() {
     handleSubmit,
   } = useForm<any>();
 
+  const searchParams = useSearchParams();
+
+  const email = searchParams.get("email");
+  console.log(email);
+  // if (!email) {
+  //   router.push("/login");
+  // }
   const verifyOtp = (payload: any) => {
-    fetch(`${baseUrl}/verifyOtp`)
+    const otp = `${payload.otp1}${payload.otp2}${payload.otp3}${payload.otp4}${payload.otp5}${payload.otp6}`;
+    if (!email || !otp) {
+      toast.error("Email and OTP is required");
+      console.log("Toast is required")
+      return;
+    }
+    fetch(`${baseUrl}/verifyOtp?email=${email}&OTP=${otp}`)
       .then((res) => res.json())
       .then((data) => {
         if (!data.success) {
-          throw Error(data || "Something went wrong");
+          toast.error(data.message || "Something went wrong");
         }
-        CookieHooks.setCookie("token", data.data, 1);
-        toast.success(data.message || "Successfully registered user.");
-        router.push("/");
+        toast.success(data.message || "OTP verified successfully");
+        setTimeout(() => {
+          router.push("/login");
+        }, 1000);
       })
       .catch((err) => toast.error(err.message || "Something went wrong"));
   };
@@ -67,7 +81,7 @@ export default function Page() {
         {/* Form  */}
         <form
           onSubmit={handleSubmit(verifyOtp)}
-          className="flex flex-col gap-8"
+          className="flex flex-col gap-4"
         >
           <div
             style={{
@@ -76,35 +90,94 @@ export default function Page() {
               alignItems: "center",
               width: "100%",
               justifyContent: "center",
-              gap: 26,
+              gap: 16,
             }}
           >
             <input
               type="text"
-              placeholder="Enter OTP"
-              className="input h-[40px] w-[150px] text-sm text-neutral-800"
-              {...register("otp", { required: "OTP is required" })}
+              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
+              style={{
+                backgroundColor: "",
+                borderRadius: "6px",
+                outlineColor: "transparent",
+                paddingLeft: 8,
+                paddingRight: 8,
+                fontSize: 24,
+                textAlign: "center"
+              }}
+              {...register("otp1", { required: "OTP is required" })}
             />
             <input
               type="text"
-              placeholder="Enter OTP"
-              className="input h-[40px] w-[150px] text-sm text-neutral-800"
-              {...register("otp", { required: "OTP is required" })}
+              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
+              style={{
+                borderRadius: "6px",
+                outlineColor: "transparent",
+                paddingLeft: 8,
+                paddingRight: 8,
+                fontSize: 24,
+                textAlign: "center"
+              }}
+              {...register("otp2", { required: "OTP is required" })}
             />
             <input
               type="text"
-              placeholder="Enter OTP"
-              className="input h-[40px] w-[150px] text-sm text-neutral-800"
-              {...register("otp", { required: "OTP is required" })}
+              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
+              style={{
+                backgroundColor: "",
+                borderRadius: "6px",
+                outlineColor: "transparent",
+                paddingLeft: 8,
+                paddingRight: 8,
+                fontSize: 24,
+                textAlign: "center"
+              }}
+              {...register("otp3", { required: "OTP is required" })}
             />
             <input
               type="text"
-              placeholder="Enter OTP"
-              className="input h-[40px] w-[150px] text-sm text-neutral-800"
-              {...register("otp", { required: "OTP is required" })}
+              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
+              style={{
+                backgroundColor: "",
+                borderRadius: "6px",
+                outlineColor: "transparent",
+                paddingLeft: 8,
+                paddingRight: 8,
+                fontSize: 24,
+                textAlign: "center"
+              }}
+              {...register("otp4", { required: "OTP is required" })}
+            />
+            <input
+              type="text"
+              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
+              style={{
+                backgroundColor: "",
+                borderRadius: "6px",
+                outlineColor: "transparent",
+                paddingLeft: 8,
+                paddingRight: 8,
+                fontSize: 24,
+                textAlign: "center"
+              }}
+              {...register("otp5", { required: "OTP is required" })}
+            />
+            <input
+              type="text"
+              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
+              style={{
+                backgroundColor: "",
+                borderRadius: "6px",
+                outlineColor: "transparent",
+                paddingLeft: 8,
+                paddingRight: 8,
+                fontSize: 24,
+                textAlign: "center"
+              }}
+              {...register("otp6", { required: "OTP is required" })}
             />
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4" style={{ marginTop: 40 }}>
             <button className="btn w-full rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
               Verify
             </button>

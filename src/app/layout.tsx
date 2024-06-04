@@ -4,6 +4,7 @@ import "./globals.css";
 import ContextProvider from "./clientWrappers/ContextProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ReactQueryClientProvider from "./clientWrappers/ReactQueryClientProvider";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"], fallback: ["Arial"] });
 
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} flex flex-col`}>
+        <Toaster />
         <ContextProvider>
           <ReactQueryClientProvider>{children}</ReactQueryClientProvider>
         </ContextProvider>

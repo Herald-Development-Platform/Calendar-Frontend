@@ -2,8 +2,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IoIosSearch } from "react-icons/io";
+import { IoIosSearch, } from "react-icons/io";
 import { AiOutlineHome } from "react-icons/ai";
+import { MdOutlineDisplaySettings } from "react-icons/md";
 
 export default function Sidebar() {
   const currentRoute = usePathname();
@@ -24,6 +25,11 @@ export default function Sidebar() {
       icon: <IoIosSearch />,
       navigation: "/search",
     },
+    {
+      name: "Departments",
+      icon: <MdOutlineDisplaySettings />,
+      navigation: "/departments",
+    }
   ];
   return (
     <div className="relative h-screen w-60 bg-neutral-50 px-4 py-10">
