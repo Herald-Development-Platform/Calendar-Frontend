@@ -54,9 +54,14 @@ export default function Page() {
         </div>
 
         {/* Title  */}
-        <div className="flex h-20 w-auto flex-col items-center gap-[6px] px-4  ">
-          <h1 className="text-2xl font-bold">Login</h1>
-          <h4 className=" text-neutral-500">Login to your account</h4>
+        <div
+          className="flex h-20 w-auto flex-col items-center gap-[6px] px-4 "
+          style={{ marginTop: 100.3 }}
+        >
+          <h1 className="text-2xl font-bold">OTP Verification</h1>
+          <h4 className=" text-neutral-500">
+            We’ve sent a 4 digit OTP in your gmail
+          </h4>
         </div>
 
         {/* Form  */}
@@ -64,88 +69,44 @@ export default function Page() {
           onSubmit={handleSubmit(verifyOtp)}
           className="flex flex-col gap-8"
         >
-          <label htmlFor="email">
-            Email
-            <br />
-            <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4 ">
-              <Image
-                src={"/images/LoginPage/EmailLogo.png"}
-                width={"20"}
-                height={"20"}
-                alt="emailLogo"
-                className="h-[20px]"
-              />
-              <input
-                type="email"
-                className="w-full bg-neutral-100  font-normal text-neutral-500 outline-none"
-                placeholder="Enter your college id."
-                id="email"
-                {...register("email", { required: "Email is required" })}
-              />
-            </div>
-          </label>
-
-          <label htmlFor="password">
-            Password
-            <br />
-            <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4">
-              <Image
-                src={"/images/LoginPage/PasswordLogo.png"}
-                width={"20"}
-                height={"20"}
-                alt="passwordLogo"
-              />
-              <input
-                type="password"
-                id="password"
-                className="w-full bg-neutral-100 font-normal text-neutral-500 outline-none "
-                placeholder="Enter your college id."
-                {...register("password", { required: "Password is required" })}
-              />
-            </div>
-          </label>
-
-          <div className="relative bottom-2 flex h-9 w-auto flex-row items-center gap-3">
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              width: "100%",
+              justifyContent: "center",
+              gap: 26,
+            }}
+          >
             <input
-              type="checkbox"
-              className="toggle-primary-600 toggle toggle-xs checked:bg-primary-600"
-              checked={rememberMe}
-              onChange={() => setRememberMe(!rememberMe)}
-              id="checkbox"
+              type="text"
+              placeholder="Enter OTP"
+              className="input h-[40px] w-[150px] text-sm text-neutral-800"
+              {...register("otp", { required: "OTP is required" })}
             />
-            <label
-              htmlFor="checkbox"
-              className="label cursor-pointer text-base text-neutral-500"
-            >
-              <span className="">Remember me</span>
-            </label>
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              className="input h-[40px] w-[150px] text-sm text-neutral-800"
+              {...register("otp", { required: "OTP is required" })}
+            />
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              className="input h-[40px] w-[150px] text-sm text-neutral-800"
+              {...register("otp", { required: "OTP is required" })}
+            />
+            <input
+              type="text"
+              placeholder="Enter OTP"
+              className="input h-[40px] w-[150px] text-sm text-neutral-800"
+              {...register("otp", { required: "OTP is required" })}
+            />
           </div>
           <div className="space-y-4">
             <button className="btn w-full rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
-              Login
-            </button>
-            <Link
-              href={`${baseUrl}/googleAuth`}
-              // onClick={() => {
-              //   Axios.get("/googleAuth");
-              // }}
-              className="btn w-full rounded-[4px] bg-primary-50  text-sm  hover:bg-primary-100"
-              type="button"
-            >
-              <Image
-                src={"/images/LoginPage/GoogleIcon.png"}
-                width={24}
-                height={24}
-                alt="GoogleIcon"
-              ></Image>{" "}
-              Continue With Google
-            </Link>
-
-            <button
-              onClick={() => router.push("/signup")}
-              className="btn w-full rounded-[4px] bg-primary-50  text-sm  hover:bg-primary-100"
-            >
-              Register New Account
+              Verify
             </button>
           </div>
         </form>
