@@ -20,12 +20,13 @@ import { DateRange } from "react-big-calendar";
 import { AiOutlinePlus } from "react-icons/ai";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import "./AddEventModal.css";
-import { baseUrl } from "@/services/baseUrl";
+import { Axios, baseUrl } from "@/services/baseUrl";
 import * as CookieHooks from "@/hooks/CookieHooks";
 import { useGetCookieByName } from "@/hooks/CookieHooks";
 import { DEPARTMENTS } from "@/constants/departments";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { postEvents } from "@/services/api/eventsApi";
 const colors = [
   "#9852F4",
   "#F0BA16",
@@ -56,18 +57,10 @@ export default function AddEventModal() {
   });
 
   const { mutate: postNewEvent } = useMutation({
-    mutationFn: (payload: any) =>
-      fetch(`${baseUrl}/event`, {
-        method: "POST",
-        body: JSON.stringify(newEvent),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      }).then((res) => res.json()),
+    mutationFn: postEvents,
     onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["Events"] });
-      toast.success(`${res.message}`);
+      toast.success(`${res?.data?.success}`);
       setNewEvent({
         title: "",
         start: null,
@@ -86,25 +79,6 @@ export default function AddEventModal() {
     console.log("handle add event ", newEvent);
     // setEvents([...events, newEvent]);
     postNewEvent(newEvent);
-    // setNewEvent({
-    //   title: "",
-    //   start: null,
-    //   end: null,
-    //   color: undefined,
-    //   duration: 0,
-    //   location: "",
-    //   description: undefined,
-    //   department: undefined,
-    //   notes: "",
-    // });
-    // fetch(`${baseUrl}/event`, {
-    //   method: "POST",
-    //   body: JSON.stringify(newEvent),
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: `Bearer ${token}`,
-    //   },
-    // });
   }
 
   const setDateAndTime = ({ hours, minutes, type }: setDateAndTimeTypes) => {
@@ -130,7 +104,7 @@ export default function AddEventModal() {
     <>
       <button
         className="btn btn-sm
-           relative flex h-8 rounded border-none bg-primary-600 text-sm font-medium text-primary-50 outline-none hover:bg-primary-400"
+           relative flex h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
         onClick={() => {
           const modal_3 = document.getElementById(
             "my_modal_3",
@@ -138,7 +112,7 @@ export default function AddEventModal() {
           modal_3.showModal();
         }}
       >
-        <AiOutlinePlus className="h-4 w-4 text-primary-50" />
+        <AiOutlinePlus className="h-4 w-4 font-bold text-primary-50" />
         Add Event
       </button>
       <dialog id="my_modal_3" className="modal">

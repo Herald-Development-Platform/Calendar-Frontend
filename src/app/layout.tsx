@@ -5,7 +5,7 @@ import ContextProvider from "./clientWrappers/ContextProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ReactQueryClientProvider from "./clientWrappers/ReactQueryClientProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], fallback: ["Arial"] });
 
 export const metadata: Metadata = {
   title: "Calendar Application",

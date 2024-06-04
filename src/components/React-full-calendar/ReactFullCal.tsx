@@ -6,37 +6,34 @@ import Calendar, { DateUnselectArg } from "@fullcalendar/core";
 import { Context, ContextType } from "@/app/clientWrappers/ContextProvider";
 import "./FullCalExtraCss.css";
 import { useQuery } from "@tanstack/react-query";
-import { baseUrl } from "@/services/baseUrl";
+import { Axios, baseUrl } from "@/services/baseUrl";
 import { getCookie } from "@/hooks/CookieHooks";
+import Endpoints from "@/services/API_ENDPOINTS";
 
 export default function ReactFullCal() {
-  const { calendarRef } = useContext(Context);
+  const { calendarRef, setSelectedDate } = useContext(Context);
 
   const { data: eventsData } = useQuery({
     queryKey: ["Events"],
-    queryFn: () =>
-      fetch(`${baseUrl}/event`, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${getCookie("token")}`,
-        },
-      }).then((res) => res.json()),
+    queryFn: () => Axios.get(Endpoints.event),
   });
+
+  console.log("eventsData", eventsData);
   return (
     <div className="h-full w-full">
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
-        events={eventsData?.data}
+        events={eventsData?.data?.data}
         headerToolbar={false}
         selectable={true}
-        // dateClick={(dateClickInfo) => {
-        //   setSelectedDate(dateClickInfo.date);
-        // }}
-        // unselect={(arg: DateUnselectArg) => {
-        //   setSelectedDate(undefined);
-        // }}
+        dateClick={(dateClickInfo) => {
+          setSelectedDate(dateClickInfo?.date);
+        }}
+        unselect={(arg: DateUnselectArg) => {
+          setSelectedDate(undefined);
+        }}
         displayEventTime={false}
         dayHeaderClassNames={"customStylesDayHeader"}
         dayCellClassNames={"customStylesDayCells"}
