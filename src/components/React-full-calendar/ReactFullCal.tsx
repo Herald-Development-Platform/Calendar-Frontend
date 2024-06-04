@@ -11,12 +11,13 @@ import { getCookie } from "@/hooks/CookieHooks";
 import Endpoints from "@/services/API_ENDPOINTS";
 
 export default function ReactFullCal() {
-  const { calendarRef } = useContext(Context);
+  const { calendarRef, setSelectedDate } = useContext(Context);
 
   const { data: eventsData } = useQuery({
     queryKey: ["Events"],
     queryFn: () => Axios.get(Endpoints.event),
   });
+
   console.log("eventsData", eventsData);
   return (
     <div className="h-full w-full">
@@ -27,12 +28,12 @@ export default function ReactFullCal() {
         events={eventsData?.data?.data}
         headerToolbar={false}
         selectable={true}
-        // dateClick={(dateClickInfo) => {
-        //   setSelectedDate(dateClickInfo.date);
-        // }}
-        // unselect={(arg: DateUnselectArg) => {
-        //   setSelectedDate(undefined);
-        // }}
+        dateClick={(dateClickInfo) => {
+          setSelectedDate(dateClickInfo?.date);
+        }}
+        unselect={(arg: DateUnselectArg) => {
+          setSelectedDate(undefined);
+        }}
         displayEventTime={false}
         dayHeaderClassNames={"customStylesDayHeader"}
         dayCellClassNames={"customStylesDayCells"}

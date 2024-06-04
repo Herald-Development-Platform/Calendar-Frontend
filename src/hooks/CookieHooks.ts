@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export function useGetCookieByName(cookieName: string): String | undefined {
+export function useGetCookieByName(cookieName: string): string | undefined {
   const [cookie, setCookie] = useState<any>();
 
   useEffect(() => {

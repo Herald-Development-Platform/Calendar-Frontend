@@ -21,6 +21,7 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Endpoints from "@/services/API_ENDPOINTS";
 import { decryptJwtPayload } from "@/lib/utils";
+import { useGetCookieByName } from "@/hooks/CookieHooks";
 
 export function HomeHeader() {
   const [redner, setredner] = useState<number>(1);
@@ -29,12 +30,14 @@ export function HomeHeader() {
   const { calendarRef, selectedDate } = useContext(Context);
   console.log("calREf", calendarRef);
 
-  const token = Cookies.get("token");
+  const token = useGetCookieByName("token");
   const userData = token ? decryptJwtPayload(token) : null;
   console.log("userData", userData);
 
   const router = useRouter();
   const date = selectedDate ? selectedDate : new Date();
+
+  console.log("selectedData", selectedDate);
 
   // useEffect(() => {
   //   console.log("calendarRef from header component", calendarRef);
