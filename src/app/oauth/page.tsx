@@ -11,7 +11,6 @@ export default function Oauth() {
   useEffect(() => {
     if (typeof token === "string") {
       Cookies.set("token", token);
-
       router.push("/");
     }
   }, []);

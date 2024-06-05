@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { Axios, baseUrl } from "@/services/baseUrl";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import * as CookieHooks from "@/hooks/CookieHooks";
 import axios from "axios";
@@ -22,22 +22,50 @@ export default function Page() {
     handleSubmit,
   } = useForm<any>();
 
+  const searchParams = useSearchParams();
+
+  const email = searchParams.get("email");
+  console.log(email);
+  // if (!email) {
+  //   router.push("/login");
+  // }
   const verifyOtp = (payload: any) => {
-    fetch(`${baseUrl}/verifyOtp`)
+    const otp = `${payload.otp1}${payload.otp2}${payload.otp3}${payload.otp4}${payload.otp5}${payload.otp6}`;
+    if (!email || !otp) {
+      toast.error("Email and OTP is required");
+      console.log("Toast is required")
+      return;
+    }
+    fetch(`${baseUrl}/verifyOtp?email=${email}&OTP=${otp}`)
       .then((res) => res.json())
       .then((data) => {
         if (!data.success) {
-          throw Error(data || "Something went wrong");
+          toast.error(data.message || "Something went wrong");
         }
-        CookieHooks.setCookie("token", data.data, 1);
-        toast.success(data.message || "Successfully registered user.");
-        router.push("/");
+        toast.success(data.message || "OTP verified successfully");
+        setTimeout(() => {
+          router.push("/login");
+        }, 1000);
       })
       .catch((err) => toast.error(err.message || "Something went wrong"));
   };
+
+  const handleOTPChange = (e: any) => {
+    const otpNumber = e.target.getAttribute("name")?.replace("otp", "");
+    if (parseInt(otpNumber) < 6 && e.target.value.length === 1) {
+      console.log("e.target.nextSibling", e.target.nextSibling);
+      e.target.nextSibling.focus();
+    }
+    else if (parseInt(otpNumber) > 1 && e.target.value.length === 0){
+      e.target.previousSibling.focus();
+    }
+    else if (parseInt(otpNumber) === 6 && e.target.value.length === 1){
+      handleSubmit(verifyOtp)();
+    }
+  }
   return (
     <>
-      <div className="relative mx-auto my-[80px] flex h-auto w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 pb-[84px] pt-12 font-medium">
+      <div className="relative mx-auto my-[60px] flex h-auto w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 pb-[84px] pt-12 font-medium">
         {/* Logo  */}
         <div className="absolute top-0 flex -translate-y-1/2 transform items-center justify-between gap-2 bg-[#FFFFFF] px-3">
           <Image
@@ -54,98 +82,118 @@ export default function Page() {
         </div>
 
         {/* Title  */}
-        <div className="flex h-20 w-auto flex-col items-center gap-[6px] px-4  ">
-          <h1 className="text-2xl font-bold">Login</h1>
-          <h4 className=" text-neutral-500">Login to your account</h4>
+        <div
+          className="flex h-20 w-auto flex-col items-center gap-[6px] px-4 "
+          style={{ marginTop: 100.3 }}
+        >
+          <h1 className="text-2xl font-bold">OTP Verification</h1>
+          <h4 className=" text-neutral-500">
+            We’ve sent a 4 digit OTP in your gmail
+          </h4>
         </div>
 
         {/* Form  */}
         <form
           onSubmit={handleSubmit(verifyOtp)}
-          className="flex flex-col gap-8"
+          className="flex flex-col gap-4"
         >
-          <label htmlFor="email">
-            Email
-            <br />
-            <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4 ">
-              <Image
-                src={"/images/LoginPage/EmailLogo.png"}
-                width={"20"}
-                height={"20"}
-                alt="emailLogo"
-                className="h-[20px]"
-              />
-              <input
-                type="email"
-                className="w-full bg-neutral-100  font-normal text-neutral-500 outline-none"
-                placeholder="Enter your college id."
-                id="email"
-                {...register("email", { required: "Email is required" })}
-              />
-            </div>
-          </label>
-
-          <label htmlFor="password">
-            Password
-            <br />
-            <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4">
-              <Image
-                src={"/images/LoginPage/PasswordLogo.png"}
-                width={"20"}
-                height={"20"}
-                alt="passwordLogo"
-              />
-              <input
-                type="password"
-                id="password"
-                className="w-full bg-neutral-100 font-normal text-neutral-500 outline-none "
-                placeholder="Enter your college id."
-                {...register("password", { required: "Password is required" })}
-              />
-            </div>
-          </label>
-
-          <div className="relative bottom-2 flex h-9 w-auto flex-row items-center gap-3">
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              width: "100%",
+              justifyContent: "center",
+              gap: 16,
+            }}
+          >
             <input
-              type="checkbox"
-              className="toggle-primary-600 toggle toggle-xs checked:bg-primary-600"
-              checked={rememberMe}
-              onChange={() => setRememberMe(!rememberMe)}
-              id="checkbox"
+              type="text"
+              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
+              style={{
+                backgroundColor: "",
+                borderRadius: "6px",
+                outlineColor: "transparent",
+                paddingLeft: 8,
+                paddingRight: 8,
+                fontSize: 24,
+                textAlign: "center"
+              }}
+              {...register("otp1", { required: "OTP is required", onChange: handleOTPChange,})}
             />
-            <label
-              htmlFor="checkbox"
-              className="label cursor-pointer text-base text-neutral-500"
-            >
-              <span className="">Remember me</span>
-            </label>
+            <input
+              type="text"
+              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
+              style={{
+                borderRadius: "6px",
+                outlineColor: "transparent",
+                paddingLeft: 8,
+                paddingRight: 8,
+                fontSize: 24,
+                textAlign: "center"
+              }}
+              {...register("otp2", { required: "OTP is required", onChange: handleOTPChange })}
+            />
+            <input
+              type="text"
+              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
+              style={{
+                backgroundColor: "",
+                borderRadius: "6px",
+                outlineColor: "transparent",
+                paddingLeft: 8,
+                paddingRight: 8,
+                fontSize: 24,
+                textAlign: "center"
+              }}
+              {...register("otp3", { required: "OTP is required", onChange: handleOTPChange })}
+            />
+            <input
+              type="text"
+              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
+              style={{
+                backgroundColor: "",
+                borderRadius: "6px",
+                outlineColor: "transparent",
+                paddingLeft: 8,
+                paddingRight: 8,
+                fontSize: 24,
+                textAlign: "center"
+              }}
+              {...register("otp4", { required: "OTP is required", onChange: handleOTPChange })}
+            />
+            <input
+              type="text"
+              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
+              style={{
+                backgroundColor: "",
+                borderRadius: "6px",
+                outlineColor: "transparent",
+                paddingLeft: 8,
+                paddingRight: 8,
+                fontSize: 24,
+                textAlign: "center"
+              }}
+              {...register("otp5", { required: "OTP is required", onChange: handleOTPChange })}
+            />
+            <input
+              type="text"
+              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
+              style={{
+                backgroundColor: "",
+                borderRadius: "6px",
+                outlineColor: "transparent",
+                paddingLeft: 8,
+                paddingRight: 8,
+                fontSize: 24,
+                textAlign: "center"
+              }}
+              {...register("otp6", { required: "OTP is required", onChange: handleOTPChange })}
+            />
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4" style={{ marginTop: 40 }}>
             <button className="btn w-full rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
-              Login
-            </button>
-            <Link
-              href={`${baseUrl}/googleAuth`}
-              // onClick={() => {
-              //   Axios.get("/googleAuth");
-              // }}
-              className="btn w-full rounded-[4px] bg-primary-50  text-sm  hover:bg-primary-100"
-              type="button"
-            >
-              <Image
-                src={"/images/LoginPage/GoogleIcon.png"}
-                width={24}
-                height={24}
-                alt="GoogleIcon"
-              ></Image>{" "}
-              Continue With Google
-            </Link>
-
-            <button
-              onClick={() => router.push("/signup")}
-              className="btn w-full rounded-[4px] bg-primary-50  text-sm  hover:bg-primary-100"
-            >
-              Register New Account
+              Verify
             </button>
           </div>
         </form>
