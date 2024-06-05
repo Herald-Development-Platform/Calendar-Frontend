@@ -6,7 +6,7 @@ interface eventType {
   duration?: number;
   location?: string;
   description?: string;
-  department?: string;
+  department?: string[];
   notes?: string;
   _id?: string;
 }
@@ -16,3 +16,8 @@ type setDateAndTimeTypes = {
   minutes: number;
   type: "start" | "end";
 };
+
+interface eventByParamsType {
+  q: string;
+  departments: string[];
+}

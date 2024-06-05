@@ -1,10 +1,16 @@
-import React, { useContext, useEffect } from "react";
+import React, { Dispatch, SetStateAction, useContext, useEffect } from "react";
 import { HiOutlineBell } from "react-icons/hi";
 import Image from "next/image";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import { IoIosSearch } from "react-icons/io";
 
-export function SearchHeader() {
+export function SearchHeader({
+  queryParams,
+  setQueryParams,
+}: {
+  queryParams: eventByParamsType;
+  setQueryParams: Dispatch<SetStateAction<eventByParamsType>>;
+}) {
   const { calendarRef, selectedDate } = useContext(Context);
 
   const date = selectedDate ? selectedDate : new Date();
@@ -27,10 +33,12 @@ export function SearchHeader() {
               className="w-full bg-neutral-100 text-sm font-medium text-neutral-500 outline-none"
               placeholder="Search events, dates, participants..."
               id="add-title"
-              // value={newEvent.title}
-              // onChange={(e) =>
-              //   setNewEvent({ ...newEvent, title: e.target.value })
-              // }
+              value={queryParams?.q}
+              onChange={
+                (e) =>
+                  setQueryParams((prev) => ({ ...prev, q: e.target.value }))
+                // setNewEvent({ ...newEvent, title: e.target.value })
+              }
             />
           </div>
         </label>

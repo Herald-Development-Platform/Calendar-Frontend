@@ -28,13 +28,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { postEvents } from "@/services/api/eventsApi";
 const colors = [
-  "#9852F4",
-  "#F0BA16",
-  "#F45293",
-  "#F45252",
-  "#FF8447",
-  "#47A3FF",
-  "#6647FF",
+  "#FC3434",
+  "#FF6D6D",
+  "#FFD760",
+  "#FFDD85",
+  "#96FFA0",
+  "#B8FFBF",
 ];
 
 export default function AddEventModal() {
@@ -103,7 +102,7 @@ export default function AddEventModal() {
   return (
     <>
       <button
-        className="btn btn-sm
+        className="scale btn btn-sm
            relative flex h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
         onClick={() => {
           const modal_3 = document.getElementById(
@@ -278,7 +277,9 @@ export default function AddEventModal() {
 
             {/* Departments section  */}
             <div className="">
-              Departments <br />
+              <div className="flex flex-wrap">
+                <span>Departments:</span>
+              </div>
               <select
                 className="select select-bordered h-10 w-full  rounded border-[1px] border-neutral-300 text-neutral-900 focus:border-primary-600 focus:outline-none"
                 defaultValue={""}

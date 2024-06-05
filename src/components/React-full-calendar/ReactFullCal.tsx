@@ -2,6 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import listPlugin from "@fullcalendar/list";
+import multiMonthPlugin from "@fullcalendar/multimonth";
+import timeGridPlugin from "@fullcalendar/timegrid";
 import Calendar, { DateUnselectArg } from "@fullcalendar/core";
 import { Context, ContextType } from "@/app/clientWrappers/ContextProvider";
 import "./FullCalExtraCss.css";
@@ -12,19 +15,43 @@ import Endpoints from "@/services/API_ENDPOINTS";
 
 export default function ReactFullCal() {
   const { calendarRef, setSelectedDate } = useContext(Context);
+  const [initialView, setInitialView] = useState<string>("dayGridMonth");
 
   const { data: eventsData } = useQuery({
     queryKey: ["Events"],
     queryFn: () => Axios.get(Endpoints.event),
   });
 
-  console.log("eventsData", eventsData);
+  // console.log("eventsData", eventsData);
+  // const calendarApi = calendarRef?.current?.getApi();
+
+  // console.log("calendarapi", calendarApi.currentV);
+
   return (
     <div className="h-full w-full">
+      <button
+        className="btn btn-sm bg-primary-600 text-white"
+        onClick={() =>
+          console.log(
+            "calendarRef.current",
+            calendarRef?.current.getApi().changeView("listYear"),
+          )
+        }
+      >
+        {" "}
+        Button to change view
+      </button>
       <FullCalendar
         ref={calendarRef}
-        plugins={[dayGridPlugin, interactionPlugin]}
-        initialView="dayGridMonth"
+        plugins={[
+          dayGridPlugin,
+          multiMonthPlugin,
+          interactionPlugin,
+          timeGridPlugin,
+          listPlugin,
+          multiMonthPlugin,
+        ]}
+        initialView={`${initialView}`}
         events={eventsData?.data?.data}
         headerToolbar={false}
         selectable={true}
