@@ -61,7 +61,10 @@ export default function Page() {
                   <span className="text-xl ">
                     <BsDot />
                   </span>
-                  <span>{format(new Date(event?.start), "yyyy/MM/dd")}</span>
+                  <span>
+                    {event?.start &&
+                      format(new Date(event.start), "yyyy/MM/dd")}
+                  </span>
                 </p>
               </div>
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm opacity-0 group-hover:opacity-100">
