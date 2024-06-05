@@ -91,7 +91,12 @@ export default function Page() {
               <span className="text-neutral-600">Calendar</span>
             </div>
           </div>
-          <Image src={`/alreadySentRequest.svg`} alt={""} width={737} height={362} />
+
+          <Image src={`/alreadySentRequest.svg`} alt={""} width={737} height={362} className=" mt-[60px]" />
+          <div className=" mt-[24px] flex flex-row gap-[6px] items-center">
+            <p className=" text-primary-600">Join request has been sent!</p>
+            <p>You will receive a mail about the request acceptance</p>
+          </div>
         </div>
       ) 
       : 

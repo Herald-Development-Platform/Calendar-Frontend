@@ -45,7 +45,7 @@ export default function Page() {
 
   return (
     <>
-      <div className="mx-auto my-[182px] flex w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 pb-10 font-medium">
+      <div className="mx-auto my-[60px] flex w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 pb-10 font-medium">
         {/* Logo  */}
         <div className="flex -translate-y-1/2 transform items-center justify-between gap-2 bg-[#FFFFFF]">
           <Image
