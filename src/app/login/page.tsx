@@ -41,11 +41,11 @@ export default function Page() {
         toast.success(data.message || "Successfully registered user.");
         router.push("/");
       })
-      .catch((err) => toast.error(err.message || "Something went wrong"));
+      .catch((err) => toast.error("Something went wrong"));
   };
   return (
     <>
-      <div className="relative mx-auto my-[80px] flex h-auto w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 pb-[84px] pt-12 font-medium">
+      <div className="relative mx-auto my-[60px] flex h-auto w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 pb-[84px] pt-12 font-medium">
         {/* Logo  */}
         <div className="absolute top-0 flex -translate-y-1/2 transform items-center justify-between gap-2 bg-[#FFFFFF] px-3">
           <Image
@@ -150,7 +150,7 @@ export default function Page() {
             </Link>
 
             <button
-              onClick={() => router.push("/signup")}
+              onClick={(e) => {e.preventDefault();router.push("/signup")}}
               className="btn w-full rounded-[4px] bg-primary-50  text-sm  hover:bg-primary-100"
             >
               Register New Account

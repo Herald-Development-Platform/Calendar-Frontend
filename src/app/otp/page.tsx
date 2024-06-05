@@ -49,9 +49,23 @@ export default function Page() {
       })
       .catch((err) => toast.error(err.message || "Something went wrong"));
   };
+
+  const handleOTPChange = (e: any) => {
+    const otpNumber = e.target.getAttribute("name")?.replace("otp", "");
+    if (parseInt(otpNumber) < 6 && e.target.value.length === 1) {
+      console.log("e.target.nextSibling", e.target.nextSibling);
+      e.target.nextSibling.focus();
+    }
+    else if (parseInt(otpNumber) > 1 && e.target.value.length === 0){
+      e.target.previousSibling.focus();
+    }
+    else if (parseInt(otpNumber) === 6 && e.target.value.length === 1){
+      handleSubmit(verifyOtp)();
+    }
+  }
   return (
     <>
-      <div className="relative mx-auto my-[80px] flex h-auto w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 pb-[84px] pt-12 font-medium">
+      <div className="relative mx-auto my-[60px] flex h-auto w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 pb-[84px] pt-12 font-medium">
         {/* Logo  */}
         <div className="absolute top-0 flex -translate-y-1/2 transform items-center justify-between gap-2 bg-[#FFFFFF] px-3">
           <Image
@@ -105,7 +119,7 @@ export default function Page() {
                 fontSize: 24,
                 textAlign: "center"
               }}
-              {...register("otp1", { required: "OTP is required" })}
+              {...register("otp1", { required: "OTP is required", onChange: handleOTPChange,})}
             />
             <input
               type="text"
@@ -118,21 +132,7 @@ export default function Page() {
                 fontSize: 24,
                 textAlign: "center"
               }}
-              {...register("otp2", { required: "OTP is required" })}
-            />
-            <input
-              type="text"
-              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
-              style={{
-                backgroundColor: "",
-                borderRadius: "6px",
-                outlineColor: "transparent",
-                paddingLeft: 8,
-                paddingRight: 8,
-                fontSize: 24,
-                textAlign: "center"
-              }}
-              {...register("otp3", { required: "OTP is required" })}
+              {...register("otp2", { required: "OTP is required", onChange: handleOTPChange })}
             />
             <input
               type="text"
@@ -146,7 +146,7 @@ export default function Page() {
                 fontSize: 24,
                 textAlign: "center"
               }}
-              {...register("otp4", { required: "OTP is required" })}
+              {...register("otp3", { required: "OTP is required", onChange: handleOTPChange })}
             />
             <input
               type="text"
@@ -160,7 +160,7 @@ export default function Page() {
                 fontSize: 24,
                 textAlign: "center"
               }}
-              {...register("otp5", { required: "OTP is required" })}
+              {...register("otp4", { required: "OTP is required", onChange: handleOTPChange })}
             />
             <input
               type="text"
@@ -174,7 +174,21 @@ export default function Page() {
                 fontSize: 24,
                 textAlign: "center"
               }}
-              {...register("otp6", { required: "OTP is required" })}
+              {...register("otp5", { required: "OTP is required", onChange: handleOTPChange })}
+            />
+            <input
+              type="text"
+              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
+              style={{
+                backgroundColor: "",
+                borderRadius: "6px",
+                outlineColor: "transparent",
+                paddingLeft: 8,
+                paddingRight: 8,
+                fontSize: 24,
+                textAlign: "center"
+              }}
+              {...register("otp6", { required: "OTP is required", onChange: handleOTPChange })}
             />
           </div>
           <div className="space-y-4" style={{ marginTop: 40 }}>

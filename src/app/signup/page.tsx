@@ -10,7 +10,7 @@ import { DEPARTMENTS } from "@/constants/departments";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
-export default function page() {
+export default function Page() {
   const {
     register,
     setValue,
@@ -40,7 +40,7 @@ export default function page() {
           router.push(`/otp?email=${payload.email}`);
         }, 1000);
       })
-      .catch((err) => toast.error(err.message || "Something went wrong"));
+      .catch((err) => toast.error("Something went wrong"));
   };
 
   return (

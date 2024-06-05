@@ -7,7 +7,7 @@
   }
   
   ::-webkit-scrollbar-thumb {
-    background: green;  /* color of the scrollbar thumb */
+    background: #90CC69;  /* color of the scrollbar thumb */
     border-radius: 10px;  /* rounded corners for the scrollbar thumb */
   }
   
