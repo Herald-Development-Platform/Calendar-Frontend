@@ -9,7 +9,7 @@ export default function UpcommingEvents() {
     queryKey: ["Events"],
     queryFn: getEvents,
   });
-  console.log("eventsData", eventsData);
+  // console.log("eventsData", eventsData);
 
   // const dateString = "2024-05-18T05:25:00.000Z";
 

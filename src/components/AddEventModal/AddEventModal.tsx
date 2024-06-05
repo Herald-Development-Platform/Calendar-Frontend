@@ -27,14 +27,21 @@ import { DEPARTMENTS } from "@/constants/departments";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { postEvents } from "@/services/api/eventsApi";
+import { watch } from "fs";
+import DepartmentBtn from "./DepartmentBtn";
 const colors = [
-  "#9852F4",
-  "#F0BA16",
-  "#F45293",
-  "#F45252",
-  "#FF8447",
-  "#47A3FF",
-  "#6647FF",
+  "#FC3434",
+  "#FF6D6D",
+  "#FFD760",
+  "#FFDD85",
+  "#96FFA0",
+  "#B8FFBF",
+];
+const departments = [
+  { code: "IT & NOC" },
+  { code: "RTE" },
+  { code: "MERO" },
+  { code: "OIJDF" },
 ];
 
 export default function AddEventModal() {
@@ -52,7 +59,7 @@ export default function AddEventModal() {
     duration: 0,
     location: "",
     description: undefined,
-    department: undefined,
+    departments: [],
     notes: "",
   });
 
@@ -69,7 +76,7 @@ export default function AddEventModal() {
         duration: 0,
         location: "",
         description: undefined,
-        department: undefined,
+        departments: [],
         notes: "",
       });
     },
@@ -99,11 +106,11 @@ export default function AddEventModal() {
       }
     }
   };
-
+  console.log("render", newEvent);
   return (
     <>
       <button
-        className="btn btn-sm
+        className="scale btn btn-sm
            relative flex h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
         onClick={() => {
           const modal_3 = document.getElementById(
@@ -138,7 +145,7 @@ export default function AddEventModal() {
                 </span>
                 <input
                   type="text"
-                  className="w-full font-normal text-neutral-900 outline-none"
+                  className="w-full text-lg font-normal text-neutral-900 outline-none"
                   placeholder="Add Title"
                   id="add-title"
                   value={newEvent.title}
@@ -150,10 +157,10 @@ export default function AddEventModal() {
             </label>
 
             {/* Date Input section */}
-            <label htmlFor="date" className="flex flex-col gap-2">
-              <span>Date</span>
+            <label htmlFor="date" className="flex flex-col gap-2 ">
+              <span className="text-sm">Date</span>
               <Datepicker
-                className="h-10 w-full rounded border-[1px] border-neutral-300 text-neutral-900 outline-none focus:border-primary-600"
+                className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
                 onChange={(datePicked) => {
                   setPickedDate(datePicked);
                   console.log("PickedDate", datePicked);
@@ -185,7 +192,7 @@ export default function AddEventModal() {
             <div className="flex flex-col">
               <div className="flex gap-4">
                 <div className="flex w-full  flex-col ">
-                  <span>From</span>
+                  <span className="text-sm">From</span>
                   <div className="flex h-10 items-center rounded border border-neutral-300 px-3 py-2 focus:border-primary-600">
                     <span className="text-3xl">
                       <LiaHourglassStartSolid />
@@ -198,7 +205,7 @@ export default function AddEventModal() {
                 </div>
 
                 <div className="flex w-full flex-col">
-                  <span>To</span>
+                  <span className="text-sm">To</span>
                   <div className="group flex h-10 items-center rounded border border-neutral-300 px-3 py-2 focus:border-primary-600">
                     <span className="text-3xl">
                       <LiaHourglassEndSolid />
@@ -214,7 +221,7 @@ export default function AddEventModal() {
 
             {/* Color input section  */}
             <div>
-              Color
+              <span className="text-sm">Priority</span>
               <div className="flex gap-2">
                 {colors.map((Color, i) => (
                   <label
@@ -253,7 +260,9 @@ export default function AddEventModal() {
 
             {/* Location section  */}
             <div>
-              Location <br />
+              <span className="text-sm">
+                Location <br />
+              </span>
               <input
                 type="text"
                 className="h-10 w-full rounded border-[1px] border-neutral-300 text-neutral-900 focus:border-primary-600"
@@ -265,7 +274,7 @@ export default function AddEventModal() {
             </div>
 
             {/* Description section  */}
-            <div className="w-full">
+            <div className="w-full text-sm">
               Description <br />
               <textarea
                 className="textarea textarea-bordered w-full text-neutral-900 focus:border-primary-600 focus:outline-none"
@@ -277,24 +286,34 @@ export default function AddEventModal() {
             </div>
 
             {/* Departments section  */}
-            <div className="">
-              Departments <br />
+            <div className="text-sm">
+              <span>Departments:</span>
+              <div className="my-2 flex flex-wrap items-center gap-1">
+                {newEvent?.departments?.map((department, i) => (
+                  <DepartmentBtn
+                    key={i}
+                    setNewEvent={setNewEvent}
+                    index={i}
+                    department={department}
+                  />
+                ))}
+              </div>
               <select
-                className="select select-bordered h-10 w-full  rounded border-[1px] border-neutral-300 text-neutral-900 focus:border-primary-600 focus:outline-none"
+                className="select select-bordered h-10 w-full rounded  border-[1px] border-neutral-300 text-sm text-neutral-900 focus:border-primary-600 focus:outline-none"
                 defaultValue={""}
                 onChange={(e) =>
                   setNewEvent((prev) => ({
                     ...prev,
-                    department: e.target.value,
+                    departments: [...newEvent?.departments, e.target.value],
                   }))
                 }
               >
                 <option disabled value={""}>
                   Choose the departments
                 </option>
-                {Object.values(DEPARTMENTS).map((department) => (
-                  <option key={department} value={department}>
-                    {department}
+                {departments?.map((department) => (
+                  <option key={department?.code} value={department?.code}>
+                    {department?.code}
                   </option>
                 ))}
               </select>
