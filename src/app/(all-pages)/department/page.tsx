@@ -11,7 +11,7 @@ interface Department {
   description: string;
 }
 
-export default function page() {
+export default function Page() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [newDepartment, setNewDepartment] = useState<Partial<Department>>({});
 
