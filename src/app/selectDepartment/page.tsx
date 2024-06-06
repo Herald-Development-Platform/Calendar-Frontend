@@ -5,7 +5,8 @@ import { Axios, baseUrl } from "@/services/baseUrl";
 import { HiOutlineUsers } from "react-icons/hi";
 import "./scrollbar.css";
 import toast from "react-hot-toast";
-
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 interface Department {
   _id: string;
   name: string;
@@ -16,11 +17,15 @@ interface Department {
 export default function Page() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [alreadySent, setAlreadySent] = useState<boolean>(false);
+  const [userData, setUserData] = useState<any>({});
+  const Router = useRouter();
+
   const [selectedDepartment, setSelectedDepartment] =
     useState<Department | null>(null);
   useEffect(() => {
     fetchDepartments();
     fetchMyRequests();
+    checkApproved();
   }, []);
 
   const fetchMyRequests = async () => {
@@ -39,6 +44,36 @@ export default function Page() {
       console.error("Error fetching my requests:", error);
     }
   };
+
+  const generateNewToken = async () => {
+    try {
+      const response = await Axios.get("/generateNewToken");
+      if (response.data.success) {
+        return response.data.data;
+      }
+      return null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  const checkApproved = async () => {
+    try {
+      const response = await Axios.get(`/profile`);
+      if (response.data.success) {
+        const userData = response.data.data;
+        if (userData.department) {
+          const newToken = await generateNewToken();
+          Cookies.set("token", newToken, {expires: Date.now()+40*86400*1000});
+          Router.push("/");
+        }
+      } else {
+        toast.error("Error fetching user data");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  }
 
   const fetchDepartments = async () => {
     try {
