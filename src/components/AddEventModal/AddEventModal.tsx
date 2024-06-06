@@ -219,21 +219,21 @@ export default function AddEventModal() {
                 {colors.map((Color, i) => (
                   <label
                     className={`btn checkbox btn-xs relative h-7 w-7 cursor-pointer rounded-none border-none`}
-                    style={{ backgroundColor: Color }}
+                    style={{ backgroundColor: Color.color }}
                     htmlFor={`ColorInput${i}`}
                     key={i}
                   >
                     <input
                       type="checkbox"
                       className={
-                        Color == newEvent.color
+                        Color.color == newEvent.color
                           ? "absolute h-full w-full border-none text-white"
                           : "absolute hidden h-full w-full border-none text-white"
                       }
                       style={{
-                        accentColor: Color,
+                        accentColor: Color.color,
                       }}
-                      checked={Color == newEvent.color}
+                      checked={Color.color == newEvent.color}
                       readOnly
                     />
                     <input
@@ -242,8 +242,10 @@ export default function AddEventModal() {
                       type="radio"
                       className="absolute hidden"
                       onChange={() => {
-                        setNewEvent({ ...newEvent, color: Color });
-                        console.log(`index ${i} clicked, Color: ${Color}`);
+                        setNewEvent({ ...newEvent, color: Color.color });
+                        console.log(
+                          `index ${i} clicked, Color.color: ${Color.color}`,
+                        );
                       }}
                     />
                   </label>
@@ -304,7 +306,7 @@ export default function AddEventModal() {
                 <option disabled value={""}>
                   Choose the departments
                 </option>
-                {departmentsRes?.data?.data?.map((department) => (
+                {departmentsRes?.data?.data?.map((department: any) => (
                   <option key={department?.code} value={department?.code}>
                     {department?.code}
                   </option>

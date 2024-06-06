@@ -11,14 +11,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import colors from "@/constants/Colors";
+import { useState } from "react";
 
 export default function EventDetails({
   selectedEvent,
 }: {
   selectedEvent: eventType | null;
 }) {
+  const [selectedColor, setSelectedColor] = useState<string>();
   return (
-    <section className="absolute right-0 top-0 flex h-auto w-80 flex-col gap-6    p-6 font-semibold text-neutral-600">
+    <section className="absolute right-0 top-0 flex h-auto w-80 flex-col gap-6 p-6 font-semibold text-neutral-600">
       <div className="font flex items-center">
         <span className="text-base">Event Details</span>
         <span className="ml-auto flex gap-[6px] text-black">
@@ -40,24 +42,29 @@ export default function EventDetails({
         {selectedEvent && <EventCard event={selectedEvent} />}
       </div>
 
-      <div>
+      <div className="flex items-center justify-between">
         <p>Priority</p>
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <div>lasdlksdjaf</div>
+        <Select onValueChange={(value) => setSelectedColor(value)}>
+          <SelectTrigger className="h-7 w-14 border-none p-0 focus:ring-0">
+            <div
+              className="h-7 w-7"
+              style={{ backgroundColor: selectedColor }}
+            ></div>
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
               <SelectLabel>Colors</SelectLabel>
-              {colors.map((color) => (
-                <SelectItem value={color} key={color}>
-                  {color}
+              {colors.map((color: any, i) => (
+                <SelectItem value={color?.color} key={color?.color}>
+                  <div className="flex items-center justify-between gap-2">
+                    <div
+                      className="h-7 w-7"
+                      style={{ backgroundColor: color?.color }}
+                    ></div>
+                    <span>{color?.priority}</span>
+                  </div>
                 </SelectItem>
               ))}
-              {/* <SelectItem value="banana">Banana</SelectItem>
-              <SelectItem value="blueberry">Blueberry</SelectItem>
-              <SelectItem value="grapes">Grapes</SelectItem>
-              <SelectItem value="pineapple">Pineapple</SelectItem> */}
             </SelectGroup>
           </SelectContent>
         </Select>
