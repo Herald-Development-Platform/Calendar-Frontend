@@ -8,17 +8,19 @@ export default function middleware(request: NextRequest) {
     );
   }
   const data = decryptJwtPayload(request.cookies?.get("token")?.value || "");
+  console.log("a;klsdfj------------------------------------", data.role && data.role!=="SUPER_ADMIN" && data.department);
   if (data.role && data.role!=="SUPER_ADMIN" && data.department) {
     const currentPath = request.nextUrl.pathname;
-    console.log("currentPath", currentPath)
+    // console.log("currentPath", currentPath)
     if (currentPath.includes("selectDepartment") || currentPath.includes("login") || currentPath.includes("signup") || currentPath.includes("otp")) {
       return NextResponse.redirect(new URL(`/`, request.url));
+    }
+    
   }
-  if (data.role && data.role!=="SUPER_ADMIN" && !data.department) {
+    if (data.role && data.role!=="SUPER_ADMIN" && !data.department) {
     return NextResponse.redirect(new URL(`/selectDepartment`, request.url));
   }
 }
-}
 export const config = {
-  matcher: ["/", "/search","/selectDepartment", "/otp"],
+  matcher: ["/", "/search", "/otp"],
 };
