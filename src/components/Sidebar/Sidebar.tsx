@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IoIosSearch, } from "react-icons/io";
+import { IoIosSearch } from "react-icons/io";
 import { AiOutlineHome } from "react-icons/ai";
 import { MdOutlineDisplaySettings } from "react-icons/md";
 
@@ -28,8 +28,8 @@ export default function Sidebar() {
     {
       name: "Departments",
       icon: <MdOutlineDisplaySettings />,
-      navigation: "/departments",
-    }
+      navigation: "/department",
+    },
   ];
   return (
     <div className="relative h-screen w-60 bg-neutral-50 px-4 py-10">

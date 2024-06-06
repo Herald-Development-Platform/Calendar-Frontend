@@ -24,11 +24,12 @@ import { Axios, baseUrl } from "@/services/baseUrl";
 import * as CookieHooks from "@/hooks/CookieHooks";
 import { useGetCookieByName } from "@/hooks/CookieHooks";
 import { DEPARTMENTS } from "@/constants/departments";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { postEvents } from "@/services/api/eventsApi";
 import { watch } from "fs";
 import DepartmentBtn from "./DepartmentBtn";
+import { getDepartments } from "@/services/api/departments";
 const colors = [
   "#FC3434",
   "#FF6D6D",
@@ -62,7 +63,12 @@ export default function AddEventModal() {
     departments: [],
     notes: "",
   });
+  const { data: departmentsRes } = useQuery({
+    queryKey: ["Departments"],
+    queryFn: getDepartments,
+  });
 
+  console.log("depar", departmentsRes);
   const { mutate: postNewEvent } = useMutation({
     mutationFn: postEvents,
     onSuccess: (res) => {
@@ -311,7 +317,7 @@ export default function AddEventModal() {
                 <option disabled value={""}>
                   Choose the departments
                 </option>
-                {departments?.map((department) => (
+                {departmentsRes?.data?.data?.map((department) => (
                   <option key={department?.code} value={department?.code}>
                     {department?.code}
                   </option>

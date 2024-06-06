@@ -29,7 +29,7 @@ export default function ReactFullCal() {
 
   return (
     <div className="h-full w-full">
-      <button
+      {/* <button
         className="btn btn-sm bg-primary-600 text-white"
         onClick={() =>
           console.log(
@@ -38,9 +38,8 @@ export default function ReactFullCal() {
           )
         }
       >
-        {" "}
         Button to change view
-      </button>
+      </button> */}
       <FullCalendar
         ref={calendarRef}
         plugins={[

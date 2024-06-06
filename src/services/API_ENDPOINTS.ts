@@ -20,6 +20,7 @@ const Endpoints = {
     return `/event?q=${query}&departments=${departmentsSearchParam}`;
   },
   eventById: (id: string) => `/event/${id}`,
+  department: "/department",
 };
 
 export default Endpoints;

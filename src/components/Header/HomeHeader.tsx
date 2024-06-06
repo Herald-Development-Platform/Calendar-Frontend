@@ -16,15 +16,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { IoMdArrowDropdown } from "react-icons/io";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Endpoints from "@/services/API_ENDPOINTS";
 import { decryptJwtPayload } from "@/lib/utils";
 import { useGetCookieByName } from "@/hooks/CookieHooks";
+import { CalendarViews } from "@/constants/CalendarViews";
 
 export function HomeHeader() {
-  const [redner, setredner] = useState<number>(1);
+  // const [redner, setredner] = useState<number>(1);
   const [calendarApi, setCalendarApi] = useState<CalendarApi>();
 
   const { calendarRef, selectedDate } = useContext(Context);
@@ -64,9 +73,6 @@ export function HomeHeader() {
 
   return (
     <div className="ml-8 mr-16 mt-8 flex h-12 w-auto justify-between">
-      {/* <button onClick={() => setredner(redner + 1)}>
-        redner asdfjlksadfj;
-      </button> */}
       <div className="flex w-9/12 justify-between">
         {/* Navigation btns and Date */}
         <div className="flex w-auto items-center gap-3 text-neutral-900">
@@ -105,14 +111,45 @@ export function HomeHeader() {
 
         {/* month and addEventModal  */}
         <div className="flex w-56 items-center justify-between gap-3 text-sm font-medium">
-          <select
-            className="h-8 w-24 max-w-xs rounded border border-neutral-300 bg-transparent text-neutral-500 focus:outline-none"
-            defaultValue={"month"}
+          <Select
+            onValueChange={(calView) => {
+              console.log("calView", calView);
+              calendarApi?.changeView(calView);
+            }}
+            defaultValue="month"
           >
-            <option value={"month"}>Month</option>
-            <option value={"week"}>Week</option>
-            <option value={"year"}>Year</option>
-          </select>
+            <SelectTrigger className="h-8 w-24 text-neutral-500 focus:outline-none focus:ring-0">
+              <SelectValue placeholder="View" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
+                className="font-normal text-neutral-500 "
+                value={CalendarViews.monthView}
+              >
+                Months
+              </SelectItem>
+
+              <SelectItem
+                className="font-normal text-neutral-500 "
+                value={CalendarViews.timeGrid.week}
+              >
+                Week
+              </SelectItem>
+              <SelectItem
+                className="font-normal text-neutral-500 "
+                value={CalendarViews.timeGrid.day}
+              >
+                Day
+              </SelectItem>
+              <SelectItem
+                className="font-normal text-neutral-500 "
+                value="year"
+              >
+                Year
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
           <AddEventModal />
         </div>
       </div>
@@ -149,7 +186,6 @@ export function HomeHeader() {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>My Profile</DropdownMenuLabel>
-            <DropdownMenuItem>Billing</DropdownMenuItem>
             <DropdownMenuItem>Team</DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
