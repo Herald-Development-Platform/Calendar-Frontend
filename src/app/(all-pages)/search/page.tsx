@@ -9,8 +9,11 @@ import Endpoints from "@/services/API_ENDPOINTS";
 import { BsDot } from "react-icons/bs";
 import { format } from "date-fns";
 import { RxArrowTopRight } from "react-icons/rx";
+import EventDetails from "./EventDetails";
 
 export default function Page() {
+  const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
+
   const [queryParams, setQueryParams] = useState({
     q: "",
     departments: [""],
@@ -33,46 +36,50 @@ export default function Page() {
 
   console.log("filteredEvents", filteredEvents);
   return (
-    <div className="flex flex-col gap-9">
+    <div className="flex h-full flex-col gap-9 pl-8 pt-10">
       <Headers.SearchHeader
         queryParams={queryParams}
         setQueryParams={setQueryParams}
       />
-      <div className="ml-8 flex w-1/2 flex-col gap-2">
-        <p className="text-base text-neutral-500 ">Recent Searches</p>
-        <div className="flex flex-col  ">
-          {filteredEvents?.data?.data?.map((event: eventType, i: number) => (
-            <div
-              key={event._id}
-              className="group flex items-center gap-4 rounded-md px-3 py-[6px] hover:bg-neutral-100"
-            >
-              <span
-                className="h-8 w-8 rounded-md"
-                style={{ backgroundColor: `${event?.color}` }}
-              ></span>
-              <div className="flex flex-grow flex-col">
-                <header className="text-base font-medium leading-6 text-neutral-900">
-                  {event?.title}
-                </header>
-                <p className="flex items-center  text-xs font-normal text-neutral-500">
-                  <span className="text-sm font-medium text-neutral-600 ">
-                    Event
-                  </span>
-                  <span className="text-xl ">
-                    <BsDot />
-                  </span>
-                  <span>
-                    {event?.start &&
-                      format(new Date(event.start), "yyyy/MM/dd")}
-                  </span>
-                </p>
+      <div className="relative w-full flex-grow ">
+        <div className=" flex w-1/2 flex-col gap-2 ">
+          <p className="text-base text-neutral-500 ">Recent Searches</p>
+          <div className="flex flex-col  ">
+            {filteredEvents?.data?.data?.map((event: eventType, i: number) => (
+              <div
+                onClick={() => setSelectedEvent(event)}
+                key={event._id}
+                className="group flex items-center gap-4 rounded-md px-3 py-[6px] hover:bg-neutral-100"
+              >
+                <span
+                  className="h-8 w-8 rounded-md"
+                  style={{ backgroundColor: `${event?.color}` }}
+                ></span>
+                <div className="flex flex-grow flex-col">
+                  <header className="text-base font-medium leading-6 text-neutral-900">
+                    {event?.title}
+                  </header>
+                  <p className="flex items-center  text-xs font-normal text-neutral-500">
+                    <span className="text-sm font-medium text-neutral-600 ">
+                      Event
+                    </span>
+                    <span className="text-xl ">
+                      <BsDot />
+                    </span>
+                    <span>
+                      {event?.start &&
+                        format(new Date(event.start), "yyyy/MM/dd")}
+                    </span>
+                  </p>
+                </div>
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm opacity-0 group-hover:opacity-100">
+                  <RxArrowTopRight />
+                </span>
               </div>
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm opacity-0 group-hover:opacity-100">
-                <RxArrowTopRight />
-              </span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+        <EventDetails selectedEvent={selectedEvent}></EventDetails>
       </div>
     </div>
   );

@@ -19,7 +19,7 @@ export function SearchHeader({
   //   const calendarApi = calendarRef?.current?.getApi();
 
   return (
-    <div className="ml-8 mt-8 flex h-12 w-[95%] justify-between">
+    <div className=" flex h-12 w-[95%] justify-between">
       <div className="flex w-9/12 justify-between">
         {/* Navigation btns and Date */}
         {/* <div className="flex w-auto items-center gap-3 text-neutral-900"> */}

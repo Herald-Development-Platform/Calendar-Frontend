@@ -30,20 +30,7 @@ import { postEvents } from "@/services/api/eventsApi";
 import { watch } from "fs";
 import DepartmentBtn from "./DepartmentBtn";
 import { getDepartments } from "@/services/api/departments";
-const colors = [
-  "#FC3434",
-  "#FF6D6D",
-  "#FFD760",
-  "#FFDD85",
-  "#96FFA0",
-  "#B8FFBF",
-];
-const departments = [
-  { code: "IT & NOC" },
-  { code: "RTE" },
-  { code: "MERO" },
-  { code: "OIJDF" },
-];
+import colors from "@/constants/Colors";
 
 export default function AddEventModal() {
   const [pickedDate, setPickedDate] = useState<Date | null>();

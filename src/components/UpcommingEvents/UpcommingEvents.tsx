@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import { parseISO, format } from "date-fns";
 import { getEvents } from "@/services/api/eventsApi";
+import EventCard from "./EventCard";
 
 export default function UpcommingEvents() {
   const { data: eventsData } = useQuery({
@@ -50,7 +51,7 @@ export default function UpcommingEvents() {
           </h1>
         </div>
 
-        {eventsData?.data?.data?.map((event: eventType, i: number) => {
+        {/* {eventsData?.data?.data?.map((event: eventType, i: number) => {
           const startTime = event?.start
             ? format(new Date(event.start), "h:mm aa")
             : "NA";
@@ -62,7 +63,6 @@ export default function UpcommingEvents() {
               key={event?._id}
               className="flex h-16 w-full flex-col gap-1 border-l-4 bg-opacity-10 px-4 py-2"
               style={{
-                // opacity: "8%",
                 backgroundColor: `${event?.color}14`,
                 borderWidth: "0 0 0 4px",
                 borderColor: `${event?.color}`,
@@ -74,7 +74,10 @@ export default function UpcommingEvents() {
               </p>
             </div>
           );
-        })}
+        })} */}
+        {eventsData?.data?.data?.map((event: eventType, i: number) => (
+          <EventCard key={event._id} event={event} />
+        ))}
       </div>
     </div>
   );

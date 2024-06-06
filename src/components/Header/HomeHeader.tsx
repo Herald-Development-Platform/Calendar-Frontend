@@ -116,7 +116,7 @@ export function HomeHeader() {
               console.log("calView", calView);
               calendarApi?.changeView(calView);
             }}
-            defaultValue="month"
+            defaultValue={CalendarViews.monthView}
           >
             <SelectTrigger className="h-8 w-24 text-neutral-500 focus:outline-none focus:ring-0">
               <SelectValue placeholder="View" />
@@ -143,7 +143,7 @@ export function HomeHeader() {
               </SelectItem>
               <SelectItem
                 className="font-normal text-neutral-500 "
-                value="year"
+                value={CalendarViews.multiMonthView}
               >
                 Year
               </SelectItem>
