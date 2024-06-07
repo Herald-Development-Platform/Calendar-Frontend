@@ -9,7 +9,7 @@ export default function EventCard({ event }: { event: eventType }) {
     <>
       <div
         // key={event?._id}
-        className="flex h-16 w-full flex-col gap-1 border-l-4 bg-opacity-10 px-4 py-2"
+        className="flex h-auto w-full flex-col gap-1 border-l-4 bg-opacity-10 px-4 py-2 text-black"
         style={{
           backgroundColor: `${event?.color}14`,
           borderWidth: "0 0 0 4px",

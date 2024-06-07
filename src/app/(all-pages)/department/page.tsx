@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import * as Headers from "@/components/Header";
 import RecentSearches from "@/components/RecentSearches/RecentSearches";
 import { Axios } from "@/services/baseUrl";
+import { useQuery } from "@tanstack/react-query";
 
 interface Department {
   _id: string;
@@ -15,6 +16,11 @@ export default function Page() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [newDepartment, setNewDepartment] = useState<Partial<Department>>({});
 
+  const { data } = useQuery({
+    queryKey: ["Departments"],
+    queryFn: () => Axios.get("/department/request"),
+  });
+  console.log("data", data.data);
   useEffect(() => {
     fetchDepartments();
   }, []);
@@ -109,6 +115,7 @@ export default function Page() {
         </div>
 
         <div className="rounded-lg bg-white p-6 shadow-md">
+          <div>asdfsadfsf</div>
           <h2 className="mb-4 text-xl font-bold">View Departments</h2>
           <ul>
             {departments.map((department) => (
