@@ -8,7 +8,7 @@ export default function middleware(request: NextRequest) {
     );
   }
   const data = decryptJwtPayload(request.cookies?.get("token")?.value || "");
-  console.log("a;klsdfj------------------------------------", data.role && data.role!=="SUPER_ADMIN" && data.department);
+  console.log(data)
   if (data.role && data.role!=="SUPER_ADMIN" && data.department) {
     const currentPath = request.nextUrl.pathname;
     // console.log("currentPath", currentPath)
@@ -18,9 +18,11 @@ export default function middleware(request: NextRequest) {
     
   }
     if (data.role && data.role!=="SUPER_ADMIN" && !data.department) {
-    return NextResponse.redirect(new URL(`/selectDepartment`, request.url));
+      if (!request.nextUrl.pathname.includes("selectDepartment")) {
+        return NextResponse.redirect(new URL(`/selectDepartment`, request.url));
+      }
   }
 }
 export const config = {
-  matcher: ["/", "/search", "/otp"],
+  matcher: ["/", "/search", "/selectDepartment" ,"/otp"],
 };
