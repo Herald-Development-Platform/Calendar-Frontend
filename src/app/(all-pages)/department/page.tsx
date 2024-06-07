@@ -16,11 +16,12 @@ export default function Page() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [newDepartment, setNewDepartment] = useState<Partial<Department>>({});
 
-  const { data } = useQuery({
+  const { data: userStatusData } = useQuery({
     queryKey: ["Departments"],
     queryFn: () => Axios.get("/department/request"),
   });
-  console.log("data", data.data);
+  console.log("data reqes", userStatusData?.data);
+
   useEffect(() => {
     fetchDepartments();
   }, []);
@@ -115,7 +116,41 @@ export default function Page() {
         </div>
 
         <div className="rounded-lg bg-white p-6 shadow-md">
-          <div>asdfsadfsf</div>
+          <div>
+            {userStatusData?.data?.data?.map((requestData) => (
+              <div
+                key={requestData._id}
+                className="flex justify-between rounded-xl border border-primary-600 bg-primary-200 px-6 py-3"
+              >
+                <div className="flex flex-col gap-2 ">
+                  <span>Username: {requestData?.user?.username}</span>
+                  <span>Department: {requestData?.department?.code}</span>
+                </div>
+                <div className="flex flex-col items-center gap-2">
+                  <button
+                    onClick={() => {
+                      Axios.put(`/department/request/${requestData?._id}`, {
+                        status: "APPROVED",
+                      });
+                    }}
+                    className="w-full cursor-pointer rounded-md bg-primary-600 px-3 py-1 text-white"
+                  >
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => {
+                      Axios.put(`/department/request/${requestData?._id}`, {
+                        status: "REJECTED",
+                      });
+                    }}
+                    className="w-full cursor-pointer rounded-md bg-danger-700 px-3 py-1 text-white"
+                  >
+                    Deny
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
           <h2 className="mb-4 text-xl font-bold">View Departments</h2>
           <ul>
             {departments.map((department) => (
