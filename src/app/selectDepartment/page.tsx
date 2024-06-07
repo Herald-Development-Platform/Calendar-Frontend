@@ -186,10 +186,10 @@ export default function Page() {
                       </div>
                       <div className="flex flex-col gap-0">
                         <h2 className="text-[16px] font-bold text-neutral-700 group-hover:text-neutral-900">
-                          {department.name}
+                          {department.code}
                         </h2>
                         <p className="text-[13px] text-neutral-400">
-                          {department.description}
+                          {department.name}
                         </p>
                       </div>
                     </div>
