@@ -8,6 +8,9 @@ import { HiOutlineBell } from "react-icons/hi";
 import Image from "next/image";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import { CalendarApi } from "@fullcalendar/core/index.js";
+import { MdOutlineSettings } from "react-icons/md";
+import { IoMdLogOut } from "react-icons/io";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CgProfile } from "react-icons/cg";
 
 import { IoMdArrowDropdown } from "react-icons/io";
 import Cookies from "js-cookie";
@@ -185,18 +189,30 @@ export function HomeHeader() {
             {userData?.username} <IoMdArrowDropdown />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuLabel>My Profile</DropdownMenuLabel>
-            <DropdownMenuItem>Team</DropdownMenuItem>
+            {/* <DropdownMenuLabel>My Profile</DropdownMenuLabel> */}
+            <DropdownMenuItem className="flex gap-2 text-sm font-semibold">
+              <span className="text-xl">
+                <CgProfile />
+              </span>{" "}
+              My Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex gap-2 text-sm font-semibold">
+              <span className="text-xl">
+                <MdOutlineSettings />
+              </span>
+              My Settings
+            </DropdownMenuItem>
+
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              className="flex gap-2"
+              className="flex gap-2 text-base font-semibold"
               onClick={() => {
                 Cookies.remove("token");
                 router.push("/login");
               }}
             >
               <span className="text-xl">
-                <CiLogout />
+                <IoMdLogOut />
               </span>
               Logout
             </DropdownMenuItem>
