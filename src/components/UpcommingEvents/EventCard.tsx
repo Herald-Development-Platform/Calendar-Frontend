@@ -5,6 +5,18 @@ export default function EventCard({ event }: { event: eventType }) {
     ? format(new Date(event.start), "h:mm aa")
     : "NA";
   const endTime = event?.end ? format(new Date(event?.end), "h:mm aa") : "NA";
+  if (!event?.start) return null;
+  console.log(
+    "starttime",
+    format(new Date(event.start), "yyyy MM dd"),
+    format(new Date(), "yyyy MM dd"),
+  );
+
+  if (
+    format(new Date(event.start), "yyyy MM dd") !==
+    format(new Date(), "yyyy MM dd")
+  )
+    return;
   return (
     <>
       <div

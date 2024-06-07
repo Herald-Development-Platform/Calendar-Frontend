@@ -28,7 +28,7 @@ export default function UpcommingEvents() {
     <div className="flex h-full w-1/3 flex-col gap-10 px-6">
       <div className="flex flex-col gap-1 text-neutral-600">
         <h2 className="font-semibold ">Todays Events</h2>
-        <h3 className="text-lg">June 17 - June 23 </h3>
+        {/* <h3 className="text-lg">June 17 - June 23 </h3> */}
       </div>
 
       {/* {[...Array(10)].map(() => 

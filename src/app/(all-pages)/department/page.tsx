@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import * as Headers from "@/components/Header";
 import RecentSearches from "@/components/RecentSearches/RecentSearches";
 import { Axios } from "@/services/baseUrl";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface Department {
   _id: string;
@@ -16,9 +16,21 @@ export default function Page() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [newDepartment, setNewDepartment] = useState<Partial<Department>>({});
 
+  const queryClient = useQueryClient();
+
   const { data: userStatusData } = useQuery({
-    queryKey: ["Departments"],
-    queryFn: () => Axios.get("/department/request"),
+    queryKey: ["UnapprovedUsers"],
+    queryFn: () => Axios.get("/department/request?status=PENDING"),
+  });
+
+  const { mutate: approveUser } = useMutation({
+    mutationFn: (payload: any) =>
+      Axios.put(`/department/request/${payload?._id}`, {
+        status: payload?.status,
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["UnapprovedUsers"] });
+    },
   });
   console.log("data reqes", userStatusData?.data);
 
@@ -117,7 +129,7 @@ export default function Page() {
 
         <div className="rounded-lg bg-white p-6 shadow-md">
           <div>
-            {userStatusData?.data?.data?.map((requestData) => (
+            {userStatusData?.data?.data?.map((requestData: any) => (
               <div
                 key={requestData._id}
                 className="flex justify-between rounded-xl border border-primary-600 bg-primary-200 px-6 py-3"

@@ -260,7 +260,7 @@ export default function AddEventModal() {
               </span>
               <input
                 type="text"
-                className="h-10 w-full rounded border-[1px] border-neutral-300 text-neutral-900 focus:border-primary-600"
+                className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
                 value={newEvent.location}
                 onChange={(e) =>
                   setNewEvent({ ...newEvent, location: e.target.value })
@@ -319,7 +319,7 @@ export default function AddEventModal() {
               <span>Notes</span> <br />
               <input
                 type="text"
-                className="h-10 w-full rounded border-[1px] border-neutral-300 text-neutral-900 focus:border-primary-600"
+                className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
                 value={newEvent.notes}
                 onChange={(e) =>
                   setNewEvent({ ...newEvent, notes: e.target.value })
