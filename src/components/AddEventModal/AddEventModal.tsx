@@ -40,6 +40,7 @@ import { Button } from "../ui/button";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { setPriority } from "os";
+import { Textarea } from "../ui/textarea";
 
 interface PickedDateType {
   startDate: Date | undefined;
@@ -78,6 +79,7 @@ export default function AddEventModal() {
       console.log("Onsuccess", res);
       queryClient.invalidateQueries({ queryKey: ["Events"] });
       toast.success(`${res?.data?.message}`);
+      setPickedDate({ startDate: null, endDate: null });
       setNewEvent({
         title: "",
         start: null,
@@ -85,7 +87,7 @@ export default function AddEventModal() {
         color: undefined,
         duration: 0,
         location: "",
-        description: undefined,
+        description: "",
         departments: [],
         notes: "",
       });
@@ -103,31 +105,29 @@ export default function AddEventModal() {
   }
 
   const setDateAndTime = ({ hours, minutes, type }: setDateAndTimeTypes) => {
-    if (pickedDate?.startDate && pickedDate.endDate) {
-      console.log("selected date in setdateandtime function:", pickedDate);
-      // const date = format(pickedDate.startDate, "yyyy-MM-dd", {
-      //   locale: US_LocaleData,
-      // });
+    console.log("selected date in setdateandtime function:", pickedDate);
+    // const date = format(pickedDate?.startDate, "yyyy-MM-dd", {
+    //   locale: US_LocaleData,
+    // });
 
-      if (type === "start") {
-        const startDate = format(pickedDate.startDate, "yyyy-MM-dd", {
-          locale: US_LocaleData,
-        });
-        const finalStartDate = new Date(startDate);
-        finalStartDate?.setHours(hours);
-        finalStartDate?.setMinutes(minutes);
+    if (type === "start" && pickedDate?.startDate) {
+      const startDate = format(pickedDate?.startDate, "yyyy-MM-dd", {
+        locale: US_LocaleData,
+      });
+      const finalStartDate = new Date(startDate);
+      finalStartDate?.setHours(hours);
+      finalStartDate?.setMinutes(minutes);
 
-        setNewEvent({ ...newEvent, start: finalStartDate });
-      } else if (type === "end") {
-        const endDate = format(pickedDate.endDate, "yyyy-MM-dd", {
-          locale: US_LocaleData,
-        });
-        const finalEndDate = new Date(endDate);
-        finalEndDate?.setHours(hours);
-        finalEndDate?.setMinutes(minutes);
+      setNewEvent({ ...newEvent, start: finalStartDate });
+    } else if (type === "end" && pickedDate?.endDate) {
+      const endDate = format(pickedDate?.endDate, "yyyy-MM-dd", {
+        locale: US_LocaleData,
+      });
+      const finalEndDate = new Date(endDate);
+      finalEndDate?.setHours(hours);
+      finalEndDate?.setMinutes(minutes);
 
-        setNewEvent({ ...newEvent, end: finalEndDate });
-      }
+      setNewEvent({ ...newEvent, end: finalEndDate });
     }
   };
   console.log("render", newEvent);
@@ -182,13 +182,20 @@ export default function AddEventModal() {
             {/* Description section  */}
             <div className="w-full text-sm">
               Description <br />
-              <textarea
+              <Textarea
+                placeholder="Type your message here."
                 className="textarea textarea-bordered w-full text-neutral-900 focus:border-primary-600 focus:outline-none"
-                value={newEvent.description}
+                id="message"
                 onChange={(e) =>
-                  setNewEvent({ ...newEvent, description: e.target.value })
+                  setNewEvent({
+                    ...newEvent,
+                    description: e?.target?.value
+                      ? e?.target?.value
+                      : undefined,
+                  })
                 }
-              ></textarea>
+                value={newEvent?.description ? newEvent.description : ""}
+              />
             </div>
 
             {/* Date Input section */}
@@ -199,8 +206,8 @@ export default function AddEventModal() {
                   onClick={() => {
                     setDateType("single");
                     setPickedDate({
-                      startDate: pickedDate.startDate,
-                      endDate: pickedDate.startDate,
+                      startDate: pickedDate?.startDate,
+                      endDate: pickedDate?.startDate,
                     });
                   }}
                   className={`${
@@ -231,7 +238,7 @@ export default function AddEventModal() {
                     // console.log("PickedDate", datePicked);
                   }}
                   value={
-                    pickedDate
+                    pickedDate?.startDate
                       ? format(pickedDate.startDate, "EEEE, dd MMMM", {
                           locale: US_LocaleData,
                         })
@@ -255,13 +262,13 @@ export default function AddEventModal() {
                       // }));
                       setPickedDate({
                         startDate: datePicked,
-                        endDate: pickedDate.endDate,
+                        endDate: pickedDate?.endDate,
                       });
                       // console.log("PickedDate", datePicked);
                     }}
                     value={
                       pickedDate?.startDate
-                        ? format(pickedDate.startDate, "EEEE, dd MMMM", {
+                        ? format(pickedDate?.startDate, "EEEE, dd MMMM", {
                             locale: US_LocaleData,
                           })
                         : undefined
@@ -279,14 +286,14 @@ export default function AddEventModal() {
                       //   // endDate: datePicked,
                       // }));
                       setPickedDate({
-                        startDate: pickedDate.startDate,
+                        startDate: pickedDate?.startDate,
                         endDate: datePicked,
                       });
                       // console.log("PickedDate", datePicked);
                     }}
                     value={
                       pickedDate?.endDate
-                        ? format(pickedDate.endDate, "EEEE, dd MMMM", {
+                        ? format(pickedDate?.endDate, "EEEE, dd MMMM", {
                             locale: US_LocaleData,
                           })
                         : undefined
@@ -307,7 +314,7 @@ export default function AddEventModal() {
                     }}
                     value={
                       pickedDate?.endDate
-                        ? format(pickedDate.endDate, "EEEE, dd MMMM", {
+                        ? format(pickedDate?.endDate, "EEEE, dd MMMM", {
                             locale: US_LocaleData,
                           })
                         : undefined
@@ -414,6 +421,7 @@ export default function AddEventModal() {
                   (department: any, i: number) => (
                     <DepartmentBtn
                       key={i}
+                      selDepartments={newEvent.departments}
                       setNewEvent={setNewEvent}
                       index={i}
                       department={department}
