@@ -11,12 +11,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import colors from "@/constants/Colors";
-import { useEffect, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 export default function EventDetails({
   selectedEvent,
+  setSelectedEvent,
 }: {
   selectedEvent: eventType | null;
+  setSelectedEvent: Dispatch<SetStateAction<eventType | null>>;
 }) {
   const [selectedColor, setSelectedColor] = useState<string | undefined>(
     selectedEvent?.color,
@@ -30,16 +32,21 @@ export default function EventDetails({
   return (
     <section
       className={`${
-        Boolean(selectedEvent) ? "right-0" : "left-full"
-      } absolute  top-0 flex h-auto w-80 flex-col gap-6 p-6 font-medium text-neutral-600`}
+        Boolean(selectedEvent) ? "" : "translate-x-full"
+      } absolute right-0 top-0 flex h-auto w-80 flex-col  gap-6 p-6 font-medium text-neutral-600 transition-all duration-150`}
     >
-      <div className="font flex items-center">
+      <div className="font flex items-center transition">
         <span className="text-base">Event Details</span>
         <span className="ml-auto flex items-center gap-[6px] text-black">
           <button className="cursor-pointer text-base">
             <BsThreeDotsVertical />
           </button>
-          <button className="cursor-pointer text-xl">
+          <button
+            onClick={() => {
+              setSelectedEvent(null);
+            }}
+            className="cursor-pointer text-xl"
+          >
             <RxCross2 />
           </button>
         </span>

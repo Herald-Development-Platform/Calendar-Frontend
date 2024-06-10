@@ -79,7 +79,10 @@ export default function Page() {
             ))}
           </div>
         </div>
-        <EventDetails selectedEvent={selectedEvent}></EventDetails>
+        <EventDetails
+          selectedEvent={selectedEvent}
+          setSelectedEvent={setSelectedEvent}
+        ></EventDetails>
       </div>
     </div>
   );

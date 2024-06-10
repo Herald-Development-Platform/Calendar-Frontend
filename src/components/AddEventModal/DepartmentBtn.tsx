@@ -15,10 +15,19 @@ export default function DepartmentBtn({ department, setNewEvent, index }: any) {
         } `}
         // key={index}
         onClick={(e) => {
-          if (!isDeletable) return setIsDeletable(true);
+          if (!isDeletable) {
+            setNewEvent((prev: any) => ({
+              ...prev,
+              departments: [...prev?.departments, department?.code],
+            }));
+            return setIsDeletable(true);
+          }
+
           setNewEvent((prev: eventType) => ({
             ...prev,
-            departments: prev.departments.filter((dep) => dep !== department),
+            departments: prev.departments.filter(
+              (dep) => dep !== department?.code,
+            ),
           }));
           setIsDeletable(false);
         }}
@@ -30,7 +39,7 @@ export default function DepartmentBtn({ department, setNewEvent, index }: any) {
         >
           <RxCross2 />
         </span>
-        {department}
+        {department?.code}
       </span>
     </>
   );

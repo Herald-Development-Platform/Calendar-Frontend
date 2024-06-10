@@ -9,6 +9,9 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { Calendar } from "@/components/ui/calendar";
+import { HiOutlineCalendar } from "react-icons/hi";
+
 import { BiPencil } from "react-icons/bi";
 import "react-datepicker/dist/react-datepicker.css";
 import { TimeSelector } from "./TimeSelector";
@@ -31,9 +34,21 @@ import { watch } from "fs";
 import DepartmentBtn from "./DepartmentBtn";
 import { getDepartments } from "@/services/api/departments";
 import colors from "@/constants/Colors";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Button } from "../ui/button";
+import { CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { setPriority } from "os";
+
+interface PickedDateType {
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+}
 
 export default function AddEventModal() {
-  const [pickedDate, setPickedDate] = useState<Date | null>();
+  const [pickedDate, setPickedDate] = useState<any>();
+  const [dateType, setDateType] = useState<"single" | "multi">("single");
 
   const queryClient = useQueryClient();
 
@@ -50,6 +65,7 @@ export default function AddEventModal() {
     departments: [],
     notes: "",
   });
+
   const { data: departmentsRes } = useQuery({
     queryKey: ["Departments"],
     queryFn: getDepartments,
@@ -59,6 +75,7 @@ export default function AddEventModal() {
   const { mutate: postNewEvent } = useMutation({
     mutationFn: postEvents,
     onSuccess: (res) => {
+      console.log("Onsuccess", res);
       queryClient.invalidateQueries({ queryKey: ["Events"] });
       toast.success(`${res?.data?.success}`);
       setNewEvent({
@@ -73,6 +90,10 @@ export default function AddEventModal() {
         notes: "",
       });
     },
+    onError: (err) => {
+      console.log("error", error);
+      toast.error(err?.data.message || "something went wrong");
+    },
   });
 
   function handleAddEvent() {
@@ -82,20 +103,30 @@ export default function AddEventModal() {
   }
 
   const setDateAndTime = ({ hours, minutes, type }: setDateAndTimeTypes) => {
-    if (pickedDate) {
+    if (pickedDate?.startDate && pickedDate.endDate) {
       console.log("selected date in setdateandtime function:", pickedDate);
-      const date = format(pickedDate, "yyyy-MM-dd", {
-        locale: US_LocaleData,
-      });
-
-      const finalDate = new Date(date);
-      finalDate?.setHours(hours);
-      finalDate?.setMinutes(minutes);
+      // const date = format(pickedDate.startDate, "yyyy-MM-dd", {
+      //   locale: US_LocaleData,
+      // });
 
       if (type === "start") {
-        setNewEvent({ ...newEvent, start: finalDate });
+        const startDate = format(pickedDate.startDate, "yyyy-MM-dd", {
+          locale: US_LocaleData,
+        });
+        const finalStartDate = new Date(startDate);
+        finalStartDate?.setHours(hours);
+        finalStartDate?.setMinutes(minutes);
+
+        setNewEvent({ ...newEvent, start: finalStartDate });
       } else if (type === "end") {
-        setNewEvent({ ...newEvent, end: finalDate });
+        const endDate = format(pickedDate.endDate, "yyyy-MM-dd", {
+          locale: US_LocaleData,
+        });
+        const finalEndDate = new Date(endDate);
+        finalEndDate?.setHours(hours);
+        finalEndDate?.setMinutes(minutes);
+
+        setNewEvent({ ...newEvent, end: finalEndDate });
       }
     }
   };
@@ -148,37 +179,144 @@ export default function AddEventModal() {
                 />
               </div>
             </label>
+            {/* Description section  */}
+            <div className="w-full text-sm">
+              Description <br />
+              <textarea
+                className="textarea textarea-bordered w-full text-neutral-900 focus:border-primary-600 focus:outline-none"
+                value={newEvent.description}
+                onChange={(e) =>
+                  setNewEvent({ ...newEvent, description: e.target.value })
+                }
+              ></textarea>
+            </div>
 
             {/* Date Input section */}
-            <label htmlFor="date" className="flex flex-col gap-2 ">
-              <span className="text-sm">Date</span>
-              <Datepicker
-                className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
-                onChange={(datePicked) => {
-                  setPickedDate(datePicked);
-                  console.log("PickedDate", datePicked);
-                }}
-                value={
-                  pickedDate
-                    ? format(pickedDate, "EEEE, dd MMMM", {
-                        locale: US_LocaleData,
-                      })
-                    : undefined
-                }
-                placeholderText="Please select a date."
-                required
-              />
-              {/* <input
-                type="date"
-                id="date"
-                className="input-container h-10 w-full rounded border-[1px] border-neutral-300 text-neutral-900 outline-none focus:border-primary-600"
-                onChange={(e) => {
-                  setSelectedDate(e.target.value);
-                  // setSelectedDate2(datePicked);
+            <label htmlFor="date" className="flex flex-col gap-2 text-sm ">
+              <div className="flex gap-3">
+                <span
+                  tabIndex={0}
+                  onClick={() => {
+                    setDateType("single");
+                    setPickedDate({
+                      startDate: pickedDate.startDate,
+                      endDate: pickedDate.startDate,
+                    });
+                  }}
+                  className={`${
+                    dateType === "single" ? "underline" : ""
+                  } cursor-pointer `}
+                >
+                  Date
+                </span>
+                <span
+                  tabIndex={0}
+                  onClick={() => setDateType("multi")}
+                  className={`${
+                    dateType === "multi" ? "underline" : ""
+                  }  cursor-pointer`}
+                >
+                  Multi Date
+                </span>
+              </div>
 
-                  console.log("selectedDate", e.target.value);
-                }}
-              /> */}
+              {dateType === "single" && (
+                <Datepicker
+                  className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
+                  onChange={(datePicked) => {
+                    setPickedDate({
+                      startDate: datePicked,
+                      endDate: datePicked,
+                    });
+                    // console.log("PickedDate", datePicked);
+                  }}
+                  value={
+                    pickedDate
+                      ? format(pickedDate.startDate, "EEEE, dd MMMM", {
+                          locale: US_LocaleData,
+                        })
+                      : undefined
+                  }
+                  placeholderText="Please select a date."
+                  required
+                />
+              )}
+
+              {dateType === "multi" && (
+                <div className="flex w-full flex-row items-center gap-2 ">
+                  {/* <span className="w-full border border-blue-500"> */}
+                  <Datepicker
+                    className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
+                    onChange={(datePicked) => {
+                      // setPickedDate((prev: any) => ({
+                      //   ...prev,
+                      //   startDate: datePicked,
+                      //   // endDate: datePicked,
+                      // }));
+                      setPickedDate({
+                        startDate: datePicked,
+                        endDate: pickedDate.endDate,
+                      });
+                      // console.log("PickedDate", datePicked);
+                    }}
+                    value={
+                      pickedDate?.startDate
+                        ? format(pickedDate.startDate, "EEEE, dd MMMM", {
+                            locale: US_LocaleData,
+                          })
+                        : undefined
+                    }
+                    placeholderText="Start Date."
+                    required
+                  />
+                  <span className="text-neutral-600">-</span>
+                  <Datepicker
+                    className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
+                    onChange={(datePicked) => {
+                      // setPickedDate((prev: any) => ({
+                      //   ...prev,
+                      //   endDate: datePicked,
+                      //   // endDate: datePicked,
+                      // }));
+                      setPickedDate({
+                        startDate: pickedDate.startDate,
+                        endDate: datePicked,
+                      });
+                      // console.log("PickedDate", datePicked);
+                    }}
+                    value={
+                      pickedDate?.endDate
+                        ? format(pickedDate.endDate, "EEEE, dd MMMM", {
+                            locale: US_LocaleData,
+                          })
+                        : undefined
+                    }
+                    placeholderText="End Date."
+                    required
+                  />
+                  {/* </span> */}
+                  {/* <Datepicker
+                    className="h-10 w-full flex-1 rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
+                    onChange={(datePicked) => {
+                      setPickedDate((prev: any) => ({
+                        ...prev,
+                        // startDate: datePicked,
+                        endDate: datePicked,
+                      }));
+                      // console.log("PickedDate", datePicked);
+                    }}
+                    value={
+                      pickedDate?.endDate
+                        ? format(pickedDate.endDate, "EEEE, dd MMMM", {
+                            locale: US_LocaleData,
+                          })
+                        : undefined
+                    }
+                    placeholderText="Please select a date."
+                    required
+                  /> */}
+                </div>
+              )}
             </label>
 
             {/* Time input section */}
@@ -268,50 +406,21 @@ export default function AddEventModal() {
               />
             </div>
 
-            {/* Description section  */}
-            <div className="w-full text-sm">
-              Description <br />
-              <textarea
-                className="textarea textarea-bordered w-full text-neutral-900 focus:border-primary-600 focus:outline-none"
-                value={newEvent.description}
-                onChange={(e) =>
-                  setNewEvent({ ...newEvent, description: e.target.value })
-                }
-              ></textarea>
-            </div>
-
             {/* Departments section  */}
             <div className="text-sm">
               <span>Departments:</span>
               <div className="my-2 flex flex-wrap items-center gap-1">
-                {newEvent?.departments?.map((department, i) => (
-                  <DepartmentBtn
-                    key={i}
-                    setNewEvent={setNewEvent}
-                    index={i}
-                    department={department}
-                  />
-                ))}
+                {departmentsRes?.data?.data?.map(
+                  (department: any, i: number) => (
+                    <DepartmentBtn
+                      key={i}
+                      setNewEvent={setNewEvent}
+                      index={i}
+                      department={department}
+                    />
+                  ),
+                )}
               </div>
-              <select
-                className="select select-bordered h-10 w-full rounded  border-[1px] border-neutral-300 text-sm text-neutral-900 focus:border-primary-600 focus:outline-none"
-                defaultValue={""}
-                onChange={(e) =>
-                  setNewEvent((prev) => ({
-                    ...prev,
-                    departments: [...newEvent?.departments, e.target.value],
-                  }))
-                }
-              >
-                <option disabled value={""}>
-                  Choose the departments
-                </option>
-                {departmentsRes?.data?.data?.map((department: any) => (
-                  <option key={department?.code} value={department?.code}>
-                    {department?.code}
-                  </option>
-                ))}
-              </select>
             </div>
 
             {/* Notes section  */}
