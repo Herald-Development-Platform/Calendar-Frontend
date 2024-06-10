@@ -104,7 +104,7 @@ export default function Page() {
                     return null;
                 }
                 return (
-                <div className="bg-neutral-100 justify-between rounded-[4px] gap-2.5 px-9 py-4 flex items-center">
+                <div key={request._id} className="bg-neutral-100 justify-between rounded-[4px] gap-2.5 px-9 py-4 flex items-center">
                     <div className="flex flex-row justify-start items-center gap-3">
                         {request?.user.photo ? (
                             <img src={request?.user.photo} alt={`Photo of ${request?.user?.username}`} className=" w-10 rounded-full" />
@@ -126,7 +126,7 @@ export default function Page() {
         
         <div className="flex flex-row justify-start items-center gap-1.5  ">
             <DepartmentBtn department="All"/>
-            {departments.map((department: Department) => <DepartmentBtn department={department.code} />)}
+            {departments.map((department: Department) => <DepartmentBtn key={department._id} department={department.code} />)}
             <span onClick={()=>{
 
             }} className="text-white hover:bg-primary-600 cursor-pointer transition-colors font-semibold text-[12px] bg-primary-500 py-2 px-4 rounded-full"><FaPlus /></span>
@@ -162,7 +162,7 @@ export default function Page() {
                         </TableCell>
                         <TableCell className="w-10 text-neutral-500 font-600">{user?.department?.code}</TableCell>
                         <TableCell className="w-[76px] ">
-                            <Select defaultValue={user?.role} className="outline-none border-none focus:outline-none focus:border-none">
+                            <Select defaultValue={user?.role}>
                                 <SelectTrigger>
                                     <SelectValue  placeholder="Select Role" />
                                 </SelectTrigger>
