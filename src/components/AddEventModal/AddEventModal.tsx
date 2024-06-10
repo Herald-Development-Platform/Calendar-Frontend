@@ -77,7 +77,7 @@ export default function AddEventModal() {
     onSuccess: (res) => {
       console.log("Onsuccess", res);
       queryClient.invalidateQueries({ queryKey: ["Events"] });
-      toast.success(`${res?.data?.success}`);
+      toast.success(`${res?.data?.message}`);
       setNewEvent({
         title: "",
         start: null,
@@ -90,9 +90,9 @@ export default function AddEventModal() {
         notes: "",
       });
     },
-    onError: (err) => {
-      console.log("error", error);
-      toast.error(err?.data.message || "something went wrong");
+    onError: (err: any) => {
+      console.log("error", err);
+      toast.error(err?.data?.message || "something went wrong");
     },
   });
 
