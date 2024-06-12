@@ -1,9 +1,23 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import * as Headers from "@/components/Header";
-import RecentSearches from "@/components/RecentSearches/RecentSearches";
 import { Axios } from "@/services/baseUrl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { CiSearch } from "react-icons/ci";
+import DepartmentBtn from "@/components/AddEventModal/DepartmentBtn";
+import { FaPlus } from "react-icons/fa";
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { MdOutlineEdit } from "react-icons/md";
+import { toast, Toaster } from "react-hot-toast";
+import { FaCircleUser } from "react-icons/fa6";
+
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
 
 interface Department {
   _id: string;
@@ -14,26 +28,46 @@ interface Department {
 
 export default function Page() {
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [newDepartment, setNewDepartment] = useState<Partial<Department>>({});
 
   const queryClient = useQueryClient();
 
-  const { data: userStatusData } = useQuery({
+  const { data: departmentRequests, isLoading: departmentRequestsLoading } = useQuery({
     queryKey: ["UnapprovedUsers"],
     queryFn: () => Axios.get("/department/request?status=PENDING"),
   });
+
+  const { data: allUsers, isLoading:allUsersLoading } = useQuery({
+    queryKey: ["AllUsers"],
+    queryFn: () => Axios.get("/profile/all"),
+  });
+
+  useEffect(()=>{
+    console.log("allUsers: ", allUsers?.data?.data);
+  }, [allUsers])
 
   const { mutate: approveUser } = useMutation({
     mutationFn: (payload: any) =>
       Axios.put(`/department/request/${payload?._id}`, {
         status: payload?.status,
       }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["UnapprovedUsers"] });
+    onSuccess: async (response) => {
+        console.log("Approve response:\n", response);
+        if (response.status >= 400 && response.status < 500 ) {
+            toast.error(response?.data?.message || response?.data?.error || "Error process request!");
+            return;
+        } else {
+            toast.success(`User ${response.data?.data?.request?.status === "APPROVED" ? "approved successfully" : "rejected"}`);
+        }
+        queryClient.invalidateQueries({ queryKey: ["AllUsers"] });
+        queryClient.invalidateQueries({ queryKey: ["UnapprovedUsers"] });
     },
   });
-  console.log("data reqes", userStatusData?.data);
 
+
+  useEffect(() => {
+    console.log("departmentRequests: ", departmentRequests?.data?.data);
+  }, [departmentRequests]);
+  
   useEffect(() => {
     fetchDepartments();
   }, []);
@@ -47,144 +81,109 @@ export default function Page() {
     }
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    setNewDepartment({ ...newDepartment, [e.target.name]: e.target.value });
-  };
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await Axios.post(`/department`, newDepartment);
-      setNewDepartment({});
-      fetchDepartments();
-    } catch (error) {
-      console.error("Error adding department:", error);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      await Axios.delete(`/api/department/${id}`);
-      fetchDepartments();
-    } catch (error) {
-      console.error("Error deleting department:", error);
-    }
-  };
   return (
-    <div className="flex flex-col gap-9">
+    <div className="flex flex-col gap-9 px-[70px] pl-3">
+        <Toaster />
       <Headers.DepartmentHeader />
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        <div className="rounded-lg bg-white p-6 shadow-md">
-          <h2 className="mb-4 text-xl font-bold">Add New Department</h2>
-          <form onSubmit={handleSubmit}>
-            <div className="mb-4">
-              <label htmlFor="name" className="mb-2 block font-bold">
-                Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={newDepartment.name || ""}
-                onChange={handleInputChange}
-                required
-                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+      <div className=" flex flex-col gap-[27px]">
+        <div className="flex flex-row justify-between">
+            <h1 className=" text-[28px] text-black font-[700]">Team</h1>
+            <div className=" w-[306px] h-[32px] flex flex-row items-center justify-start py-2 px-3 border rounded-[4px] gap-3 bg-neutral-100">
+                <span className=" text-neutral-500 font-bold"><CiSearch /></span>
+                <input
+                    type="text"
+                    placeholder="Search"
+                    className="border-2 bg-neutral-100 border-gray-300 rounded-md p-1 outline-none border-none"
+                />
             </div>
-            <div className="mb-4">
-              <label htmlFor="code" className="mb-2 block font-bold">
-                Code
-              </label>
-              <input
-                type="text"
-                id="code"
-                name="code"
-                value={newDepartment.code || ""}
-                onChange={handleInputChange}
-                required
-                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="mb-4">
-              <label htmlFor="description" className="mb-2 block font-bold">
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={newDepartment.description || ""}
-                onChange={handleInputChange}
-                className="w-full rounded-md border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <button
-              type="submit"
-              className="rounded-md bg-blue-500 px-4 py-2 text-white transition-colors duration-300 hover:bg-blue-600"
-            >
-              Add Department
-            </button>
-          </form>
         </div>
+        <>
+            {departmentRequests?.data?.data?.map((request:any)=>{
+                console.log("request: ", request)
+                if (request.status !== "PENDING") {
+                    return null;
+                }
+                return (
+                <div key={request._id} className="bg-neutral-100 justify-between rounded-[4px] gap-2.5 px-9 py-4 flex items-center">
+                    <div className="flex flex-row justify-start items-center gap-3">
+                        {request?.user.photo ? (
+                            <img src={request?.user.photo} alt={`Photo of ${request?.user?.username}`} className=" w-10 rounded-full" />
+                        ) : (
+                            <span className="text-3xl text-neutral-500"><FaCircleUser /></span>
+                        )}
+                        <div className=" flex flex-col justify-center items-start">
+                            <h1 className=" font-semibold text-[16px]">{request?.user?.username}</h1>
+                            <p>Wants to join {request?.department?.code} Department</p>
+                        </div>
+                    </div>
+                    <div className=" flex flex-row gap-4 h-8 ">
+                        <button className=" flex justify-center items-center bg-success-500 text-500 text-[13px] text-white px-4 py-2 rounded-md" onClick={() => {approveUser({_id: request._id, status:"APPROVED"})}}>Approve</button>
+                        <button className="flex justify-center items-center bg-danger-500 text-500 text-[13px] text-white px-4 py-2 rounded-md" onClick={() => {approveUser({_id: request._id, status:"REJECTED"})}}>Deny</button>
+                    </div>
+                </div>
+            )})}
+        </>
+        
+        <div className="flex flex-row justify-start items-center gap-1.5  ">
+            <DepartmentBtn department="All"/>
+            {departments.map((department: Department) => <DepartmentBtn key={department._id} department={department.code} />)}
+            <span onClick={()=>{
 
-        <div className="rounded-lg bg-white p-6 shadow-md">
-          <div>
-            {userStatusData?.data?.data?.map((requestData: any) => (
-              <div
-                key={requestData._id}
-                className="flex justify-between rounded-xl border border-primary-600 bg-primary-200 px-6 py-3"
-              >
-                <div className="flex flex-col gap-2 ">
-                  <span>Username: {requestData?.user?.username}</span>
-                  <span>Department: {requestData?.department?.code}</span>
-                </div>
-                <div className="flex flex-col items-center gap-2">
-                  <button
-                    onClick={() => {
-                      Axios.put(`/department/request/${requestData?._id}`, {
-                        status: "APPROVED",
-                      });
-                    }}
-                    className="w-full cursor-pointer rounded-md bg-primary-600 px-3 py-1 text-white"
-                  >
-                    Approve
-                  </button>
-                  <button
-                    onClick={() => {
-                      Axios.put(`/department/request/${requestData?._id}`, {
-                        status: "REJECTED",
-                      });
-                    }}
-                    className="w-full cursor-pointer rounded-md bg-danger-700 px-3 py-1 text-white"
-                  >
-                    Deny
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-          <h2 className="mb-4 text-xl font-bold">View Departments</h2>
-          <ul>
-            {departments.map((department) => (
-              <li
-                key={department._id}
-                className="mb-2 flex items-center justify-between rounded-md bg-gray-100 p-4"
-              >
-                <div>
-                  <h3 className="font-bold">{department.name}</h3>
-                  <p>Code: {department.code}</p>
-                  <p>{department.description}</p>
-                </div>
-                <button
-                  onClick={() => handleDelete(department._id)}
-                  className="rounded-md bg-red-500 px-4 py-2 text-white transition-colors duration-300 hover:bg-red-600"
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
+            }} className="text-white hover:bg-primary-600 cursor-pointer transition-colors font-semibold text-[12px] bg-primary-500 py-2 px-4 rounded-full"><FaPlus /></span>
         </div>
+        {allUsersLoading ? (
+            <div className="w-full flex flex-row justify-center items-center h-full">Loading ...</div>
+        ) : (
+        <Table>
+            <TableHeader>
+                <TableRow>
+                <TableHead className="w-[100px] text-neutral-600">Name</TableHead>
+                <TableHead className=" text-neutral-600 w-[76px]">Department</TableHead>
+                <TableHead className=" text-neutral-600 w-[76px]">Role</TableHead>
+                <TableHead className="text-right text-neutral-600 w-[76px]">Edit</TableHead>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                {allUsers?.data?.data?.map((user: any) => (
+                    user.role !== "SUPER_ADMIN" && user.department &&
+                    <TableRow key={user._id}>
+                        <TableCell className="w-[437px]">
+                            <div className="flex flex-row justify-start items-center gap-3">
+                                {user.photo ? (
+                                    <img src={user.photo} alt={`Photo of ${user?.username}`} className=" w-10 rounded-full" />
+                                ) : (
+                                    <span className="text-3xl text-neutral-500"><FaCircleUser /></span>
+                                )}
+                                <div className=" flex flex-col justify-center items-start">
+                                    <h1 className=" font-semibold text-[16px]">{user?.username}</h1>
+                                    <p>{user?.email}</p>
+                                </div>
+                            </div>
+                        </TableCell>
+                        <TableCell className="w-10 text-neutral-500 font-600">{user?.department?.code}</TableCell>
+                        <TableCell className="w-[76px] ">
+                            <Select defaultValue={user?.role}>
+                                <SelectTrigger>
+                                    <SelectValue  placeholder="Select Role" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="STAFF">Staff</SelectItem>
+                                    <SelectItem value="DEPARTMENT_ADMIN">Department Admin</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </TableCell>
+                        <TableCell className="text-right w-[76px]">
+                        <button
+                            onClick={() => {}}
+                            className=" text-primary-600 text-xl"
+                        >
+                            <MdOutlineEdit/>
+                        </button>
+                        </TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>)}
       </div>
     </div>
   );
