@@ -23,43 +23,29 @@ export interface ContextType {
 export const Context = createContext<any>({});
 // const calendarRef = createRef(undefined);
 
+interface SelectedDate {
+  start?: Date;
+  end?: Date;
+  endStr: string;
+  startStr: string;
+}
+
 export default function ContextProvider({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const calendarRef = useRef<FullCalendar | null>(null);
-  const [events, setEvents] = useState<EventInput[]>([
-    {
-      title: "event1",
-      start: new Date(),
-      end: new Date(),
-    },
-    {
-      title: "event2",
-      start: new Date(),
-      end: new Date(),
-    },
-    {
-      title: "event3",
-      start: new Date(),
-      end: new Date(),
-    },
-    {
-      title: "event4",
-      start: new Date(),
-      end: new Date(),
-    },
-    {
-      title: "event5",
-      start: new Date(),
-      end: new Date(),
-    },
-  ]);
+  const [events, setEvents] = useState<EventInput[]>();
   const calendarApi = calendarRef?.current?.getApi();
   console.log("calendar getDate()", calendarApi);
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [selectedDate, setSelectedDate] = useState<SelectedDate | undefined>({
+    start: new Date(),
+    end: undefined,
+    endStr: "",
+    startStr: "",
+  });
 
   // console.log("context events", events);
   return (

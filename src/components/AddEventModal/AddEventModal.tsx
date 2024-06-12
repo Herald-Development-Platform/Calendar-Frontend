@@ -184,7 +184,7 @@ export default function AddEventModal() {
               Description <br />
               <Textarea
                 placeholder="Type your message here."
-                className="textarea textarea-bordered w-full text-neutral-900 focus:border-primary-600 focus:outline-none"
+                className="w-full text-neutral-900 ring-ring focus:border-primary-600  focus-visible:ring-0"
                 id="message"
                 onChange={(e) =>
                   setNewEvent({
@@ -336,8 +336,10 @@ export default function AddEventModal() {
                       <LiaHourglassStartSolid />
                     </span>
                     <TimeSelector
+                      date={newEvent.start}
                       setDateAndTime={setDateAndTime}
                       type="start"
+                      // hour={0}
                     />
                   </div>
                 </div>
@@ -348,7 +350,11 @@ export default function AddEventModal() {
                     <span className="text-3xl">
                       <LiaHourglassEndSolid />
                     </span>
-                    <TimeSelector setDateAndTime={setDateAndTime} type="end" />
+                    <TimeSelector
+                      date={newEvent.end}
+                      setDateAndTime={setDateAndTime}
+                      type="end"
+                    />
                   </div>
                 </div>
               </div>

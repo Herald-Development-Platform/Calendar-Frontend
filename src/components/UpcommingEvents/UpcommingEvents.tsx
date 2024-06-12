@@ -1,11 +1,13 @@
 import { Axios } from "@/services/baseUrl";
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useContext } from "react";
 import { parseISO, format } from "date-fns";
 import { getEvents } from "@/services/api/eventsApi";
 import EventCard from "./EventCard";
+import { Context } from "@/app/clientWrappers/ContextProvider";
 
 export default function UpcommingEvents() {
+  const { selectedDate } = useContext(Context);
   const { data: eventsData } = useQuery({
     queryKey: ["Events"],
     queryFn: getEvents,
@@ -25,9 +27,9 @@ export default function UpcommingEvents() {
   // console.log(formattedTime); // Output: 5:25 AM
 
   return (
-    <div className="flex h-full w-1/3 flex-col gap-10 px-6">
+    <div className="hide-scrollbar flex h-full w-1/3 flex-col gap-10 overflow-hidden  overflow-y-auto px-6">
       <div className="flex flex-col gap-1 text-neutral-600">
-        <h2 className="font-semibold ">Todays Events</h2>
+        <h2 className="font-semibold ">Upcomming Events</h2>
         {/* <h3 className="text-lg">June 17 - June 23 </h3> */}
       </div>
 
@@ -75,9 +77,31 @@ export default function UpcommingEvents() {
             </div>
           );
         })} */}
-        {eventsData?.data?.data?.map((event: eventType, i: number) => (
-          <EventCard key={event._id} event={event} />
-        ))}
+        {eventsData?.data?.data?.map((event: eventType, i: number) => {
+          const selectedStartTime = selectedDate.start.getTime();
+          const selectedEndTime = selectedDate?.end
+            ? selectedDate.end.getTime()
+            : 0;
+          const eventStart = event?.start ? new Date(event.start).getTime() : 0;
+          const eventEnd = event?.end ? new Date(event.end).getTime() : 0;
+
+          // console.log(
+          //   "selectedDate.start",
+          //   selectedDate.start,
+          //   "eventstart",
+          //   event.start,
+          //   selectedStartTime > eventStart,
+          // );
+
+          if (selectedStartTime > eventStart && selectedEndTime == 0) {
+            return <EventCard key={event._id} event={event} />;
+          } else if (
+            eventStart > selectedStartTime &&
+            eventEnd < selectedEndTime
+          ) {
+            return <EventCard key={event._id} event={event} />;
+          }
+        })}
       </div>
     </div>
   );
