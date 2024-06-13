@@ -21,3 +21,19 @@ interface eventByParamsType {
   q: string;
   departments: string[];
 }
+
+interface Department {
+  _id: string;
+  name: string;
+  code: string;
+  description: string;
+}
+
+interface User{
+  _id: string;
+  email: string;
+  username: string;
+  photo?: string;
+  role: string;
+  department?: Department;
+}

@@ -30,13 +30,6 @@ import { BiPencil } from "react-icons/bi";
 import { postDepartment, updateUser } from "@/services/api/departments";
 import { useForm } from "react-hook-form";
 
-interface Department {
-  _id: string;
-  name: string;
-  code: string;
-  description: string;
-}
-
 export default function Page() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [selDepartments, setSelDepartments] = useState<string[]>(["All"]);

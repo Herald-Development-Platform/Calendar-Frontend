@@ -17,7 +17,6 @@ interface Department {
 export default function Page() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [alreadySent, setAlreadySent] = useState<boolean>(false);
-  const [userData, setUserData] = useState<any>({});
   const Router = useRouter();
 
   const [selectedDepartment, setSelectedDepartment] =
