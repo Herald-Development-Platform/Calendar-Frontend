@@ -14,7 +14,7 @@ import { getCookie } from "@/hooks/CookieHooks";
 import Endpoints from "@/services/API_ENDPOINTS";
 
 export default function ReactFullCal() {
-  let timeout = null;
+  let timeout: any = null;
   const { calendarRef, setSelectedDate } = useContext(Context);
   const [initialView, setInitialView] = useState<string>("dayGridMonth");
 
