@@ -20,3 +20,6 @@ export const getEventsByParams = (payload: eventByParamsType) =>
 
 export const postEvents = (payload: any) =>
   Axios.post(Endpoints.event, payload);
+
+export const updateUser = (payload: any) =>
+  Axios.put(Endpoints.updateUser(payload), payload);

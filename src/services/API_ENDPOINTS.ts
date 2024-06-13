@@ -6,6 +6,7 @@ const Endpoints = {
   admin: "/admin/login",
   oauth: `${baseUrl}/googleAuth`,
   event: `/event`,
+  updateUser: (payload: any) => `/user/${payload.id}`,
   eventByQuery: ({
     query,
     departments,

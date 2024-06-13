@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { IoIosSearch } from "react-icons/io";
 import { AiOutlineHome } from "react-icons/ai";
-import { MdOutlineDisplaySettings } from "react-icons/md";
+import { HiOutlineUserGroup } from "react-icons/hi";
+import { MdImportExport } from "react-icons/md";
+
 
 export default function Sidebar() {
   const currentRoute = usePathname();
@@ -26,9 +28,14 @@ export default function Sidebar() {
       navigation: "/search",
     },
     {
-      name: "Departments",
-      icon: <MdOutlineDisplaySettings />,
-      navigation: "/department",
+      name: "Members",
+      icon: <HiOutlineUserGroup />,
+      navigation: "/members",
+    },
+    {
+      name: "Import/Export",
+      icon: <MdImportExport />,
+      navigation: "/importExport",
     },
   ];
   return (

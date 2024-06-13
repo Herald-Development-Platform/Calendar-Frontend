@@ -11,7 +11,7 @@ export default function DepartmentBtn({
   const [isDeletable, setIsDeletable] = useState(false);
   const [departmentColor, setDepartmentColor] = useState(false);
 
-  const departmentState = selDepartments.includes(department.code);
+  const departmentState = selDepartments?.includes(department.code);
   useEffect(() => {
     if (departmentState) setDepartmentColor(true);
     else setDepartmentColor(false);
