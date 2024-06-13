@@ -19,7 +19,7 @@ export default function page() {
         <Headers.HomeHeader />
       </div>
 
-      <div className=" flex h-full w-full justify-between">
+      <div className=" flex h-full w-full justify-between overflow-hidden overflow-y-auto">
         <ReactFullCalendar />
         <UpcommingEvents />
       </div>

@@ -14,6 +14,7 @@ import { getCookie } from "@/hooks/CookieHooks";
 import Endpoints from "@/services/API_ENDPOINTS";
 
 export default function ReactFullCal() {
+  let timeout: any = null;
   const { calendarRef, setSelectedDate } = useContext(Context);
   const [initialView, setInitialView] = useState<string>("dayGridMonth");
 
@@ -54,11 +55,20 @@ export default function ReactFullCal() {
         events={eventsData?.data?.data}
         headerToolbar={false}
         selectable={true}
-        dateClick={(dateClickInfo) => {
-          setSelectedDate(dateClickInfo?.date);
+        select={({ start, end, startStr, endStr }) => {
+          setSelectedDate({ start, end, startStr, endStr });
+          console.log("eventselect", { start, end, startStr, endStr });
+          clearTimeout(timeout);
         }}
+        // unselectAuto={true}
         unselect={(arg: DateUnselectArg) => {
-          setSelectedDate(undefined);
+          timeout = setTimeout(function () {
+            console.log("arg", arg);
+            setSelectedDate({
+              start: new Date(),
+              end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
+            });
+          }, 250);
         }}
         displayEventTime={false}
         dayHeaderClassNames={"customStylesDayHeader"}
@@ -69,3 +79,12 @@ export default function ReactFullCal() {
     </div>
   );
 }
+
+// eventDragStart={(e) => {
+//   console.log("eventDragStart", e);
+// }}
+
+// dateClick={(dateClickInfo) => {
+//   console.log("dateclickinfo", dateClickInfo);
+//   setSelectedDate(dateClickInfo?.date);
+// }}

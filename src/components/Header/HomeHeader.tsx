@@ -40,7 +40,7 @@ export function HomeHeader() {
   // const [redner, setredner] = useState<number>(1);
   const [calendarApi, setCalendarApi] = useState<CalendarApi>();
 
-  const { calendarRef, selectedDate } = useContext(Context);
+  const { calendarRef, selectedDate, setSelectedDate } = useContext(Context);
   console.log("calREf", calendarRef);
 
   const token = useGetCookieByName("token");
@@ -48,7 +48,7 @@ export function HomeHeader() {
   console.log("userData", userData);
 
   const router = useRouter();
-  const date = selectedDate ? selectedDate : new Date();
+  const date = selectedDate ? selectedDate : null;
 
   console.log("selectedData", selectedDate);
 
@@ -65,14 +65,21 @@ export function HomeHeader() {
     console.log("calApi: ", calendarApi);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calendarRef]);
+
   const handleNext = () => {
     calendarApi?.next();
   };
+
   const handlePrevious = () => {
     calendarApi?.prev();
   };
+
   const handleToday = () => {
     calendarApi?.today();
+    setSelectedDate({
+      start: new Date(),
+      end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
+    });
   };
 
   return (
@@ -107,8 +114,10 @@ export function HomeHeader() {
           {/* Selected date display */}
           <div className="">
             <h6 className="text-2xl font-bold">
-              {format(date, "MMMM d', '")}
-              <span className="text-lg font-medium">{date.getFullYear()}</span>
+              {selectedDate?.start && format(selectedDate.start, "MMMM d', '")}
+              <span className="text-lg font-medium">
+                {selectedDate?.start?.getFullYear()}
+              </span>
             </h6>
           </div>
         </div>

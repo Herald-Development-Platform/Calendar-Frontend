@@ -1,9 +1,11 @@
 import React, { SetStateAction, useEffect, useState } from "react";
 
 export function TimeSelector({
+  date,
   setDateAndTime,
   type,
 }: {
+  date: Date | null;
   setDateAndTime: ({ hours, minutes, type }: setDateAndTimeTypes) => void;
   type: "start" | "end";
 }) {
@@ -27,6 +29,7 @@ export function TimeSelector({
                 const hours = +e.target.value;
                 setHours(hours);
               }}
+              value={!date ? 0 : hours}
             >
               {[...Array(24)].map((_, index) => (
                 <option key={index} value={index}>
@@ -45,6 +48,7 @@ export function TimeSelector({
                 const minutes = +e.target.value;
                 setMinutes(minutes);
               }}
+              value={!date ? 0 : minutes}
             >
               {[...Array(12)].map((_, index) => (
                 <option key={index} value={index * 5}>

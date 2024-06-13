@@ -40,7 +40,7 @@ export default function Sidebar() {
   ];
   return (
     <div className="relative h-screen w-60 bg-neutral-50 px-4 py-10">
-      <div className="flex h-screen w-[213px] flex-col items-center gap-16  font-medium">
+      <div className="flex h-full w-[213px] flex-col items-center gap-16  font-medium">
         <div className="flex gap-3 text-lg text-neutral-600 ">
           <Image
             width={32}
