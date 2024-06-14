@@ -66,7 +66,7 @@ export default function ContextProvider({
         setUserData(user);
         const token = await generateNewToken();
         if (token) {
-          setCookie("token", token, Date.now()+(5*86400));
+          setCookie("token", token, 5);
         }
       }
       console.log("UserData: ", response.data.data);
