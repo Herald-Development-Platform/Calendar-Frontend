@@ -47,11 +47,7 @@ interface PickedDateType {
   endDate: Date | undefined;
 }
 
-export default function AddEventModal({
-  defaultData,
-}: {
-  defaultData?: eventType;
-}) {
+export default function AddEventModal() {
   const [pickedDate, setPickedDate] = useState<any>();
   const [dateType, setDateType] = useState<"single" | "multi">("single");
 
@@ -134,24 +130,7 @@ export default function AddEventModal({
       setNewEvent({ ...newEvent, end: finalEndDate });
     }
   };
-
   console.log("render", newEvent);
-
-  useEffect(() => {
-    if (!defaultData) return;
-    const modifiedData = {
-      ...defaultData,
-      departments: defaultData.departments.map(
-        //@ts-ignore
-        (department) => department?.code,
-      ),
-    };
-    setNewEvent(modifiedData);
-    setPickedDate({ start: defaultData.start, end: defaultData.end });
-  }, [defaultData]);
-  console.log("pickedDate", pickedDate);
-
-  const datepickerRef = useRef<any>();
   return (
     <>
       <button
@@ -182,17 +161,6 @@ export default function AddEventModal({
 
           {/* input section  */}
           <div className="flex flex-col gap-8">
-            <button
-              onClick={() => {
-                const date = format(new Date(), "EEEE, dd MMMM", {
-                  locale: US_LocaleData,
-                });
-                // datepickerRef?.current?.click() == date;
-                console.log("date", datepickerRef.current);
-              }}
-            >
-              set date
-            </button>{" "}
             {/* Title input section  */}
             <label htmlFor="add-title">
               <div className="group flex h-11 w-full items-center gap-2  border-b-[1px] border-neutral-300 px-4 focus-within:border-primary-600">
@@ -212,8 +180,8 @@ export default function AddEventModal({
               </div>
             </label>
             {/* Description section  */}
-            <div className="w-full text-start text-sm">
-              Description
+            <div className="w-full text-sm">
+              Description <br />
               <Textarea
                 placeholder="Type your message here."
                 className="w-full text-neutral-900 ring-ring focus:border-primary-600  focus-visible:ring-0"
@@ -229,6 +197,7 @@ export default function AddEventModal({
                 value={newEvent?.description ? newEvent.description : ""}
               />
             </div>
+
             {/* Date Input section */}
             <label htmlFor="date" className="flex flex-col gap-2 text-sm ">
               <div className="flex gap-3">
@@ -258,9 +227,8 @@ export default function AddEventModal({
                 </span>
               </div>
 
-              {dateType === "single" && Boolean(pickedDate?.start) && (
+              {dateType === "single" && (
                 <Datepicker
-                  ref={datepickerRef}
                   className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
                   onChange={(datePicked) => {
                     setPickedDate({
@@ -269,15 +237,13 @@ export default function AddEventModal({
                     });
                     // console.log("PickedDate", datePicked);
                   }}
-                  // value={
-                  //   pickedDate?.startDate
-                  //     ? format(pickedDate.startDate, "EEEE, dd MMMM", {
-                  //         locale: US_LocaleData,
-                  //       })
-                  //     : undefined
-                  // }
-                  selected={new Date(pickedDate?.start)}
-                  dateFormat={"EEEE, dd MMMM"}
+                  value={
+                    pickedDate?.startDate
+                      ? format(pickedDate.startDate, "EEEE, dd MMMM", {
+                          locale: US_LocaleData,
+                        })
+                      : undefined
+                  }
                   placeholderText="Please select a date."
                   required
                 />
@@ -289,6 +255,11 @@ export default function AddEventModal({
                   <Datepicker
                     className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
                     onChange={(datePicked) => {
+                      // setPickedDate((prev: any) => ({
+                      //   ...prev,
+                      //   startDate: datePicked,
+                      //   // endDate: datePicked,
+                      // }));
                       setPickedDate({
                         startDate: datePicked,
                         endDate: pickedDate?.endDate,
@@ -354,10 +325,11 @@ export default function AddEventModal({
                 </div>
               )}
             </label>
+
             {/* Time input section */}
             <div className="flex flex-col">
               <div className="flex gap-4">
-                <div className="flex w-full flex-col text-start ">
+                <div className="flex w-full  flex-col ">
                   <span className="text-sm">From</span>
                   <div className="flex h-10 items-center rounded border border-neutral-300 px-3 py-2 focus:border-primary-600">
                     <span className="text-3xl">
@@ -372,7 +344,7 @@ export default function AddEventModal({
                   </div>
                 </div>
 
-                <div className="flex w-full flex-col text-start">
+                <div className="flex w-full flex-col">
                   <span className="text-sm">To</span>
                   <div className="group flex h-10 items-center rounded border border-neutral-300 px-3 py-2 focus:border-primary-600">
                     <span className="text-3xl">
@@ -386,13 +358,14 @@ export default function AddEventModal({
                   </div>
                 </div>
               </div>
-              <span className="flex justify-start text-sm font-medium text-neutral-500">
+              <span className="text-sm font-medium text-neutral-500">
                 Duration:
               </span>
             </div>
+
             {/* Color input section  */}
             <div>
-              <span className="flex justify-start text-sm ">Priority</span>
+              <span className="text-sm">Priority</span>
               <div className="flex gap-2">
                 {colors.map((Color, i) => (
                   <label
@@ -430,9 +403,10 @@ export default function AddEventModal({
                 ))}
               </div>
             </div>
+
             {/* Location section  */}
             <div>
-              <span className="flex justify-start text-sm ">
+              <span className="text-sm">
                 Location <br />
               </span>
               <input
@@ -444,9 +418,10 @@ export default function AddEventModal({
                 }
               />
             </div>
+
             {/* Departments section  */}
             <div className="text-sm">
-              <span className="flex justify-start ">Departments:</span>
+              <span>Departments:</span>
               <div className="my-2 flex flex-wrap items-center gap-1">
                 {departmentsRes?.data?.data?.map(
                   (department: any, i: number) => (
@@ -461,9 +436,10 @@ export default function AddEventModal({
                 )}
               </div>
             </div>
+
             {/* Notes section  */}
             <div className="">
-              <span className="flex justify-start ">Notes</span> <br />
+              <span>Notes</span> <br />
               <input
                 type="text"
                 className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
