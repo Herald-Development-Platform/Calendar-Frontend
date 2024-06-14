@@ -85,22 +85,9 @@ export default function UpcommingEvents() {
           const eventStart = event?.start ? new Date(event.start).getTime() : 0;
           const eventEnd = event?.end ? new Date(event.end).getTime() : 0;
 
-          // console.log(
-          //   "selectedDate.start",
-          //   selectedDate.start,
-          //   "eventstart",
-          //   event.start,
-          //   selectedStartTime > eventStart,
-          // );
-
-          if (selectedStartTime > eventStart && selectedEndTime == 0) {
-            return <EventCard key={event._id} event={event} />;
-          } else if (
-            eventStart > selectedStartTime &&
-            eventEnd < selectedEndTime
-          ) {
-            return <EventCard key={event._id} event={event} />;
-          }
+          if (eventStart < selectedStartTime || eventEnd > selectedEndTime)
+            return;
+          return <EventCard key={event._id} event={event} />;
         })}
       </div>
     </div>

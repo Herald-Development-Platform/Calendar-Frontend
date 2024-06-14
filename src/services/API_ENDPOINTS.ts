@@ -6,6 +6,7 @@ const Endpoints = {
   admin: "/admin/login",
   oauth: `${baseUrl}/googleAuth`,
   event: `/event`,
+  eventById: (id: string) => `/event/${id}`,
   updateUser: (payload: any) => `/user/${payload.id}`,
   eventByQuery: ({
     query,
@@ -20,7 +21,6 @@ const Endpoints = {
     console.log("departmentsSearchParam", departmentsSearchParam);
     return `/event?q=${query}&departments=${departmentsSearchParam}`;
   },
-  eventById: (id: string) => `/event/${id}`,
   department: "/department",
 };
 

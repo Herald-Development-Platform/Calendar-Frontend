@@ -82,7 +82,7 @@ export default function ContextProvider({
 
   const [selectedDate, setSelectedDate] = useState<SelectedDate | undefined>({
     start: new Date(),
-    end: undefined,
+    end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
     endStr: "",
     startStr: "",
   });

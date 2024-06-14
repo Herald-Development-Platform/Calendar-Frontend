@@ -16,6 +16,12 @@ export function TimeSelector({
     setDateAndTime({ hours, minutes, type });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hours, minutes]);
+  console.log("date", date);
+  useEffect(() => {
+    if (!date) return;
+    setHours(new Date(date)?.getHours());
+    setMinutes(new Date(date)?.getMinutes());
+  }, [date]);
 
   return (
     <>

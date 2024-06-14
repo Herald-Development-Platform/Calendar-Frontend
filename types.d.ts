@@ -6,7 +6,7 @@ interface eventType {
   duration?: number;
   location?: string;
   description?: string;
-  departments: string[];
+  departments: string[] | { code: string }[];
   notes?: string;
   _id?: string;
 }
@@ -29,7 +29,7 @@ interface Department {
   description: string;
 }
 
-interface User{
+interface User {
   _id: string;
   email: string;
   username: string;

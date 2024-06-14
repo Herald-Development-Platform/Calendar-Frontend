@@ -30,21 +30,35 @@ export default function Page() {
       ),
   });
 
-  useEffect(() => {
-    refetch();
-  }, [queryParams]);
+  // useEffect(() => {
+  //   clearTimeout(timeout);
+  //   timeout = setTimeout(() => {
+  //     refetch();
+  //   }, 500);
+  // }, [queryParams]);
 
   console.log("filteredEvents", filteredEvents);
+
+  let timeout: any;
+  const handleQueryParams = (e: any) => {
+    setQueryParams((prev) => ({ ...prev, q: e.target.value }));
+    clearTimeout(timeout);
+    timeout = setTimeout(() => {
+      refetch();
+    }, 1000);
+  };
+
   return (
-    <div className="flex h-full flex-col gap-9 pl-8 pt-10">
+    <div className="flex h-full  flex-col gap-9 overflow-hidden pl-8 pt-10 ">
       <Headers.SearchHeader
         queryParams={queryParams}
-        setQueryParams={setQueryParams}
+        handleQueryParams={handleQueryParams}
       />
-      <div className="relative w-full flex-grow ">
-        <div className=" flex w-1/2 flex-col gap-2 ">
-          <p className="text-base text-neutral-500 ">Recent Searches</p>
-          <div className="flex flex-col  ">
+
+      <div className="relative flex h-full w-full flex-grow flex-col">
+        <div className="flex h-full w-1/2 flex-col gap-2 pb-20">
+          <p className="text-base text-neutral-500">Recent Searches</p>
+          <div className="flex flex-grow flex-col overflow-hidden overflow-y-auto">
             {filteredEvents?.data?.data?.map((event: eventType, i: number) => (
               <div
                 onClick={() => setSelectedEvent(event)}
@@ -79,6 +93,7 @@ export default function Page() {
             ))}
           </div>
         </div>
+
         <EventDetails
           selectedEvent={selectedEvent}
           setSelectedEvent={setSelectedEvent}
