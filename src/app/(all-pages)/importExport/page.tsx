@@ -6,27 +6,27 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { TbCloudUpload, TbCloudDownload } from "react-icons/tb";
 import { FaRegFile } from "react-icons/fa6";
 import { Axios } from "@/services/baseUrl";
 import DepartmentButton from "@/components/DepartmentButton";
-import { set } from "date-fns";
 import { BiPencil } from "react-icons/bi";
+import ContextProvider, { Context } from "@/app/clientWrappers/ContextProvider";
 
 export default function ImportExport() {
   const [currentTab, setCurrentTab] = useState("import");
   const [importFileData, setImportFileData] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [departments, setDepartments] = useState<Department[]>([]);
-  const [userData, setUserData] = useState<User>();
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] = useState<File>();
   const [exportFilename, setExportFilename] = useState("Calendar");
 
+  const { userData } = useContext(Context);
+
   useEffect(() => {
-    fetchUserData();
     fetchDepartments();
   }, []);
 
@@ -45,16 +45,6 @@ export default function ImportExport() {
       }
     }
   }, [currentTab]);
-
-  const fetchUserData = async () => {
-    try {
-      const response = await Axios.get(`/profile`);
-      setUserData(response.data.data);
-      console.log("UserData: ", response.data.data);
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  };
 
   const handleFileInput = (e: any) => {
     if (e.target.files.length === 0) return;

@@ -1,5 +1,7 @@
 "use client";
 
+import { setCookie } from "@/hooks/CookieHooks";
+import { Axios } from "@/services/baseUrl";
 import { CalendarApi, EventInput } from "@fullcalendar/core/index.js";
 import FullCalendar from "@fullcalendar/react";
 import {
@@ -9,6 +11,7 @@ import {
   SetStateAction,
   Dispatch,
   LegacyRef,
+  useEffect,
 } from "react";
 
 export interface ContextType {
@@ -18,6 +21,7 @@ export interface ContextType {
   selectedDate: Date | undefined;
   setSelectedDate: Dispatch<SetStateAction<Date | undefined>>;
   calendarApi: CalendarApi | undefined;
+  userData: User | undefined;
 }
 
 export const Context = createContext<any>({});
@@ -40,6 +44,42 @@ export default function ContextProvider({
   const calendarApi = calendarRef?.current?.getApi();
   console.log("calendar getDate()", calendarApi);
 
+  const [userData, setUserData] = useState<User>();
+
+  const generateNewToken = async () => {
+    try {
+      const response = await Axios.get("/generateNewToken");
+      if (response.data.success) {
+        return response.data.data;
+      }
+      return null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  const fetchUserData = async () => {
+    try {
+      const response = await Axios.get(`/profile`);
+      const user = response.data.data;
+      if (user) {
+        setUserData(user);
+        const token = await generateNewToken();
+        if (token) {
+          setCookie("token", token, Date.now()+(5*86400));
+        }
+      }
+      console.log("UserData: ", response.data.data);
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+
   const [selectedDate, setSelectedDate] = useState<SelectedDate | undefined>({
     start: new Date(),
     end: undefined,
@@ -57,6 +97,7 @@ export default function ContextProvider({
         calendarApi,
         selectedDate,
         setSelectedDate,
+        userData,
       }}
     >
       {children}
