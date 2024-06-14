@@ -29,7 +29,7 @@ import { useGetCookieByName } from "@/hooks/CookieHooks";
 import { DEPARTMENTS } from "@/constants/departments";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { postEvents } from "@/services/api/eventsApi";
+import { postEvents, updateEvents } from "@/services/api/eventsApi";
 import { watch } from "fs";
 import DepartmentBtn from "./DepartmentBtn";
 import { getDepartments } from "@/services/api/departments";
@@ -43,16 +43,16 @@ import { setPriority } from "os";
 import { Textarea } from "../ui/textarea";
 
 interface PickedDateType {
-  startDate: Date | undefined;
-  endDate: Date | undefined;
+  startDate: Date | null | undefined;
+  endDate: Date | null | undefined;
 }
 
-export default function AddEventModal({
+export default function EditEventModal({
   defaultData,
 }: {
-  defaultData?: eventType;
+  defaultData: eventType | null;
 }) {
-  const [pickedDate, setPickedDate] = useState<any>();
+  const [pickedDate, setPickedDate] = useState<PickedDateType>();
   const [dateType, setDateType] = useState<"single" | "multi">("single");
 
   const queryClient = useQueryClient();
@@ -77,8 +77,8 @@ export default function AddEventModal({
   });
 
   console.log("depar", departmentsRes);
-  const { mutate: postNewEvent } = useMutation({
-    mutationFn: postEvents,
+  const { mutate: updateEvent } = useMutation({
+    mutationFn: updateEvents,
     onSuccess: (res) => {
       console.log("Onsuccess", res);
       queryClient.invalidateQueries({ queryKey: ["Events"] });
@@ -102,10 +102,10 @@ export default function AddEventModal({
     },
   });
 
-  function handleAddEvent() {
+  function handleUpdateEvent(id: string) {
     console.log("handle add event ", newEvent);
     // setEvents([...events, newEvent]);
-    postNewEvent(newEvent);
+    updateEvent({ id, newEvent });
   }
 
   const setDateAndTime = ({ hours, minutes, type }: setDateAndTimeTypes) => {
@@ -114,17 +114,19 @@ export default function AddEventModal({
     //   locale: US_LocaleData,
     // });
 
-    if (type === "start" && pickedDate?.startDate) {
-      const startDate = format(pickedDate?.startDate, "yyyy-MM-dd", {
-        locale: US_LocaleData,
-      });
+    if (type === "start" && Boolean(pickedDate?.startDate)) {
+      const startDate = pickedDate?.startDate
+        ? format(new Date(pickedDate.startDate), "yyyy-MM-dd", {
+            locale: US_LocaleData,
+          })
+        : new Date();
       const finalStartDate = new Date(startDate);
       finalStartDate?.setHours(hours);
       finalStartDate?.setMinutes(minutes);
 
       setNewEvent({ ...newEvent, start: finalStartDate });
     } else if (type === "end" && pickedDate?.endDate) {
-      const endDate = format(pickedDate?.endDate, "yyyy-MM-dd", {
+      const endDate = format(new Date(pickedDate?.endDate), "yyyy-MM-dd", {
         locale: US_LocaleData,
       });
       const finalEndDate = new Date(endDate);
@@ -147,7 +149,7 @@ export default function AddEventModal({
       ),
     };
     setNewEvent(modifiedData);
-    setPickedDate({ start: defaultData.start, end: defaultData.end });
+    setPickedDate({ startDate: defaultData.start, endDate: defaultData.end });
   }, [defaultData]);
   console.log("pickedDate", pickedDate);
 
@@ -182,17 +184,6 @@ export default function AddEventModal({
 
           {/* input section  */}
           <div className="flex flex-col gap-8">
-            <button
-              onClick={() => {
-                const date = format(new Date(), "EEEE, dd MMMM", {
-                  locale: US_LocaleData,
-                });
-                // datepickerRef?.current?.click() == date;
-                console.log("date", datepickerRef.current);
-              }}
-            >
-              set date
-            </button>{" "}
             {/* Title input section  */}
             <label htmlFor="add-title">
               <div className="group flex h-11 w-full items-center gap-2  border-b-[1px] border-neutral-300 px-4 focus-within:border-primary-600">
@@ -258,7 +249,7 @@ export default function AddEventModal({
                 </span>
               </div>
 
-              {dateType === "single" && Boolean(pickedDate?.start) && (
+              {dateType === "single" && pickedDate?.startDate && (
                 <Datepicker
                   ref={datepickerRef}
                   className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
@@ -276,7 +267,7 @@ export default function AddEventModal({
                   //       })
                   //     : undefined
                   // }
-                  selected={new Date(pickedDate?.start)}
+                  selected={new Date(pickedDate.startDate)}
                   dateFormat={"EEEE, dd MMMM"}
                   placeholderText="Please select a date."
                   required
@@ -463,7 +454,7 @@ export default function AddEventModal({
             </div>
             {/* Notes section  */}
             <div className="">
-              <span className="flex justify-start ">Notes</span> <br />
+              <span className="flex justify-start ">Notes</span>
               <input
                 type="text"
                 className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
@@ -482,9 +473,11 @@ export default function AddEventModal({
           >
             <button
               className="btn btn-md  h-5 border-none bg-primary-600 text-base font-medium text-primary-50"
-              onClick={handleAddEvent}
+              onClick={() =>
+                handleUpdateEvent(newEvent?._id ? newEvent._id : "")
+              }
             >
-              Create
+              Edit
             </button>
           </form>
         </div>

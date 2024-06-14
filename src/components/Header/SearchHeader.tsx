@@ -6,11 +6,12 @@ import { IoIosSearch } from "react-icons/io";
 
 export function SearchHeader({
   queryParams,
-  setQueryParams,
+  handleQueryParams,
 }: {
   queryParams: eventByParamsType;
-  setQueryParams: Dispatch<SetStateAction<eventByParamsType>>;
+  handleQueryParams: (e: any) => void;
 }) {
+  let timeout;
   const { calendarRef, selectedDate } = useContext(Context);
 
   const date = selectedDate ? selectedDate : new Date();
@@ -34,11 +35,7 @@ export function SearchHeader({
               placeholder="Search events, dates, participants..."
               id="add-title"
               value={queryParams?.q}
-              onChange={
-                (e) =>
-                  setQueryParams((prev) => ({ ...prev, q: e.target.value }))
-                // setNewEvent({ ...newEvent, title: e.target.value })
-              }
+              onChange={handleQueryParams}
             />
           </div>
         </label>
