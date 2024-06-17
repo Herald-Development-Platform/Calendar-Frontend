@@ -47,7 +47,7 @@ export default function EventDetails({
       <section
         className={`${
           Boolean(selectedEvent) ? "" : "translate-x-full"
-        } absolute right-0 top-0 flex h-auto w-80 flex-col  gap-6 p-6 font-medium text-neutral-600 transition-all duration-150`}
+        } absolute right-0 top-0 flex h-full w-80 flex-col gap-6 overflow-y-auto bg-white p-6 font-medium text-neutral-600 transition-all duration-150`}
       >
         <div className="font flex items-center transition">
           <span className="text-base">Event Details</span>
