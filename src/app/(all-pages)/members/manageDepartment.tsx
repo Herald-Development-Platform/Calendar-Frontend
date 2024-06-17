@@ -14,7 +14,6 @@ export default function ManageDepartment({
 }: {
   closeDepartmentManagement: React.Dispatch<React.SetStateAction<boolean>>;
   departments: Department[];
-  events: eventType[];
   allUsers: User[];
 }) {
   const { data: eventsData } = useQuery({

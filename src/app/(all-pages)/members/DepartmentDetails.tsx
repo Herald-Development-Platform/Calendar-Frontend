@@ -50,8 +50,8 @@ export default function DepartmentDetails({
                 return null;
               }
               return (
-                <div className=" my-1">
-                  <EventCard event={event} key={event._id} />
+                <div className=" my-1" key={event._id}>
+                  <EventCard event={event} />
                 </div>
               );
             })}

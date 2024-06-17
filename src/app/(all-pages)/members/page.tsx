@@ -71,8 +71,7 @@ export default function Page() {
     }
   }, [allUsers]);
 
-  useEffect(() => {
-  }, [searchedUsers]);
+  useEffect(() => {}, [searchedUsers]);
 
   const { mutate: approveUser } = useMutation({
     mutationFn: (payload: any) =>
@@ -172,8 +171,7 @@ export default function Page() {
     }
   };
 
-  useEffect(() => {
-  }, [departmentRequests]);
+  useEffect(() => {}, [departmentRequests]);
 
   useEffect(() => {
     fetchDepartments();
@@ -407,7 +405,9 @@ export default function Page() {
       {manageDepartmentOpen ? (
         <ManageDepartment
           departments={departments}
-          closeDepartmentManagement={()=>{setManageDepartmentOpen(false)}}
+          closeDepartmentManagement={() => {
+            setManageDepartmentOpen(false);
+          }}
           allUsers={allUsers?.data?.data}
         />
       ) : (
@@ -543,15 +543,14 @@ export default function Page() {
             </span> */}
             </div>
             <div className="flex flex-row ">
-              {
-                departments && departments.length > 0 &&
+              {departments && departments.length > 0 && (
                 <span
                   onClick={() => setManageDepartmentOpen(true)}
                   className=" cursor-pointer text-[14px] font-semibold text-info-600 underline underline-offset-2"
                 >
                   Manage Departments
                 </span>
-              }
+              )}
             </div>
           </div>
 
