@@ -1,3 +1,4 @@
+"use client";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 import EventCard from "@/components/UpcommingEvents/EventCard";
@@ -25,17 +26,26 @@ import colors from "@/constants/Colors";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import AddEventModal from "@/components/AddEventModal";
 import EditEventModal from "@/components/AddEventModal/EditEventModal";
+import { updateEvents } from "@/services/api/eventsApi";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 export default function EventDetails({
   selectedEvent,
   setSelectedEvent,
+  updateEvent,
+  width,
 }: {
   selectedEvent: eventType | null;
   setSelectedEvent: Dispatch<SetStateAction<eventType | null>>;
+  updateEvent: any;
+  width: number | null;
 }) {
   const [selectedColor, setSelectedColor] = useState<string | undefined>(
     selectedEvent?.color,
   );
+  console.log("width", width);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     console.log("selected", selectedEvent);
@@ -47,7 +57,8 @@ export default function EventDetails({
       <section
         className={`${
           Boolean(selectedEvent) ? "" : "translate-x-full"
-        } absolute right-0 top-0 flex h-full w-80 flex-col gap-6 overflow-y-auto bg-white p-6 font-medium text-neutral-600 transition-all duration-150`}
+        } absolute right-0 top-0 flex h-full w-80  flex-col gap-6 overflow-y-auto bg-white p-6 font-medium text-neutral-600 transition-all duration-150`}
+        style={{ width: `${width}px` }}
       >
         <div className="font flex items-center transition">
           <span className="text-base">Event Details</span>
@@ -116,7 +127,13 @@ export default function EventDetails({
           <p>Priority</p>
           <Select
             defaultValue={selectedEvent?.color}
-            onValueChange={(value) => setSelectedColor(value)}
+            onValueChange={(value) => {
+              updateEvent({
+                id: selectedEvent?._id,
+                newEvent: { ...selectedEvent, color: value },
+              });
+              setSelectedColor(value);
+            }}
           >
             <SelectTrigger className="h-7 w-14 border-none p-0 focus:ring-0">
               <div
@@ -142,6 +159,7 @@ export default function EventDetails({
             </SelectContent>
           </Select>
         </div>
+
         <div>
           <h3>Description</h3>
           <p className="text-base font-normal text-neutral-500 ">

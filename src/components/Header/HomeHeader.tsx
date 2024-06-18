@@ -49,33 +49,57 @@ export function HomeHeader() {
   const [calendarApi, setCalendarApi] = useState<CalendarApi>();
   const [listView, setListView] = useState<boolean>(false);
 
-  const { calendarRef, selectedDate, setSelectedDate } = useContext(Context);
-  console.log("calREf", calendarRef);
+  const { calendarRef, selectedDate, setSelectedDate, timeout } =
+    useContext(Context);
 
   const token = useGetCookieByName("token");
   const userData = token ? decryptJwtPayload(token) : null;
-  console.log("userData", userData);
 
   const router = useRouter();
   const date = selectedDate ? selectedDate : null;
 
-  // console.log("selectedData", selectedDate);
+  console.log("selectedData", selectedDate);
 
   // sets value of calendarAPI as soon as calRef loads.
   useEffect(() => {
     // @ts-ignore
     const calApi = calendarRef?.current?.getApi();
     setCalendarApi(calApi);
-    console.log("calApi: ", calendarApi);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [calendarRef]);
 
   const handleNext = () => {
     calendarApi?.next();
+    setSelectedDate((prev: any) => {
+      if (!prev?.start) return prev;
+
+      const nextMonth = new Date(prev.start);
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      return {
+        start: nextMonth,
+        end: nextMonth,
+        endStr: "",
+        startStr: "",
+      };
+    });
+    clearTimeout(timeout.current);
   };
 
   const handlePrevious = () => {
     calendarApi?.prev();
+    setSelectedDate((prev: any) => {
+      if (!prev?.start) return prev;
+
+      const nextMonth = new Date(prev.start);
+      nextMonth.setMonth(nextMonth.getMonth() - 1);
+      return {
+        start: nextMonth,
+        end: nextMonth,
+        endStr: "",
+        startStr: "",
+      };
+    });
+    clearTimeout(timeout.current);
   };
 
   const handleToday = () => {
@@ -86,7 +110,6 @@ export function HomeHeader() {
     });
   };
 
-  // console.log("listview", listView);
   useHandleListViewToggle(listView, calendarApi);
   return (
     <div className="ml-8 mr-16 mt-8 flex h-12 w-auto justify-between">

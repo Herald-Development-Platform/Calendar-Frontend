@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import listPlugin from "@fullcalendar/list";
 import multiMonthPlugin from "@fullcalendar/multimonth";
 import timeGridPlugin from "@fullcalendar/timegrid";
-import Calendar, { DateUnselectArg } from "@fullcalendar/core";
+import Calendar, { DateSelectArg, DateUnselectArg } from "@fullcalendar/core";
 import { Context, ContextType } from "@/app/clientWrappers/ContextProvider";
 import "./FullCalExtraCss.css";
 import { useQuery } from "@tanstack/react-query";
@@ -14,20 +14,28 @@ import { getCookie } from "@/hooks/CookieHooks";
 import Endpoints from "@/services/API_ENDPOINTS";
 
 export default function ReactFullCal() {
-  let timeout: any = null;
-  const { calendarRef, setSelectedDate } = useContext(Context);
-  // const [initialView, setInitialView] = useState<string>("dayGridMonth");
+  const { calendarRef, setSelectedDate, timeout } = useContext(Context);
 
   const { data: eventsData } = useQuery({
     queryKey: ["Events"],
     queryFn: () => Axios.get(Endpoints.event),
   });
 
-  // console.log("eventsData", eventsData);
-  // const calendarApi = calendarRef?.current?.getApi();
+  const handleSelect = ({ start, end, startStr, endStr }: DateSelectArg) => {
+    setSelectedDate({ start, end, startStr, endStr });
+    console.log("eventselect", { start, end, startStr, endStr });
+    clearTimeout(timeout.current);
+  };
 
-  // console.log("calendarapi", calendarApi.currentV);
-
+  const handleUnselect = (arg: DateUnselectArg) => {
+    timeout.current = setTimeout(function () {
+      console.log("arg", arg);
+      setSelectedDate({
+        start: new Date(),
+        end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
+      });
+    }, 250);
+  };
   return (
     <div className="h-full w-full">
       <FullCalendar
@@ -44,21 +52,9 @@ export default function ReactFullCal() {
         events={eventsData?.data?.data}
         headerToolbar={false}
         selectable={true}
-        select={({ start, end, startStr, endStr }) => {
-          setSelectedDate({ start, end, startStr, endStr });
-          console.log("eventselect", { start, end, startStr, endStr });
-          clearTimeout(timeout);
-        }}
+        select={handleSelect}
         // unselectAuto={true}
-        unselect={(arg: DateUnselectArg) => {
-          timeout = setTimeout(function () {
-            console.log("arg", arg);
-            setSelectedDate({
-              start: new Date(),
-              end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
-            });
-          }, 250);
-        }}
+        unselect={handleUnselect}
         displayEventTime={false}
         dayHeaderClassNames={"customStylesDayHeader"}
         dayCellClassNames={"customStylesDayCells"}
