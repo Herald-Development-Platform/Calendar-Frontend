@@ -27,6 +27,7 @@ interface Department {
   name: string;
   code: string;
   description: string;
+  membersCount?: number;
 }
 
 interface User {
