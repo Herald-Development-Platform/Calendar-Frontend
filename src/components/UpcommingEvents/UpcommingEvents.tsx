@@ -1,10 +1,11 @@
 import { Axios } from "@/services/baseUrl";
 import { useQuery } from "@tanstack/react-query";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { parseISO, format } from "date-fns";
 import { getEvents } from "@/services/api/eventsApi";
 import EventCard from "./EventCard";
 import { Context } from "@/app/clientWrappers/ContextProvider";
+import EventDetails from "@/app/(all-pages)/search/EventDetails";
 
 export default function UpcommingEvents() {
   const { selectedDate } = useContext(Context);
@@ -12,6 +13,7 @@ export default function UpcommingEvents() {
     queryKey: ["Events"],
     queryFn: getEvents,
   });
+  const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
   // console.log("eventsData", eventsData);
 
   // const dateString = "2024-05-18T05:25:00.000Z";
@@ -25,25 +27,15 @@ export default function UpcommingEvents() {
   // new Date('2024-05-18T05:25:00.000Z')
 
   // console.log(formattedTime); // Output: 5:25 AM
-
+  const handleCardClick = (eventData: eventType) => {
+    setSelectedEvent(eventData);
+  };
   return (
-    <div className="hide-scrollbar flex h-full w-1/3 flex-col gap-10 overflow-hidden  overflow-y-auto px-6">
+    <div className="hide-scrollbar relative flex h-full w-1/3 flex-col gap-10 overflow-hidden  overflow-y-auto px-6">
       <div className="flex flex-col gap-1 text-neutral-600">
         <h2 className="font-semibold ">Upcomming Events</h2>
         {/* <h3 className="text-lg">June 17 - June 23 </h3> */}
       </div>
-
-      {/* {[...Array(10)].map(() => 
-        <>
-        <div className="flex flex-col gap-3">
-        <div className="relative flex h-5 w-full items-center">
-          <div className="w-full border-t border-neutral-300"></div>
-          <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-white px-2 text-sm text-neutral-600">
-            August 11
-          </h1>
-        </div>
-        </>
-      )} */}
 
       <div className="flex flex-col gap-3">
         <div className="relative flex h-5 w-full items-center">
@@ -87,9 +79,19 @@ export default function UpcommingEvents() {
 
           if (eventStart < selectedStartTime || eventEnd > selectedEndTime)
             return;
-          return <EventCard key={event._id} event={event} />;
+          return (
+            <EventCard
+              key={event._id}
+              event={event}
+              handleCardClick={handleCardClick}
+            />
+          );
         })}
       </div>
+      <EventDetails
+        selectedEvent={selectedEvent}
+        setSelectedEvent={setSelectedEvent}
+      ></EventDetails>
     </div>
   );
 }

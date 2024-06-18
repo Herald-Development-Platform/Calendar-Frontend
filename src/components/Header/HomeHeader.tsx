@@ -10,6 +10,8 @@ import { Context } from "@/app/clientWrappers/ContextProvider";
 import { CalendarApi } from "@fullcalendar/core/index.js";
 import { MdOutlineSettings } from "react-icons/md";
 import { IoMdLogOut } from "react-icons/io";
+import { MdListAlt } from "react-icons/md";
+import { Toggle } from "@/components/ui/toggle";
 
 import {
   DropdownMenu,
@@ -32,13 +34,20 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Endpoints from "@/services/API_ENDPOINTS";
-import { decryptJwtPayload } from "@/lib/utils";
+import {
+  checkListView,
+  decryptJwtPayload,
+  findListView,
+  findNormalView,
+} from "@/lib/utils";
 import { useGetCookieByName } from "@/hooks/CookieHooks";
-import { CalendarViews } from "@/constants/CalendarViews";
+import { CalendarViews, ListViews } from "@/constants/CalendarViews";
+import { CgList } from "react-icons/cg";
 
 export function HomeHeader() {
   // const [redner, setredner] = useState<number>(1);
   const [calendarApi, setCalendarApi] = useState<CalendarApi>();
+  const [listView, setListView] = useState<boolean>(false);
 
   const { calendarRef, selectedDate, setSelectedDate } = useContext(Context);
   console.log("calREf", calendarRef);
@@ -50,12 +59,7 @@ export function HomeHeader() {
   const router = useRouter();
   const date = selectedDate ? selectedDate : null;
 
-  console.log("selectedData", selectedDate);
-
-  // useEffect(() => {
-  //   console.log("calendarRef from header component", calendarRef);
-  //   console.log("selectedDate header:", selectedDate);
-  // }, [calendarRef, selectedDate]);
+  // console.log("selectedData", selectedDate);
 
   // sets value of calendarAPI as soon as calRef loads.
   useEffect(() => {
@@ -82,6 +86,8 @@ export function HomeHeader() {
     });
   };
 
+  // console.log("listview", listView);
+  useHandleListViewToggle(listView, calendarApi);
   return (
     <div className="ml-8 mr-16 mt-8 flex h-12 w-auto justify-between">
       <div className="flex w-9/12 justify-between">
@@ -122,11 +128,39 @@ export function HomeHeader() {
           </div>
         </div>
 
-        {/* month and addEventModal  */}
-        <div className="flex w-56 items-center justify-between gap-3 text-sm font-medium">
+        {/* listview, month and addEventModal  */}
+        <div className="flex max-h-8 w-56 items-center justify-between gap-3 text-sm font-medium">
+          {/* <button
+            onClick={(e) => {
+              console.log("current view");
+              calendarApi?.view?.type &&
+                findListView(calendarApi.view.type, calendarApi);
+            }}
+            className={`${
+              checkListView(calendarApi?.view.type)
+                ? "bg-primary-500 text-white"
+                : "text-neutral-500"
+            } h-full w-32 rounded-sm border border-neutral-300 px-3 text-2xl font-semibold `}
+          >
+            <MdListAlt />
+          </button> */}
+          <button
+            className={`${
+              listView ? "bg-primary-500 text-white" : "text-neutral-500"
+            } h-full w-32 rounded-sm border border-neutral-300 px-3 text-2xl font-semibold transition duration-200 `}
+            onClick={(e) => {
+              setListView((prev) => !prev);
+              console.log("listview", listView);
+              // calendarApi?.view?.type &&
+              //   findListView(calendarApi.view.type, calendarApi);
+            }}
+          >
+            <MdListAlt />
+          </button>
           <Select
             onValueChange={(calView) => {
-              console.log("calView", calView);
+              if (listView && calendarApi)
+                return findListView(calView, calendarApi);
               calendarApi?.changeView(calView);
             }}
             defaultValue={CalendarViews.monthView}
@@ -238,3 +272,16 @@ export function HomeHeader() {
 //   const jsonPayload = base64UrlDecode(base64);
 //   return JSON.parse(jsonPayload);
 // }
+const useHandleListViewToggle = (
+  listView: boolean,
+  calendarApi: CalendarApi | undefined,
+) => {
+  useEffect(() => {
+    if (!calendarApi) return;
+    if (listView) {
+      findListView(calendarApi.view.type, calendarApi);
+    } else {
+      findNormalView(calendarApi.view.type, calendarApi);
+    }
+  }, [listView]);
+};

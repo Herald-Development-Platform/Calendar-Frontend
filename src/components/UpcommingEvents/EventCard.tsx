@@ -1,6 +1,12 @@
 import React from "react";
 import { format } from "date-fns";
-export default function EventCard({ event }: { event: eventType }) {
+export default function EventCard({
+  event,
+  handleCardClick,
+}: {
+  event: eventType;
+  handleCardClick?: (eventData: eventType) => void;
+}) {
   const startTime = event?.start
     ? format(new Date(event.start), "h:mm aa")
     : "NA";
@@ -21,11 +27,16 @@ export default function EventCard({ event }: { event: eventType }) {
     <>
       <div
         // key={event?._id}
-        className="flex h-auto w-full flex-col gap-1 border-l-4 bg-opacity-10 px-4 py-2 text-black"
+        className={`${
+          Boolean(handleCardClick) ? "cursor-pointer" : ""
+        } flex h-auto w-full cursor-pointer flex-col gap-1 border-l-4 bg-opacity-10 px-4 py-2 text-black`}
         style={{
           backgroundColor: `${event?.color}14`,
           borderWidth: "0 0 0 4px",
           borderColor: `${event?.color}`,
+        }}
+        onClick={() => {
+          handleCardClick && handleCardClick(event);
         }}
       >
         <h1 className=" font-medium">{event?.title}</h1>

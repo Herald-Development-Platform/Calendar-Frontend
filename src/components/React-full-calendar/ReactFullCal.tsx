@@ -16,7 +16,7 @@ import Endpoints from "@/services/API_ENDPOINTS";
 export default function ReactFullCal() {
   let timeout: any = null;
   const { calendarRef, setSelectedDate } = useContext(Context);
-  const [initialView, setInitialView] = useState<string>("dayGridMonth");
+  // const [initialView, setInitialView] = useState<string>("dayGridMonth");
 
   const { data: eventsData } = useQuery({
     queryKey: ["Events"],
@@ -30,17 +30,6 @@ export default function ReactFullCal() {
 
   return (
     <div className="h-full w-full">
-      {/* <button
-        className="btn btn-sm bg-primary-600 text-white"
-        onClick={() =>
-          console.log(
-            "calendarRef.current",
-            calendarRef?.current.getApi().changeView("listYear"),
-          )
-        }
-      >
-        Button to change view
-      </button> */}
       <FullCalendar
         ref={calendarRef}
         plugins={[
@@ -51,7 +40,7 @@ export default function ReactFullCal() {
           listPlugin,
           multiMonthPlugin,
         ]}
-        initialView={`${initialView}`}
+        initialView={`dayGridMonth`}
         events={eventsData?.data?.data}
         headerToolbar={false}
         selectable={true}
