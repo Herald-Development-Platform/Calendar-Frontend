@@ -1,11 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import * as Headers from "@/components/Header";
 import { Axios } from "@/services/baseUrl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CiSearch } from "react-icons/ci";
 import DepartmentBtn from "@/components/DepartmentButton";
-import { FaPlus } from "react-icons/fa";
 import {
   Table,
   TableBody,
@@ -14,9 +13,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MdOutlineEdit } from "react-icons/md";
+import { MdDelete, MdOutlineEdit } from "react-icons/md";
 import { toast, Toaster } from "react-hot-toast";
-import { FaBackward, FaCircleUser } from "react-icons/fa6";
+import { FaCircleUser } from "react-icons/fa6";
 
 import {
   Dialog,
@@ -33,19 +32,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BiPencil } from "react-icons/bi";
-import { postDepartment, updateUser } from "@/services/api/departments";
+import { updateUser } from "@/services/api/departments";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
+import { ROLES } from "@/constants/role";
+import ContextProvider, { Context } from "@/app/clientWrappers/ContextProvider";
 
 export default function Page() {
   const router = useRouter();
   const [departments, setDepartments] = useState<Department[]>([]);
   const [selDepartments, setSelDepartments] = useState<string[]>(["All"]);
   const [editUserDialogOpen, setEditUserDialogOpen] = useState<boolean>(false);
+  const [deleteUserDialogOpen, setDeleteUserDialogOpen] =
+    useState<boolean>(false);
   const [changeRoleVerificationModalOpen, setChangeRoleVerificationModalOpen] =
     useState<boolean>(false);
-  const [changeRoleUser, setChangeRoleUser] = useState<User>();
+  const [updatingUserData, setUpdatingUserData] = useState<User>();
+
+  const { userData: profile } = useContext(Context);
+  console.log("User data from members page", profile);
 
   const queryClient = useQueryClient();
 
@@ -54,6 +59,8 @@ export default function Page() {
       queryKey: ["UnapprovedUsers"],
       queryFn: () => Axios.get("/department/request?status=PENDING"),
     });
+
+  console.log();
 
   const { data: allUsers, isLoading: allUsersLoading } = useQuery({
     queryKey: ["AllUsers"],
@@ -92,7 +99,6 @@ export default function Page() {
       queryClient.invalidateQueries({ queryKey: ["UnapprovedUsers"] });
     },
   });
-
 
   const {
     register: registerUser,
@@ -136,11 +142,10 @@ export default function Page() {
       toast.success("User updated successfully");
       resetUserForm();
     }
-    setChangeRoleUser(undefined);
+    setUpdatingUserData(undefined);
     queryClient.invalidateQueries({ queryKey: ["AllUsers"] });
     queryClient.invalidateQueries({ queryKey: ["UnapprovedUsers"] });
   };
-
 
   useEffect(() => {}, [departmentRequests]);
 
@@ -178,6 +183,28 @@ export default function Page() {
     setSearchedUsers(newSearchedUsers);
   };
 
+  const deleteUser = (id: string) => {
+    Axios.delete(`/profile/${id}`)
+      .then((response) => {
+        if (response.status >= 400 && response.status < 500) {
+          toast.error(
+            response?.data?.message ||
+              response?.data?.error ||
+              "Error process request!",
+          );
+          return;
+        } else {
+          toast.success("User deleted successfully");
+          queryClient.invalidateQueries({ queryKey: ["AllUsers"] });
+          setDeleteUserDialogOpen(false);
+          setUpdatingUserData(undefined);
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting user:", error);
+      });
+  };
+
   return (
     <div className="flex flex-col gap-9 px-[70px] pl-3">
       <Toaster />
@@ -187,7 +214,7 @@ export default function Page() {
         open={changeRoleVerificationModalOpen}
         onOpenChange={(open) => {
           setChangeRoleVerificationModalOpen(open);
-          setChangeRoleUser(undefined);
+          setUpdatingUserData(undefined);
           queryClient.invalidateQueries({ queryKey: ["AllUsers"] });
         }}
       >
@@ -198,9 +225,9 @@ export default function Page() {
             </DialogTitle>
           </DialogHeader>
           <div>
-            Do you really want to change the role of {changeRoleUser?.username}{" "}
-            to{" "}
-            {changeRoleUser?.role === "STAFF"
+            Do you really want to change the role of{" "}
+            {updatingUserData?.username} to{" "}
+            {updatingUserData?.role === "STAFF"
               ? "Officer"
               : "Head of Department"}
           </div>
@@ -208,10 +235,10 @@ export default function Page() {
             <button
               onClick={() => {
                 resetUserForm({
-                  email: changeRoleUser?.email,
-                  username: changeRoleUser?.username,
-                  role: changeRoleUser?.role,
-                  department: changeRoleUser?.department?._id,
+                  email: updatingUserData?.email,
+                  username: updatingUserData?.username,
+                  role: updatingUserData?.role,
+                  department: updatingUserData?.department?._id,
                 });
                 handleUserSubmit(onUserEditSubmit)();
                 setChangeRoleVerificationModalOpen(false);
@@ -290,12 +317,15 @@ export default function Page() {
               <span className="font-500 text-[14px]">
                 Role <br />
               </span>
-              <Select onValueChange={(e) => {
-                resetUserForm({
-                  ...getUserValues(),
-                  role: e,
-                });
-              }} value={watchUserValues("role")}>
+              <Select
+                onValueChange={(e) => {
+                  resetUserForm({
+                    ...getUserValues(),
+                    role: e,
+                  });
+                }}
+                value={watchUserValues("role")}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select Role" />
                 </SelectTrigger>
@@ -321,6 +351,52 @@ export default function Page() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog
+        open={deleteUserDialogOpen}
+        onOpenChange={() => {
+          setDeleteUserDialogOpen(false);
+          setUpdatingUserData(undefined);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete User?</DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-3">
+            <p className="text-neutral-700">
+              Type{" "}
+              <span className="font-semibold">
+                {updatingUserData?.username}
+              </span>{" "}
+              to delete the user.
+            </p>
+            <input
+              type="text"
+              id="delete-verification"
+              className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
+              placeholder="Username to delete"
+            />
+          </div>
+          <DialogFooter>
+            <button
+              onClick={() => {
+                const verification = document.getElementById(
+                  "delete-verification",
+                ) as HTMLInputElement;
+                if (verification.value !== updatingUserData?.username) {
+                  return;
+                }
+                updatingUserData && deleteUser(updatingUserData?._id);
+              }}
+              className="btn btn-md h-5 border-none bg-red-500 text-sm font-medium text-primary-50 hover:bg-red-600"
+            >
+              Delete
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className=" flex flex-col gap-[27px]">
         <div className="flex flex-row justify-between">
           <h1 className=" text-[28px] font-[700] text-black">Team</h1>
@@ -399,50 +475,60 @@ export default function Page() {
         </>
         <div className="flex flex-row justify-between">
           <div className="flex max-w-[80vw] flex-row items-center justify-start gap-1.5">
-            <DepartmentBtn
-              selectedCross={false}
-              value={"All"}
-              selected={selDepartments.includes("All")}
-              onClick={() => {
-                if (selDepartments.includes("All")) {
-                  setSelDepartments([]);
-                } else {
-                  setSelDepartments(["All"]);
-                }
-              }}
-            />
-            {departments &&
-              departments.map((department: Department) => (
-                <DepartmentBtn
-                  key={department._id}
-                  selectedCross={false}
-                  value={department.code}
-                  onClick={() => {
-                    let newSelectedDepartments = [...selDepartments];
-                    if (newSelectedDepartments.includes("All")) {
-                      newSelectedDepartments = newSelectedDepartments.filter(
-                        (dep) => dep !== "All",
-                      );
-                    }
-                    if (newSelectedDepartments.includes(department.code)) {
-                      newSelectedDepartments = newSelectedDepartments.filter(
-                        (dep) => dep !== department.code,
-                      );
-                    } else {
-                      newSelectedDepartments = [
-                        ...newSelectedDepartments,
-                        department.code,
-                      ];
-                    }
-                    if (newSelectedDepartments.length === 0) {
-                      newSelectedDepartments = ["All"];
-                      return;
-                    }
-                    setSelDepartments(newSelectedDepartments);
-                  }}
-                  selected={selDepartments.includes(department.code)}
-                />
-              ))}
+            {profile && profile.role === ROLES.SUPER_ADMIN && (
+              <DepartmentBtn
+                selectedCross={false}
+                value={"All"}
+                selected={selDepartments.includes("All")}
+                onClick={() => {
+                  if (selDepartments.includes("All")) {
+                    setSelDepartments([]);
+                  } else {
+                    setSelDepartments(["All"]);
+                  }
+                }}
+              />
+            )}
+
+            {profile &&
+              profile.role === ROLES.SUPER_ADMIN &&
+              departments &&
+              departments.map((department: Department) =>
+                profile?.role === ROLES.SUPER_ADMIN ||
+                profile?.department?._id === department._id ? (
+                  <DepartmentBtn
+                    key={department._id}
+                    selectedCross={false}
+                    value={department.code}
+                    onClick={() => {
+                      let newSelectedDepartments = [...selDepartments];
+                      if (newSelectedDepartments.includes("All")) {
+                        newSelectedDepartments = newSelectedDepartments.filter(
+                          (dep) => dep !== "All",
+                        );
+                      }
+                      if (newSelectedDepartments.includes(department.code)) {
+                        newSelectedDepartments = newSelectedDepartments.filter(
+                          (dep) => dep !== department.code,
+                        );
+                      } else {
+                        newSelectedDepartments = [
+                          ...newSelectedDepartments,
+                          department.code,
+                        ];
+                      }
+                      if (newSelectedDepartments.length === 0) {
+                        newSelectedDepartments = ["All"];
+                        return;
+                      }
+                      setSelDepartments(newSelectedDepartments);
+                    }}
+                    selected={selDepartments.includes(department.code)}
+                  />
+                ) : (
+                  <></>
+                ),
+              )}
             {/* <span
               onClick={() => {
                 setDepartmentDialogOpen(true);
@@ -453,14 +539,17 @@ export default function Page() {
             </span> */}
           </div>
           <div className="flex flex-row ">
-            {departments && departments.length > 0 && (
-              <span
-                onClick={() => router.push("/department")}
-                className=" cursor-pointer text-[14px] font-semibold text-info-600 underline underline-offset-2"
-              >
-                Manage Departments
-              </span>
-            )}
+            {profile &&
+              profile.role === "SUPER_ADMIN" &&
+              departments &&
+              departments.length > 0 && (
+                <span
+                  onClick={() => router.push("/department")}
+                  className=" cursor-pointer text-[14px] font-semibold text-info-600 underline underline-offset-2"
+                >
+                  Manage Departments
+                </span>
+              )}
           </div>
         </div>
 
@@ -481,9 +570,11 @@ export default function Page() {
                 <TableHead className=" w-[76px] text-neutral-600">
                   Role
                 </TableHead>
-                <TableHead className="w-[76px] text-right text-neutral-600">
-                  Edit
-                </TableHead>
+                {profile?.role !== ROLES.STAFF && (
+                  <TableHead className="w-[76px] text-right text-neutral-600">
+                    Action
+                  </TableHead>
+                )}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -503,7 +594,7 @@ export default function Page() {
                               className=" w-10 rounded-full"
                             />
                           ) : (
-                            <span className="text-3xl text-neutral-500">
+                            <span className="text-[40px] text-neutral-500">
                               <FaCircleUser />
                             </span>
                           )}
@@ -519,54 +610,83 @@ export default function Page() {
                         {user?.department?.code}
                       </TableCell>
                       <TableCell className="w-[76px] ">
-                        <Select
-                          value={user?.role}
-                          onValueChange={(val) => {
-                            let newSearchedUsers = [...searchedUsers];
-                            newSearchedUsers = newSearchedUsers.map((user) => {
-                              if (user.email === getUserValues("email")) {
-                                return {
-                                  ...user,
-                                  role: val,
-                                };
-                              }
-                              return user;
-                            });
-                            setSearchedUsers(newSearchedUsers);
-                            setChangeRoleUser({
-                              ...user,
-                              role: val,
-                            });
-                            setChangeRoleVerificationModalOpen(true);
-                          }}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select Role" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="STAFF">Officer</SelectItem>
-                            <SelectItem value="DEPARTMENT_ADMIN">
-                              Head of Department
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
+                        {profile?.data?.role === "SUPER_ADMIN" ? (
+                          <Select
+                            value={user?.role}
+                            onValueChange={(val) => {
+                              let newSearchedUsers = [...searchedUsers];
+                              newSearchedUsers = newSearchedUsers.map(
+                                (user) => {
+                                  if (user.email === getUserValues("email")) {
+                                    return {
+                                      ...user,
+                                      role: val,
+                                    };
+                                  }
+                                  return user;
+                                },
+                              );
+                              setSearchedUsers(newSearchedUsers);
+                              setUpdatingUserData({
+                                ...user,
+                                role: val,
+                              });
+                              setChangeRoleVerificationModalOpen(true);
+                            }}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select Role" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="STAFF">Officer</SelectItem>
+                              <SelectItem value="DEPARTMENT_ADMIN">
+                                Head of Department
+                              </SelectItem>
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <div className=" flex flex-col items-start justify-center">
+                            <p>
+                              {user.role === ROLES.STAFF
+                                ? "Officer"
+                                : "Head of Department"}
+                            </p>
+                          </div>
+                        )}
                       </TableCell>
-                      <TableCell className="w-[76px] text-right">
-                        <button
-                          onClick={() => {
-                            resetUserForm({
-                              email: user?.email,
-                              username: user?.username,
-                              role: user?.role,
-                              department: user?.department?._id,
-                            });
-                            setEditUserDialogOpen(true);
-                          }}
-                          className=" text-xl text-primary-600"
-                        >
-                          <MdOutlineEdit />
-                        </button>
-                      </TableCell>
+                      {profile?.role !== ROLES.STAFF && (
+                        <TableCell className="w-[76px] text-right">
+                          {profile?.role !== ROLES.STAFF && (
+                            <div className="flex flex-row items-center justify-end gap-2">
+                              {profile.role === ROLES.SUPER_ADMIN && (
+                                <button
+                                  onClick={() => {
+                                    resetUserForm({
+                                      email: user?.email,
+                                      username: user?.username,
+                                      role: user?.role,
+                                      department: user?.department?._id,
+                                    });
+                                    setEditUserDialogOpen(true);
+                                  }}
+                                  className=" text-xl text-primary-600"
+                                >
+                                  <MdOutlineEdit />
+                                </button>
+                              )}
+                              <button
+                                onClick={() => {
+                                  setUpdatingUserData(user);
+                                  setDeleteUserDialogOpen(true);
+                                }}
+                                className=" text-xl text-red-700"
+                              >
+                                <MdDelete />
+                              </button>
+                            </div>
+                          )}
+                        </TableCell>
+                      )}
                     </TableRow>
                   ),
               )}

@@ -2,11 +2,10 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
-import { Axios, baseUrl } from "@/services/baseUrl";
+import { baseUrl } from "@/services/baseUrl";
 import { useRouter } from "next/navigation";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import * as CookieHooks from "@/hooks/CookieHooks";
-import axios from "axios";
 import Link from "next/link";
 
 export default function Page() {
@@ -15,10 +14,6 @@ export default function Page() {
   const router = useRouter();
   const {
     register,
-    setValue,
-    reset,
-    // formState: { error },
-    getValues,
     handleSubmit,
   } = useForm<any>();
 
@@ -34,7 +29,6 @@ export default function Page() {
       .then((data) => {
         if (!data.success) {
           toast.error(data.message || "Something went wrong.");
-          // throw Error(data || "Something went wrong");
           return;
         }
         CookieHooks.setCookie("token", data.data, 1);
@@ -134,9 +128,6 @@ export default function Page() {
             </button>
             <Link
               href={`${baseUrl}/googleAuth`}
-              // onClick={() => {
-              //   Axios.get("/googleAuth");
-              // }}
               className="btn w-full rounded-[4px] bg-primary-50  text-sm  hover:bg-primary-100"
               type="button"
             >

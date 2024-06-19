@@ -2,7 +2,7 @@
 import Endpoints from "@/services/API_ENDPOINTS";
 import { Axios } from "@/services/baseUrl";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import toast from "react-hot-toast";
 import { HiOutlineUsers, HiArrowNarrowUp } from "react-icons/hi";
 import { IoMdArrowBack } from "react-icons/io";
@@ -19,10 +19,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { BiPencil } from "react-icons/bi";
+import { Context } from "@/app/clientWrappers/ContextProvider";
+import { profile } from "console";
+import { ROLES } from "@/constants/role";
 
 export default function ManageDepartment() {
   const router = useRouter();
   const queryClient = useQueryClient();
+
+  const { userData } = useContext(Context);
 
   const { data: eventsData } = useQuery({
     queryKey: ["Events"],
@@ -112,15 +117,17 @@ export default function ManageDepartment() {
         <p className="text-[28px] font-semibold text-neutral-700">
           Manage Department
         </p>
-        <button
-          onClick={() => {
-            setDepartmentDialogOpen(true);
-          }}
-          className="ml-7 flex items-center gap-2 rounded-[4px] bg-primary-600 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary-700"
-        >
-          <FaPlus />
-          <span>Add Department</span>
-        </button>
+        {userData?.role === ROLES.SUPER_ADMIN && (
+          <button
+            onClick={() => {
+              setDepartmentDialogOpen(true);
+            }}
+            className="ml-7 flex items-center gap-2 rounded-[4px] bg-primary-600 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary-700"
+          >
+            <FaPlus />
+            <span>Add Department</span>
+          </button>
+        )}
       </div>
       <div className="flex w-full flex-col gap-5">
         {departments &&
