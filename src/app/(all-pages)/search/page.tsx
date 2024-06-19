@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 import * as Headers from "@/components/Header";
 import RecentSearches from "@/components/RecentSearches/RecentSearches";
-import { useQuery } from "@tanstack/react-query";
-import { getEventsByParams } from "@/services/api/eventsApi";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getEventsByParams, updateEvents } from "@/services/api/eventsApi";
 import { Axios } from "@/services/baseUrl";
 import Endpoints from "@/services/API_ENDPOINTS";
 import { BsDot } from "react-icons/bs";
@@ -20,7 +20,7 @@ export default function Page() {
   });
   console.log("queryParams", queryParams);
   const { data: filteredEvents, refetch } = useQuery({
-    queryKey: ["Events", queryParams],
+    queryKey: ["Events"],
     queryFn: () =>
       Axios.get(
         Endpoints.eventByQuery({
@@ -30,12 +30,17 @@ export default function Page() {
       ),
   });
 
-  // useEffect(() => {
-  //   clearTimeout(timeout);
-  //   timeout = setTimeout(() => {
-  //     refetch();
-  //   }, 500);
-  // }, [queryParams]);
+  const queryClient = useQueryClient();
+  const { mutate: updateEvent } = useMutation({
+    mutationFn: updateEvents,
+    onSuccess: async () => {
+      console.log("response after updating");
+      queryClient.invalidateQueries({ queryKey: ["Events"] });
+    },
+    // onError: () => {
+    //   console.log("error here");
+    // },
+  });
 
   console.log("filteredEvents", filteredEvents);
 
@@ -97,6 +102,7 @@ export default function Page() {
         <EventDetails
           selectedEvent={selectedEvent}
           setSelectedEvent={setSelectedEvent}
+          updateEvent={updateEvent}
         ></EventDetails>
       </div>
     </div>

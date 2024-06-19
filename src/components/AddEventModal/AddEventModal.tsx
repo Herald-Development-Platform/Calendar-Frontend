@@ -325,6 +325,29 @@ export default function AddEventModal() {
                 </div>
               )}
             </label>
+            <div className="flex gap-4">
+              <label
+                className="gap-2 text-sm font-medium text-neutral-500"
+                htmlFor="Once"
+              >
+                <input id="Once" type="checkbox" name="" /> <span>Once</span>
+              </label>
+              {/* <label htmlFor="Daily">
+                <input id="Daily" type="checkbox" name="" /> <span>Daily</span>
+              </label>
+              <label htmlFor="Weekly">
+                <input id="Weekly" type="checkbox" name="" />{" "}
+                <span>Weekly</span>
+              </label>
+              <label htmlFor="Monthly">
+                <input id="Monthly" type="checkbox" name="" />{" "}
+                <span>Monthly</span>
+              </label>
+              <label htmlFor="Yearly">
+                <input id="Yearly" type="checkbox" name="" />{" "}
+                <span>Yearly</span>
+              </label> */}
+            </div>
 
             {/* Time input section */}
             <div className="flex flex-col">

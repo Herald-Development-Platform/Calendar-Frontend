@@ -1,6 +1,6 @@
 import { Axios } from "@/services/baseUrl";
 import { useQuery } from "@tanstack/react-query";
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { parseISO, format } from "date-fns";
 import { getEvents } from "@/services/api/eventsApi";
 import EventCard from "./EventCard";
@@ -14,6 +14,8 @@ export default function UpcommingEvents() {
     queryFn: getEvents,
   });
   const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
+
+  const upcommingEventRef = useRef<HTMLDivElement>(null);
   // console.log("eventsData", eventsData);
 
   // const dateString = "2024-05-18T05:25:00.000Z";
@@ -31,7 +33,10 @@ export default function UpcommingEvents() {
     setSelectedEvent(eventData);
   };
   return (
-    <div className="hide-scrollbar relative flex h-full w-1/3 flex-col gap-10 overflow-hidden  overflow-y-auto px-6">
+    <div
+      ref={upcommingEventRef}
+      className="hide-scrollbar relative flex h-full w-1/3 flex-col gap-10 overflow-hidden  overflow-y-auto px-6"
+    >
       <div className="flex flex-col gap-1 text-neutral-600">
         <h2 className="font-semibold ">Upcomming Events</h2>
         {/* <h3 className="text-lg">June 17 - June 23 </h3> */}
@@ -77,7 +82,7 @@ export default function UpcommingEvents() {
           const eventStart = event?.start ? new Date(event.start).getTime() : 0;
           const eventEnd = event?.end ? new Date(event.end).getTime() : 0;
 
-          if (eventStart < selectedStartTime || eventEnd > selectedEndTime)
+          if (eventStart < selectedStartTime || eventStart > selectedEndTime)
             return;
           return (
             <EventCard
@@ -91,21 +96,27 @@ export default function UpcommingEvents() {
       <EventDetails
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
+        updateEvent={() => {}}
+        width={
+          upcommingEventRef.current
+            ? upcommingEventRef.current.offsetWidth
+            : null
+        }
       ></EventDetails>
     </div>
   );
 }
 
-function hexToRgba(hex: string, opacity: number) {
-  // Remove the hash at the start if it's there
-  hex = hex.replace(/^#/, "");
+// function hexToRgba(hex: string, opacity: number) {
+//   // Remove the hash at the start if it's there
+//   hex = hex.replace(/^#/, "");
 
-  // Parse the r, g, b values
-  let bigint = parseInt(hex, 16);
-  let r = (bigint >> 16) & 255;
-  let g = (bigint >> 8) & 255;
-  let b = bigint & 255;
+//   // Parse the r, g, b values
+//   let bigint = parseInt(hex, 16);
+//   let r = (bigint >> 16) & 255;
+//   let g = (bigint >> 8) & 255;
+//   let b = bigint & 255;
 
-  // Return the RGBA string
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-}
+//   // Return the RGBA string
+//   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+// }

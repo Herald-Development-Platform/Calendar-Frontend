@@ -10,7 +10,12 @@ interface eventType {
   notes?: string;
   _id?: string;
 }
-
+interface SelectedDate {
+  start?: Date;
+  end?: Date;
+  endStr: string;
+  startStr: string;
+}
 type setDateAndTimeTypes = {
   hours: number;
   minutes: number;
