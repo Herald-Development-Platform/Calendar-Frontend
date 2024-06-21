@@ -9,6 +9,8 @@ interface eventType {
   departments: string[] | { code: string }[];
   notes?: string;
   _id?: string;
+  recurringType: string;
+  involvedMembers: string[];
 }
 interface SelectedDate {
   start?: Date;

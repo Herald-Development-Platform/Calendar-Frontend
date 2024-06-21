@@ -8,47 +8,45 @@ import { Context } from "@/app/clientWrappers/ContextProvider";
 import EventDetails from "@/app/(all-pages)/search/EventDetails";
 
 export default function UpcommingEvents() {
-  const { selectedDate } = useContext(Context);
+  const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
+  let lastDate: string;
+
+  const upcommingEventRef = useRef<HTMLDivElement>(null);
+
+  const { selectedDate, timeout } = useContext(Context);
+
   const { data: eventsData } = useQuery({
     queryKey: ["Events"],
     queryFn: getEvents,
   });
-  const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
 
-  const upcommingEventRef = useRef<HTMLDivElement>(null);
-  // console.log("eventsData", eventsData);
-
-  // const dateString = "2024-05-18T05:25:00.000Z";
-
-  // Parse the date string to a Date object
-  // const date = parseISO(dateString);
-  // const date = new Date(dateString);
-  // console.log("date", new Date());
-  // Format the date to the desired time format (h:mm aa for 12-hour clock with AM/PM)
-  // const formattedTime = format(new Date(), "h:mm aa");
-  // new Date('2024-05-18T05:25:00.000Z')
-
-  // console.log(formattedTime); // Output: 5:25 AM
   const handleCardClick = (eventData: eventType) => {
+    clearTimeout(timeout.current);
     setSelectedEvent(eventData);
+
+    if (!upcommingEventRef?.current) return;
+    upcommingEventRef.current.scrollTop = 0;
   };
+
   return (
     <div
       ref={upcommingEventRef}
-      className="hide-scrollbar relative flex h-full w-1/3 flex-col gap-10 overflow-hidden  overflow-y-auto px-6"
+      className={`${
+        selectedEvent ? "" : "overflow-y-auto"
+      } hide-scrollbar relative flex h-full w-1/3 flex-col gap-10 overflow-hidden px-6`}
     >
-      <div className="flex flex-col gap-1 text-neutral-600">
+      <div className="flex flex-col gap-1 text-neutral-600 ">
         <h2 className="font-semibold ">Upcomming Events</h2>
         {/* <h3 className="text-lg">June 17 - June 23 </h3> */}
       </div>
 
       <div className="flex flex-col gap-3">
-        <div className="relative flex h-5 w-full items-center">
+        {/* <div className="relative flex h-5 w-full items-center">
           <div className="w-full border-t border-neutral-300"></div>
           <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-white px-2 text-sm text-neutral-600">
             {format(new Date(), "MMMM d")}
           </h1>
-        </div>
+        </div> */}
 
         {/* {eventsData?.data?.data?.map((event: eventType, i: number) => {
           const startTime = event?.start
@@ -81,15 +79,30 @@ export default function UpcommingEvents() {
             : 0;
           const eventStart = event?.start ? new Date(event.start).getTime() : 0;
           const eventEnd = event?.end ? new Date(event.end).getTime() : 0;
-
           if (eventStart < selectedStartTime || eventStart > selectedEndTime)
             return;
+
+          let displayDate = false;
+          if (lastDate !== format(new Date(eventStart), "MMMM d")) {
+            lastDate = format(new Date(eventStart), "MMMM d");
+            displayDate = true;
+          }
           return (
-            <EventCard
-              key={event._id}
-              event={event}
-              handleCardClick={handleCardClick}
-            />
+            <>
+              {displayDate && (
+                <div className="relative flex h-5 w-full items-center">
+                  <div className="w-full border-t border-neutral-300"></div>
+                  <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-white px-2 text-sm text-neutral-600">
+                    {lastDate && format(new Date(lastDate), "MMMM d")}
+                  </h1>
+                </div>
+              )}
+              <EventCard
+                key={event._id}
+                event={event}
+                handleCardClick={handleCardClick}
+              />
+            </>
           );
         })}
       </div>

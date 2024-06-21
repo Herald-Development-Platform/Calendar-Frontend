@@ -21,6 +21,7 @@ const Endpoints = {
     console.log("departmentsSearchParam", departmentsSearchParam);
     return `/event?q=${query}&departments=${departmentsSearchParam}`;
   },
+  profile: `/profile/all`,
   department: "/department",
   departmentById: (id: string) => `/department/${id}`,
 };

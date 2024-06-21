@@ -29,6 +29,7 @@ import EditEventModal from "@/components/AddEventModal/EditEventModal";
 import { updateEvents } from "@/services/api/eventsApi";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { format } from "date-fns";
 
 export default function EventDetails({
   selectedEvent,
@@ -117,7 +118,8 @@ export default function EventDetails({
           <div className="relative flex h-5 w-full items-center">
             <div className="w-full border-t border-neutral-300"></div>
             <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-white px-2 text-sm text-neutral-600">
-              August 11
+              {selectedEvent?.start &&
+                format(new Date(selectedEvent?.start), "MMMM d")}
             </h1>
           </div>
           {selectedEvent && <EventCard event={selectedEvent} />}
