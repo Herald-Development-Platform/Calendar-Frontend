@@ -3,6 +3,7 @@ import { HiOutlineBell } from "react-icons/hi";
 import Image from "next/image";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import { IoIosSearch } from "react-icons/io";
+import { NotificationList } from "../NotificationList";
 
 export function SearchHeader({
   queryParams,
@@ -12,7 +13,7 @@ export function SearchHeader({
   handleQueryParams: (e: any) => void;
 }) {
   let timeout;
-  const { calendarRef, selectedDate } = useContext(Context);
+  const { calendarRef, selectedDate, userData } = useContext(Context);
 
   const date = selectedDate ? selectedDate : new Date();
 
@@ -44,24 +45,17 @@ export function SearchHeader({
 
       {/* notification and accounts  */}
       <div className="flex">
-        <details className="dropdown">
-          <summary className="btn border-none bg-transparent text-xl">
-            <HiOutlineBell />
-          </summary>
-          <ul className="menu dropdown-content rounded-box z-[1] w-52 bg-base-100 p-2 shadow">
-            <li>
-              <a>Item 1</a>
-            </li>
-            <li>
-              <a>Item 2</a>
-            </li>
-          </ul>
-        </details>
+        <NotificationList className="" />
         <div className="flex items-center ">
+          {console.log("Profile Pic", userData?.photo) === null ? (
+            <div></div>
+          ) : (
+            <div></div>
+          )}
           <Image
             className="h-8 w-8 rounded-full"
             alt={"profile pic"}
-            src={"/images/Sidebar/HelpIcon.png"}
+            src={userData?.photo ?? "/images/Sidebar/HelpIcon.png"}
             width={32}
             height={32}
           />

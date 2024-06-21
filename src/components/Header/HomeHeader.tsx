@@ -43,18 +43,20 @@ import {
 import { useGetCookieByName } from "@/hooks/CookieHooks";
 import { CalendarViews, ListViews } from "@/constants/CalendarViews";
 import { CgList } from "react-icons/cg";
+import { NotificationList } from "../NotificationList";
+import { Popover, PopoverContent } from "../ui/popover";
+import { PopoverTrigger } from "@radix-ui/react-popover";
 
 export function HomeHeader() {
   // const [redner, setredner] = useState<number>(1);
   const [calendarApi, setCalendarApi] = useState<CalendarApi>();
   const [listView, setListView] = useState<boolean>(false);
 
-  const { calendarRef, selectedDate, setSelectedDate } = useContext(Context);
+  const { calendarRef, selectedDate, setSelectedDate, userData } =
+    useContext(Context);
   console.log("calREf", calendarRef);
 
   const token = useGetCookieByName("token");
-  const userData = token ? decryptJwtPayload(token) : null;
-  console.log("userData", userData);
 
   const router = useRouter();
   const date = selectedDate ? selectedDate : null;
@@ -89,7 +91,7 @@ export function HomeHeader() {
   // console.log("listview", listView);
   useHandleListViewToggle(listView, calendarApi);
   return (
-    <div className="ml-8 mr-16 mt-8 flex h-12 w-auto justify-between">
+    <div className="ml-8 mr-16 mt-8 flex h-12 w-auto items-center justify-between">
       <div className="flex w-9/12 justify-between">
         {/* Navigation btns and Date */}
         <div className="flex w-auto items-center gap-3 text-neutral-900">
@@ -130,20 +132,6 @@ export function HomeHeader() {
 
         {/* listview, month and addEventModal  */}
         <div className="flex max-h-8 w-56 items-center justify-between gap-3 text-sm font-medium">
-          {/* <button
-            onClick={(e) => {
-              console.log("current view");
-              calendarApi?.view?.type &&
-                findListView(calendarApi.view.type, calendarApi);
-            }}
-            className={`${
-              checkListView(calendarApi?.view.type)
-                ? "bg-primary-500 text-white"
-                : "text-neutral-500"
-            } h-full w-32 rounded-sm border border-neutral-300 px-3 text-2xl font-semibold `}
-          >
-            <MdListAlt />
-          </button> */}
           <button
             className={`${
               listView ? "bg-primary-500 text-white" : "text-neutral-500"
@@ -202,28 +190,24 @@ export function HomeHeader() {
       </div>
 
       {/* notification and accounts  */}
-      <div className="flex">
-        <details className="dropdown">
-          <summary className="btn border-none bg-transparent text-xl">
-            <HiOutlineBell />
-          </summary>
-          <ul className="menu dropdown-content rounded-box z-[1] w-52 bg-base-100 p-2 shadow">
-            <li>
-              <a>Item 1</a>
-            </li>
-            <li>
-              <a>Item 2</a>
-            </li>
-          </ul>
-        </details>
-
+      <div className="flex flex-row items-center gap-4">
+        <Popover>
+          <PopoverTrigger>
+            <span className="text-xl text-neutral-600">
+              <HiOutlineBell />
+            </span>
+          </PopoverTrigger>
+          <PopoverContent className="w-[600px]" align="end">
+            <NotificationList />
+          </PopoverContent>
+        </Popover>
         <DropdownMenu>
           <DropdownMenuTrigger className="flex items-center gap-2">
             <div className="flex items-center ">
               <Image
                 className="h-8 w-8 rounded-full"
                 alt={"profile pic"}
-                src={"/images/Sidebar/HelpIcon.png"}
+                src={userData?.photo ?? "/images/Sidebar/HelpIcon.png"}
                 width={32}
                 height={32}
               />
@@ -232,7 +216,7 @@ export function HomeHeader() {
             {userData?.username} <IoMdArrowDropdown />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            {/* <DropdownMenuLabel>My Profile</DropdownMenuLabel> */}
+            <DropdownMenuLabel>My Profile</DropdownMenuLabel>
             <DropdownMenuItem className="flex gap-2 text-sm font-semibold">
               <span className="text-xl">
                 <CgProfile />
