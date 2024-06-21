@@ -1,12 +1,16 @@
 import { RxCross2 } from "react-icons/rx";
 
 export default function DepartmentButton({
-    selected = false,
-    selectedCross = true,
-    value,
-    onClick,
-}: {selected?:boolean, value:any, onClick:()=>void, selectedCross?:boolean}) {
-
+  selected = false,
+  selectedCross = true,
+  value,
+  onClick,
+}: {
+  selected?: boolean;
+  value: any;
+  onClick: () => void;
+  selectedCross?: boolean;
+}) {
   return (
     <>
       <span
@@ -15,7 +19,7 @@ export default function DepartmentButton({
           selected
             ? "bg-primary-500 text-white hover:bg-primary-600"
             : "text-black"
-        } `}
+        }`}
         onClick={onClick}
       >
         {selectedCross && selected && (

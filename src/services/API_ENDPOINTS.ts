@@ -11,15 +11,26 @@ const Endpoints = {
   eventByQuery: ({
     query,
     departments,
+    colors,
   }: {
     query: string;
     departments: string[];
+    colors: string[];
   }) => {
-    const departmentsSearchParam = departments.reduce(
-      (last, current) => last + "," + current,
+    const departmentsSearchParam = departments
+      .filter((dept) => dept.trim() !== "")
+      .reduce((last, current) => (last ? last + "," + current : current), "");
+
+    const colorsSearchParam = colors
+      .filter((color) => color.trim() !== "")
+      .map((color) => color.replace(/^#/, ""))
+      .reduce((last, current) => (last ? last + "," + current : current), "");
+
+    console.log(
+      "event?q=${query}&departments",
+      `/event?q=${query}&departments=${departmentsSearchParam}&colors=${colorsSearchParam}`,
     );
-    console.log("departmentsSearchParam", departmentsSearchParam);
-    return `/event?q=${query}&departments=${departmentsSearchParam}`;
+    return `/event?q=${query}&departments=${departmentsSearchParam}&colors=${colorsSearchParam}`;
   },
   profile: `/profile/all`,
   department: "/department",

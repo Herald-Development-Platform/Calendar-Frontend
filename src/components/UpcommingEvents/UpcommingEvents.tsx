@@ -79,14 +79,19 @@ export default function UpcommingEvents() {
             : 0;
           const eventStart = event?.start ? new Date(event.start).getTime() : 0;
           const eventEnd = event?.end ? new Date(event.end).getTime() : 0;
+
           if (eventStart < selectedStartTime || eventStart > selectedEndTime)
             return;
+
+          // if (!(selectedStartTime > eventStart || selectedEndTime < eventEnd))
+          //   return;
 
           let displayDate = false;
           if (lastDate !== format(new Date(eventStart), "MMMM d")) {
             lastDate = format(new Date(eventStart), "MMMM d");
             displayDate = true;
           }
+          // if (selectedStartTime < eventStart && selectedEndTime > eventStart || )
           return (
             <>
               {displayDate && (

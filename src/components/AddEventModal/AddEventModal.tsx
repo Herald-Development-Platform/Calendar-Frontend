@@ -53,7 +53,7 @@ export default function AddEventModal() {
     departments: [],
     notes: "",
     recurringType: RecurringEventTypes.ONCE,
-    involvedMembers: [],
+    involvedUsers: [],
   });
 
   const { data: departmentsRes } = useQuery({
@@ -80,7 +80,7 @@ export default function AddEventModal() {
         description: "",
         departments: [],
         notes: "",
-        involvedMembers: [""],
+        involvedUsers: [""],
       });
     },
     onError: (err: any) => {
@@ -122,34 +122,41 @@ export default function AddEventModal() {
     }
   };
 
-  console.log("render", newEvent);
+  console.log("render", newEvent?.involvedUsers);
 
   const handleInviteMembers = (user: User, action: "add" | "remove") => {
     switch (action) {
       case "add":
-        console.log("adding", user._id);
-        // setNewEvent((prev) => ({
-        //   ...prev,
-        //   involvedMembers: [...newEvent?.involvedMembers, user._id],
-        // }));
+        if (newEvent?.involvedUsers.includes(user._id)) {
+          console.log("adding", newEvent?.involvedUsers.includes(user._id));
+          return;
+        }
+
         setNewEvent({
           ...newEvent,
-          involvedMembers: [...newEvent.involvedMembers, user._id],
+          involvedUsers: [...newEvent?.involvedUsers, user._id],
         });
+        break;
       case "remove":
         setNewEvent((prev) => ({
           ...prev,
-          involvedMembers: [
-            ...newEvent?.involvedMembers.filter(
+          involvedUsers: [
+            ...newEvent?.involvedUsers.filter(
               (memberId) => memberId !== user._id,
             ),
           ],
         }));
+        break;
     }
   };
 
   return (
     <>
+      {/* <button
+        onClick={() => handleInviteMembers({ _id: "alskdjflsadkjf" }, "add")}
+      >
+        invite memebers
+      </button> */}
       <button
         className="scale btn btn-sm
            relative flex h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
@@ -461,7 +468,7 @@ export default function AddEventModal() {
             <div>
               <span className="text-sm">Priority</span>
               <div className="flex gap-2">
-                {colors.map((Color, i) => (
+                {colors?.map((Color, i) => (
                   <label
                     className={`btn checkbox btn-xs relative h-7 w-7 cursor-pointer rounded-none border-none`}
                     style={{ backgroundColor: Color.color }}
@@ -532,7 +539,7 @@ export default function AddEventModal() {
             </div>
 
             <InviteMembers
-              memberIds={newEvent.involvedMembers}
+              memberIds={newEvent?.involvedUsers}
               handleInviteMembers={handleInviteMembers}
             ></InviteMembers>
 

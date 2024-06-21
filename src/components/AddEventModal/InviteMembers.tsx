@@ -87,7 +87,7 @@ export default function InviteMembers({
       <div ref={inviteRef} className=" text-sm">
         <span>Invite Members:</span>
         <div className="flex">
-          <div className=" relative flex h-fit w-fit ">
+          <div className=" relative flex h-fit w-fit gap-1">
             <button
               className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-300 bg-primary-500 text-base text-white"
               onClick={() => setShowPopover((prev) => !prev)}
@@ -95,12 +95,16 @@ export default function InviteMembers({
               <FiPlus />
             </button>
             {userData?.data?.data
-              ?.filter((user: User) => memberIds.includes(user._id))
-              .map((selMembers: User) => <span>{selMembers.username}</span>)}
+              ?.filter((user: User) => memberIds?.includes(user._id))
+              .map((selMembers: User) => (
+                <div className="flex h-8 w-auto items-center justify-center rounded-full border border-neutral-300 bg-primary-500 px-3 text-base text-white">
+                  {selMembers?.username}
+                </div>
+              ))}
             <div
               className={`${
                 showPopover ? "flex" : "hidden"
-              } absolute bottom-full left-full z-0 h-[600px] max-h-80 w-[500px] flex-col overflow-hidden overflow-y-auto rounded-xl border border-[#d4d4d4] bg-white  px-6 py-4`}
+              } absolute bottom-10 left-5 z-0 h-[600px] max-h-80 w-[500px] flex-col overflow-hidden overflow-y-auto rounded-xl border border-[#d4d4d4] bg-white px-6 py-4`}
             >
               <div className="flex-grow">
                 {filteredUserData?.map((userData: User) => (

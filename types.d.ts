@@ -10,7 +10,7 @@ interface eventType {
   notes?: string;
   _id?: string;
   recurringType: string;
-  involvedMembers: string[];
+  involvedUsers: string[];
 }
 interface SelectedDate {
   start?: Date;
@@ -27,6 +27,7 @@ type setDateAndTimeTypes = {
 interface eventByParamsType {
   q: string;
   departments: string[];
+  colors: string[];
 }
 
 interface Department {
@@ -44,4 +45,5 @@ interface User {
   photo?: string;
   role: string;
   department?: Department;
+  photo?: string;
 }

@@ -4,17 +4,13 @@ import { Axios, baseUrl } from "../baseUrl";
 import Cookies from "js-cookie";
 import Endpoints from "../API_ENDPOINTS";
 
-interface eventByParamsType {
-  q: string;
-  departments: string[];
-}
-
 export const getEvents = () => Axios.get(Endpoints.event);
 export const getEventsByParams = (payload: eventByParamsType) =>
   Axios.get(
     Endpoints.eventByQuery({
       query: payload.q,
       departments: payload.departments,
+      colors: payload.colors,
     }),
   );
 
