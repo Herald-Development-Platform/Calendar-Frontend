@@ -96,8 +96,8 @@ export default function InviteMembers({
             </button>
             {userData?.data?.data
               ?.filter((user: User) => memberIds?.includes(user._id))
-              .map((selMembers: User) => (
-                <div className="flex h-8 w-auto items-center justify-center rounded-full border border-neutral-300 bg-primary-500 px-3 text-base text-white">
+              .map((selMembers: User, i:number) => (
+                <div key={i} className="flex h-8 w-auto items-center justify-center rounded-full border border-neutral-300 bg-primary-500 px-3 text-base text-white">
                   {selMembers?.username}
                 </div>
               ))}

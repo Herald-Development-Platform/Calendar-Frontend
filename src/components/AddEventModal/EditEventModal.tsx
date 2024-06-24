@@ -62,6 +62,7 @@ export default function EditEventModal({
   const [newEvent, setNewEvent] = useState<eventType>({
     title: "",
     start: null,
+    recurringType: "NONE",
     end: null,
     color: undefined,
     duration: 0,
@@ -69,6 +70,7 @@ export default function EditEventModal({
     description: undefined,
     departments: [],
     notes: "",
+    involvedUsers: [],
   });
 
   const { data: departmentsRes } = useQuery({
@@ -87,13 +89,15 @@ export default function EditEventModal({
       setNewEvent({
         title: "",
         start: null,
+        recurringType: "NONE",
         end: null,
         color: undefined,
         duration: 0,
         location: "",
-        description: "",
+        description: undefined,
         departments: [],
         notes: "",
+        involvedUsers: [],
       });
     },
     onError: (err: any) => {

@@ -10,13 +10,14 @@ interface eventByParamsType {
 }
 
 export const getDepartments = () => Axios.get(Endpoints.department);
-export const getEventsByParams = (payload: eventByParamsType) =>
-  Axios.get(
-    Endpoints.eventByQuery({
-      query: payload.q,
-      departments: payload.departments,
-    }),
-  );
+// export const getEventsByParams = (payload: eventByParamsType) =>
+//   Axios.get(
+//     Endpoints.eventByQuery({
+//       query: payload.q,
+//       departments: payload.departments,
+
+//     }),
+//   );
 
 export const postEvents = (payload: any) =>
   Axios.post(Endpoints.event, payload);

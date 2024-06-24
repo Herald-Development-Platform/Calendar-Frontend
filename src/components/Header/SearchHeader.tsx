@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useContext, useEffect } from "react";
+import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { HiOutlineBell } from "react-icons/hi";
 import Image from "next/image";
 import { Context } from "@/app/clientWrappers/ContextProvider";
@@ -16,6 +16,7 @@ import DepartmentButton from "../DepartmentButton";
 import { access } from "fs";
 import colors from "@/constants/Colors";
 import ReactDatePicker from "react-datepicker";
+import { NotificationList } from "../NotificationList";
 
 export function SearchHeader({
   queryParams,
@@ -25,6 +26,7 @@ export function SearchHeader({
   handleQueryParams: (value: string, action: string) => void;
 }) {
   let timeout;
+  const [dateType, setDateType] = useState('single');
   const { calendarRef, selectedDate, userData } = useContext(Context);
 
   const date = selectedDate ? selectedDate : new Date();
@@ -122,7 +124,7 @@ export function SearchHeader({
                     </span>
                   </div>
 
-                  {dateType === "single" && (
+                  {/* {dateType === "single" && (
                     <ReactDatePicker
                       className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
                       onChange={(datePicked) => {
@@ -142,12 +144,11 @@ export function SearchHeader({
                       placeholderText="Please select a date."
                       required
                     />
-                  )}
+                  )} */}
 
-                  {dateType === "multi" && (
+                  {/* {dateType === "multi" && (
                     <div className="flex w-full flex-row items-center gap-2 ">
-                      {/* <span className="w-full border border-blue-500"> */}
-                      <Datepicker
+                      <ReactDatePicker
                         className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
                         onChange={(datePicked) => {
                           // setPickedDate((prev: any) => ({
@@ -197,7 +198,7 @@ export function SearchHeader({
                         required
                       />
                     </div>
-                  )}
+                  )} */}
                 </label>
                 <div className=" text-sm text-neutral-600">
                   <span>Choose Priorities</span>
