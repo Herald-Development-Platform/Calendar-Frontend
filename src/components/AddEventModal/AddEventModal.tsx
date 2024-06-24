@@ -1,16 +1,7 @@
 "use client";
 import Datepicker from "react-datepicker";
 import Image from "next/image";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { Calendar } from "@/components/ui/calendar";
-import { HiOutlineCalendar } from "react-icons/hi";
+import React, { useState } from "react";
 
 import { BiPencil } from "react-icons/bi";
 import "react-datepicker/dist/react-datepicker.css";
@@ -34,13 +25,9 @@ import { watch } from "fs";
 import DepartmentBtn from "./DepartmentBtn";
 import { getDepartments } from "@/services/api/departments";
 import colors from "@/constants/Colors";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Button } from "../ui/button";
-import { CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { setPriority } from "os";
 import { Textarea } from "../ui/textarea";
+import { RecurringEventTypes } from "@/constants/RecurringEvents";
+import InviteMembers from "./InviteMembers";
 
 interface PickedDateType {
   startDate: Date | undefined;
@@ -65,6 +52,8 @@ export default function AddEventModal() {
     description: undefined,
     departments: [],
     notes: "",
+    recurringType: RecurringEventTypes.ONCE,
+    involvedUsers: [],
   });
 
   const { data: departmentsRes } = useQuery({
@@ -86,10 +75,12 @@ export default function AddEventModal() {
         end: null,
         color: undefined,
         duration: 0,
+        recurringType: RecurringEventTypes.ONCE,
         location: "",
         description: "",
         departments: [],
         notes: "",
+        involvedUsers: [""],
       });
     },
     onError: (err: any) => {
@@ -130,9 +121,42 @@ export default function AddEventModal() {
       setNewEvent({ ...newEvent, end: finalEndDate });
     }
   };
-  console.log("render", newEvent);
+
+  console.log("render", newEvent?.involvedUsers);
+
+  const handleInviteMembers = (user: User, action: "add" | "remove") => {
+    switch (action) {
+      case "add":
+        if (newEvent?.involvedUsers.includes(user._id)) {
+          console.log("adding", newEvent?.involvedUsers.includes(user._id));
+          return;
+        }
+
+        setNewEvent({
+          ...newEvent,
+          involvedUsers: [...newEvent?.involvedUsers, user._id],
+        });
+        break;
+      case "remove":
+        setNewEvent((prev) => ({
+          ...prev,
+          involvedUsers: [
+            ...newEvent?.involvedUsers.filter(
+              (memberId) => memberId !== user._id,
+            ),
+          ],
+        }));
+        break;
+    }
+  };
+
   return (
     <>
+      {/* <button
+        onClick={() => handleInviteMembers({ _id: "alskdjflsadkjf" }, "add")}
+      >
+        invite memebers
+      </button> */}
       <button
         className="scale btn btn-sm
            relative flex h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
@@ -160,7 +184,7 @@ export default function AddEventModal() {
           </div>
 
           {/* input section  */}
-          <div className="flex flex-col gap-8">
+          <div className="flex flex-col gap-8 ">
             {/* Title input section  */}
             <label htmlFor="add-title">
               <div className="group flex h-11 w-full items-center gap-2  border-b-[1px] border-neutral-300 px-4 focus-within:border-primary-600">
@@ -212,7 +236,7 @@ export default function AddEventModal() {
                   }}
                   className={`${
                     dateType === "single" ? "underline" : ""
-                  } cursor-pointer `}
+                  } cursor-pointer  underline-offset-4`}
                 >
                   Date
                 </span>
@@ -221,7 +245,7 @@ export default function AddEventModal() {
                   onClick={() => setDateType("multi")}
                   className={`${
                     dateType === "multi" ? "underline" : ""
-                  }  cursor-pointer`}
+                  }  cursor-pointer underline-offset-4`}
                 >
                   Multi Date
                 </span>
@@ -301,30 +325,107 @@ export default function AddEventModal() {
                     placeholderText="End Date."
                     required
                   />
-                  {/* </span> */}
-                  {/* <Datepicker
-                    className="h-10 w-full flex-1 rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
-                    onChange={(datePicked) => {
-                      setPickedDate((prev: any) => ({
-                        ...prev,
-                        // startDate: datePicked,
-                        endDate: datePicked,
-                      }));
-                      // console.log("PickedDate", datePicked);
-                    }}
-                    value={
-                      pickedDate?.endDate
-                        ? format(pickedDate?.endDate, "EEEE, dd MMMM", {
-                            locale: US_LocaleData,
-                          })
-                        : undefined
-                    }
-                    placeholderText="Please select a date."
-                    required
-                  /> */}
                 </div>
               )}
             </label>
+            <div className="flex gap-[14px]">
+              <label
+                className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"
+                htmlFor="Once"
+              >
+                <input
+                  checked={RecurringEventTypes.ONCE === newEvent.recurringType}
+                  id="Once"
+                  type="checkbox"
+                  name=""
+                  onClick={() =>
+                    setNewEvent((prev) => ({
+                      ...prev,
+                      recurringType: RecurringEventTypes.ONCE,
+                    }))
+                  }
+                />
+                <span>Once</span>
+              </label>
+              <label
+                className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"
+                htmlFor="Daily"
+              >
+                <input
+                  checked={RecurringEventTypes.DAILY === newEvent.recurringType}
+                  id="Daily"
+                  type="checkbox"
+                  name=""
+                  onClick={() =>
+                    setNewEvent((prev) => ({
+                      ...prev,
+                      recurringType: RecurringEventTypes.DAILY,
+                    }))
+                  }
+                />
+                <span>Daily</span>
+              </label>
+              <label
+                className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"
+                htmlFor="Weekly"
+              >
+                <input
+                  checked={
+                    RecurringEventTypes.WEEKLY === newEvent.recurringType
+                  }
+                  id="Weekly"
+                  type="checkbox"
+                  name=""
+                  onClick={() =>
+                    setNewEvent((prev) => ({
+                      ...prev,
+                      recurringType: RecurringEventTypes.WEEKLY,
+                    }))
+                  }
+                />
+                <span>Weekly</span>
+              </label>
+              <label
+                className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"
+                htmlFor="Monthly"
+              >
+                <input
+                  checked={
+                    RecurringEventTypes.MONTHLY === newEvent.recurringType
+                  }
+                  id="Monthly"
+                  type="checkbox"
+                  name=""
+                  onClick={() =>
+                    setNewEvent((prev) => ({
+                      ...prev,
+                      recurringType: RecurringEventTypes.MONTHLY,
+                    }))
+                  }
+                />
+                <span>Monthly</span>
+              </label>
+              <label
+                className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"
+                htmlFor="Yearly"
+              >
+                <input
+                  checked={
+                    RecurringEventTypes.YEARLY === newEvent.recurringType
+                  }
+                  id="Yearly"
+                  type="checkbox"
+                  name=""
+                  onClick={() =>
+                    setNewEvent((prev) => ({
+                      ...prev,
+                      recurringType: RecurringEventTypes.YEARLY,
+                    }))
+                  }
+                />
+                <span>Yearly</span>
+              </label>
+            </div>
 
             {/* Time input section */}
             <div className="flex flex-col">
@@ -367,7 +468,7 @@ export default function AddEventModal() {
             <div>
               <span className="text-sm">Priority</span>
               <div className="flex gap-2">
-                {colors.map((Color, i) => (
+                {colors?.map((Color, i) => (
                   <label
                     className={`btn checkbox btn-xs relative h-7 w-7 cursor-pointer rounded-none border-none`}
                     style={{ backgroundColor: Color.color }}
@@ -436,6 +537,11 @@ export default function AddEventModal() {
                 )}
               </div>
             </div>
+
+            <InviteMembers
+              memberIds={newEvent?.involvedUsers}
+              handleInviteMembers={handleInviteMembers}
+            ></InviteMembers>
 
             {/* Notes section  */}
             <div className="">

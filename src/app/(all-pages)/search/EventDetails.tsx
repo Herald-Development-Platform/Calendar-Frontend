@@ -1,3 +1,4 @@
+"use client";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 import EventCard from "@/components/UpcommingEvents/EventCard";
@@ -25,17 +26,27 @@ import colors from "@/constants/Colors";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import AddEventModal from "@/components/AddEventModal";
 import EditEventModal from "@/components/AddEventModal/EditEventModal";
+import { updateEvents } from "@/services/api/eventsApi";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { format } from "date-fns";
 
 export default function EventDetails({
   selectedEvent,
   setSelectedEvent,
+  updateEvent,
+  width,
 }: {
   selectedEvent: eventType | null;
   setSelectedEvent: Dispatch<SetStateAction<eventType | null>>;
+  updateEvent: any;
+  width: number | null;
 }) {
   const [selectedColor, setSelectedColor] = useState<string | undefined>(
     selectedEvent?.color,
   );
+  console.log("width", width);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     console.log("selected", selectedEvent);
@@ -47,7 +58,8 @@ export default function EventDetails({
       <section
         className={`${
           Boolean(selectedEvent) ? "" : "translate-x-full"
-        } absolute right-0 top-0 flex h-full w-80 flex-col gap-6 overflow-y-auto bg-white p-6 font-medium text-neutral-600 transition-all duration-150`}
+        } absolute right-0 top-0 flex h-full w-80  flex-col gap-6 overflow-y-auto bg-white p-6 font-medium text-neutral-600 transition-all duration-150`}
+        style={{ width: `${width}px` }}
       >
         <div className="font flex items-center transition">
           <span className="text-base">Event Details</span>
@@ -106,7 +118,8 @@ export default function EventDetails({
           <div className="relative flex h-5 w-full items-center">
             <div className="w-full border-t border-neutral-300"></div>
             <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-white px-2 text-sm text-neutral-600">
-              August 11
+              {selectedEvent?.start &&
+                format(new Date(selectedEvent?.start), "MMMM d")}
             </h1>
           </div>
           {selectedEvent && <EventCard event={selectedEvent} />}
@@ -116,7 +129,13 @@ export default function EventDetails({
           <p>Priority</p>
           <Select
             defaultValue={selectedEvent?.color}
-            onValueChange={(value) => setSelectedColor(value)}
+            onValueChange={(value) => {
+              updateEvent({
+                id: selectedEvent?._id,
+                newEvent: { ...selectedEvent, color: value },
+              });
+              setSelectedColor(value);
+            }}
           >
             <SelectTrigger className="h-7 w-14 border-none p-0 focus:ring-0">
               <div
@@ -142,6 +161,7 @@ export default function EventDetails({
             </SelectContent>
           </Select>
         </div>
+
         <div>
           <h3>Description</h3>
           <p className="text-base font-normal text-neutral-500 ">

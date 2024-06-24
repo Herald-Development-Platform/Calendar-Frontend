@@ -27,13 +27,6 @@ export interface ContextType {
 export const Context = createContext<any>({});
 // const calendarRef = createRef(undefined);
 
-interface SelectedDate {
-  start?: Date;
-  end?: Date;
-  endStr: string;
-  startStr: string;
-}
-
 export default function ContextProvider({
   children,
 }: {
@@ -42,6 +35,8 @@ export default function ContextProvider({
   const calendarRef = useRef<FullCalendar | null>(null);
   const [events, setEvents] = useState<EventInput[]>();
   const calendarApi = calendarRef?.current?.getApi();
+  const timeout = useRef<any>();
+
   console.log("calendar getDate()", calendarApi);
 
   const [userData, setUserData] = useState<User>();
@@ -57,7 +52,7 @@ export default function ContextProvider({
     } catch (error) {
       return null;
     }
-  }
+  };
 
   const fetchUserData = async () => {
     try {
@@ -80,7 +75,6 @@ export default function ContextProvider({
     fetchUserData();
   }, []);
 
-
   const [selectedDate, setSelectedDate] = useState<SelectedDate | undefined>({
     start: new Date(),
     end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
@@ -99,6 +93,7 @@ export default function ContextProvider({
         selectedDate,
         setSelectedDate,
         userData,
+        timeout,
       }}
     >
       {children}
