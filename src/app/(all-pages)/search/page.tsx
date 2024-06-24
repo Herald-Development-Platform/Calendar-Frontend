@@ -12,15 +12,21 @@ import { RxArrowTopRight } from "react-icons/rx";
 import EventDetails from "./EventDetails";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useGetEventByQuery, useUpdateEvents } from "@/services/api/searchApi";
+import { useRouter } from "next/router";
 
 export default function Page() {
   const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
-  const debounce = useRef(null);
-  const [queryParams, setQueryParams] = useState({
+  const [queryParams, setQueryParams] = useState<eventByParamsType>({
     q: "",
     departments: [""],
     colors: [""],
+    eventTo: "",
+    eventFrom: "",
   });
+  // const router = useRouter();
+  // router.push({ pathname: "sadlkfj", query: { alsdjkf: "asldkjflsd" } });
+
+  // const debounce = useRef(null);
 
   const {
     data: filteredEvents,
@@ -33,28 +39,35 @@ export default function Page() {
   console.log("queryParams", queryParams);
   console.log("filteredEvents", filteredEvents);
 
-  const handleQueryParams = (value: string, action: string) => {
-    console.log("departmentAdd", value, action);
-    switch (action) {
+  const handleQueryParams = (e: any) => {
+    const { name, value } = e.target;
+
+    console.log("departmentAdd", value);
+    let startDate, endDate;
+    switch (name) {
       case "query":
         setQueryParams((prev) => ({ ...prev, q: value }));
         break;
-      case "departmentAdd":
-        setQueryParams((prev) => ({
-          ...prev,
-          departments: [...queryParams.departments, value],
-        }));
+
+      case "department":
+        const departmentExists = queryParams?.departments?.includes(value);
+
+        if (departmentExists)
+          setQueryParams((prev) => ({
+            ...prev,
+            departments: [
+              ...queryParams?.departments?.filter(
+                (departmentCode) => departmentCode !== value,
+              ),
+            ],
+          }));
+        else
+          setQueryParams((prev) => ({
+            ...prev,
+            departments: [...queryParams.departments, value],
+          }));
         break;
-      case "departmentRemove":
-        setQueryParams((prev) => ({
-          ...prev,
-          departments: [
-            ...queryParams?.departments?.filter(
-              (departmentCode) => departmentCode !== value,
-            ),
-          ],
-        }));
-        break;
+
       case "colors":
         queryParams.colors.includes(value)
           ? setQueryParams((prev) => ({
@@ -68,12 +81,52 @@ export default function Page() {
               colors: [...queryParams.colors, value],
             }));
         break;
-      // case "colorsRemove":
-      //   setQueryParams((prev) => ({
-      //     ...prev,
-      //     colors: [...queryParams.colors.filter((color) => color !== value)],
-      //   }));
-      //   break;
+
+      case "single":
+        console.log("singledate", new Date(value).getTime());
+        {
+          const startDate = new Date(value);
+          const endDate = startDate;
+          endDate.setDate(endDate.getDate() + 1);
+
+          setQueryParams((prev) => ({
+            ...prev,
+            eventFrom: startDate.getTime(),
+            eventTo: endDate.getTime(),
+          }));
+        }
+        break;
+
+      case "multiStart":
+        {
+          const startDate = new Date(value);
+
+          setQueryParams((prev) => ({
+            ...prev,
+            eventFrom: startDate.getTime(),
+          }));
+        }
+        break;
+
+      case "multiEnd":
+        {
+          const endDate = new Date(value);
+          setQueryParams((prev) => ({
+            ...prev,
+            eventTo: endDate.getTime(),
+          }));
+        }
+        break;
+      case "reset":
+        {
+          const endDate = new Date(value);
+          setQueryParams((prev) => ({
+            ...prev,
+            eventTo: "",
+            eventFrom: "",
+          }));
+        }
+        break;
     }
   };
 
@@ -98,7 +151,7 @@ export default function Page() {
               filteredEvents?.data?.data?.map((event: eventType, i: number) => (
                 <div
                   onClick={() => setSelectedEvent(event)}
-                  key={event._id}
+                  key={i}
                   className="group flex items-center gap-4 rounded-md px-3 py-[6px] hover:bg-neutral-100"
                 >
                   <span

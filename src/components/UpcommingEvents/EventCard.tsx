@@ -16,7 +16,7 @@ export default function EventCard({
   return (
     <>
       <div
-        // key={event?._id}
+        key={event?._id}
         className={`${
           Boolean(handleCardClick) ? "cursor-pointer" : ""
         } flex h-auto w-full cursor-pointer flex-col gap-1 border-l-4 bg-opacity-10 px-4 py-2 text-black`}

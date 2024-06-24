@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { HiOutlineBell } from "react-icons/hi";
 import Image from "next/image";
+import US_LocaleData from "date-fns/locale/en-US";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import { IoIosSearch, IoMdArrowDropdown, IoMdLogOut } from "react-icons/io";
 import { VscSettings } from "react-icons/vsc";
@@ -34,6 +35,8 @@ import {
 import { CgProfile } from "react-icons/cg";
 import { MdOutlineSettings } from "react-icons/md";
 import Cookies from "js-cookie";
+import { format } from "date-fns";
+import { Router } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export function SearchHeader({
@@ -41,7 +44,7 @@ export function SearchHeader({
   handleQueryParams,
 }: {
   queryParams: eventByParamsType;
-  handleQueryParams: (value: string, action: string) => void;
+  handleQueryParams: (e: any) => void;
 }) {
   let timeout;
   const [dateType, setDateType] = useState("single");
@@ -78,9 +81,9 @@ export function SearchHeader({
               className="w-full bg-neutral-100 text-sm font-medium text-neutral-500 outline-none"
               placeholder="Search events, dates, participants..."
               id="add-title"
-              name="q"
+              name="query"
               value={queryParams?.q}
-              onChange={(e) => handleQueryParams(e.target.value, "query")}
+              onChange={handleQueryParams}
             />
 
             <Popover>
@@ -89,7 +92,7 @@ export function SearchHeader({
               </PopoverTrigger>
               <PopoverContent
                 align="start"
-                className="h-[315px] w-[550px] space-y-10 p-6"
+                className="h-auto w-[550px] space-y-10 p-6"
               >
                 <h3 className="text-xl font-semibold text-neutral-900">
                   Filters
@@ -103,18 +106,8 @@ export function SearchHeader({
                       return (
                         <DepartmentButton
                           key={department._id}
-                          onClick={() => {
-                            console.log("department.code", department.code);
-                            departmentExists
-                              ? handleQueryParams(
-                                  department?._id,
-                                  "departmentRemove",
-                                )
-                              : handleQueryParams(
-                                  department?._id,
-                                  "departmentAdd",
-                                );
-                          }}
+                          id={department._id}
+                          handleQueryParams={handleQueryParams}
                           value={department.code}
                           selected={queryParams?.departments?.includes(
                             department?._id,
@@ -130,7 +123,7 @@ export function SearchHeader({
                     <span
                       tabIndex={0}
                       onClick={() => {
-                        // setDateType("single");
+                        setDateType("single");
                         // setPickedDate({
                         //   startDate: pickedDate?.startDate,
                         //   endDate: pickedDate?.startDate,
@@ -151,51 +144,59 @@ export function SearchHeader({
                     >
                       Multi Date
                     </span>
+                    <button
+                      tabIndex={0}
+                      name="reset"
+                      onClick={handleQueryParams}
+                      className={`btn btn-xs cursor-pointer underline-offset-4`}
+                    >
+                      Reset
+                    </button>
                   </div>
 
-                  {/* {dateType === "single" && (
+                  {dateType === "single" && (
                     <ReactDatePicker
                       className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
-                      onChange={(datePicked) => {
-                        // setPickedDate({
-                        //   startDate: datePicked,
-                        //   endDate: datePicked,
-                        // })
-                        // console.log("PickedDate", datePicked);
-                      }}
+                      name="single"
+                      onChange={(date) =>
+                        handleQueryParams({
+                          target: { name: "single", value: date },
+                        })
+                      }
                       value={
-                        pickedDate?.startDate
-                          ? format(pickedDate.startDate, "EEEE, dd MMMM", {
-                              locale: US_LocaleData,
-                            })
+                        queryParams?.eventTo
+                          ? format(
+                              new Date(queryParams.eventTo),
+                              "EEEE, dd MMMM",
+                              {
+                                locale: US_LocaleData,
+                              },
+                            )
                           : undefined
                       }
                       placeholderText="Please select a date."
                       required
                     />
-                  )} */}
+                  )}
 
-                  {/* {dateType === "multi" && (
+                  {dateType === "multi" && (
                     <div className="flex w-full flex-row items-center gap-2 ">
                       <ReactDatePicker
                         className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
-                        onChange={(datePicked) => {
-                          // setPickedDate((prev: any) => ({
-                          //   ...prev,
-                          //   startDate: datePicked,
-                          //   // endDate: datePicked,
-                          // }));
-                          setPickedDate({
-                            startDate: datePicked,
-                            endDate: pickedDate?.endDate,
-                          });
-                          // console.log("PickedDate", datePicked);
-                        }}
+                        onChange={(date) =>
+                          handleQueryParams({
+                            target: { name: "multiStart", value: date },
+                          })
+                        }
                         value={
-                          pickedDate?.startDate
-                            ? format(pickedDate?.startDate, "EEEE, dd MMMM", {
-                                locale: US_LocaleData,
-                              })
+                          queryParams?.eventFrom
+                            ? format(
+                                new Date(queryParams.eventFrom),
+                                "EEEE, dd MMMM",
+                                {
+                                  locale: US_LocaleData,
+                                },
+                              )
                             : undefined
                         }
                         placeholderText="Start Date."
@@ -204,30 +205,27 @@ export function SearchHeader({
                       <span className="text-neutral-600">-</span>
                       <ReactDatePicker
                         className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
-                        onChange={(datePicked) => {
-                          // setPickedDate((prev: any) => ({
-                          //   ...prev,
-                          //   endDate: datePicked,
-                          //   // endDate: datePicked,
-                          // }));
-                          setPickedDate({
-                            startDate: pickedDate?.startDate,
-                            endDate: datePicked,
-                          });
-                          // console.log("PickedDate", datePicked);
-                        }}
+                        onChange={(date) =>
+                          handleQueryParams({
+                            target: { name: "multiEnd", value: date },
+                          })
+                        }
                         value={
-                          pickedDate?.endDate
-                            ? format(pickedDate?.endDate, "EEEE, dd MMMM", {
-                                locale: US_LocaleData,
-                              })
+                          queryParams?.eventTo
+                            ? format(
+                                new Date(queryParams.eventTo),
+                                "EEEE, dd MMMM",
+                                {
+                                  locale: US_LocaleData,
+                                },
+                              )
                             : undefined
                         }
                         placeholderText="End Date."
                         required
                       />
                     </div>
-                  )} */}
+                  )}
                 </label>
                 <div className=" text-sm text-neutral-600">
                   <span>Choose Priorities</span>
@@ -250,9 +248,9 @@ export function SearchHeader({
                           style={{
                             accentColor: Color.color,
                           }}
-                          onClick={() =>
-                            handleQueryParams(Color.color, "colors")
-                          }
+                          name="colors"
+                          value={Color.color}
+                          onClick={handleQueryParams}
                           checked={queryParams.colors.includes(Color.color)}
                           // readOnly
                         />

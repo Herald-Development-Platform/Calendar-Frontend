@@ -36,11 +36,13 @@ export default function EventDetails({
   setSelectedEvent,
   updateEvent,
   width,
+  handleDelete,
 }: {
   selectedEvent: eventType | null;
   setSelectedEvent: Dispatch<SetStateAction<eventType | null>>;
   updateEvent: any;
   width: number | null;
+  handleDelete: (e: any) => void;
 }) {
   const [selectedColor, setSelectedColor] = useState<string | undefined>(
     selectedEvent?.color,
@@ -73,13 +75,11 @@ export default function EventDetails({
               <DropdownMenuContent className="h-[115px] w-[300px] px-5 py-4 text-sm font-semibold">
                 <button
                   onClick={(e: any) => {
-                    // setTimeout(() => {
                     const modal_3 = document.getElementById(
                       "my_modal_3",
                     ) as HTMLDialogElement;
                     console.log("modal elemenet", modal_3);
                     modal_3.showModal();
-                    // }, 1000);
                   }}
                   className="flex w-full items-center justify-start gap-2 px-2 py-1 text-neutral-700 transition-colors duration-150 hover:bg-neutral-100  hover:text-neutral-800"
                 >
@@ -96,7 +96,11 @@ export default function EventDetails({
                   </span>
                 </button>
                 <DropdownMenuSeparator />
-                <button className="flex w-full items-center justify-start gap-2 px-2 py-1 text-danger-400 transition-colors duration-150 hover:bg-neutral-100  hover:text-danger-500">
+                <button
+                  onClick={handleDelete}
+                  className="flex w-full items-center justify-start gap-2 px-2 py-1 text-danger-400 transition-colors duration-150 hover:bg-neutral-100  hover:text-danger-500"
+                  value={selectedEvent?._id}
+                >
                   <span className="text-2xl">
                     <RiDeleteBin6Line />
                   </span>
