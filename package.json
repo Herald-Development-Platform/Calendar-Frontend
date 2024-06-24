@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 7575",
+    "dev": "next dev --port 8080",
     "build": "next build",
-    "start": "next start --port 7575",
+    "start": "next start --port 8080",
     "lint": "next lint"
   },
   "dependencies": {
@@ -44,6 +44,7 @@
     "react-icons": "^4.11.0",
     "react-time-input": "^1.0.1",
     "sass": "^1.69.5",
+    "socket.io-client": "^4.7.5",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "toast": "^0.5.4"

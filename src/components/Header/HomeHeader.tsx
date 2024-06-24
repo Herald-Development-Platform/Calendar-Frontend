@@ -52,7 +52,17 @@ export function HomeHeader() {
   const [calendarApi, setCalendarApi] = useState<CalendarApi>();
   const [listView, setListView] = useState<boolean>(false);
 
-  const { calendarRef,userData, selectedDate, setSelectedDate, timeout } =
+  const { notifications } = useContext(Context);
+
+  let newNotifications = false;
+  console.log("notifications", notifications);
+  if (notifications) {
+    newNotifications = notifications.some(
+      (notification: any) => !notification.isRead,
+    );
+  }
+
+  const { calendarRef, userData, selectedDate, setSelectedDate, timeout } =
     useContext(Context);
 
   const token = useGetCookieByName("token");
@@ -216,7 +226,12 @@ export function HomeHeader() {
       <div className="flex flex-row items-center gap-4">
         <Popover>
           <PopoverTrigger>
-            <span className="text-xl text-neutral-600">
+            <span className="relative text-xl text-neutral-600">
+              {newNotifications && (
+                <div>
+                  <div className="absolute right-0 top-0 min-h-[10px] min-w-[10px] rounded-full bg-[#FA3E3E]"></div>
+                </div>
+              )}
               <HiOutlineBell />
             </span>
           </PopoverTrigger>

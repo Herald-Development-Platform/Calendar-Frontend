@@ -1,6 +1,8 @@
+import { Context } from "@/app/clientWrappers/ContextProvider";
 import { Axios } from "@/services/baseUrl";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
+import { useContext } from "react";
 
 const NOTIFICATION_CONTEXT = {
   DEPARTMENT_REQUEST: "DEPARTMENT_REQUEST",
@@ -14,10 +16,8 @@ const NOTIFICATION_CONTEXT = {
 };
 
 export const NotificationList = (props: any) => {
-  const { data: notifications, isLoading: notificationsLoading } = useQuery({
-    queryKey: ["Notification"],
-    queryFn: () => Axios.get("/notification"),
-  });
+  const queryClient = useQueryClient();
+  const { notifications, notificationsLoading } = useContext(Context);
   console.log("Notifications", notifications);
 
   const getNotificationIconLetter = (notification: any) => {
@@ -36,45 +36,77 @@ export const NotificationList = (props: any) => {
         return "EC";
       case NOTIFICATION_CONTEXT.EVENT_RESCHEDULED:
         return "ER";
-        return null;
       default:
         break;
     }
   };
+
+  const markAsRead = async (id?:string) => {
+    try {
+      if (id) {
+        await Axios.get(`/notification/read/${id}`);
+      } else {
+        await Axios.get(`/notification/read`);
+      }
+      queryClient.invalidateQueries({
+        queryKey: ["Notification"]
+      })
+    } catch (error) {
+      console.error("Error marking all as read", error);
+    }
+  };
+
   return (
-    <div className="flex flex-col h-[400px]">
+    <div className="flex flex-col h-[400px] overflow-y-scroll">
       <div className="flex flex-row items-center justify-between">
         <h1 className="text-xl font-semibold text-neutral-900">
           Notifications
         </h1>
-        <span className="text-[13px] text-primary-600">Mark all as Read</span>
+        <span
+          onClick={()=>{
+            markAsRead();
+          }}
+          className="text-[13px] cursor-pointer text-primary-600">
+          Mark all as Read
+          </span>
       </div>
-      <div className="mt-[40px] gap-4">
+      <div className="mt-[40px] flex flex-col gap-3">
         {notificationsLoading ? (
           <div className="menu-title">Loading...</div>
-        ) : notifications?.data?.data?.length === 0 ? (
+        ) : notifications?.length === 0 ? (
           <div>No Notifications to View</div>
         ) : (
-          notifications?.data?.data?.map((notification: any, i: any) => {
+          notifications?.map((notification: any, i: any) => {
             let notificationDate = new Date(notification.date);
             let showDate = false;
             if (i === 0) {
               showDate = true;
             } else if (
               notificationDate.getDate() !==
-              new Date(notifications?.data?.data[i - 1].createdAt).getDate()
+              new Date(notifications?.data?.data[i - 1].date).getDate()
             ) {
+              console.log("Date from notification: ", notificationDate.getDate());
+              console.log(
+                "Date from previous notification: ",
+                new Date(notifications?.data?.data[i - 1].date).getDate(),
+              );
               showDate = true;
             }
             let icon = getNotificationIconLetter(notification);
-            // let icon = false;
+            console.log("Show date", showDate, notificationDate, icon)
+            console.log("notification isRead: ", notification.isRead);
             return (
               <div
+              onMouseEnter={()=>{
+                if (!notification.isRead) {
+                  markAsRead(notification._id);
+                }
+              }}
                 key={notification._id}
-                className="flex flex-col items-start gap-3"
+                className="flex flex-col items-start py-3"
               >
                 {showDate && (
-                  <div className="text-[13px] text-sm text-neutral-600">
+                  <div className="text-[13px] text-sm text-neutral-600 mb-3 font-semibold ">
                     {Math.abs(
                       new Date().getTime() - notificationDate.getTime(),
                     ) < 86400000
@@ -84,10 +116,15 @@ export const NotificationList = (props: any) => {
                 )}
                 <div className="flex flex-row items-start justify-start gap-2">
                   <div
-                    className={`flex h-10 w-10 items-center justify-center rounded-full ${icon && "bg-primary-100"}`}
+                    className={`flex min-h-10 min-w-10 items-center flex-grow-0 relative justify-center rounded-full ${icon && "bg-primary-100"}`}
                   >
+                    {
+                      (!notification.isRead) && (<div>
+                        <div className="bg-[#FA3E3E] min-w-[10px] min-h-[10px] rounded-full absolute top-0 right-0"></div>
+                      </div>)
+                    }
                     {icon ? (
-                      <span className="text-md flex items-center justify-center text-primary-600">
+                      <span  className="text-primary-600 h-full w-full flex justify-center items-center flex-grow-0">
                         {icon}
                       </span>
                     ) : (
@@ -101,7 +138,7 @@ export const NotificationList = (props: any) => {
                     )}
                   </div>
                   <div className="flex flex-col items-start justify-center">
-                    <p className="text-[16px] text-neutral-900 ">
+                    <p className="text-[16px] text-neutral-900 font-normal ">
                       {notification.message}
                     </p>
                     <span className="text-[13px] text-neutral-600">
@@ -117,6 +154,7 @@ export const NotificationList = (props: any) => {
             );
           })
         )}
+        
       </div>
     </div>
   );

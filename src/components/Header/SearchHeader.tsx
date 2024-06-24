@@ -1,8 +1,14 @@
-import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { HiOutlineBell } from "react-icons/hi";
 import Image from "next/image";
 import { Context } from "@/app/clientWrappers/ContextProvider";
-import { IoIosSearch } from "react-icons/io";
+import { IoIosSearch, IoMdArrowDropdown, IoMdLogOut } from "react-icons/io";
 import { VscSettings } from "react-icons/vsc";
 import {
   Popover,
@@ -17,6 +23,18 @@ import { access } from "fs";
 import colors from "@/constants/Colors";
 import ReactDatePicker from "react-datepicker";
 import { NotificationList } from "../NotificationList";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { CgProfile } from "react-icons/cg";
+import { MdOutlineSettings } from "react-icons/md";
+import Cookies from "js-cookie";
+import { useRouter } from "next/navigation";
 
 export function SearchHeader({
   queryParams,
@@ -26,7 +44,7 @@ export function SearchHeader({
   handleQueryParams: (value: string, action: string) => void;
 }) {
   let timeout;
-  const [dateType, setDateType] = useState('single');
+  const [dateType, setDateType] = useState("single");
   const { calendarRef, selectedDate, userData } = useContext(Context);
 
   const date = selectedDate ? selectedDate : new Date();
@@ -35,6 +53,17 @@ export function SearchHeader({
     queryFn: () => Axios.get(Endpoints.department),
   });
 
+  const router = useRouter();
+
+  const { notifications } = useContext(Context);
+
+  let newNotifications = false;
+  console.log("notifications", notifications);
+  if (notifications) {
+    newNotifications = notifications.some(
+      (notification: any) => !notification.isRead,
+    );
+  }
   return (
     <div className=" flex h-12 w-[95%] justify-between">
       <div className="flex w-9/12 justify-between">
@@ -238,23 +267,66 @@ export function SearchHeader({
       </div>
 
       {/* notification and accounts  */}
-      <div className="flex">
-        <NotificationList className="" />
-        <div className="flex items-center ">
-          {console.log("Profile Pic", userData?.photo) === null ? (
-            <div></div>
-          ) : (
-            <div></div>
-          )}
-          <Image
-            className="h-8 w-8 rounded-full"
-            alt={"profile pic"}
-            src={userData?.photo ?? "/images/Sidebar/HelpIcon.png"}
-            width={32}
-            height={32}
-          />
-          <p className="font-medium text-neutral-600 "></p>
-        </div>
+      <div className="flex flex-row items-center gap-4">
+        <Popover>
+          <PopoverTrigger>
+            <span className="relative text-xl text-neutral-600">
+              {newNotifications && (
+                <div>
+                  <div className="absolute right-0 top-0 min-h-[10px] min-w-[10px] rounded-full bg-[#FA3E3E]"></div>
+                </div>
+              )}
+              <HiOutlineBell />
+            </span>
+          </PopoverTrigger>
+          <PopoverContent className="w-[600px]" align="end">
+            <NotificationList />
+          </PopoverContent>
+        </Popover>
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex items-center gap-2">
+            <div className="flex items-center ">
+              <Image
+                className="h-8 w-8 rounded-full"
+                alt={"profile pic"}
+                src={userData?.photo ?? "/images/Sidebar/HelpIcon.png"}
+                width={32}
+                height={32}
+              />
+              <p className="font-medium text-neutral-600 "></p>
+            </div>
+            {userData?.username} <IoMdArrowDropdown />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuLabel>My Profile</DropdownMenuLabel>
+            <DropdownMenuItem className="flex gap-2 text-sm font-semibold">
+              <span className="text-xl">
+                <CgProfile />
+              </span>{" "}
+              My Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem className="flex gap-2 text-sm font-semibold">
+              <span className="text-xl">
+                <MdOutlineSettings />
+              </span>
+              My Settings
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              className="flex gap-2 text-base font-semibold"
+              onClick={() => {
+                Cookies.remove("token");
+                router.push("/login");
+              }}
+            >
+              <span className="text-xl">
+                <IoMdLogOut />
+              </span>
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );

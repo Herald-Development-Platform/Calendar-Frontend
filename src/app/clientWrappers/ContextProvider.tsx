@@ -4,6 +4,7 @@ import { setCookie } from "@/hooks/CookieHooks";
 import { Axios } from "@/services/baseUrl";
 import { CalendarApi, EventInput } from "@fullcalendar/core/index.js";
 import FullCalendar from "@fullcalendar/react";
+import { useQuery } from "@tanstack/react-query";
 import {
   createContext,
   useRef,
@@ -22,6 +23,8 @@ export interface ContextType {
   setSelectedDate: Dispatch<SetStateAction<Date | undefined>>;
   calendarApi: CalendarApi | undefined;
   userData: User | undefined;
+  notifications: any[];
+  notificationsLoading: boolean;
 }
 
 export const Context = createContext<any>({});
@@ -37,7 +40,10 @@ export default function ContextProvider({
   const calendarApi = calendarRef?.current?.getApi();
   const timeout = useRef<any>();
 
-  console.log("calendar getDate()", calendarApi);
+  const { data: notifications, isLoading: notificationsLoading } = useQuery({
+    queryKey: ["Notification"],
+    queryFn: () => Axios.get("/notification"),
+  });
 
   const [userData, setUserData] = useState<User>();
   
@@ -94,6 +100,8 @@ export default function ContextProvider({
         setSelectedDate,
         userData,
         timeout,
+        notifications: notifications?.data?.data,
+        notificationsLoading,
       }}
     >
       {children}
