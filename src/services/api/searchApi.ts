@@ -4,15 +4,17 @@ import Endpoints from "../API_ENDPOINTS";
 import { updateEvents } from "./eventsApi";
 import toast from "react-hot-toast";
 
-export const useGetEventByQuery = (queryParams: any) =>
+export const useGetEventByQuery = (queryParams: eventByParamsType) =>
   useQuery({
     queryKey: ["Events"],
     queryFn: () =>
       Axios.get(
         Endpoints.eventByQuery({
-          query: queryParams.q,
+          q: queryParams.q,
           departments: queryParams.departments,
           colors: queryParams.colors,
+          eventTo: queryParams.eventTo,
+          eventFrom: queryParams.eventFrom,
         }),
       ),
   });

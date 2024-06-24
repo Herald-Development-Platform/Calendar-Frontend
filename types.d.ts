@@ -28,6 +28,8 @@ interface eventByParamsType {
   q: string;
   departments: string[];
   colors: string[];
+  eventTo: number | string;
+  eventFrom: number | string;
 }
 
 interface Department {

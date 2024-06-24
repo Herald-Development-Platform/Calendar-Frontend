@@ -9,14 +9,13 @@ const Endpoints = {
   eventById: (id: string) => `/event/${id}`,
   updateUser: (payload: any) => `/user/${payload.id}`,
   eventByQuery: ({
-    query,
+    q,
     departments,
     colors,
-  }: {
-    query: string;
-    departments: string[];
-    colors: string[];
-  }) => {
+    eventTo,
+    eventFrom,
+  }: eventByParamsType) => {
+    // console.log("eventTo", eventTo, "eventFrom", eventFrom);
     const departmentsSearchParam = departments
       .filter((dept) => dept.trim() !== "")
       .reduce((last, current) => (last ? last + "," + current : current), "");
@@ -28,9 +27,9 @@ const Endpoints = {
 
     console.log(
       "event?q=${query}&departments",
-      `/event?q=${query}&departments=${departmentsSearchParam}&colors=${colorsSearchParam}`,
+      `/event?q=${q}&departments=${departmentsSearchParam}&colors=${colorsSearchParam}&eventFrom=${eventFrom}&eventTo=${eventTo}`,
     );
-    return `/event?q=${query}&departments=${departmentsSearchParam}&colors=${colorsSearchParam}`;
+    return `/event?q=${q}&departments=${departmentsSearchParam}&colors=${colorsSearchParam}&eventFrom=${eventFrom}&eventTo=${eventTo}`;
   },
   profile: `/profile/all`,
   department: "/department",
