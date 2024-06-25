@@ -39,6 +39,7 @@ export default function ContextProvider({
   const [events, setEvents] = useState<EventInput[]>();
   const calendarApi = calendarRef?.current?.getApi();
   const timeout = useRef<any>();
+  // calendarApi.
 
   const { data: notifications, isLoading: notificationsLoading } = useQuery({
     queryKey: ["Notification"],
@@ -46,7 +47,6 @@ export default function ContextProvider({
   });
 
   const [userData, setUserData] = useState<User>();
-  
 
   const generateNewToken = async () => {
     try {

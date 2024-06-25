@@ -3,6 +3,7 @@ import React, {
   SetStateAction,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { HiOutlineBell } from "react-icons/hi";
@@ -67,6 +68,7 @@ export function SearchHeader({
       (notification: any) => !notification.isRead,
     );
   }
+
   return (
     <div className=" flex h-12 w-[95%] justify-between">
       <div className="flex w-9/12 justify-between">
@@ -119,7 +121,7 @@ export function SearchHeader({
                 </div>
 
                 <label htmlFor="date" className="flex flex-col gap-2 text-sm ">
-                  <div className="flex gap-3">
+                  <div className="flex items-center gap-3">
                     <span
                       tabIndex={0}
                       onClick={() => {
@@ -148,7 +150,7 @@ export function SearchHeader({
                       tabIndex={0}
                       name="reset"
                       onClick={handleQueryParams}
-                      className={`btn btn-xs cursor-pointer underline-offset-4`}
+                      className={`btn btn-xs cursor-pointer bg-primary-200 underline-offset-4`}
                     >
                       Reset
                     </button>

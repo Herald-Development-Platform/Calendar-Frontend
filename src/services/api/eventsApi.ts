@@ -13,7 +13,11 @@ export const useGetEvents = () =>
     queryFn: getEvents,
   });
 
-export const useDeleteEvent = () => {
+export const useDeleteEvent = ({
+  onSuccessFn,
+}: {
+  onSuccessFn?: () => void;
+}) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: { id: string }) => {
@@ -24,6 +28,7 @@ export const useDeleteEvent = () => {
       console.log("res", res);
       toast.success(res.data.message || "Successfuly Deleted Event");
       queryClient.invalidateQueries({ queryKey: ["Events"] });
+      // onSuccessFn && onSuccessFn();
     },
   });
 };

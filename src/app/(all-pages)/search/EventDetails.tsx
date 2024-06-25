@@ -23,7 +23,13 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 
 import colors from "@/constants/Colors";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import {
+  Dispatch,
+  RefObject,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import AddEventModal from "@/components/AddEventModal";
 import EditEventModal from "@/components/AddEventModal/EditEventModal";
 import { updateEvents } from "@/services/api/eventsApi";
@@ -47,6 +53,7 @@ export default function EventDetails({
   const [selectedColor, setSelectedColor] = useState<string | undefined>(
     selectedEvent?.color,
   );
+  const [dropDown, setDropDown] = useState<boolean>(false);
   console.log("width", width);
   const queryClient = useQueryClient();
 
@@ -59,14 +66,14 @@ export default function EventDetails({
     <>
       <section
         className={`${
-          Boolean(selectedEvent) ? "" : "translate-x-full"
+          selectedEvent ? "" : "translate-x-full"
         } absolute right-0 top-0 flex h-full w-80  flex-col gap-6 overflow-y-auto bg-white p-6 font-medium text-neutral-600 transition-all duration-150`}
         style={{ width: `${width}px` }}
       >
         <div className="font flex items-center transition">
           <span className="text-base">Event Details</span>
           <span className="ml-auto flex items-center gap-[6px] text-black">
-            <DropdownMenu>
+            <DropdownMenu open={dropDown} onOpenChange={setDropDown}>
               <DropdownMenuTrigger>
                 <button className="cursor-pointer text-base">
                   <BsThreeDotsVertical />
@@ -97,7 +104,13 @@ export default function EventDetails({
                 </button>
                 <DropdownMenuSeparator />
                 <button
-                  onClick={handleDelete}
+                  onClick={(e: any) => {
+                    setDropDown(false);
+                    setTimeout(() => {
+                      setSelectedEvent(null);
+                      handleDelete(e);
+                    }, 200);
+                  }}
                   className="flex w-full items-center justify-start gap-2 px-2 py-1 text-danger-400 transition-colors duration-150 hover:bg-neutral-100  hover:text-danger-500"
                   value={selectedEvent?._id}
                 >
@@ -112,6 +125,7 @@ export default function EventDetails({
               onClick={() => {
                 setSelectedEvent(null);
               }}
+              // ref={crossBtnRef && crossBtnRef}
               className="cursor-pointer text-xl"
             >
               <RxCross2 />

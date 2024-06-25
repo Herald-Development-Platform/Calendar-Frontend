@@ -23,7 +23,7 @@ export default function UpcommingEvents() {
   const upcommingEventRef = useRef<HTMLDivElement>(null);
 
   const { data: eventsData } = useGetEvents();
-  const { mutate: deleteEvent } = useDeleteEvent();
+  const { mutate: deleteEvent } = useDeleteEvent({});
 
   const queryClient = useQueryClient();
 
@@ -35,10 +35,11 @@ export default function UpcommingEvents() {
     upcommingEventRef.current.scrollTop = 0;
   };
 
+  // const handleSetEventNull = ;
   const handleDelete = (e: any) => {
     const { value } = e.target;
-    deleteEvent({ id: value });
     // setSelectedEvent(null);
+    deleteEvent({ id: value });
   };
   return (
     <div

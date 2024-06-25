@@ -117,6 +117,7 @@ export default function InviteMembers({
                       alt={"User Image"}
                       width={33}
                       height={33}
+                      className="rounded-full"
                     ></Image>
                   );
                 } else {
