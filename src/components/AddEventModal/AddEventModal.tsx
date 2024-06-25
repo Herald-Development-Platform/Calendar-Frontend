@@ -161,6 +161,7 @@ export default function AddEventModal() {
           ) as HTMLDialogElement;
           modal_3.showModal();
         }}
+        key={"my_modal_3"}
       >
         <AiOutlinePlus className="h-4 w-4 font-bold text-primary-50" />
         Add Event
