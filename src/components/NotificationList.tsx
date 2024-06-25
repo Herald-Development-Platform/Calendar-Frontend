@@ -57,7 +57,7 @@ export const NotificationList = (props: any) => {
   };
 
   return (
-    <div className="flex flex-col h-[400px] overflow-y-scroll">
+    <div className="flex flex-col">
       <div className="flex flex-row items-center justify-between">
         <h1 className="text-xl font-semibold text-neutral-900">
           Notifications
@@ -70,7 +70,7 @@ export const NotificationList = (props: any) => {
           Mark all as Read
           </span>
       </div>
-      <div className="mt-[40px] flex flex-col gap-3">
+      <div className="mt-[40px] flex flex-col gap-3  h-[400px] overflow-y-scroll">
         {notificationsLoading ? (
           <div className="menu-title">Loading...</div>
         ) : notifications?.length === 0 ? (
@@ -83,18 +83,16 @@ export const NotificationList = (props: any) => {
               showDate = true;
             } else if (
               notificationDate.getDate() !==
-              new Date(notifications?.data?.data[i - 1].date).getDate()
+              new Date(notifications[i - 1].date).getDate()
             ) {
               console.log("Date from notification: ", notificationDate.getDate());
               console.log(
                 "Date from previous notification: ",
-                new Date(notifications?.data?.data[i - 1].date).getDate(),
+                new Date(notifications[i - 1].date).getDate(),
               );
               showDate = true;
             }
             let icon = getNotificationIconLetter(notification);
-            console.log("Show date", showDate, notificationDate, icon)
-            console.log("notification isRead: ", notification.isRead);
             return (
               <div
               onMouseEnter={()=>{
@@ -109,7 +107,7 @@ export const NotificationList = (props: any) => {
                   <div className="text-[13px] text-sm text-neutral-600 mb-3 font-semibold ">
                     {Math.abs(
                       new Date().getTime() - notificationDate.getTime(),
-                    ) < 86400000
+                    ) < (86400000/2)
                       ? "Today"
                       : notificationDate.toDateString()}
                   </div>
