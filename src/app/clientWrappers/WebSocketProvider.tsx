@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { Context } from "./ContextProvider";
 import { useQueryClient } from "@tanstack/react-query";
+import { baseUrl, webSocketUrl } from "@/services/baseUrl";
 
 export interface ContextType {
   connection?: Socket;
@@ -40,11 +41,18 @@ export default function WebSocketProvider({
   const { userData } = useContext(Context);
   const queryClient = useQueryClient();
   useEffect(() => {
-    const connection = io("https://compiler.codynn.com");
+    const connection = io(webSocketUrl);
     connection.on("connect", () => {
       setConnection(connection);
     });
-    connection.on("notification", (data) => {
+    connection.on("notification", (notification) => {
+      new Notification(
+        notification.message || `New Notification`,
+        {
+          body: notification.message,
+          data: notification,
+        }
+      );
       queryClient.invalidateQueries({
         queryKey: ["Notification"],
       });
