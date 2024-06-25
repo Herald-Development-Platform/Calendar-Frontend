@@ -5,6 +5,7 @@ import { io, Socket } from "socket.io-client";
 import { Context } from "./ContextProvider";
 import { useQueryClient } from "@tanstack/react-query";
 import { baseUrl, webSocketUrl } from "@/services/baseUrl";
+import { getCookie } from "@/hooks/CookieHooks";
 
 export interface ContextType {
   connection?: Socket;
@@ -43,11 +44,12 @@ export default function WebSocketProvider({
   useEffect(() => {
     const connection = io(webSocketUrl);
     connection.on("connect", () => {
+      connection.emit("authenticate", getCookie("token"));
       setConnection(connection);
     });
     connection.on("notification", (notification) => {
       new Notification(
-        notification.message || `New Notification`,
+        `New Notification`,
         {
           body: notification.message,
           data: notification,
