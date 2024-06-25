@@ -300,7 +300,8 @@ export default function Page() {
                   <DepartmentBtn
                     key={department._id}
                     selectedCross={false}
-                    onClick={() => {
+                    id={department._id}
+                    handleQueryParams={() => {
                       resetUserForm({
                         ...getUserValues(),
                         department: department._id,
@@ -480,7 +481,8 @@ export default function Page() {
                 selectedCross={false}
                 value={"All"}
                 selected={selDepartments.includes("All")}
-                onClick={() => {
+                id={"All"}
+                handleQueryParams={() => {
                   if (selDepartments.includes("All")) {
                     setSelDepartments([]);
                   } else {
@@ -500,7 +502,9 @@ export default function Page() {
                     key={department._id}
                     selectedCross={false}
                     value={department.code}
-                    onClick={() => {
+                    
+                    id={department.code}
+                    handleQueryParams={() => {
                       let newSelectedDepartments = [...selDepartments];
                       if (newSelectedDepartments.includes("All")) {
                         newSelectedDepartments = newSelectedDepartments.filter(

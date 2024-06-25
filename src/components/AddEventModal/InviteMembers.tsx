@@ -113,6 +113,7 @@ export default function InviteMembers({
                 if (selMembers?.photo) {
                   return (
                     <Image
+                    key={selMembers._id}
                       src={selMembers.photo}
                       alt={"User Image"}
                       width={33}
@@ -123,6 +124,7 @@ export default function InviteMembers({
                 } else {
                   return (
                     <Image
+                    key={selMembers._id}
                       src={"/DummyProfile.jpg"}
                       alt={"User Image"}
                       width={33}
