@@ -298,6 +298,7 @@ export default function Page() {
               <div className=" flex flex-row flex-wrap items-center justify-start gap-2">
                 {departments.map((department: Department) => (
                   <DepartmentBtn
+                    id={department._id}
                     key={department._id}
                     selectedCross={false}
                     handleQueryParams={() => {
