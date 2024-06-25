@@ -41,7 +41,7 @@ export const NotificationList = (props: any) => {
     }
   };
 
-  const markAsRead = async (id?:string) => {
+  const markAsRead = async (id?: string) => {
     try {
       if (id) {
         await Axios.get(`/notification/read/${id}`);
@@ -49,8 +49,8 @@ export const NotificationList = (props: any) => {
         await Axios.get(`/notification/read`);
       }
       queryClient.invalidateQueries({
-        queryKey: ["Notification"]
-      })
+        queryKey: ["Notification"],
+      });
     } catch (error) {
       console.error("Error marking all as read", error);
     }
@@ -63,14 +63,15 @@ export const NotificationList = (props: any) => {
           Notifications
         </h1>
         <span
-          onClick={()=>{
+          onClick={() => {
             markAsRead();
           }}
-          className="text-[13px] cursor-pointer text-primary-600">
+          className="cursor-pointer text-[13px] text-primary-600"
+        >
           Mark all as Read
-          </span>
+        </span>
       </div>
-      <div className="mt-[40px] flex flex-col gap-3  h-[400px] overflow-y-scroll">
+      <div className="mt-[40px] flex h-[400px] flex-col  gap-3 overflow-y-scroll">
         {notificationsLoading ? (
           <div className="menu-title">Loading...</div>
         ) : notifications?.length === 0 ? (
@@ -85,7 +86,10 @@ export const NotificationList = (props: any) => {
               notificationDate.getDate() !==
               new Date(notifications[i - 1].date).getDate()
             ) {
-              console.log("Date from notification: ", notificationDate.getDate());
+              console.log(
+                "Date from notification: ",
+                notificationDate.getDate(),
+              );
               console.log(
                 "Date from previous notification: ",
                 new Date(notifications[i - 1].date).getDate(),
@@ -95,39 +99,40 @@ export const NotificationList = (props: any) => {
             let icon = getNotificationIconLetter(notification);
             return (
               <div
-              onMouseEnter={()=>{
-                if (!notification.isRead) {
-                  markAsRead(notification._id);
-                }
-              }}
+                onMouseEnter={() => {
+                  if (!notification.isRead) {
+                    markAsRead(notification._id);
+                  }
+                }}
                 key={notification._id}
                 className="flex flex-col items-start py-3"
               >
                 {showDate && (
-                  <div className="text-[13px] text-sm text-neutral-600 mb-3 font-semibold ">
+                  <div className="mb-3 text-[13px] text-sm font-semibold text-neutral-600 ">
                     {Math.abs(
                       new Date().getTime() - notificationDate.getTime(),
-                    ) < (86400000/2)
+                    ) <
+                    86400000 / 2
                       ? "Today"
                       : notificationDate.toDateString()}
                   </div>
                 )}
                 <div className="flex flex-row items-start justify-start gap-2">
                   <div
-                    className={`flex min-h-10 min-w-10 items-center flex-grow-0 relative justify-center rounded-full ${icon && "bg-primary-100"}`}
+                    className={`relative flex min-h-10 min-w-10 flex-grow-0 items-center justify-center rounded-full ${icon && "bg-primary-100"}`}
                   >
-                    {
-                      (!notification.isRead) && (<div>
-                        <div className="bg-[#FA3E3E] min-w-[10px] min-h-[10px] rounded-full absolute top-0 right-0"></div>
-                      </div>)
-                    }
+                    {!notification.isRead && (
+                      <div>
+                        <div className="absolute right-0 top-0 min-h-[10px] min-w-[10px] rounded-full bg-[#FA3E3E]"></div>
+                      </div>
+                    )}
                     {icon ? (
-                      <span  className="text-primary-600 h-full w-full flex justify-center items-center flex-grow-0">
+                      <span className="flex h-full w-full flex-grow-0 items-center justify-center text-primary-600">
                         {icon}
                       </span>
                     ) : (
                       <Image
-                        className=" p-0.5 rounded-full"
+                        className=" rounded-full p-0.5"
                         width={32}
                         height={32}
                         src={"/images/LoginPage/HeraldLogo.png"}
@@ -136,7 +141,7 @@ export const NotificationList = (props: any) => {
                     )}
                   </div>
                   <div className="flex flex-col items-start justify-center">
-                    <p className="text-[16px] text-neutral-900 font-normal ">
+                    <p className="text-[16px] font-normal text-neutral-900 ">
                       {notification.message}
                     </p>
                     <span className="text-[13px] text-neutral-600">
@@ -152,7 +157,6 @@ export const NotificationList = (props: any) => {
             );
           })
         )}
-        
       </div>
     </div>
   );

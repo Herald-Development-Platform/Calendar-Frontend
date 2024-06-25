@@ -300,7 +300,7 @@ export default function Page() {
                   <DepartmentBtn
                     key={department._id}
                     selectedCross={false}
-                    onClick={() => {
+                    handleQueryParams={() => {
                       resetUserForm({
                         ...getUserValues(),
                         department: department._id,
@@ -480,7 +480,8 @@ export default function Page() {
                 selectedCross={false}
                 value={"All"}
                 selected={selDepartments.includes("All")}
-                onClick={() => {
+                id={"All"}
+                handleQueryParams={() => {
                   if (selDepartments.includes("All")) {
                     setSelDepartments([]);
                   } else {
@@ -497,10 +498,11 @@ export default function Page() {
                 profile?.role === ROLES.SUPER_ADMIN ||
                 profile?.department?._id === department._id ? (
                   <DepartmentBtn
+                    id={department._id}
                     key={department._id}
                     selectedCross={false}
                     value={department.code}
-                    onClick={() => {
+                    handleQueryParams={() => {
                       let newSelectedDepartments = [...selDepartments];
                       if (newSelectedDepartments.includes("All")) {
                         newSelectedDepartments = newSelectedDepartments.filter(
