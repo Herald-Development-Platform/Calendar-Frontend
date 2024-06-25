@@ -155,7 +155,8 @@ export default function EditEventModal({
     setNewEvent(modifiedData);
     setPickedDate({ startDate: defaultData.start, endDate: defaultData.end });
   }, [defaultData]);
-  console.log("pickedDate", pickedDate);
+
+  console.log("index newEvent", newEvent);
 
   const datepickerRef = useRef<any>();
   return (
@@ -164,16 +165,17 @@ export default function EditEventModal({
         className="scale btn btn-sm
            relative flex h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
         onClick={() => {
-          const modal_3 = document.getElementById(
-            "my_modal_3",
+          const modal_4 = document.getElementById(
+            "my_modal_4",
           ) as HTMLDialogElement;
-          modal_3.showModal();
+          modal_4.showModal();
         }}
+        key={"my_modal_4"}
       >
         <AiOutlinePlus className="h-4 w-4 font-bold text-primary-50" />
-        Add Event
+        Edit Event
       </button>
-      <dialog id="my_modal_3" className="modal">
+      <dialog id="my_modal_4" className="modal">
         <div className="min-w-xl modal-box relative flex max-w-2xl flex-col gap-10 overflow-y-auto  p-8 text-lg text-neutral-600">
           {/* Heading  */}
           <div className="m-auto">
@@ -183,7 +185,7 @@ export default function EditEventModal({
                 ✕
               </button>
             </form>
-            <h3 className="text-lg font-bold">Add Event</h3>
+            <h3 className="text-lg font-bold">Edit Event</h3>
           </div>
 
           {/* input section  */}
@@ -415,10 +417,10 @@ export default function EditEventModal({
                       type="radio"
                       className="absolute hidden"
                       onChange={() => {
-                        setNewEvent({ ...newEvent, color: Color.color });
                         console.log(
                           `index ${i} clicked, Color.color: ${Color.color}`,
                         );
+                        setNewEvent({ ...newEvent, color: Color.color });
                       }}
                     />
                   </label>
