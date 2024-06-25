@@ -30,11 +30,8 @@ import {
   useEffect,
   useState,
 } from "react";
-import AddEventModal from "@/components/AddEventModal";
 import EditEventModal from "@/components/AddEventModal/EditEventModal";
-import { updateEvents } from "@/services/api/eventsApi";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 
 export default function EventDetails({
@@ -54,7 +51,6 @@ export default function EventDetails({
     selectedEvent?.color,
   );
   const [dropDown, setDropDown] = useState<boolean>(false);
-  console.log("width", width);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -62,6 +58,7 @@ export default function EventDetails({
     setSelectedColor(selectedEvent?.color);
   }, [selectedEvent]);
 
+  console.log("width in eventDetails", width);
   return (
     <>
       <section
@@ -82,20 +79,21 @@ export default function EventDetails({
               <DropdownMenuContent className="h-[115px] w-[300px] px-5 py-4 text-sm font-semibold">
                 <button
                   onClick={(e: any) => {
-                    const modal_3 = document.getElementById(
-                      "my_modal_3",
+                    const modal_4 = document.getElementById(
+                      "my_modal_4",
                     ) as HTMLDialogElement;
-                    console.log("modal elemenet", modal_3);
-                    modal_3.showModal();
+                    console.log("modal elemenet", modal_4);
+                    modal_4.showModal();
+                    // setDropDown(false);
                   }}
                   className="flex w-full items-center justify-start gap-2 px-2 py-1 text-neutral-700 transition-colors duration-150 hover:bg-neutral-100  hover:text-neutral-800"
                 >
                   <span className="text-2xl">
                     <MdOutlineModeEditOutline />
                   </span>
-                  Edit Event
+                  Edit Event 1
                   <span className={`fixed left-full `}>
-                    {Boolean(selectedEvent) && (
+                    {selectedEvent && (
                       <EditEventModal
                         defaultData={selectedEvent}
                       ></EditEventModal>

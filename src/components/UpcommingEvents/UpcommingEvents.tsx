@@ -10,6 +10,7 @@ import {
 import EventCard from "./EventCard";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import EventDetails from "@/app/(all-pages)/search/EventDetails";
+import { useUpdateEvents } from "@/services/api/searchApi";
 
 export default function UpcommingEvents() {
   const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
@@ -27,6 +28,8 @@ export default function UpcommingEvents() {
 
   const queryClient = useQueryClient();
 
+  const { mutate: updateEvent } = useUpdateEvents();
+
   const handleCardClick = (eventData: eventType) => {
     clearTimeout(timeout.current);
     setSelectedEvent(eventData);
@@ -35,12 +38,12 @@ export default function UpcommingEvents() {
     upcommingEventRef.current.scrollTop = 0;
   };
 
-  // const handleSetEventNull = ;
   const handleDelete = (e: any) => {
     const { value } = e.target;
     // setSelectedEvent(null);
     deleteEvent({ id: value });
   };
+
   return (
     <div
       ref={upcommingEventRef}
@@ -92,7 +95,7 @@ export default function UpcommingEvents() {
       <EventDetails
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
-        updateEvent={() => {}}
+        updateEvent={updateEvent}
         handleDelete={handleDelete}
         width={
           upcommingEventRef.current
