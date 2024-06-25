@@ -190,11 +190,7 @@ export default function ImportExport() {
               <div className=" flex flex-row flex-wrap items-center justify-start gap-2">
                 {departments.map((department: Department) => (
                   <DepartmentButton
-<<<<<<< HEAD
                     id={department._id}
-=======
-                  id={department._id}
->>>>>>> Search
                     key={department._id}
                     selectedCross={false}
                     handleQueryParams={() => {
