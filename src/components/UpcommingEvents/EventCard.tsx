@@ -36,7 +36,7 @@ export default function EventCard({
         <h1 className="font-medium">{event?.title}</h1>
         <div className="flex items-center text-neutral-600">
           {//  departments =event.departments;
-          event?.departments?.map((department: any, i: number) => (
+          event?.departments?.map((department: any, i: number) => i<2 ? (
             <>
               <p className="whitespace-pre text-sm font-medium ">
                 {department.code} {i < event.departments.length - 1 && "/ "}
@@ -47,7 +47,7 @@ export default function EventCard({
                 </span>
               )}
             </>
-          ))}
+          ):<p key={department._id} className="whitespace-pre text-sm font-medium ">.</p>)}
 
           <p className="text-sm font-medium ">
             {startTime} - {endTime}
