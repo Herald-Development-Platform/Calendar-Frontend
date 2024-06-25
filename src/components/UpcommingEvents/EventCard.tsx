@@ -1,5 +1,8 @@
 import React from "react";
 import { format } from "date-fns";
+import { Dot } from "lucide-react";
+import { LuDot } from "react-icons/lu";
+
 export default function EventCard({
   event,
   handleCardClick,
@@ -13,6 +16,7 @@ export default function EventCard({
   const endTime = event?.end ? format(new Date(event?.end), "h:mm aa") : "NA";
   if (!event?.start) return null;
 
+  console.log("event", event);
   return (
     <>
       <div
@@ -29,10 +33,26 @@ export default function EventCard({
           handleCardClick && handleCardClick(event);
         }}
       >
-        <h1 className=" font-medium">{event?.title}</h1>
-        <p className="text-sm font-medium text-neutral-600">
-          {startTime} - {endTime}
-        </p>
+        <h1 className="font-medium">{event?.title}</h1>
+        <div className="flex items-center text-neutral-600">
+          {//  departments =event.departments;
+          event?.departments?.map((department: any, i: number) => (
+            <>
+              <p className="whitespace-pre text-sm font-medium ">
+                {department.code} {i < event.departments.length - 1 && "/ "}
+              </p>
+              {i == event.departments.length - 1 && (
+                <span className="ml-[-5px] text-2xl">
+                  <LuDot />
+                </span>
+              )}
+            </>
+          ))}
+
+          <p className="text-sm font-medium ">
+            {startTime} - {endTime}
+          </p>
+        </div>
       </div>
     </>
   );

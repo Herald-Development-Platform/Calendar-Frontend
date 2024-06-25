@@ -48,18 +48,24 @@ export default function ReactFullCal() {
           listPlugin,
           multiMonthPlugin,
         ]}
+        // views={{
+        //   dayGridMonth: {
+        //     dayMaxEventRows: 3,
+        //     eventLimit: 3,
+        //   },
+        // }}
+        // eventLimit={true}
         initialView={`dayGridMonth`}
         events={eventsData?.data?.data}
         headerToolbar={false}
         selectable={true}
         select={handleSelect}
-        // unselectAuto={true}
         unselect={handleUnselect}
         displayEventTime={false}
         dayHeaderClassNames={"customStylesDayHeader"}
         dayCellClassNames={"customStylesDayCells"}
         eventMaxStack={2}
-        dayMaxEvents={1}
+        dayMaxEvents={3}
       />
     </div>
   );

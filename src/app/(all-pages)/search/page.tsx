@@ -3,7 +3,11 @@ import React, { useEffect, useRef, useState } from "react";
 import * as Headers from "@/components/Header";
 import RecentSearches from "@/components/RecentSearches/RecentSearches";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getEventsByParams, updateEvents } from "@/services/api/eventsApi";
+import {
+  getEventsByParams,
+  updateEvents,
+  useDeleteEvent,
+} from "@/services/api/eventsApi";
 import { Axios } from "@/services/baseUrl";
 import Endpoints from "@/services/API_ENDPOINTS";
 import { BsDot } from "react-icons/bs";
@@ -23,10 +27,14 @@ export default function Page() {
     eventTo: "",
     eventFrom: "",
   });
-  // const router = useRouter();
-  // router.push({ pathname: "sadlkfj", query: { alsdjkf: "asldkjflsd" } });
+  // const crossBtnRef = useRef<HTMLButtonElement>(null);
 
-  // const debounce = useRef(null);
+  const { mutate: deleteEvent } = useDeleteEvent({});
+
+  const handleDelete = (e: any) => {
+    const { value } = e.target;
+    deleteEvent({ id: value });
+  };
 
   const {
     data: filteredEvents,
@@ -188,6 +196,7 @@ export default function Page() {
           setSelectedEvent={setSelectedEvent}
           updateEvent={updateEvent}
           width={null}
+          handleDelete={handleDelete}
         ></EventDetails>
       </div>
     </div>

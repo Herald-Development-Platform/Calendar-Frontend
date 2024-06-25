@@ -80,7 +80,7 @@ export default function AddEventModal() {
         description: "",
         departments: [],
         notes: "",
-        involvedUsers: [""],
+        involvedUsers: [],
       });
     },
     onError: (err: any) => {
