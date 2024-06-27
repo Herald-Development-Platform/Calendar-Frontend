@@ -94,7 +94,7 @@
   }
   
   /* For Firefox */
-  /* html {
+  .green-scrollbar {
     scrollbar-width: thin; 
     scrollbar-color: green #f1f1f1;  
-  } */
+  }

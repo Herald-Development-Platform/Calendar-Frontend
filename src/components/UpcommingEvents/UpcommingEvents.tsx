@@ -18,7 +18,9 @@ export default function UpcommingEvents() {
 
   const { selectedDate, timeout } = useContext(Context);
 
-  const selectedStartTime = selectedDate.start.getTime();
+  const selectedStartTime = selectedDate?.start
+    ? selectedDate?.start.getTime()
+    : 0;
   const selectedEndTime = selectedDate?.end ? selectedDate.end.getTime() : 0;
 
   const upcommingEventRef = useRef<HTMLDivElement>(null);
@@ -61,11 +63,21 @@ export default function UpcommingEvents() {
 
       <div className="flex flex-col gap-3">
         {eventsData?.data?.data?.map((event: eventType, i: number) => {
+          let inFirstEdge = null;
+          let inBetween = null;
+          let inLastEdge = null;
+
           const eventStart = event?.start ? new Date(event.start).getTime() : 0;
           const eventEnd = event?.end ? new Date(event.end).getTime() : 0;
 
-          if (eventStart < selectedStartTime || eventStart > selectedEndTime)
-            return;
+          inFirstEdge =
+            eventStart < selectedStartTime && eventEnd > selectedStartTime;
+          inBetween =
+            eventStart > selectedStartTime && eventEnd < selectedEndTime;
+          inLastEdge =
+            eventStart < selectedEndTime && eventEnd > selectedEndTime;
+
+          if (!inFirstEdge && !inBetween && !inLastEdge) return;
 
           let displayDate = false;
           if (lastDate !== format(new Date(eventStart), "MMMM d")) {

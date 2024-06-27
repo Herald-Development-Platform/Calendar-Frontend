@@ -59,7 +59,7 @@ export default function EditEventModal({
 
   const token = useGetCookieByName("token");
 
-  const [newEvent, setNewEvent] = useState<eventType>({
+  const [editEvent, setEditEvent] = useState<eventType>({
     title: "",
     start: null,
     recurringType: "NONE",
@@ -86,7 +86,7 @@ export default function EditEventModal({
       queryClient.invalidateQueries({ queryKey: ["Events"] });
       toast.success(`${res?.data?.message}`);
       setPickedDate({ startDate: null, endDate: null });
-      setNewEvent({
+      setEditEvent({
         title: "",
         start: null,
         recurringType: "NONE",
@@ -107,9 +107,9 @@ export default function EditEventModal({
   });
 
   function handleUpdateEvent(id: string) {
-    console.log("handle add event ", newEvent);
-    // setEvents([...events, newEvent]);
-    updateEvent({ id, newEvent });
+    console.log("handle add event ", editEvent);
+    // setEvents([...events, editEvent]);
+    updateEvent({ id, editEvent });
   }
 
   const setDateAndTime = ({ hours, minutes, type }: setDateAndTimeTypes) => {
@@ -128,7 +128,7 @@ export default function EditEventModal({
       finalStartDate?.setHours(hours);
       finalStartDate?.setMinutes(minutes);
 
-      setNewEvent({ ...newEvent, start: finalStartDate });
+      setEditEvent({ ...editEvent, start: finalStartDate });
     } else if (type === "end" && pickedDate?.endDate) {
       const endDate = format(new Date(pickedDate?.endDate), "yyyy-MM-dd", {
         locale: US_LocaleData,
@@ -137,11 +137,11 @@ export default function EditEventModal({
       finalEndDate?.setHours(hours);
       finalEndDate?.setMinutes(minutes);
 
-      setNewEvent({ ...newEvent, end: finalEndDate });
+      setEditEvent({ ...editEvent, end: finalEndDate });
     }
   };
 
-  console.log("render", newEvent);
+  console.log("render", editEvent);
 
   useEffect(() => {
     if (!defaultData) return;
@@ -152,11 +152,11 @@ export default function EditEventModal({
         (department) => department?.code,
       ),
     };
-    setNewEvent(modifiedData);
+    setEditEvent(modifiedData);
     setPickedDate({ startDate: defaultData.start, endDate: defaultData.end });
   }, [defaultData]);
 
-  console.log("index newEvent", newEvent);
+  console.log("index editEvent", editEvent);
 
   const datepickerRef = useRef<any>();
   return (
@@ -201,9 +201,9 @@ export default function EditEventModal({
                   className="w-full text-lg font-normal text-neutral-900 outline-none"
                   placeholder="Add Title"
                   id="add-title"
-                  value={newEvent.title}
+                  value={editEvent.title}
                   onChange={(e) =>
-                    setNewEvent({ ...newEvent, title: e.target.value })
+                    setEditEvent({ ...editEvent, title: e.target.value })
                   }
                 />
               </div>
@@ -216,14 +216,14 @@ export default function EditEventModal({
                 className="w-full text-neutral-900 ring-ring focus:border-primary-600  focus-visible:ring-0"
                 id="message"
                 onChange={(e) =>
-                  setNewEvent({
-                    ...newEvent,
+                  setEditEvent({
+                    ...editEvent,
                     description: e?.target?.value
                       ? e?.target?.value
                       : undefined,
                   })
                 }
-                value={newEvent?.description ? newEvent.description : ""}
+                value={editEvent?.description ? editEvent.description : ""}
               />
             </div>
             {/* Date Input section */}
@@ -361,7 +361,7 @@ export default function EditEventModal({
                       <LiaHourglassStartSolid />
                     </span>
                     <TimeSelector
-                      date={newEvent.start}
+                      date={editEvent.start}
                       setDateAndTime={setDateAndTime}
                       type="start"
                       // hour={0}
@@ -376,7 +376,7 @@ export default function EditEventModal({
                       <LiaHourglassEndSolid />
                     </span>
                     <TimeSelector
-                      date={newEvent.end}
+                      date={editEvent.end}
                       setDateAndTime={setDateAndTime}
                       type="end"
                     />
@@ -387,57 +387,59 @@ export default function EditEventModal({
                 Duration:
               </span>
             </div>
+
             {/* Color input section  */}
-            <div>
-              <span className="flex justify-start text-sm ">Priority</span>
-              <div className="flex gap-2">
-                {colors.map((Color, i) => (
+            <div className="flex flex-col items-start">
+              <span className=" text-sm">Priority</span>
+              <div key={"EditEventPriority"} className="flex gap-2">
+                {colors?.map((Color, i) => (
                   <label
                     className={`btn checkbox btn-xs relative h-7 w-7 cursor-pointer rounded-none border-none`}
                     style={{ backgroundColor: Color.color }}
-                    htmlFor={`ColorInput${i}`}
+                    htmlFor={`ColorInput${i}-edit`}
                     key={i}
                   >
                     <input
                       type="checkbox"
                       className={
-                        Color.color == newEvent.color
+                        Color.color == editEvent.color
                           ? "absolute h-full w-full border-none text-white"
                           : "absolute hidden h-full w-full border-none text-white"
                       }
                       style={{
                         accentColor: Color.color,
                       }}
-                      checked={Color.color == newEvent.color}
+                      checked={Color.color == editEvent.color}
                       readOnly
                     />
                     <input
                       name={"color"}
-                      id={`ColorInput${i}`}
+                      id={`ColorInput${i}-edit`}
                       type="radio"
                       className="absolute hidden"
                       onChange={() => {
                         console.log(
-                          `index ${i} clicked, Color.color: ${Color.color}`,
+                          ` index editevent ${i} clicked, Color.color: ${Color.color}`,
                         );
-                        setNewEvent({ ...newEvent, color: Color.color });
+                        setEditEvent({ ...editEvent, color: Color.color });
                       }}
                     />
                   </label>
                 ))}
               </div>
             </div>
+
             {/* Location section  */}
             <div>
-              <span className="flex justify-start text-sm ">
+              <span className="flex justify-start text-sm">
                 Location <br />
               </span>
               <input
                 type="text"
                 className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
-                value={newEvent.location}
+                value={editEvent.location}
                 onChange={(e) =>
-                  setNewEvent({ ...newEvent, location: e.target.value })
+                  setEditEvent({ ...editEvent, location: e.target.value })
                 }
               />
             </div>
@@ -449,8 +451,8 @@ export default function EditEventModal({
                   (department: any, i: number) => (
                     <DepartmentBtn
                       key={i}
-                      selDepartments={newEvent.departments}
-                      setNewEvent={setNewEvent}
+                      selDepartments={editEvent.departments}
+                      setEditEvent={setEditEvent}
                       index={i}
                       department={department}
                     />
@@ -464,9 +466,9 @@ export default function EditEventModal({
               <input
                 type="text"
                 className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
-                value={newEvent.notes}
+                value={editEvent.notes}
                 onChange={(e) =>
-                  setNewEvent({ ...newEvent, notes: e.target.value })
+                  setEditEvent({ ...editEvent, notes: e.target.value })
                 }
               />
             </div>
@@ -480,7 +482,7 @@ export default function EditEventModal({
             <button
               className="btn btn-md  h-5 border-none bg-primary-600 text-base font-medium text-primary-50"
               onClick={() =>
-                handleUpdateEvent(newEvent?._id ? newEvent._id : "")
+                handleUpdateEvent(editEvent?._id ? editEvent._id : "")
               }
             >
               Edit

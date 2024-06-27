@@ -52,3 +52,15 @@ export function checkListView(currentView: string | undefined): boolean {
     return true;
   else return false;
 }
+
+export function makePascalCase(original_string: string) {
+  let final_str = "";
+  original_string.split(" ").forEach((str) => {
+    final_str +=
+      (str.length > 1
+        ? str[0].toUpperCase() + str.toLowerCase().substr(1)
+        : str.toUpperCase()) + " ";
+  });
+  console.log("finalstr", final_str);
+  return final_str.trim();
+}
