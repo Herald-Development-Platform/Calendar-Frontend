@@ -54,11 +54,9 @@ export default function EventDetails({
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    console.log("selected", selectedEvent);
     setSelectedColor(selectedEvent?.color);
   }, [selectedEvent]);
 
-  console.log("width in eventDetails", width);
   return (
     <>
       <section
@@ -94,9 +92,9 @@ export default function EventDetails({
                   Edit Event
                   <span className={`fixed left-full `}>
                     {selectedEvent && (
-                      <EditEventModal
+                      <AddEventModal
                         defaultData={selectedEvent}
-                      ></EditEventModal>
+                      ></AddEventModal>
                     )}
                   </span>
                 </button>

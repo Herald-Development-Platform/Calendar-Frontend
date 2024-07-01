@@ -15,12 +15,11 @@ export default function CustomTimePicker({
   handleTimeChange: (e: any) => void;
 }) {
   const [showTimePicker, setShowTimePicker] = useState<boolean>();
-  // const [date, setDate] = useState<any>(new Date());
 
-  console.log(
-    "customtimepicker",
-    value ? new Date(value).getTime() : "no value",
-  );
+  // console.log(
+  //   "customtimepicker",
+  //   value ? new Date(value).getTime() : "no value",
+  // );
   return (
     <>
       <div className="relative flex-grow">

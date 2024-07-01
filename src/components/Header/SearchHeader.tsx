@@ -39,6 +39,7 @@ import Cookies from "js-cookie";
 import { format } from "date-fns";
 import { Router } from "lucide-react";
 import { useRouter } from "next/navigation";
+import ProfileDropdown from "./ProfileDropdown";
 
 export function SearchHeader({
   queryParams,
@@ -279,50 +280,7 @@ export function SearchHeader({
             <NotificationList />
           </PopoverContent>
         </Popover>
-        <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2">
-            <div className="flex items-center ">
-              <Image
-                className="h-8 w-8 rounded-full"
-                alt={"profile pic"}
-                src={userData?.photo ?? "/images/Sidebar/HelpIcon.png"}
-                width={32}
-                height={32}
-              />
-              <p className="font-medium text-neutral-600 "></p>
-            </div>
-            {userData?.username} <IoMdArrowDropdown />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>My Profile</DropdownMenuLabel>
-            <DropdownMenuItem className="flex gap-2 text-sm font-semibold">
-              <span className="text-xl">
-                <CgProfile />
-              </span>{" "}
-              My Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex gap-2 text-sm font-semibold">
-              <span className="text-xl">
-                <MdOutlineSettings />
-              </span>
-              My Settings
-            </DropdownMenuItem>
-
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="flex gap-2 text-base font-semibold"
-              onClick={() => {
-                Cookies.remove("token");
-                router.push("/login");
-              }}
-            >
-              <span className="text-xl">
-                <IoMdLogOut />
-              </span>
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <ProfileDropdown userData={userData} />
       </div>
     </div>
   );

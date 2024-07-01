@@ -26,6 +26,7 @@ export default function UpcommingEvents() {
   const upcommingEventRef = useRef<HTMLDivElement>(null);
 
   const { data: eventsData } = useGetEvents();
+  console.log("upcomgin", eventsData);
   const { mutate: deleteEvent } = useDeleteEvent({});
 
   const queryClient = useQueryClient();
@@ -62,7 +63,7 @@ export default function UpcommingEvents() {
       </div>
 
       <div className="flex flex-col gap-3">
-        {eventsData?.data?.data?.map((event: eventType, i: number) => {
+        {eventsData?.map((event: eventType, i: number) => {
           let inFirstEdge = null;
           let inBetween = null;
           let inLastEdge = null;

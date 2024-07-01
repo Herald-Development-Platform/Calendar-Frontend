@@ -61,6 +61,6 @@ export function makePascalCase(original_string: string) {
         ? str[0].toUpperCase() + str.toLowerCase().substr(1)
         : str.toUpperCase()) + " ";
   });
-  console.log("finalstr", final_str);
+
   return final_str.trim();
 }

@@ -46,6 +46,7 @@ import { CgList } from "react-icons/cg";
 import { NotificationList } from "../NotificationList";
 import { Popover, PopoverContent } from "../ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
+import ProfileDropdown from "./ProfileDropdown";
 
 export function HomeHeader() {
   // const [redner, setredner] = useState<number>(1);
@@ -55,7 +56,6 @@ export function HomeHeader() {
   const { notifications } = useContext(Context);
 
   let newNotifications = false;
-  console.log("notifications", notifications);
   if (notifications) {
     newNotifications = notifications.some(
       (notification: any) => !notification.isRead,
@@ -69,8 +69,6 @@ export function HomeHeader() {
 
   const router = useRouter();
   const date = selectedDate ? selectedDate : null;
-
-  console.log("selectedData", selectedDate);
 
   // sets value of calendarAPI as soon as calRef loads.
   useEffect(() => {
@@ -171,9 +169,6 @@ export function HomeHeader() {
             } h-full w-32 rounded-sm border border-neutral-300 px-3 text-2xl font-semibold transition duration-200 `}
             onClick={(e) => {
               setListView((prev) => !prev);
-              console.log("listview", listView);
-              // calendarApi?.view?.type &&
-              //   findListView(calendarApi.view.type, calendarApi);
             }}
           >
             <MdListAlt />
@@ -239,50 +234,8 @@ export function HomeHeader() {
             <NotificationList />
           </PopoverContent>
         </Popover>
-        <DropdownMenu>
-          <DropdownMenuTrigger className="flex items-center gap-2">
-            <div className="flex items-center ">
-              <Image
-                className="h-8 w-8 rounded-full"
-                alt={"profile pic"}
-                src={userData?.photo ?? "/images/Sidebar/HelpIcon.png"}
-                width={32}
-                height={32}
-              />
-              <p className="font-medium text-neutral-600 "></p>
-            </div>
-            {userData?.username} <IoMdArrowDropdown />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuLabel>My Profile</DropdownMenuLabel>
-            <DropdownMenuItem className="flex gap-2 text-sm font-semibold">
-              <span className="text-xl">
-                <CgProfile />
-              </span>{" "}
-              My Profile
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex gap-2 text-sm font-semibold">
-              <span className="text-xl">
-                <MdOutlineSettings />
-              </span>
-              My Settings
-            </DropdownMenuItem>
 
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="flex gap-2 text-base font-semibold"
-              onClick={() => {
-                Cookies.remove("token");
-                router.push("/login");
-              }}
-            >
-              <span className="text-xl">
-                <IoMdLogOut />
-              </span>
-              Logout
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <ProfileDropdown userData={userData} />
       </div>
     </div>
   );

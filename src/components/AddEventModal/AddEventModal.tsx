@@ -1,7 +1,7 @@
 "use client";
 import Datepicker from "react-datepicker";
 import Image from "next/image";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -32,7 +32,11 @@ interface PickedDateType {
   endDate: Date | undefined;
 }
 
-export default function AddEventModal() {
+export default function AddEventModal({
+  defaultData,
+}: {
+  defaultData: eventType;
+}) {
   // const [pickedDate, setPickedDate] = useState<any>();
   const [dateType, setDateType] = useState<"single" | "multi">("single");
   const [newEvent, setNewEvent] = useState<eventType>({
@@ -49,14 +53,24 @@ export default function AddEventModal() {
     involvedUsers: [],
   });
 
+  useEffect(() => {
+    if (!defaultData) return;
+    const modifiedData = {
+      ...defaultData,
+      departments: defaultData.departments.map(
+        //@ts-ignore
+        (department) => department?.code,
+      ),
+    };
+    setNewEvent(modifiedData);
+  }, [defaultData]);
+
   const { userData } = useContext(Context);
 
   const { data: departmentsRes } = useQuery({
     queryKey: ["Departments"],
     queryFn: getDepartments,
   });
-
-  console.log("depar", departmentsRes);
 
   const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
 
@@ -72,7 +86,7 @@ export default function AddEventModal() {
       value = e.currentTarget.value;
     }
 
-    console.log("name value", name, value);
+    // console.log("name value", name, value);
 
     switch (name) {
       case "department":
@@ -118,9 +132,6 @@ export default function AddEventModal() {
         setNewEvent((prev) => ({ ...prev, [name]: value }));
     }
   };
-
-  console.log("render", newEvent);
-  console.log("userData", userData);
 
   return (
     <>
@@ -304,7 +315,6 @@ export default function AddEventModal() {
                       keyof typeof RecurringEventTypes
                     >
                   ).map((eventKey) => {
-                    console.log("eventKey", eventKey);
                     return (
                       <label
                         className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"

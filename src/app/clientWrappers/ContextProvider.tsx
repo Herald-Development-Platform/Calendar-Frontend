@@ -71,7 +71,6 @@ export default function ContextProvider({
           setCookie("token", token, 5);
         }
       }
-      console.log("UserData: ", response.data.data);
     } catch (error) {
       console.error("Error fetching user data:", error);
     }

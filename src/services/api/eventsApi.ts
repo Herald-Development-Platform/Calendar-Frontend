@@ -9,6 +9,7 @@ import { RecurringEventTypes } from "@/constants/RecurringEvents";
 import { Dispatch, SetStateAction } from "react";
 
 export const getEvents = () => Axios.get(Endpoints.event);
+
 export const getEventsByParams = (payload: eventByParamsType) =>
   Axios.get(
     Endpoints.eventByQuery({
@@ -29,9 +30,19 @@ export const updateUser = (payload: any) =>
   Axios.put(Endpoints.updateUser(payload), payload);
 
 export const useGetEvents = () =>
-  useQuery({
+  useQuery<eventType[]>({
     queryKey: ["Events"],
-    queryFn: getEvents,
+    queryFn: async () => {
+      const axiosRes = await Axios.get(Endpoints.event);
+      if (axiosRes.statusText !== "OK") {
+        toast.error(
+          axiosRes?.data?.message ||
+            `Someting went wrong. Status Code: ${axiosRes?.status}`,
+        );
+        return axiosRes.data;
+      }
+      return axiosRes.data.data;
+    },
   });
 
 export const useDeleteEvent = ({
