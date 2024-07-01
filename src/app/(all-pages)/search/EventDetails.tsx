@@ -64,7 +64,7 @@ export default function EventDetails({
       <section
         className={`${
           selectedEvent ? "" : "translate-x-full"
-        } absolute right-0 top-0 flex h-full w-80  flex-col gap-6 overflow-y-auto bg-white p-6 font-medium text-neutral-600 transition-all duration-150`}
+        } absolute right-0 top-0 z-20 flex h-full  w-80 flex-col gap-6 overflow-y-auto bg-white p-6 font-medium text-neutral-600 transition-all duration-150`}
         style={{ width: `${width}px` }}
       >
         <div className="font flex items-center transition">
@@ -198,12 +198,12 @@ export default function EventDetails({
           </p>
         </div>
       </section>
+      <div
+        className={`${
+          selectedEvent ? "block" : "hidden"
+        } fixed left-0 top-0 z-10 h-full w-full opacity-0`}
+        onClick={() => setSelectedEvent(null)}
+      ></div>
     </>
   );
 }
-//  onClick={() => {
-//           const modal_3 = document.getElementById(
-//             "my_modal_3",
-//           ) as HTMLDialogElement;
-//           modal_3.showModal();
-//         }}

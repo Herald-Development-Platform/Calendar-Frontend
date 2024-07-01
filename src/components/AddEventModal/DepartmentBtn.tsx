@@ -12,6 +12,7 @@ export default function DepartmentBtn({
   const [departmentColor, setDepartmentColor] = useState(false);
 
   const departmentState = selDepartments?.includes(department.code);
+
   useEffect(() => {
     if (departmentState) setDepartmentColor(true);
     else setDepartmentColor(false);

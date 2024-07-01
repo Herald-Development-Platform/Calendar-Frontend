@@ -15,7 +15,7 @@ import Endpoints from "@/services/API_ENDPOINTS";
 
 export default function ReactFullCal() {
   const { calendarRef, setSelectedDate, timeout } = useContext(Context);
-
+  const calWrapper = useRef<HTMLDivElement>(null);
   const { data: eventsData } = useQuery({
     queryKey: ["Events"],
     queryFn: () => Axios.get(Endpoints.event),
@@ -36,38 +36,53 @@ export default function ReactFullCal() {
       });
     }, 250);
   };
+
+  useEffect(() => {
+    if (!calWrapper.current) return;
+    const dotEvent = calWrapper.current.querySelector(".fc-daygrid-dot-event");
+    const departmentsWrapper = document.createElement("div");
+
+    departmentsWrapper.style.height = "5px";
+    departmentsWrapper.style.width = "5px";
+    departmentsWrapper.style.backgroundColor = "red";
+
+    dotEvent?.appendChild(departmentsWrapper);
+    console.log("dotEvent", dotEvent);
+  }, [calWrapper]);
   return (
-    <div className="h-full w-full">
-      <FullCalendar
-        ref={calendarRef}
-        plugins={[
-          dayGridPlugin,
-          multiMonthPlugin,
-          interactionPlugin,
-          timeGridPlugin,
-          listPlugin,
-          multiMonthPlugin,
-        ]}
-        // views={{
-        //   dayGridMonth: {
-        //     dayMaxEventRows: 3,
-        //     eventLimit: 3,
-        //   },
-        // }}
-        // eventLimit={true}
-        initialView={`dayGridMonth`}
-        events={eventsData?.data?.data}
-        headerToolbar={false}
-        selectable={true}
-        select={handleSelect}
-        unselect={handleUnselect}
-        displayEventTime={false}
-        dayHeaderClassNames={"customStylesDayHeader"}
-        dayCellClassNames={"customStylesDayCells"}
-        eventMaxStack={2}
-        dayMaxEvents={3}
-      />
-    </div>
+    <>
+      <div ref={calWrapper} className="h-full w-full">
+        <FullCalendar
+          ref={calendarRef}
+          plugins={[
+            dayGridPlugin,
+            multiMonthPlugin,
+            interactionPlugin,
+            timeGridPlugin,
+            listPlugin,
+            multiMonthPlugin,
+          ]}
+          // views={{
+          //   dayGridMonth: {
+          //     dayMaxEventRows: 3,
+          //     eventLimit: 3,
+          //   },
+          // }}
+          // eventLimit={true}
+          initialView={`dayGridMonth`}
+          events={eventsData?.data?.data}
+          headerToolbar={false}
+          selectable={true}
+          select={handleSelect}
+          unselect={handleUnselect}
+          displayEventTime={false}
+          dayHeaderClassNames={"customStylesDayHeader"}
+          dayCellClassNames={"customStylesDayCells"}
+          eventMaxStack={2}
+          dayMaxEvents={2}
+        />
+      </div>
+    </>
   );
 }
 

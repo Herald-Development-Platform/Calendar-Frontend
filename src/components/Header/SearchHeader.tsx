@@ -126,10 +126,6 @@ export function SearchHeader({
                       tabIndex={0}
                       onClick={() => {
                         setDateType("single");
-                        // setPickedDate({
-                        //   startDate: pickedDate?.startDate,
-                        //   endDate: pickedDate?.startDate,
-                        // });
                       }}
                       className={`${
                         dateType === "single" ? "underline" : ""
@@ -166,9 +162,9 @@ export function SearchHeader({
                         })
                       }
                       value={
-                        queryParams?.eventTo
+                        queryParams?.eventFrom
                           ? format(
-                              new Date(queryParams.eventTo),
+                              new Date(queryParams.eventFrom),
                               "EEEE, dd MMMM",
                               {
                                 locale: US_LocaleData,

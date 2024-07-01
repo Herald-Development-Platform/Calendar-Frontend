@@ -21,6 +21,7 @@
     box-sizing: content-box;
     margin: 0px 4px;
     width: 0px;
+    position: absolute;
 }
 
 /* .fc .fc-daygrid-event-harness {
@@ -66,6 +67,23 @@
 .fc-col-header-cell .fc-scrollgrid-sync-inner{
     padding-bottom: 13px;
 }
+.fc-daygrid-day-frame{
+    max-height: 100px;
+}
+
 .customStylesDayCells:hover{
     background-color: #f5f5f5;
+}
+/* .fc-event.fc-daygrid-event.fc-daygrid-dot-event{ */
+    /* display: flex;
+    flex-direction: column; */
+/* } */
+.fc-event.fc-daygrid-dot-event{
+    min-height: 16px; 
+    height: auto;
+}
+
+.fc-event.fc-daygrid-event.fc-daygrid-dot-event > .fc-event-title{ 
+    padding-left: 15px;
+
 }

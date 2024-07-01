@@ -92,7 +92,11 @@ export default function Page() {
         return;
       } else {
         toast.success(
-          `User ${response.data?.data?.request?.status === "APPROVED" ? "approved successfully" : "rejected"}`,
+          `User ${
+            response.data?.data?.request?.status === "APPROVED"
+              ? "approved successfully"
+              : "rejected"
+          }`,
         );
       }
       queryClient.invalidateQueries({ queryKey: ["AllUsers"] });
@@ -661,7 +665,7 @@ export default function Page() {
                         <TableCell className="w-[76px] text-right">
                           {profile?.role !== ROLES.STAFF && (
                             <div className="flex flex-row items-center justify-end gap-2">
-                              {profile.role === ROLES.SUPER_ADMIN && (
+                              {profile?.role === ROLES.SUPER_ADMIN && (
                                 <button
                                   onClick={() => {
                                     resetUserForm({
@@ -672,7 +676,7 @@ export default function Page() {
                                     });
                                     setEditUserDialogOpen(true);
                                   }}
-                                  className=" text-xl text-primary-600"
+                                  className="text-xl text-primary-600"
                                 >
                                   <MdOutlineEdit />
                                 </button>

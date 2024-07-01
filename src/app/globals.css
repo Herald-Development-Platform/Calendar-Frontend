@@ -4,6 +4,8 @@
 
   @layer base {
     :root {
+  
+
       --background: 0 0% 100%;
       --foreground: 222.2 84% 4.9%;
 
@@ -75,6 +77,12 @@
     }
   }
 
+  .tooltip{
+    --tooltip-color: white;
+    border: 1px white;
+    --tooltip-text-color: black;  
+  }
+
   .hide-scrollbar::-webkit-scrollbar{
     display: none; 
     scrollbar-width: none;
@@ -98,3 +106,4 @@
     scrollbar-width: thin; 
     scrollbar-color: green #f1f1f1;  
   }
+

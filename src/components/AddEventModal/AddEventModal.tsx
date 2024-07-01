@@ -1,47 +1,22 @@
 "use client";
 import Datepicker from "react-datepicker";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 
-import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
-import { MobileTimePicker } from "@mui/x-date-pickers/MobileTimePicker";
-import { DesktopTimePicker } from "@mui/x-date-pickers/DesktopTimePicker";
-import { StaticTimePicker } from "@mui/x-date-pickers/StaticTimePicker";
-import { format, parseISO } from "date-fns";
-
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { TimeField } from "@mui/x-date-pickers/TimeField";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { format } from "date-fns";
 
 import { BiPencil } from "react-icons/bi";
 import "react-datepicker/dist/react-datepicker.css";
-import { TimeSelector } from "./TimeSelector";
-import { MdOutlineHourglassTop } from "react-icons/md";
-import { LiaHourglassEndSolid, LiaHourglassStartSolid } from "react-icons/lia";
 import US_LocaleData from "date-fns/locale/en-US";
-import { DateRange } from "react-big-calendar";
 import { AiOutlinePlus } from "react-icons/ai";
-import { Context } from "@/app/clientWrappers/ContextProvider";
+import ContextProvider, { Context } from "@/app/clientWrappers/ContextProvider";
 import { Axios, baseUrl } from "@/services/baseUrl";
-import * as CookieHooks from "@/hooks/CookieHooks";
-import { useGetCookieByName } from "@/hooks/CookieHooks";
-import { DEPARTMENTS } from "@/constants/departments";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { postEvents } from "@/services/api/eventsApi";
+import { postEvents, usePostEventMutation } from "@/services/api/eventsApi";
 import { watch } from "fs";
-import DepartmentBtn from "./DepartmentBtn";
 import { getDepartments } from "@/services/api/departments";
 import colors from "@/constants/Colors";
 import { Textarea } from "../ui/textarea";
@@ -50,6 +25,7 @@ import InviteMembers from "./InviteMembers";
 import "./AddEventModal.css";
 import CustomTimePicker from "./CustomTimePicker";
 import { makePascalCase } from "@/lib/utils";
+import DepartmentButton from "../DepartmentButton";
 
 interface PickedDateType {
   startDate: Date | undefined;
@@ -57,13 +33,8 @@ interface PickedDateType {
 }
 
 export default function AddEventModal() {
-  const [pickedDate, setPickedDate] = useState<any>();
+  // const [pickedDate, setPickedDate] = useState<any>();
   const [dateType, setDateType] = useState<"single" | "multi">("single");
-
-  const queryClient = useQueryClient();
-
-  const token = useGetCookieByName("token");
-
   const [newEvent, setNewEvent] = useState<eventType>({
     title: "",
     start: null,
@@ -78,103 +49,78 @@ export default function AddEventModal() {
     involvedUsers: [],
   });
 
+  const { userData } = useContext(Context);
+
   const { data: departmentsRes } = useQuery({
     queryKey: ["Departments"],
     queryFn: getDepartments,
   });
 
   console.log("depar", departmentsRes);
-  const { mutate: postNewEvent } = useMutation({
-    mutationFn: postEvents,
-    onSuccess: (res) => {
-      console.log("Onsuccess", res);
-      queryClient.invalidateQueries({ queryKey: ["Events"] });
-      toast.success(`${res?.data?.message}`);
-      setPickedDate({ startDate: null, endDate: null });
-      setNewEvent({
-        title: "",
-        start: null,
-        end: null,
-        color: undefined,
-        duration: 0,
-        recurringType: RecurringEventTypes.ONCE,
-        location: "",
-        description: "",
-        departments: [],
-        notes: "",
-        involvedUsers: [],
-      });
-    },
-    onError: (err: any) => {
-      console.log("error", err);
-      toast.error(err?.data?.message || "something went wrong");
-    },
-  });
+
+  const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
 
   function handleAddEvent() {
-    console.log("handle add event ", newEvent);
-    // setEvents([...events, newEvent]);
+    // console.log("handle add event ", newEvent);
     postNewEvent(newEvent);
   }
 
-  const setDateAndTime = ({ hours, minutes, type }: setDateAndTimeTypes) => {
-    console.log("selected date in setdateandtime function:", pickedDate);
-    // const date = format(pickedDate?.startDate, "yyyy-MM-dd", {
-    //   locale: US_LocaleData,
-    // });
-
-    if (type === "start" && pickedDate?.startDate) {
-      const startDate = format(pickedDate?.startDate, "yyyy-MM-dd", {
-        locale: US_LocaleData,
-      });
-      const finalStartDate = new Date(startDate);
-      finalStartDate?.setHours(hours);
-      finalStartDate?.setMinutes(minutes);
-
-      setNewEvent({ ...newEvent, start: finalStartDate });
-    } else if (type === "end" && pickedDate?.endDate) {
-      const endDate = format(pickedDate?.endDate, "yyyy-MM-dd", {
-        locale: US_LocaleData,
-      });
-      const finalEndDate = new Date(endDate);
-      finalEndDate?.setHours(hours);
-      finalEndDate?.setMinutes(minutes);
-
-      setNewEvent({ ...newEvent, end: finalEndDate });
+  const handleValueChange = (e: any) => {
+    let { name, value } = e.target;
+    if (!name) {
+      name = e.currentTarget.name;
+      value = e.currentTarget.value;
     }
-  };
 
-  const handleInviteMembers = (user: User, action: "add" | "remove") => {
-    switch (action) {
-      case "add":
-        if (newEvent?.involvedUsers.includes(user._id)) {
-          console.log("adding", newEvent?.involvedUsers?.includes(user._id));
-          return;
+    console.log("name value", name, value);
+
+    switch (name) {
+      case "department":
+        if (newEvent.departments.includes(value)) {
+          setNewEvent((prev) => ({
+            ...prev,
+            departments: [
+              ...newEvent.departments.filter((item) => item !== value),
+            ],
+          }));
+        } else {
+          setNewEvent((prev) => ({
+            ...prev,
+            departments: [...newEvent.departments, value],
+          }));
         }
+        break;
 
+      case "addMember": {
+        const userId = value;
+        if (newEvent?.involvedUsers.includes(userId)) return;
         setNewEvent({
           ...newEvent,
-          involvedUsers: [...newEvent?.involvedUsers, user._id],
+          involvedUsers: [...newEvent?.involvedUsers, userId],
         });
         break;
-      case "remove":
+      }
+      case "removeMember": {
+        const userId = value;
+
         setNewEvent((prev) => ({
           ...prev,
           involvedUsers: [
             ...newEvent?.involvedUsers.filter(
-              (memberId) => memberId !== user._id,
+              (memberId) => memberId !== userId,
             ),
           ],
         }));
         break;
+      }
+
+      default:
+        setNewEvent((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  const handleValueChange = (e: any) => {
-    const { name, value } = e.target;
-    setNewEvent((prev) => ({ ...prev, [name]: value }));
-  };
   console.log("render", newEvent);
+  console.log("userData", userData);
 
   return (
     <>
@@ -219,10 +165,12 @@ export default function AddEventModal() {
                     className="w-full text-lg font-normal text-neutral-900 outline-none"
                     placeholder="Add Title"
                     id="add-title"
+                    name="title"
                     value={newEvent.title}
-                    onChange={(e) =>
-                      setNewEvent({ ...newEvent, title: e.target.value })
-                    }
+                    // onChange={(e) =>
+                    //   setNewEvent({ ...newEvent, title: e.target.value })
+                    // }
+                    onChange={handleValueChange}
                   />
                 </div>
               </label>
@@ -233,27 +181,30 @@ export default function AddEventModal() {
                   placeholder="Type your message here."
                   className="w-full text-neutral-900 ring-ring focus:border-primary-600  focus-visible:ring-0"
                   id="message"
-                  onChange={(e) =>
-                    setNewEvent({
-                      ...newEvent,
-                      description: e?.target?.value
-                        ? e?.target?.value
-                        : undefined,
-                    })
-                  }
+                  name="description"
+                  // onChange={(e) =>
+                  //   setNewEvent({
+                  //     ...newEvent,
+                  //     description: e?.target?.value
+                  //       ? e?.target?.value
+                  //       : undefined,
+                  //   })
+                  // }
+                  onChange={handleValueChange}
                   value={newEvent?.description ? newEvent.description : ""}
                 />
               </div>
+
               {/* Date Input section */}
               <label htmlFor="date" className="flex flex-col gap-2 text-sm ">
                 <div className="flex gap-3">
-                  <span
+                  <button
                     tabIndex={0}
-                    onClick={() => {
+                    name="end"
+                    onClick={(e) => {
                       setDateType("single");
-                      setPickedDate({
-                        startDate: pickedDate?.startDate,
-                        endDate: pickedDate?.startDate,
+                      handleValueChange({
+                        target: { name: "end", value: newEvent.start },
                       });
                     }}
                     className={`${
@@ -261,8 +212,8 @@ export default function AddEventModal() {
                     } cursor-pointer  underline-offset-4`}
                   >
                     Date
-                  </span>
-                  <span
+                  </button>
+                  <button
                     tabIndex={0}
                     onClick={() => setDateType("multi")}
                     className={`${
@@ -270,7 +221,7 @@ export default function AddEventModal() {
                     }  cursor-pointer underline-offset-4`}
                   >
                     Multi Date
-                  </span>
+                  </button>
                 </div>
 
                 {dateType === "single" && (
@@ -287,8 +238,8 @@ export default function AddEventModal() {
                       });
                     }}
                     value={
-                      pickedDate?.startDate
-                        ? format(pickedDate.startDate, "EEEE, dd MMMM", {
+                      newEvent?.start
+                        ? format(newEvent.start, "EEEE, dd MMMM", {
                             locale: US_LocaleData,
                           })
                         : undefined
@@ -345,6 +296,7 @@ export default function AddEventModal() {
                     />
                   </div>
                 )}
+
                 {/* Recurrence  */}
                 <div className="flex gap-[14px]">
                   {(
@@ -389,6 +341,7 @@ export default function AddEventModal() {
                   handleTimeChange={handleValueChange}
                 />
               </div>
+
               {/* Color input section  */}
               <div className=" flex flex-col items-start">
                 <span className="text-sm">Priority</span>
@@ -414,21 +367,24 @@ export default function AddEventModal() {
                         readOnly
                       />
                       <input
-                        name={"color"}
+                        name="color"
                         id={`ColorInput${i}`}
                         type="radio"
                         className="absolute hidden"
-                        onChange={() => {
-                          console.log(
-                            ` index addeventmodal ${i} clicked, Color.color: ${Color.color}`,
-                          );
-                          setNewEvent({ ...newEvent, color: Color.color });
-                        }}
+                        value={Color.color}
+                        // onChange={() => {
+                        //   console.log(
+                        //     ` index addeventmodal ${i} clicked, Color.color: ${Color.color}`,
+                        //   );
+                        //   setNewEvent({ ...newEvent, color: Color.color });
+                        // }}
+                        onChange={handleValueChange}
                       />
                     </label>
                   ))}
                 </div>
               </div>
+
               {/* Location section  */}
               <div>
                 <span className="text-sm">
@@ -437,43 +393,53 @@ export default function AddEventModal() {
                 <input
                   type="text"
                   className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
+                  name="location"
                   value={newEvent.location}
-                  onChange={(e) =>
-                    setNewEvent({ ...newEvent, location: e.target.value })
-                  }
+                  // onChange={(e) =>
+                  //   setNewEvent({ ...newEvent, location: e.target.value })
+                  // }
+                  onChange={handleValueChange}
                 />
               </div>
+
               {/* Departments section  */}
               <div className="text-sm">
                 <span>Departments:</span>
                 <div className="my-2 flex flex-wrap items-center gap-1">
-                  {departmentsRes?.data?.data?.map(
-                    (department: any, i: number) => (
-                      <DepartmentBtn
-                        key={i}
-                        selDepartments={newEvent.departments}
-                        setNewEvent={setNewEvent}
-                        index={i}
-                        department={department}
+                  {departmentsRes?.data?.data?.map((department: Department) => {
+                    const departmentExists =
+                      newEvent.departments.includes(department._id) ||
+                      department._id === userData?.department?._id;
+                    return (
+                      <DepartmentButton
+                        key={department._id}
+                        id={department._id}
+                        handleQueryParams={handleValueChange}
+                        value={department.code}
+                        selected={departmentExists}
                       />
-                    ),
-                  )}
+                    );
+                  })}
                 </div>
               </div>
+
               <InviteMembers
                 memberIds={newEvent?.involvedUsers}
-                handleInviteMembers={handleInviteMembers}
+                handleInviteMembers={handleValueChange}
               ></InviteMembers>
+
               {/* Notes section  */}
               <div className="">
                 <span>Notes</span> <br />
                 <input
                   type="text"
                   className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
+                  name="notes"
                   value={newEvent.notes}
-                  onChange={(e) =>
-                    setNewEvent({ ...newEvent, notes: e.target.value })
-                  }
+                  // onChange={(e) =>
+                  //   setNewEvent({ ...newEvent, notes: e.target.value })
+                  // }
+                  onChange={handleValueChange}
                 />
               </div>
             </div>
@@ -499,3 +465,29 @@ export default function AddEventModal() {
     </>
   );
 }
+
+// const handleInviteMembers = (user: User, action: "add" | "remove") => {
+//   switch (action) {
+//     case "add":
+//       if (newEvent?.involvedUsers.includes(user._id)) {
+//         console.log("adding", newEvent?.involvedUsers?.includes(user._id));
+//         return;
+//       }
+
+//       setNewEvent({
+//         ...newEvent,
+//         involvedUsers: [...newEvent?.involvedUsers, user._id],
+//       });
+//       break;
+//     case "remove":
+//       setNewEvent((prev) => ({
+//         ...prev,
+//         involvedUsers: [
+//           ...newEvent?.involvedUsers.filter(
+//             (memberId) => memberId !== user._id,
+//           ),
+//         ],
+//       }));
+//       break;
+//   }
+// };

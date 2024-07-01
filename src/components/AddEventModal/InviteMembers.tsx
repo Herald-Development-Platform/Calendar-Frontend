@@ -42,14 +42,14 @@ export default function InviteMembers({
   handleInviteMembers,
 }: {
   memberIds: string[];
-  handleInviteMembers: (user: User, action: "add" | "remove") => void;
+  handleInviteMembers: (e: any) => void;
 }) {
   const [showPopover, setShowPopover] = useState<boolean>(false);
   const [filterQuery, setFilterQuery] = useState("");
   const [filteredUserData, setFilteredUserData] = useState<
     User[] | null | undefined
   >(null);
-  const inviteRef = useRef<HTMLDivElement>(null);
+  // const inviteRef = useRef<HTMLDivElement>(null);
 
   const handleHidePopover = () => {
     console.log("handleHidePopover");
@@ -87,14 +87,7 @@ export default function InviteMembers({
 
   return (
     <>
-      <div
-        ref={inviteRef}
-        onClick={(e) => {
-          e.stopPropagation();
-          // setShowPopover(true);
-        }}
-        className="text-sm"
-      >
+      <div className="text-sm">
         <span>Invite Members:</span>
         <div className="flex">
           <div className=" relative flex h-fit w-fit gap-1">
@@ -112,25 +105,35 @@ export default function InviteMembers({
               .map((selMembers: User, i: number) => {
                 if (selMembers?.photo) {
                   return (
-                    <Image
-                    key={selMembers._id}
-                      src={selMembers.photo}
-                      alt={"User Image"}
-                      width={33}
-                      height={33}
-                      className="rounded-full"
-                    ></Image>
+                    <div
+                      className="tooltip bg-white text-black"
+                      data-tip={selMembers?.username}
+                    >
+                      <Image
+                        key={selMembers._id}
+                        src={selMembers.photo}
+                        alt={"User Image"}
+                        width={33}
+                        height={33}
+                        className="rounded-full"
+                      ></Image>
+                    </div>
                   );
                 } else {
                   return (
-                    <Image
-                    key={selMembers._id}
-                      src={"/DummyProfile.jpg"}
-                      alt={"User Image"}
-                      width={33}
-                      height={33}
-                      className="rounded-full"
-                    ></Image>
+                    <div
+                      className="tooltip  bg-white text-black "
+                      data-tip={selMembers?.username}
+                    >
+                      <Image
+                        key={selMembers._id}
+                        src={"/DummyProfile.jpg"}
+                        alt={"User Image"}
+                        width={33}
+                        height={33}
+                        className="rounded-full"
+                      ></Image>
+                    </div>
                   );
                 }
               })}
@@ -142,18 +145,32 @@ export default function InviteMembers({
             >
               <div className="flex-grow">
                 {filteredUserData &&
-                  filteredUserData?.map((userData: User) => (
+                  filteredUserData?.map((userData: User, i) => (
                     <div
-                      key={userData._id}
+                      key={i}
                       className="group flex items-center gap-2 overflow-hidden overflow-y-auto py-[7.5px] pl-[10px] pr-[17px] transition-colors duration-0 hover:bg-neutral-100"
                     >
-                      <Image
-                        src={"/images/LoginPage/HeraldLogo.png"}
-                        height={33}
-                        width={33}
-                        alt={"user image"}
-                        className="rounded-full"
-                      ></Image>
+                      {userData?.photo ? (
+                        <>
+                          <Image
+                            src={userData.photo}
+                            height={33}
+                            width={33}
+                            alt={"user image"}
+                            className="rounded-full"
+                          ></Image>
+                        </>
+                      ) : (
+                        <>
+                          <Image
+                            src={"/DummyProfile.jpg"}
+                            height={33}
+                            width={33}
+                            alt={"user image"}
+                            className="rounded-full"
+                          ></Image>
+                        </>
+                      )}
                       <div className="flex flex-grow flex-col">
                         <p className="text-sm font-semibold text-neutral-900">
                           {userData?.username}
@@ -163,7 +180,9 @@ export default function InviteMembers({
                         </p>
                       </div>
                       <button
-                        onClick={() => handleInviteMembers(userData, "add")}
+                        name="addMember"
+                        value={userData?._id}
+                        onClick={handleInviteMembers}
                         className="hidden h-6 w-6 items-center justify-center rounded-full bg-white p-[7.5px] text-xl  group-hover:flex"
                       >
                         <FaPlus></FaPlus>
@@ -296,12 +315,3 @@ const useHidePopOver = (
 //     ></Image>
 //   );
 // }
-
-{
-  /* <div
-key={i}
-className="flex h-8 w-auto items-center justify-center rounded-full border border-neutral-300 bg-primary-500 px-3 text-base text-white"
->
-{selMembers?.username}
-</div> */
-}
