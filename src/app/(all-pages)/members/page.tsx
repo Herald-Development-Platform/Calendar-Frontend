@@ -40,7 +40,11 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { ROLES } from "@/constants/role";
 import ContextProvider, { Context } from "@/app/clientWrappers/ContextProvider";
-import { PERMISSIONS, READABLE_PERMISSIONS } from "@/constants/permissions";
+import {
+  PERMISSIONS,
+  PERMISSION_GROUPS,
+  READABLE_PERMISSIONS,
+} from "@/constants/permissions";
 import DepartmentButton from "@/components/DepartmentButton";
 import { IoIosSearch } from "react-icons/io";
 import {
@@ -116,7 +120,13 @@ export default function Page() {
     handleSubmit: handleUserSubmit,
     formState: { errors: userFormError },
     reset: resetUserForm,
-  } = useForm({
+  } = useForm<{
+    email: string;
+    username: string;
+    role: string;
+    department: string;
+    permissions: string[];
+  }>({
     defaultValues: {
       email: "",
       username: "",
@@ -132,7 +142,8 @@ export default function Page() {
     );
     if (
       data.role === previousData.role &&
-      data.department === previousData.department._id
+      data.department === previousData.department._id &&
+      data.permissions.join(",") === previousData.permissions.join(",")
     ) {
       return;
     }
@@ -140,6 +151,7 @@ export default function Page() {
       id: previousData._id,
       role: data.role,
       department: data.department,
+      permissions: data.permissions,
     });
     if (response.status >= 400 && response.status < 500) {
       toast.error(
@@ -384,9 +396,9 @@ export default function Page() {
 
                 {/** ------------------ */}
                 <Popover>
-                  <PopoverTrigger>
+                  <PopoverTrigger className="ml-auto ">
                     <span
-                      className="ml-auto w-6 cursor-pointer text-2xl text-neutral-500"
+                      className="w-6 cursor-pointer text-2xl text-neutral-500"
                       onClick={() => {}}
                     >
                       <MdArrowDropDown />
@@ -397,50 +409,66 @@ export default function Page() {
                     className="max-h-[370px] w-[350px] gap-2.5 overflow-y-scroll px-6 py-4"
                   >
                     <div className=" flex flex-col gap-2.5">
-                      <span className=" text-[13px] font-semibold text-neutral-600">
-                        User Permissions
-                      </span>
-                      <div className=" flex flex-col items-start justify-start gap-2.5">
-                        {/* {[
-                          PERMISSIONS.CREATE_USER,
-                          PERMISSIONS.UPDATE_USER,
-                          PERMISSIONS.DELETE_USER,
-                        ].map((permission) => {
-                          return (
-                            <div className="flex flex-row items-center justify-start gap-1">
-                              <span className=" text-primary-500">
-                                {watchUserValues("permissions")?.includes(permission) ? <MdCheckBox /> :
-                                <MdCheckBoxOutlineBlank />
-                        }
-                              </span>
-                              <span className=" text-[13px] font-[500] text-neutral-900">
-                                {(READABLE_PERMISSIONS as any)[permission]}
-                              </span>
+                      {Object.keys(PERMISSION_GROUPS).map((groupLabel) => {
+                        return (
+                          <>
+                            <span className=" text-[13px] font-semibold text-neutral-600">
+                              {groupLabel}
+                            </span>
+                            <div className=" flex flex-col items-start justify-start gap-2.5">
+                              {(PERMISSION_GROUPS as any)[groupLabel].map((permission: string) => {
+                                return (
+                                  <div
+                                  key={permission}
+                                    className="flex flex-row items-center justify-start gap-1"
+                                    onClick={() => {
+                                      let newPermissions = [
+                                        ...watchUserValues("permissions"),
+                                      ];
+                                      if (newPermissions.includes(permission)) {
+                                        newPermissions = newPermissions.filter(
+                                          (perm: string) => perm !== permission,
+                                        );
+                                      } else {
+                                        newPermissions = [
+                                          ...newPermissions,
+                                          permission,
+                                        ];
+                                      }
+
+                                      resetUserForm({
+                                        ...getUserValues(),
+                                        permissions: newPermissions,
+                                      });
+                                    }}
+                                  >
+                                    <span className=" text-primary-500">
+                                      {watchUserValues("permissions").includes(
+                                        permission,
+                                      ) ? (
+                                        <MdCheckBox />
+                                      ) : (
+                                        <MdCheckBoxOutlineBlank />
+                                      )}
+                                    </span>
+                                    <span className=" text-[13px] font-[500] text-neutral-900">
+                                      {
+                                        (READABLE_PERMISSIONS as any)[
+                                          permission
+                                        ]
+                                      }
+                                    </span>
+                                  </div>
+                                );
+                              })}
                             </div>
-                          );
-                        })} */}
-                      </div>
-                      {/* <span>Department Permissions</span>
-                      <div className="flex flex-col items-start justify-start">
-                        {[PERMISSIONS.CREATE_DEPARTMENT, PERMISSIONS.UPDATE_DEPARTMENT, PERMISSIONS.DELETE_DEPARTMENT, PERMISSIONS.MANAGE_DEPARTMENT_REQUEST].map(permission=>{
-                          return (<div>
-                            {permission}
-                          </div>);
-                        })}
-                      </div>
-                      <span>Other Permissions</span>
-                      <div className="flex flex-col items-start justify-start">
-                        {[PERMISSIONS.VIEW_EVENTS_FOR_ALL_DEPARTMENT].map(permission=>{
-                          return (<div>
-                            {permission}
-                          </div>);
-                        })}
-                      </div> */}
+                          </>
+                        );
+                      })}
+                      
                     </div>
                   </PopoverContent>
                 </Popover>
-
-                {/** ------------------ */}
               </div>
             </div>
             <div className="flex flex-col gap-2 ">
