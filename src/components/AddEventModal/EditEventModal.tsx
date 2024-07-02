@@ -30,6 +30,7 @@ import "./AddEventModal.css";
 import CustomTimePicker from "./CustomTimePicker";
 import { makePascalCase } from "@/lib/utils";
 import DepartmentButton from "../DepartmentButton";
+import Locations from "./Locations";
 
 // interface PickedDateType {
 //   startDate: Date | undefined;
@@ -170,7 +171,7 @@ export default function EditEventModal({
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <button
           className="scale btn btn-sm
-           relative flex h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
+           relative  hidden h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
           onClick={() => {
             const modal_4 = document.getElementById(
               "my_modal_4",
@@ -215,7 +216,7 @@ export default function EditEventModal({
                 </div>
               </label>
               {/* Description section  */}
-              <div className="w-full text-sm">
+              <div className="flex w-full flex-col items-start text-sm">
                 Description <br />
                 <Textarea
                   placeholder="Type your message here."
@@ -347,7 +348,8 @@ export default function EditEventModal({
                     return (
                       <label
                         className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"
-                        htmlFor={eventKey} key={i}
+                        htmlFor={eventKey}
+                        key={i}
                       >
                         <input
                           checked={
@@ -425,21 +427,7 @@ export default function EditEventModal({
               </div>
 
               {/* Location section  */}
-              <div className="flex-start flex flex-col items-start">
-                <span className="text-sm">
-                  Location <br />
-                </span>
-                <input
-                  type="text"
-                  className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
-                  name="location"
-                  value={newEvent.location}
-                  // onChange={(e) =>
-                  //   setNewEvent({ ...newEvent, location: e.target.value })
-                  // }
-                  onChange={handleValueChange}
-                />
-              </div>
+              <Locations handleValueChange={handleValueChange} />
 
               {/* Departments section  */}
               <div className="flex flex-col items-start text-sm">
@@ -447,8 +435,8 @@ export default function EditEventModal({
                 <div className="my-2 flex flex-wrap items-center gap-1">
                   {departmentsRes?.data?.data?.map((department: Department) => {
                     const departmentExists =
-                      newEvent.departments.includes(department._id) ||
-                      department._id === userData?.department?._id;
+                      newEvent.departments.includes(department.code) ||
+                      department.code === userData?.department?.code;
                     return (
                       <DepartmentButton
                         key={department._id}

@@ -83,6 +83,7 @@
     flex-direction: column; 
     justify-content: space-between;
     align-items: flex-start;
+    text-overflow: ellipsis;
 }
 
 .fc-event.fc-daygrid-dot-event{
@@ -91,9 +92,11 @@
     padding-left: 17px;
 }
 
-/* .fc-event.fc-daygrid-event.fc-daygrid-dot-event > .fc-event-title{ 
-    padding-left: 15px;
-} */
+.fc-event-title{ 
+    overflow: hidden;
+    width: 100%;
+    text-overflow: ellipsis;
+}
 
 
 .department-wrapper{
@@ -131,9 +134,10 @@
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
     scale: 1.2; /* Transition the opacity */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow */
+    z-index: 9999999999;
+
 }
-
-
 .event-tooltip-transition{
     opacity: 1;
 }

@@ -113,7 +113,7 @@ export default function LocationPage() {
               </span>
               <input
                 {...registerLocation("description")}
-                className=" py-2 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
+                className=" w-full rounded border-[1px] border-neutral-300 px-2 py-2 text-neutral-900 focus:border-primary-600"
               />
             </div>
             {/* <div className="mt-[32px]">
@@ -167,24 +167,8 @@ export default function LocationPage() {
           <FaPlus />
           <span>Add Location</span>
         </button>
-        {/* )} */}
       </div>
       <div className="flex w-full flex-col gap-5">
-        {/* <div className=" w-28">
-          <Select onValueChange={(val) => {}}>
-            <SelectTrigger>
-              <SelectValue placeholder="All Blocks" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Blocks</SelectItem>
-              {blocks?.data?.map((block: { name: string; _id: string }) => (
-                <SelectItem key={block._id} value={block.name}>
-                  {block.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div> */}
         <div className="flex flex-col items-start justify-start gap-5">
           {locations?.data?.length === 0 ? (
             <div className="w-full text-center">No locations added.</div>
@@ -198,7 +182,7 @@ export default function LocationPage() {
               }) => {
                 return (
                   <>
-                    <div className="flex w-full flex-row items-center rounded-[4px] bg-neutral-100 px-3 py-1.5 gap-2">
+                    <div className="flex w-full flex-row items-center gap-2 rounded-[4px] bg-neutral-100 px-3 py-1.5">
                       <span className="text-2xl text-neutral-600">
                         <GrLocationPin />
                       </span>
@@ -217,10 +201,17 @@ export default function LocationPage() {
                           </span>
                         )}
                       </div>
-                      <span  className="ml-auto cursor-pointer text-danger-400" onClick={async () => {
-                        await Axios.delete(`${Endpoints.location}/${location._id}`);
-                        queryClient.invalidateQueries({ queryKey: ["locations"] });
-                      }}>
+                      <span
+                        className="ml-auto cursor-pointer text-danger-400"
+                        onClick={async () => {
+                          await Axios.delete(
+                            `${Endpoints.location}/${location._id}`,
+                          );
+                          queryClient.invalidateQueries({
+                            queryKey: ["locations"],
+                          });
+                        }}
+                      >
                         <RiDeleteBin6Line />
                       </span>
                     </div>
