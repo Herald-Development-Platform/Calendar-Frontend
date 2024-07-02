@@ -29,7 +29,7 @@ export default function Page() {
 
   const fetchMyRequests = async () => {
     try {
-      const response = await Axios.get(`/department/request`);
+      const response = await Axios.get(`/department/request/my`);
       if (response.data.success) {
         for (let request of response.data.data) {
           if (request.status === "PENDING") {

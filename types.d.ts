@@ -45,6 +45,7 @@ interface User {
   email: string;
   username: string;
   photo?: string;
+  permissions: string[];
   role: string;
   department?: Department;
   photo?: string;

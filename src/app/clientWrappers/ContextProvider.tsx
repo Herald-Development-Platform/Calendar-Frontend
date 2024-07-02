@@ -88,7 +88,6 @@ export default function ContextProvider({
     startStr: "",
   });
 
-  // console.log("context events", events);
   return (
     <Context.Provider
       value={{

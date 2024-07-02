@@ -4,6 +4,9 @@ import * as Headers from "@/components/Header";
 import { Axios } from "@/services/baseUrl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CiSearch } from "react-icons/ci";
+import { MdArrowDropDown } from "react-icons/md";
+import { MdCheckBoxOutlineBlank, MdCheckBox } from "react-icons/md";
+
 import DepartmentBtn from "@/components/DepartmentButton";
 import {
   Table,
@@ -15,7 +18,7 @@ import {
 } from "@/components/ui/table";
 import { MdDelete, MdOutlineEdit } from "react-icons/md";
 import { toast, Toaster } from "react-hot-toast";
-import { FaCircleUser } from "react-icons/fa6";
+import { FaCircleUser, FaPlus } from "react-icons/fa6";
 
 import {
   Dialog,
@@ -37,6 +40,14 @@ import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { ROLES } from "@/constants/role";
 import ContextProvider, { Context } from "@/app/clientWrappers/ContextProvider";
+import { PERMISSIONS, READABLE_PERMISSIONS } from "@/constants/permissions";
+import DepartmentButton from "@/components/DepartmentButton";
+import { IoIosSearch } from "react-icons/io";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export default function Page() {
   const router = useRouter();
@@ -59,8 +70,6 @@ export default function Page() {
       queryKey: ["UnapprovedUsers"],
       queryFn: () => Axios.get("/department/request?status=PENDING"),
     });
-
-  console.log();
 
   const { data: allUsers, isLoading: allUsersLoading } = useQuery({
     queryKey: ["AllUsers"],
@@ -113,6 +122,7 @@ export default function Page() {
       username: "",
       role: "",
       department: "",
+      permissions: [],
     },
   });
 
@@ -168,7 +178,7 @@ export default function Page() {
       return;
     }
     let newSearchedUsers = allUsers?.data?.data?.filter((user: any) => {
-      if (user.role === "SUPER_ADMIN" || !user.department) {
+      if (user.role === ROLES.SUPER_ADMIN || !user.department) {
         return false;
       }
       if (
@@ -204,6 +214,8 @@ export default function Page() {
         console.error("Error deleting user:", error);
       });
   };
+
+  const showPopover = true;
 
   return (
     <div className="flex flex-col gap-9 px-[70px] pl-3">
@@ -259,7 +271,7 @@ export default function Page() {
             </DialogTitle>
           </DialogHeader>
           <form
-            className="flex flex-col gap-8 py-2"
+            className="flex max-h-[60vh] flex-col gap-8 overflow-y-scroll py-2 pr-2"
             onSubmit={handleUserSubmit(onUserEditSubmit)}
           >
             <label htmlFor="add-title">
@@ -302,6 +314,12 @@ export default function Page() {
                     key={department._id}
                     selectedCross={false}
                     handleQueryParams={() => {
+                      if (!profile) {
+                        return;
+                      }
+                      if (profile?.role !== ROLES.SUPER_ADMIN) {
+                        return;
+                      }
                       resetUserForm({
                         ...getUserValues(),
                         department: department._id,
@@ -337,6 +355,104 @@ export default function Page() {
                   </SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="flex flex-col gap-2 ">
+              <span className="font-500 text-[14px]">
+                Permissions <br />
+              </span>
+              <div className="flex flex-row items-center gap-4 rounded-md border-[1px] border-neutral-300 px-1 py-1">
+                <div className="hide-scrollbar flex flex-row items-center gap-1 overflow-x-scroll">
+                  {watchUserValues("permissions")?.map((permission: string) => (
+                    <DepartmentButton
+                      selectedCross={true}
+                      value={permission}
+                      selected={true}
+                      id={permission}
+                      key={permission}
+                      handleQueryParams={() => {
+                        resetUserForm({
+                          ...getUserValues(),
+                          permissions: watchUserValues("permissions").filter(
+                            (perm: string) => perm !== permission,
+                          ),
+                        });
+                      }}
+                    />
+                  ))}
+                </div>
+
+                {/** ------------------ */}
+                <Popover>
+                  <PopoverTrigger>
+                    <span
+                      className="ml-auto w-6 cursor-pointer text-2xl text-neutral-500"
+                      onClick={() => {}}
+                    >
+                      <MdArrowDropDown />
+                    </span>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    side="top"
+                    className="max-h-[370px] w-[350px] gap-2.5 overflow-y-scroll px-6 py-4"
+                  >
+                    <div className=" flex flex-col gap-2.5">
+                      <span className=" text-[13px] font-semibold text-neutral-600">
+                        User Permissions
+                      </span>
+                      <div className=" flex flex-col items-start justify-start gap-2.5">
+                        {/* {[
+                          PERMISSIONS.CREATE_USER,
+                          PERMISSIONS.UPDATE_USER,
+                          PERMISSIONS.DELETE_USER,
+                        ].map((permission) => {
+                          return (
+                            <div className="flex flex-row items-center justify-start gap-1">
+                              <span className=" text-primary-500">
+                                {watchUserValues("permissions")?.includes(permission) ? <MdCheckBox /> :
+                                <MdCheckBoxOutlineBlank />
+                        }
+                              </span>
+                              <span className=" text-[13px] font-[500] text-neutral-900">
+                                {(READABLE_PERMISSIONS as any)[permission]}
+                              </span>
+                            </div>
+                          );
+                        })} */}
+                      </div>
+                      {/* <span>Department Permissions</span>
+                      <div className="flex flex-col items-start justify-start">
+                        {[PERMISSIONS.CREATE_DEPARTMENT, PERMISSIONS.UPDATE_DEPARTMENT, PERMISSIONS.DELETE_DEPARTMENT, PERMISSIONS.MANAGE_DEPARTMENT_REQUEST].map(permission=>{
+                          return (<div>
+                            {permission}
+                          </div>);
+                        })}
+                      </div>
+                      <span>Other Permissions</span>
+                      <div className="flex flex-col items-start justify-start">
+                        {[PERMISSIONS.VIEW_EVENTS_FOR_ALL_DEPARTMENT].map(permission=>{
+                          return (<div>
+                            {permission}
+                          </div>);
+                        })}
+                      </div> */}
+                    </div>
+                  </PopoverContent>
+                </Popover>
+
+                {/** ------------------ */}
+              </div>
+            </div>
+            <div className="flex flex-col gap-2 ">
+              <span className="font-500 text-[14px]">
+                Remove Member <br />
+              </span>
+              <button
+                onClick={() => {}}
+                className="text-normal btn btn-md h-5 rounded-md border-none bg-red-400 font-medium text-primary-50 hover:bg-red-500"
+              >
+                Remove
+              </button>
             </div>
           </form>
           <DialogFooter className=" flex flex-row items-center justify-end py-4">
@@ -416,63 +532,67 @@ export default function Page() {
           </div>
         </div>
         <>
-          {departmentRequests?.data?.data?.map((request: any) => {
-            if (request.status !== "PENDING") {
-              return null;
-            }
-            return (
-              <div
-                key={request._id}
-                className="flex items-center justify-between gap-2.5 rounded-[4px] bg-neutral-100 px-9 py-4"
-              >
-                <div className="flex flex-row items-center justify-start gap-3">
-                  {request?.user.photo ? (
-                    <img
-                      src={request?.user.photo}
-                      alt={`Photo of ${request?.user?.username}`}
-                      className=" w-10 rounded-full"
-                    />
-                  ) : (
-                    <span className="text-3xl text-neutral-500">
-                      <FaCircleUser />
-                    </span>
-                  )}
-                  <div className=" flex flex-col items-start justify-center">
-                    <h1 className=" text-[16px] font-semibold text-neutral-900">
-                      {request?.user?.email}
-                    </h1>
-                    <p className=" font-400 text-neutral-500">
-                      <span className=" font-medium">
-                        {request?.user?.username}
-                      </span>{" "}
-                      wants to join{" "}
-                      <span className=" font-medium">
-                        {request?.department?.name}
+          {profile &&
+            profile.permissions.includes(
+              PERMISSIONS.MANAGE_DEPARTMENT_REQUEST,
+            ) &&
+            departmentRequests?.data?.data?.map((request: any) => {
+              if (request.status !== "PENDING") {
+                return null;
+              }
+              return (
+                <div
+                  key={request._id}
+                  className="flex items-center justify-between gap-2.5 rounded-[4px] bg-neutral-100 px-9 py-4"
+                >
+                  <div className="flex flex-row items-center justify-start gap-3">
+                    {request?.user.photo ? (
+                      <img
+                        src={request?.user.photo}
+                        alt={`Photo of ${request?.user?.username}`}
+                        className=" w-10 rounded-full"
+                      />
+                    ) : (
+                      <span className="text-3xl text-neutral-500">
+                        <FaCircleUser />
                       </span>
-                    </p>
+                    )}
+                    <div className=" flex flex-col items-start justify-center">
+                      <h1 className=" text-[16px] font-semibold text-neutral-900">
+                        {request?.user?.email}
+                      </h1>
+                      <p className=" font-400 text-neutral-500">
+                        <span className=" font-medium">
+                          {request?.user?.username}
+                        </span>{" "}
+                        wants to join{" "}
+                        <span className=" font-medium">
+                          {request?.department?.name}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  <div className=" flex h-8 flex-row gap-4 ">
+                    <button
+                      className=" text-500 flex items-center justify-center rounded-md bg-success-500 px-4 py-2 text-[13px] text-white"
+                      onClick={() => {
+                        approveUser({ _id: request._id, status: "APPROVED" });
+                      }}
+                    >
+                      Approve
+                    </button>
+                    <button
+                      className="text-500 flex items-center justify-center rounded-md bg-danger-500 px-4 py-2 text-[13px] text-white"
+                      onClick={() => {
+                        approveUser({ _id: request._id, status: "REJECTED" });
+                      }}
+                    >
+                      Deny
+                    </button>
                   </div>
                 </div>
-                <div className=" flex h-8 flex-row gap-4 ">
-                  <button
-                    className=" text-500 flex items-center justify-center rounded-md bg-success-500 px-4 py-2 text-[13px] text-white"
-                    onClick={() => {
-                      approveUser({ _id: request._id, status: "APPROVED" });
-                    }}
-                  >
-                    Approve
-                  </button>
-                  <button
-                    className="text-500 flex items-center justify-center rounded-md bg-danger-500 px-4 py-2 text-[13px] text-white"
-                    onClick={() => {
-                      approveUser({ _id: request._id, status: "REJECTED" });
-                    }}
-                  >
-                    Deny
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
         </>
         <div className="flex flex-row justify-between">
           <div className="flex max-w-[80vw] flex-row items-center justify-start gap-1.5">
@@ -532,20 +652,13 @@ export default function Page() {
                   <></>
                 ),
               )}
-            {/* <span
-              onClick={() => {
-                setDepartmentDialogOpen(true);
-              }}
-              className="cursor-pointer rounded-full bg-primary-500 px-4 py-2 text-[12px] font-semibold text-white transition-colors hover:bg-primary-600"
-            >
-              <FaPlus />
-            </span> */}
           </div>
           <div className="flex flex-row ">
             {profile &&
-              profile.role === "SUPER_ADMIN" &&
-              departments &&
-              departments.length > 0 && (
+              (profile.permissions.includes(PERMISSIONS.CREATE_DEPARTMENT) ||
+                profile.permissions.includes(
+                  PERMISSIONS.UPDATE_DEPARTMENT,
+                )) && (
                 <span
                   onClick={() => router.push("/department")}
                   className=" cursor-pointer text-[14px] font-semibold text-info-600 underline underline-offset-2"
@@ -573,17 +686,15 @@ export default function Page() {
                 <TableHead className=" w-[76px] text-neutral-600">
                   Role
                 </TableHead>
-                {profile?.role !== ROLES.STAFF && (
-                  <TableHead className="w-[76px] text-right text-neutral-600">
-                    Action
-                  </TableHead>
-                )}
+                <TableHead className="w-[76px] text-right text-neutral-600">
+                  Action
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {searchedUsers?.map(
                 (user: any) =>
-                  user.role !== "SUPER_ADMIN" &&
+                  user.role !== ROLES.SUPER_ADMIN &&
                   user.department &&
                   (selDepartments.includes("All") ||
                     selDepartments.includes(user?.department?.code)) && (
@@ -604,6 +715,7 @@ export default function Page() {
                           <div className=" flex flex-col items-start justify-center">
                             <h1 className=" text-[16px] font-semibold">
                               {user?.username}
+                              {profile?._id === user._id && " (You)"}
                             </h1>
                             <p>{user?.email}</p>
                           </div>
@@ -613,7 +725,9 @@ export default function Page() {
                         {user?.department?.code}
                       </TableCell>
                       <TableCell className="w-[76px] ">
-                        {profile?.data?.role === "SUPER_ADMIN" ? (
+                        {profile?.permissions.includes(
+                          PERMISSIONS.UPDATE_USER,
+                        ) && profile?._id !== user._id ? (
                           <Select
                             value={user?.role}
                             onValueChange={(val) => {
@@ -657,26 +771,33 @@ export default function Page() {
                           </div>
                         )}
                       </TableCell>
-                      {profile?.role !== ROLES.STAFF && (
-                        <TableCell className="w-[76px] text-right">
-                          {profile?.role !== ROLES.STAFF && (
-                            <div className="flex flex-row items-center justify-end gap-2">
-                              {profile.role === ROLES.SUPER_ADMIN && (
-                                <button
-                                  onClick={() => {
-                                    resetUserForm({
-                                      email: user?.email,
-                                      username: user?.username,
-                                      role: user?.role,
-                                      department: user?.department?._id,
-                                    });
-                                    setEditUserDialogOpen(true);
-                                  }}
-                                  className=" text-xl text-primary-600"
-                                >
-                                  <MdOutlineEdit />
-                                </button>
-                              )}
+                      <TableCell className="w-[76px] text-right">
+                        <div className="flex flex-row items-center justify-end gap-2">
+                          {profile?.permissions.includes(
+                            PERMISSIONS.UPDATE_USER,
+                          ) &&
+                            profile?._id !== user._id && (
+                              <button
+                                onClick={() => {
+                                  resetUserForm({
+                                    email: user?.email,
+                                    username: user?.username,
+                                    role: user?.role,
+                                    department: user?.department?._id,
+                                    permissions: user?.permissions,
+                                  });
+                                  setEditUserDialogOpen(true);
+                                }}
+                                className=" text-xl text-primary-600"
+                              >
+                                <MdOutlineEdit />
+                              </button>
+                            )}
+
+                          {profile?.permissions.includes(
+                            PERMISSIONS.DELETE_USER,
+                          ) &&
+                            profile?._id !== user._id && (
                               <button
                                 onClick={() => {
                                   setUpdatingUserData(user);
@@ -686,10 +807,9 @@ export default function Page() {
                               >
                                 <MdDelete />
                               </button>
-                            </div>
-                          )}
-                        </TableCell>
-                      )}
+                            )}
+                        </div>
+                      </TableCell>
                     </TableRow>
                   ),
               )}
