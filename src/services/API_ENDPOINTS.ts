@@ -6,6 +6,8 @@ const Endpoints = {
   admin: "/admin/login",
   oauth: `${baseUrl}/googleAuth`,
   event: `/event`,
+  location: `/location`,
+  block: `/block`,
   eventById: (id: string) => `/event/${id}`,
   updateUser: (payload: any) => `/user/${payload.id}`,
   eventByQuery: ({

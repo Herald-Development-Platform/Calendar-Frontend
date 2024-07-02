@@ -22,6 +22,7 @@ import { BiPencil } from "react-icons/bi";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import { profile } from "console";
 import { ROLES } from "@/constants/role";
+import { PERMISSIONS } from "@/constants/permissions";
 import { useGetEvents } from "@/services/api/eventsApi";
 
 export default function ManageDepartment() {
@@ -57,7 +58,6 @@ export default function ManageDepartment() {
       newEvent.departments = newEvent?.departments?.map((d: any) => d._id);
       return newEvent;
     });
-    console.log("idOnlyEvents", idOnlyEvents);
     let eventsCountMap: any = {};
     let today = new Date();
     today = new Date(today.setHours(0, 0, 0));
@@ -115,7 +115,7 @@ export default function ManageDepartment() {
         <p className="text-[28px] font-semibold text-neutral-700">
           Manage Department
         </p>
-        {userData?.role === ROLES.SUPER_ADMIN && (
+        {userData?.permissions.includes(PERMISSIONS.CREATE_DEPARTMENT) && (
           <button
             onClick={() => {
               setDepartmentDialogOpen(true);
@@ -128,9 +128,7 @@ export default function ManageDepartment() {
         )}
       </div>
       <div className="flex w-full flex-col gap-5">
-        {departments &&
-          departments.length &&
-          departments.length > 0 &&
+        {departments && departments.length > 0 &&
           departments.map((department: Department) => {
             return (
               <>
@@ -156,10 +154,9 @@ export default function ManageDepartment() {
                         {departmentEventsCount
                           ? departmentEventsCount[department._id]
                           : 0}{" "}
-                        Events •
-                      </span>
+                        Events{" "}•{" "}</span>
                       <span className=" text-[11px] font-normal text-neutral-500">
-                        {department.membersCount} members
+                        {department.membersCount}{" "}members
                       </span>
                     </p>
                   </div>

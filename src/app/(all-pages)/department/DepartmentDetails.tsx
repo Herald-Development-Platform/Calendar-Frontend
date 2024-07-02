@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { MdOutlineModeEditOutline } from "react-icons/md";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -24,6 +24,8 @@ import Endpoints from "@/services/API_ENDPOINTS";
 import toast from "react-hot-toast";
 import { BiPencil } from "react-icons/bi";
 import { useForm } from "react-hook-form";
+import { Context } from "@/app/clientWrappers/ContextProvider";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export default function DepartmentDetails({
   department,
@@ -72,6 +74,8 @@ export default function DepartmentDetails({
       },
     });
 
+  const { userData } = useContext(Context);
+
   const {
     register: registerDepartment,
     handleSubmit: handleDepartmentSubmit,
@@ -86,14 +90,14 @@ export default function DepartmentDetails({
     },
   });
 
-  useEffect(()=> {
+  useEffect(() => {
     resetDepartmentForm({
       code: mutateDepartment?.code,
       name: mutateDepartment?.name,
       description: mutateDepartment?.description,
-      _id: mutateDepartment?._id
+      _id: mutateDepartment?._id,
     });
-  }, [mutateDepartment])
+  }, [mutateDepartment]);
 
   const onDepartmentSubmit = async (data: any) => {
     updateDepartment(data);
@@ -232,32 +236,45 @@ export default function DepartmentDetails({
                   <BsThreeDotsVertical />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="h-[115px] w-[300px] px-5 py-4 text-sm font-semibold">
-                <button
-                  onClick={(e: any) => {
-                    setMutateDepartment(department);
-                    setEditDepartmentModalOpen(true);
-                  }}
-                  className="flex w-full items-center justify-start gap-2 px-2 py-1 text-neutral-700 transition-colors duration-150 hover:bg-neutral-100  hover:text-neutral-800"
-                >
-                  <span className="text-2xl">
-                    <MdOutlineModeEditOutline />
-                  </span>
-                  Edit Department
-                </button>
-                <DropdownMenuSeparator />
-                <button
-                  onClick={() => {
-                    setMutateDepartment(department);
-                    setDeleteDepartmentModalOpen(true);
-                  }}
-                  className="flex w-full items-center justify-start gap-2 px-2 py-1 text-danger-400 transition-colors duration-150 hover:bg-neutral-100  hover:text-danger-500"
-                >
-                  <span className="text-2xl">
-                    <RiDeleteBin6Line />
-                  </span>
-                  Delete Department
-                </button>
+              <DropdownMenuContent align="end" className="w-[300px] px-5 py-4 text-sm font-semibold">
+                {userData &&
+                  userData?.permissions?.includes(
+                    PERMISSIONS.UPDATE_DEPARTMENT,
+                  ) && (
+                    <button
+                      onClick={(e: any) => {
+                        setMutateDepartment(department);
+                        setEditDepartmentModalOpen(true);
+                      }}
+                      className="flex w-full items-center justify-start gap-2 px-2 py-1 text-neutral-700 transition-colors duration-150 hover:bg-neutral-100  hover:text-neutral-800"
+                    >
+                      <span className="text-2xl">
+                        <MdOutlineModeEditOutline />
+                      </span>
+                      Edit Department
+                    </button>
+                  )}
+
+                {userData &&
+                  userData?.permissions?.includes(
+                    PERMISSIONS.DELETE_DEPARTMENT,
+                  ) && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <button
+                        onClick={() => {
+                          setMutateDepartment(department);
+                          setDeleteDepartmentModalOpen(true);
+                        }}
+                        className="flex w-full items-center justify-start gap-2 px-2 py-1 text-danger-400 transition-colors duration-150 hover:bg-neutral-100  hover:text-danger-500"
+                      >
+                        <span className="text-2xl">
+                          <RiDeleteBin6Line />
+                        </span>
+                        Delete Department
+                      </button>
+                    </>
+                  )}
               </DropdownMenuContent>
             </DropdownMenu>
           </span>
