@@ -14,13 +14,15 @@ import { Axios } from "@/services/baseUrl";
 import DepartmentButton from "@/components/DepartmentButton";
 import { BiPencil } from "react-icons/bi";
 import ContextProvider, { Context } from "@/app/clientWrappers/ContextProvider";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import Image from "next/image";
 
 export default function ImportExport() {
   const [currentTab, setCurrentTab] = useState("import");
   const [importFileData, setImportFileData] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [memberDialog, setMemberDialog] = useState(false);
+  const [syncDialogOpen, setSyncDialogOpen] = useState(false);
 
   const [departments, setDepartments] = useState<Department[]>([]);
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
@@ -149,7 +151,7 @@ export default function ImportExport() {
       console.log("data", data);
       toast.success(data?.message || "Success");
     },
-    onError: (err:any) => {
+    onError: (err: any) => {
       console.log("err", err);
       toast.error(err?.response?.data?.message || "Something went wrong.");
     },
@@ -174,6 +176,31 @@ export default function ImportExport() {
     }
     return `${size.toFixed(1)} ${units[unitIndex]}`;
   };
+
+  const { data: googleLocations, isLoading: googleLocationsLoading } = useQuery(
+    {
+      queryKey: ["googlelocations"],
+      queryFn: async () => {
+        const response = await Axios.get(`/google/events`);
+        const events = response.data.data;
+        let uniqueEvents: any[] = [];
+        // each event has "recurringEventId" field which is same for all recurring events
+        // so we will filter out the unique events
+
+        events.forEach((event:any) => {
+          if (
+            !uniqueEvents.find(
+              (uniqueEvent) =>
+                uniqueEvent.recurringEventId === event.recurringEventId,
+            )
+          ) {
+            uniqueEvents.push(event);
+          }
+        });
+        return uniqueEvents;
+      },
+    },
+  );
 
   return (
     <div className="flex flex-col gap-9 px-[70px] pl-9">
@@ -328,13 +355,69 @@ export default function ImportExport() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={syncDialogOpen} onOpenChange={setSyncDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className=" text-[19px] font-semibold ">
+              Sync With Google
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-8 max-h-[60vh] overflow-y-scroll">
+            <div className=" flex w-full flex-row items-start justify-start gap-[8px] rounded-md px-3 py-4 text-neutral-500">
+              {googleLocationsLoading ? (
+                <span>Loading</span>
+              ) : (
+                <div>
+                  {googleLocations?.map((location: any) => (
+                    <div key={location.id} className="flex items-center gap-2 ">
+                      <div
+                        className={`h-8 w-8 rounded-md bg-[${location.color ?? "transparent"}]`}
+                      >
+                        {!location.color && (
+                          <Image
+                            src={"/images/google.logo.svg"}
+                            width={24}
+                            height={24}
+                            alt="GoogleIcon"
+                          ></Image>
+                        )}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className=" text-neutral-900 text-[16px] font-semibold">{location.summary}</span>
+                        <span className="text-[11px] text-neutral-500 ">{new Date(location.start.dateTime).toLocaleDateString()}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <DialogFooter className=" flex flex-row items-center justify-end py-4">
+            <button
+              onClick={() => {
+                selectedFile
+                  ? postMemberFiles(selectedFile)
+                  : toast.error("File is not selected.");
+              }}
+              className="btn btn-md h-5 border-none bg-primary-600 text-[13px] font-medium text-primary-50 hover:bg-primary-700"
+              style={{
+                textDecoration: "none",
+              }}
+            >
+              Sync
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className=" mt-[80px] flex flex-col gap-[37px]">
         <div className="flex flex-row justify-between">
           <h1 className=" text-[28px] font-[700] text-neutral-700">
             Import/ Export
           </h1>
         </div>
-        <div className="flex flex-row items-center justify-start gap-4 text-neutral-500">
+        <div className="flex w-full flex-row items-center justify-start gap-4 text-neutral-500">
           <span
             onClick={() => {
               setCurrentTab("import");
@@ -358,6 +441,22 @@ export default function ImportExport() {
             } cursor-pointer `}
           >
             Export
+          </span>
+          <span className="ml-auto">
+            <button
+              onClick={() => {
+                setSyncDialogOpen(true);
+              }}
+              className="ml-7 flex items-center gap-2 rounded-[4px] bg-primary-600 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary-700"
+            >
+              <Image
+                src={"/images/google.logo.svg"}
+                width={24}
+                height={24}
+                alt="GoogleIcon"
+              ></Image>{" "}
+              <span>Sync With Google</span>
+            </button>
           </span>
         </div>
         {currentTab === "import" ? (
