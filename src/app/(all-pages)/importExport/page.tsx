@@ -149,7 +149,7 @@ export default function ImportExport() {
       console.log("data", data);
       toast.success(data?.message || "Success");
     },
-    onError: (err) => {
+    onError: (err:any) => {
       console.log("err", err);
       toast.error(err?.response?.data?.message || "Something went wrong.");
     },
