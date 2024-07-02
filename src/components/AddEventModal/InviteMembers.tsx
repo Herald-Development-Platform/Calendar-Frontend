@@ -105,7 +105,7 @@ export default function InviteMembers({
               .map((selMembers: User, i: number) => {
                 if (selMembers?.photo) {
                   return (
-                    <div
+                    <div key={i}
                       className="tooltip bg-white text-black"
                       data-tip={selMembers?.username}
                     >
@@ -121,7 +121,7 @@ export default function InviteMembers({
                   );
                 } else {
                   return (
-                    <div
+                    <div key={i}
                       className="tooltip  bg-white text-black "
                       data-tip={selMembers?.username}
                     >

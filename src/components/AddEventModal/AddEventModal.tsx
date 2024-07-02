@@ -326,11 +326,12 @@ export default function AddEventModal({
                     Object.keys(RecurringEventTypes) as Array<
                       keyof typeof RecurringEventTypes
                     >
-                  ).map((eventKey) => {
+                  ).map((eventKey,i) => {
                     return (
                       <label
                         className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"
                         htmlFor={eventKey}
+                        key={i}
                       >
                         <input
                           checked={
