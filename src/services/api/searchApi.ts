@@ -7,16 +7,27 @@ import toast from "react-hot-toast";
 export const useGetEventByQuery = (queryParams: eventByParamsType) =>
   useQuery({
     queryKey: ["Events"],
-    queryFn: () =>
-      Axios.get(
-        Endpoints.eventByQuery({
-          q: queryParams.q,
-          departments: queryParams.departments,
-          colors: queryParams.colors,
-          eventTo: queryParams.eventTo,
-          eventFrom: queryParams.eventFrom,
-        }),
-      ),
+    queryFn: async () => {
+      try {
+        const res = await Axios.get(
+          Endpoints.eventByQuery({
+            q: queryParams.q,
+            departments: queryParams.departments,
+            colors: queryParams.colors,
+            eventTo: queryParams.eventTo,
+            eventFrom: queryParams.eventFrom,
+          }),
+        );
+        if (res.statusText !== "OK") {
+          toast.error(res.data.message);
+          return res.data;
+        }
+        return res.data.data;
+      } catch (err: any) {
+        console.error(err);
+        toast.error(err?.message || "something went wrong");
+      }
+    },
   });
 
 export const useUpdateEvents = () => {

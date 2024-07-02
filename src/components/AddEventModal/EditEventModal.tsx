@@ -1,68 +1,47 @@
 "use client";
 import Datepicker from "react-datepicker";
 import Image from "next/image";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import { Calendar } from "@/components/ui/calendar";
-import { HiOutlineCalendar } from "react-icons/hi";
+import React, { useContext, useEffect, useState } from "react";
+
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { format } from "date-fns";
 
 import { BiPencil } from "react-icons/bi";
 import "react-datepicker/dist/react-datepicker.css";
-import { TimeSelector } from "./TimeSelector";
-import { MdOutlineHourglassTop } from "react-icons/md";
-import { LiaHourglassEndSolid, LiaHourglassStartSolid } from "react-icons/lia";
-import format from "date-fns/format";
 import US_LocaleData from "date-fns/locale/en-US";
-import { DateRange } from "react-big-calendar";
 import { AiOutlinePlus } from "react-icons/ai";
-import { Context } from "@/app/clientWrappers/ContextProvider";
-import "./AddEventModal.css";
+import ContextProvider, { Context } from "@/app/clientWrappers/ContextProvider";
 import { Axios, baseUrl } from "@/services/baseUrl";
-import * as CookieHooks from "@/hooks/CookieHooks";
-import { useGetCookieByName } from "@/hooks/CookieHooks";
-import { DEPARTMENTS } from "@/constants/departments";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { postEvents, updateEvents } from "@/services/api/eventsApi";
+import { postEvents, usePostEventMutation } from "@/services/api/eventsApi";
 import { watch } from "fs";
-import DepartmentBtn from "./DepartmentBtn";
 import { getDepartments } from "@/services/api/departments";
 import colors from "@/constants/Colors";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Button } from "../ui/button";
-import { CalendarIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { setPriority } from "os";
 import { Textarea } from "../ui/textarea";
+import { RecurringEventTypes } from "@/constants/RecurringEvents";
+import InviteMembers from "./InviteMembers";
+import "./AddEventModal.css";
+import CustomTimePicker from "./CustomTimePicker";
+import { makePascalCase } from "@/lib/utils";
+import DepartmentButton from "../DepartmentButton";
 
-interface PickedDateType {
-  startDate: Date | null | undefined;
-  endDate: Date | null | undefined;
-}
+// interface PickedDateType {
+//   startDate: Date | undefined;
+//   endDate: Date | undefined;
+// }
 
-export default function EditEventModal({
+export default function AddEventModal({
   defaultData,
 }: {
   defaultData: eventType | null;
 }) {
-  const [pickedDate, setPickedDate] = useState<PickedDateType>();
+  // const [pickedDate, setPickedDate] = useState<any>();
   const [dateType, setDateType] = useState<"single" | "multi">("single");
-
-  const queryClient = useQueryClient();
-
-  const token = useGetCookieByName("token");
-
-  const [editEvent, setEditEvent] = useState<eventType>({
+  const [newEvent, setNewEvent] = useState<eventType>({
     title: "",
     start: null,
-    recurringType: "NONE",
     end: null,
     color: undefined,
     duration: 0,
@@ -70,78 +49,9 @@ export default function EditEventModal({
     description: undefined,
     departments: [],
     notes: "",
+    recurringType: RecurringEventTypes.ONCE,
     involvedUsers: [],
   });
-
-  const { data: departmentsRes } = useQuery({
-    queryKey: ["Departments"],
-    queryFn: getDepartments,
-  });
-
-  console.log("depar", departmentsRes);
-  const { mutate: updateEvent } = useMutation({
-    mutationFn: updateEvents,
-    onSuccess: (res) => {
-      console.log("Onsuccess", res);
-      queryClient.invalidateQueries({ queryKey: ["Events"] });
-      toast.success(`${res?.data?.message}`);
-      setPickedDate({ startDate: null, endDate: null });
-      setEditEvent({
-        title: "",
-        start: null,
-        recurringType: "NONE",
-        end: null,
-        color: undefined,
-        duration: 0,
-        location: "",
-        description: undefined,
-        departments: [],
-        notes: "",
-        involvedUsers: [],
-      });
-    },
-    onError: (err: any) => {
-      console.log("error", err);
-      toast.error(err?.data?.message || "something went wrong");
-    },
-  });
-
-  function handleUpdateEvent(id: string) {
-    console.log("handle add event ", editEvent);
-    // setEvents([...events, editEvent]);
-    updateEvent({ id, editEvent });
-  }
-
-  const setDateAndTime = ({ hours, minutes, type }: setDateAndTimeTypes) => {
-    console.log("selected date in setdateandtime function:", pickedDate);
-    // const date = format(pickedDate?.startDate, "yyyy-MM-dd", {
-    //   locale: US_LocaleData,
-    // });
-
-    if (type === "start" && Boolean(pickedDate?.startDate)) {
-      const startDate = pickedDate?.startDate
-        ? format(new Date(pickedDate.startDate), "yyyy-MM-dd", {
-            locale: US_LocaleData,
-          })
-        : new Date();
-      const finalStartDate = new Date(startDate);
-      finalStartDate?.setHours(hours);
-      finalStartDate?.setMinutes(minutes);
-
-      setEditEvent({ ...editEvent, start: finalStartDate });
-    } else if (type === "end" && pickedDate?.endDate) {
-      const endDate = format(new Date(pickedDate?.endDate), "yyyy-MM-dd", {
-        locale: US_LocaleData,
-      });
-      const finalEndDate = new Date(endDate);
-      finalEndDate?.setHours(hours);
-      finalEndDate?.setMinutes(minutes);
-
-      setEditEvent({ ...editEvent, end: finalEndDate });
-    }
-  };
-
-  console.log("render", editEvent);
 
   useEffect(() => {
     if (!defaultData) return;
@@ -151,348 +61,446 @@ export default function EditEventModal({
         //@ts-ignore
         (department) => department?.code,
       ),
+      start: defaultData.start ? new Date(defaultData.start) : new Date(),
+      end: defaultData.end ? new Date(defaultData.end) : new Date(),
     };
-    setEditEvent(modifiedData);
-    setPickedDate({ startDate: defaultData.start, endDate: defaultData.end });
+    setNewEvent(modifiedData);
+    console.log("modifiedData", modifiedData);
   }, [defaultData]);
 
-  console.log("index editEvent", editEvent);
+  const { userData } = useContext(Context);
 
-  const datepickerRef = useRef<any>();
+  const { data: departmentsRes } = useQuery({
+    queryKey: ["Departments"],
+    queryFn: getDepartments,
+  });
+
+  const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
+
+  function handleAddEvent() {
+    // console.log("handle add event ", newEvent);
+    postNewEvent(newEvent);
+  }
+
+  const handleValueChange = (e: any) => {
+    let { name, value } = e.target;
+    if (!name) {
+      name = e.currentTarget.name;
+      value = e.currentTarget.value;
+    }
+
+    // console.log("name value", name, value);
+
+    switch (name) {
+      case "department":
+        if (newEvent.departments.includes(value)) {
+          setNewEvent((prev) => ({
+            ...prev,
+            departments: [
+              ...newEvent.departments.filter((item) => item !== value),
+            ],
+          }));
+        } else {
+          setNewEvent((prev) => ({
+            ...prev,
+            departments: [...newEvent.departments, value],
+          }));
+        }
+        break;
+
+      case "addMember": {
+        const userId = value;
+        if (newEvent?.involvedUsers.includes(userId)) return;
+        setNewEvent({
+          ...newEvent,
+          involvedUsers: [...newEvent?.involvedUsers, userId],
+        });
+        break;
+      }
+      case "removeMember": {
+        const userId = value;
+
+        setNewEvent((prev) => ({
+          ...prev,
+          involvedUsers: [
+            ...newEvent?.involvedUsers.filter(
+              (memberId) => memberId !== userId,
+            ),
+          ],
+        }));
+        break;
+      }
+
+      default:
+        setNewEvent((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
   return (
     <>
-      <button
-        className="scale btn btn-sm
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <button
+          className="scale btn btn-sm
            relative flex h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
-        onClick={() => {
-          const modal_4 = document.getElementById(
-            "my_modal_4",
-          ) as HTMLDialogElement;
-          modal_4.showModal();
-        }}
-        key={"my_modal_4"}
-      >
-        <AiOutlinePlus className="h-4 w-4 font-bold text-primary-50" />
-        Edit Event
-      </button>
-      <dialog id="my_modal_4" className="modal">
-        <div className="min-w-xl modal-box relative flex max-w-2xl flex-col gap-10 overflow-y-auto  p-8 text-lg text-neutral-600">
-          {/* Heading  */}
-          <div className="m-auto">
-            <form method="dialog">
-              {/* if there is a button in form, it will close the modal */}
-              <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
-                ✕
-              </button>
-            </form>
-            <h3 className="text-lg font-bold">Edit Event</h3>
-          </div>
-
-          {/* input section  */}
-          <div className="flex flex-col gap-8">
-            {/* Title input section  */}
-            <label htmlFor="add-title">
-              <div className="group flex h-11 w-full items-center gap-2  border-b-[1px] border-neutral-300 px-4 focus-within:border-primary-600">
-                <span className="text-xl">
-                  <BiPencil />
-                </span>
-                <input
-                  type="text"
-                  className="w-full text-lg font-normal text-neutral-900 outline-none"
-                  placeholder="Add Title"
-                  id="add-title"
-                  value={editEvent.title}
-                  onChange={(e) =>
-                    setEditEvent({ ...editEvent, title: e.target.value })
-                  }
-                />
-              </div>
-            </label>
-            {/* Description section  */}
-            <div className="w-full text-start text-sm">
-              Description
-              <Textarea
-                placeholder="Type your message here."
-                className="w-full text-neutral-900 ring-ring focus:border-primary-600  focus-visible:ring-0"
-                id="message"
-                onChange={(e) =>
-                  setEditEvent({
-                    ...editEvent,
-                    description: e?.target?.value
-                      ? e?.target?.value
-                      : undefined,
-                  })
-                }
-                value={editEvent?.description ? editEvent.description : ""}
-              />
+          onClick={() => {
+            const modal_4 = document.getElementById(
+              "my_modal_4",
+            ) as HTMLDialogElement;
+            modal_4.showModal();
+          }}
+          key={"my_modal_4"}
+        >
+          <AiOutlinePlus className="h-4 w-4 font-bold text-primary-50" />
+          Add Event
+        </button>
+        <dialog id="my_modal_4" className="modal z-[1111]">
+          <div className="min-w-xl modal-box relative flex max-w-2xl flex-col gap-10 overflow-y-auto p-8 text-lg text-neutral-600">
+            {/* Heading  */}
+            <div className="m-auto">
+              <form method="dialog">
+                {/* if there is a button in form, it will close the modal */}
+                <button className="btn btn-circle btn-ghost btn-sm absolute right-2 top-2">
+                  ✕
+                </button>
+              </form>
+              <h3 className="text-lg font-bold">Add Event</h3>
             </div>
-            {/* Date Input section */}
-            <label htmlFor="date" className="flex flex-col gap-2 text-sm ">
-              <div className="flex gap-3">
-                <span
-                  tabIndex={0}
-                  onClick={() => {
-                    setDateType("single");
-                    setPickedDate({
-                      startDate: pickedDate?.startDate,
-                      endDate: pickedDate?.startDate,
-                    });
-                  }}
-                  className={`${
-                    dateType === "single" ? "underline" : ""
-                  } cursor-pointer `}
-                >
-                  Date
-                </span>
-                <span
-                  tabIndex={0}
-                  onClick={() => setDateType("multi")}
-                  className={`${
-                    dateType === "multi" ? "underline" : ""
-                  }  cursor-pointer`}
-                >
-                  Multi Date
-                </span>
+
+            {/* input section  */}
+            <div className="flex flex-col gap-8 ">
+              {/* Title input section  */}
+              <label htmlFor="add-title">
+                <div className="group flex h-11 w-full items-center gap-2  border-b-[1px] border-neutral-300 px-4 focus-within:border-primary-600">
+                  <span className="text-xl">
+                    <BiPencil />
+                  </span>
+                  <input
+                    type="text"
+                    className="w-full text-lg font-normal text-neutral-900 outline-none"
+                    placeholder="Add Title"
+                    id="add-title"
+                    name="title"
+                    value={newEvent.title}
+                    // onChange={(e) =>
+                    //   setNewEvent({ ...newEvent, title: e.target.value })
+                    // }
+                    onChange={handleValueChange}
+                  />
+                </div>
+              </label>
+              {/* Description section  */}
+              <div className="w-full text-sm">
+                Description <br />
+                <Textarea
+                  placeholder="Type your message here."
+                  className="w-full text-neutral-900 ring-ring focus:border-primary-600  focus-visible:ring-0"
+                  id="message"
+                  name="description"
+                  // onChange={(e) =>
+                  //   setNewEvent({
+                  //     ...newEvent,
+                  //     description: e?.target?.value
+                  //       ? e?.target?.value
+                  //       : undefined,
+                  //   })
+                  // }
+                  onChange={handleValueChange}
+                  value={newEvent?.description ? newEvent.description : ""}
+                />
               </div>
 
-              {dateType === "single" && pickedDate?.startDate && (
-                <Datepicker
-                  ref={datepickerRef}
-                  className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
-                  onChange={(datePicked) => {
-                    setPickedDate({
-                      startDate: datePicked,
-                      endDate: datePicked,
-                    });
-                    // console.log("PickedDate", datePicked);
-                  }}
-                  // value={
-                  //   pickedDate?.startDate
-                  //     ? format(pickedDate.startDate, "EEEE, dd MMMM", {
-                  //         locale: US_LocaleData,
-                  //       })
-                  //     : undefined
-                  // }
-                  selected={new Date(pickedDate.startDate)}
-                  dateFormat={"EEEE, dd MMMM"}
-                  placeholderText="Please select a date."
-                  required
-                />
-              )}
+              {/* Date Input section */}
+              <label htmlFor="date" className="flex flex-col gap-2 text-sm ">
+                <div className="flex gap-3">
+                  <button
+                    tabIndex={0}
+                    name="end"
+                    onClick={(e) => {
+                      setDateType("single");
+                      handleValueChange({
+                        target: { name: "end", value: newEvent.start },
+                      });
+                    }}
+                    className={`${
+                      dateType === "single" ? "underline" : ""
+                    } cursor-pointer  underline-offset-4`}
+                  >
+                    Date
+                  </button>
+                  <button
+                    tabIndex={0}
+                    onClick={() => setDateType("multi")}
+                    className={`${
+                      dateType === "multi" ? "underline" : ""
+                    }  cursor-pointer underline-offset-4`}
+                  >
+                    Multi Date
+                  </button>
+                </div>
 
-              {dateType === "multi" && (
-                <div className="flex w-full flex-row items-center gap-2 ">
-                  {/* <span className="w-full border border-blue-500"> */}
+                {dateType === "single" && (
                   <Datepicker
-                    className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
+                    className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
                     onChange={(datePicked) => {
-                      setPickedDate({
-                        startDate: datePicked,
-                        endDate: pickedDate?.endDate,
+                      if (!datePicked) return;
+
+                      handleValueChange({
+                        target: { name: "start", value: new Date(datePicked) },
                       });
-                      // console.log("PickedDate", datePicked);
-                    }}
-                    value={
-                      pickedDate?.startDate
-                        ? format(pickedDate?.startDate, "EEEE, dd MMMM", {
-                            locale: US_LocaleData,
-                          })
-                        : undefined
-                    }
-                    placeholderText="Start Date."
-                    required
-                  />
-                  <span className="text-neutral-600">-</span>
-                  <Datepicker
-                    className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
-                    onChange={(datePicked) => {
-                      // setPickedDate((prev: any) => ({
-                      //   ...prev,
-                      //   endDate: datePicked,
-                      //   // endDate: datePicked,
-                      // }));
-                      setPickedDate({
-                        startDate: pickedDate?.startDate,
-                        endDate: datePicked,
+                      handleValueChange({
+                        target: { name: "end", value: new Date(datePicked) },
                       });
-                      // console.log("PickedDate", datePicked);
                     }}
                     value={
-                      pickedDate?.endDate
-                        ? format(pickedDate?.endDate, "EEEE, dd MMMM", {
-                            locale: US_LocaleData,
-                          })
-                        : undefined
-                    }
-                    placeholderText="End Date."
-                    required
-                  />
-                  {/* </span> */}
-                  {/* <Datepicker
-                    className="h-10 w-full flex-1 rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
-                    onChange={(datePicked) => {
-                      setPickedDate((prev: any) => ({
-                        ...prev,
-                        // startDate: datePicked,
-                        endDate: datePicked,
-                      }));
-                      // console.log("PickedDate", datePicked);
-                    }}
-                    value={
-                      pickedDate?.endDate
-                        ? format(pickedDate?.endDate, "EEEE, dd MMMM", {
+                      newEvent?.start
+                        ? format(newEvent.start, "EEEE, dd MMMM", {
                             locale: US_LocaleData,
                           })
                         : undefined
                     }
                     placeholderText="Please select a date."
                     required
-                  /> */}
-                </div>
-              )}
-            </label>
-            {/* Time input section */}
-            <div className="flex flex-col">
-              <div className="flex gap-4">
-                <div className="flex w-full flex-col text-start ">
-                  <span className="text-sm">From</span>
-                  <div className="flex h-10 items-center rounded border border-neutral-300 px-3 py-2 focus:border-primary-600">
-                    <span className="text-3xl">
-                      <LiaHourglassStartSolid />
-                    </span>
-                    <TimeSelector
-                      date={editEvent.start}
-                      setDateAndTime={setDateAndTime}
-                      type="start"
-                      // hour={0}
-                    />
-                  </div>
-                </div>
-
-                <div className="flex w-full flex-col text-start">
-                  <span className="text-sm">To</span>
-                  <div className="group flex h-10 items-center rounded border border-neutral-300 px-3 py-2 focus:border-primary-600">
-                    <span className="text-3xl">
-                      <LiaHourglassEndSolid />
-                    </span>
-                    <TimeSelector
-                      date={editEvent.end}
-                      setDateAndTime={setDateAndTime}
-                      type="end"
-                    />
-                  </div>
-                </div>
-              </div>
-              <span className="flex justify-start text-sm font-medium text-neutral-500">
-                Duration:
-              </span>
-            </div>
-
-            {/* Color input section  */}
-            <div className="flex flex-col items-start">
-              <span className=" text-sm">Priority</span>
-              <div key={"EditEventPriority"} className="flex gap-2">
-                {colors?.map((Color, i) => (
-                  <label
-                    className={`btn checkbox btn-xs relative h-7 w-7 cursor-pointer rounded-none border-none`}
-                    style={{ backgroundColor: Color.color }}
-                    htmlFor={`ColorInput${i}-edit`}
-                    key={i}
-                  >
-                    <input
-                      type="checkbox"
-                      className={
-                        Color.color == editEvent.color
-                          ? "absolute h-full w-full border-none text-white"
-                          : "absolute hidden h-full w-full border-none text-white"
-                      }
-                      style={{
-                        accentColor: Color.color,
-                      }}
-                      checked={Color.color == editEvent.color}
-                      readOnly
-                    />
-                    <input
-                      name={"color"}
-                      id={`ColorInput${i}-edit`}
-                      type="radio"
-                      className="absolute hidden"
-                      onChange={() => {
-                        console.log(
-                          ` index editevent ${i} clicked, Color.color: ${Color.color}`,
-                        );
-                        setEditEvent({ ...editEvent, color: Color.color });
-                      }}
-                    />
-                  </label>
-                ))}
-              </div>
-            </div>
-
-            {/* Location section  */}
-            <div>
-              <span className="flex justify-start text-sm">
-                Location <br />
-              </span>
-              <input
-                type="text"
-                className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
-                value={editEvent.location}
-                onChange={(e) =>
-                  setEditEvent({ ...editEvent, location: e.target.value })
-                }
-              />
-            </div>
-            {/* Departments section  */}
-            <div className="text-sm">
-              <span className="flex justify-start ">Departments:</span>
-              <div className="my-2 flex flex-wrap items-center gap-1">
-                {departmentsRes?.data?.data?.map(
-                  (department: any, i: number) => (
-                    <DepartmentBtn
-                      key={i}
-                      selDepartments={editEvent.departments}
-                      setEditEvent={setEditEvent}
-                      index={i}
-                      department={department}
-                    />
-                  ),
+                  />
                 )}
+
+                {dateType === "multi" && (
+                  <div className="flex w-full flex-row items-center gap-2 ">
+                    {/* <span className="w-full border border-blue-500"> */}
+                    <Datepicker
+                      className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
+                      onChange={(datePicked) => {
+                        if (!datePicked) return;
+
+                        handleValueChange({
+                          target: {
+                            name: "start",
+                            value: new Date(datePicked),
+                          },
+                        });
+                      }}
+                      value={
+                        newEvent?.start
+                          ? format(newEvent?.start, "EEEE, dd MMMM", {
+                              locale: US_LocaleData,
+                            })
+                          : undefined
+                      }
+                      placeholderText="Start Date."
+                      required
+                    />
+                    <span className="text-neutral-600">-</span>
+                    <Datepicker
+                      className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
+                      onChange={(datePicked) => {
+                        if (!datePicked) return;
+                        handleValueChange({
+                          target: { name: "end", value: new Date(datePicked) },
+                        });
+                        // console.log("newEvent", datePicked);
+                      }}
+                      value={
+                        newEvent?.end
+                          ? format(newEvent?.end, "EEEE, dd MMMM", {
+                              locale: US_LocaleData,
+                            })
+                          : undefined
+                      }
+                      placeholderText="End Date."
+                      required
+                    />
+                  </div>
+                )}
+
+                {/* Recurrence  */}
+                <div className="flex gap-[14px]">
+                  {(
+                    Object.keys(RecurringEventTypes) as Array<
+                      keyof typeof RecurringEventTypes
+                    >
+                  ).map((eventKey) => {
+                    return (
+                      <label
+                        className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"
+                        htmlFor={eventKey}
+                      >
+                        <input
+                          checked={
+                            RecurringEventTypes[eventKey] ===
+                            newEvent.recurringType
+                          }
+                          id={eventKey}
+                          type="checkbox"
+                          name={"recurringType"}
+                          value={RecurringEventTypes[eventKey]}
+                          onClick={handleValueChange}
+                        />
+                        <span>{makePascalCase(eventKey)}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </label>
+
+              {/* Time Picker  */}
+              <div className="flex w-full gap-4">
+                <CustomTimePicker
+                  type="start"
+                  value={newEvent.start}
+                  handleTimeChange={handleValueChange}
+                />
+                <CustomTimePicker
+                  type="end"
+                  value={newEvent.end}
+                  handleTimeChange={handleValueChange}
+                />
+              </div>
+
+              {/* Color input section  */}
+              <div className=" flex flex-col items-start">
+                <span className="text-sm">Priority</span>
+                <div key={"AddEventPriority"} className="flex gap-2">
+                  {colors?.map((Color, i) => (
+                    <label
+                      className={`btn checkbox btn-xs relative h-7 w-7 cursor-pointer rounded-none border-none`}
+                      style={{ backgroundColor: Color.color }}
+                      htmlFor={`ColorInput${i}`}
+                      key={i}
+                    >
+                      <input
+                        type="checkbox"
+                        className={
+                          Color.color == newEvent.color
+                            ? "absolute h-full w-full border-none text-white"
+                            : "absolute hidden h-full w-full border-none text-white"
+                        }
+                        style={{
+                          accentColor: Color.color,
+                        }}
+                        checked={Color.color == newEvent.color}
+                        readOnly
+                      />
+                      <input
+                        name="color"
+                        id={`ColorInput${i}`}
+                        type="radio"
+                        className="absolute hidden"
+                        value={Color.color}
+                        // onChange={() => {
+                        //   console.log(
+                        //     ` index addeventmodal ${i} clicked, Color.color: ${Color.color}`,
+                        //   );
+                        //   setNewEvent({ ...newEvent, color: Color.color });
+                        // }}
+                        onChange={handleValueChange}
+                      />
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Location section  */}
+              <div>
+                <span className="text-sm">
+                  Location <br />
+                </span>
+                <input
+                  type="text"
+                  className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
+                  name="location"
+                  value={newEvent.location}
+                  // onChange={(e) =>
+                  //   setNewEvent({ ...newEvent, location: e.target.value })
+                  // }
+                  onChange={handleValueChange}
+                />
+              </div>
+
+              {/* Departments section  */}
+              <div className="text-sm">
+                <span>Departments:</span>
+                <div className="my-2 flex flex-wrap items-center gap-1">
+                  {departmentsRes?.data?.data?.map((department: Department) => {
+                    const departmentExists =
+                      newEvent.departments.includes(department._id) ||
+                      department._id === userData?.department?._id;
+                    return (
+                      <DepartmentButton
+                        key={department._id}
+                        id={department._id}
+                        handleQueryParams={handleValueChange}
+                        value={department.code}
+                        selected={departmentExists}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+
+              <InviteMembers
+                memberIds={newEvent?.involvedUsers}
+                handleInviteMembers={handleValueChange}
+              ></InviteMembers>
+
+              {/* Notes section  */}
+              <div className="">
+                <span>Notes</span> <br />
+                <input
+                  type="text"
+                  className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
+                  name="notes"
+                  value={newEvent.notes}
+                  // onChange={(e) =>
+                  //   setNewEvent({ ...newEvent, notes: e.target.value })
+                  // }
+                  onChange={handleValueChange}
+                />
               </div>
             </div>
-            {/* Notes section  */}
-            <div className="">
-              <span className="flex justify-start ">Notes</span>
-              <input
-                type="text"
-                className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
-                value={editEvent.notes}
-                onChange={(e) =>
-                  setEditEvent({ ...editEvent, notes: e.target.value })
-                }
-              />
-            </div>
-          </div>
 
-          {/* create btn  */}
-          <form
-            method="dialog"
-            className=" flex h-16 w-full items-center justify-end "
-          >
-            <button
-              className="btn btn-md  h-5 border-none bg-primary-600 text-base font-medium text-primary-50"
-              onClick={() =>
-                handleUpdateEvent(editEvent?._id ? editEvent._id : "")
-              }
+            {/* create btn  */}
+            <form
+              method="dialog"
+              className=" flex h-16 w-full items-center justify-end "
             >
-              Edit
-            </button>
+              <button
+                className="btn btn-md  h-5 border-none bg-primary-600 text-base font-medium text-primary-50"
+                onClick={handleAddEvent}
+              >
+                Create
+              </button>
+            </form>
+          </div>
+          <form method="dialog" className="modal-backdrop">
+            <button>close</button>
           </form>
-        </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
-      </dialog>
+        </dialog>
+      </LocalizationProvider>
     </>
   );
 }
+
+// const handleInviteMembers = (user: User, action: "add" | "remove") => {
+//   switch (action) {
+//     case "add":
+//       if (newEvent?.involvedUsers.includes(user._id)) {
+//         console.log("adding", newEvent?.involvedUsers?.includes(user._id));
+//         return;
+//       }
+
+//       setNewEvent({
+//         ...newEvent,
+//         involvedUsers: [...newEvent?.involvedUsers, user._id],
+//       });
+//       break;
+//     case "remove":
+//       setNewEvent((prev) => ({
+//         ...prev,
+//         involvedUsers: [
+//           ...newEvent?.involvedUsers.filter(
+//             (memberId) => memberId !== user._id,
+//           ),
+//         ],
+//       }));
+//       break;
+//   }
+// };

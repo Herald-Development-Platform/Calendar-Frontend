@@ -156,7 +156,7 @@ export default function Page() {
           <p className="text-base text-neutral-500">Recent Searches</p>
           <div className="green-scrollbar flex flex-grow flex-col overflow-hidden overflow-y-auto">
             {!isFetching &&
-              filteredEvents?.data?.data?.map((event: eventType, i: number) => (
+              filteredEvents?.map((event: eventType, i: number) => (
                 <div
                   onClick={() => setSelectedEvent(event)}
                   key={i}
