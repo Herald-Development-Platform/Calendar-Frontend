@@ -14,11 +14,14 @@ import { Axios } from "@/services/baseUrl";
 import DepartmentButton from "@/components/DepartmentButton";
 import { BiPencil } from "react-icons/bi";
 import ContextProvider, { Context } from "@/app/clientWrappers/ContextProvider";
+import { useMutation } from "@tanstack/react-query";
 
 export default function ImportExport() {
   const [currentTab, setCurrentTab] = useState("import");
   const [importFileData, setImportFileData] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [memberDialog, setMemberDialog] = useState(false);
+
   const [departments, setDepartments] = useState<Department[]>([]);
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
   const [selectedFile, setSelectedFile] = useState<File>();
@@ -47,6 +50,20 @@ export default function ImportExport() {
   }, [currentTab]);
 
   const handleFileInput = (e: any) => {
+    if (e.target.files.length === 0) return;
+    const reader = new FileReader();
+    const file = e.target.files[0];
+
+    setSelectedFile(file);
+    reader.onload = (e) => {
+      const data = e.target?.result;
+      setImportFileData(data);
+      setDialogOpen(true);
+    };
+    reader.readAsText(file);
+  };
+
+  const handleFileUpload = (e: any) => {
     if (e.target.files.length === 0) return;
     const reader = new FileReader();
     const file = e.target.files[0];
@@ -115,6 +132,28 @@ export default function ImportExport() {
     }
     setDialogOpen(false);
   };
+
+  const { mutate: postMemberFiles } = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await Axios.post("/user/addUsers", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      console.log("data", data);
+      toast.success(data?.message || "Success");
+    },
+    onError: (err) => {
+      console.log("err", err);
+      toast.error(err?.response?.data?.message || "Something went wrong.");
+    },
+  });
 
   const fetchDepartments = async () => {
     try {
@@ -252,7 +291,49 @@ export default function ImportExport() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      <div className=" mt-[80px] flex flex-col gap-[27px]">
+      <Dialog open={memberDialog} onOpenChange={setMemberDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className=" text-[19px] font-semibold ">
+              Import Member
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex flex-col gap-8">
+            <div className=" flex w-full flex-row items-center justify-center gap-2.5 rounded-md bg-neutral-100 px-3 py-4 text-neutral-500">
+              <span className="flex items-center justify-center text-3xl">
+                <FaRegFile />
+              </span>
+              <div className="flex flex-col items-start justify-center gap-[3px]">
+                <span className="text-[13px]">{selectedFile?.name}</span>
+                <span className="text-[9px]">
+                  {formatFileSize(selectedFile?.size || 0)}
+                </span>
+              </div>
+            </div>
+          </div>
+          <DialogFooter className=" flex flex-row items-center justify-end py-4">
+            <button
+              onClick={() => {
+                setMemberDialog(false);
+              }}
+              className="btn btn-md h-5 border-none bg-red-400 text-[13px] font-medium text-primary-50 hover:bg-red-500"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                selectedFile
+                  ? postMemberFiles(selectedFile)
+                  : toast.error("File is not selected.");
+              }}
+              className="btn btn-md h-5 border-none bg-primary-600 text-[13px] font-medium text-primary-50 hover:bg-primary-700"
+            >
+              {currentTab === "import" ? "Import" : "Export"}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <div className=" mt-[80px] flex flex-col gap-[37px]">
         <div className="flex flex-row justify-between">
           <h1 className=" text-[28px] font-[700] text-neutral-700">
             Import/ Export
@@ -263,7 +344,11 @@ export default function ImportExport() {
             onClick={() => {
               setCurrentTab("import");
             }}
-            className={`${currentTab === "import" ? "text-primary-700 underline underline-offset-4" : ""} cursor-pointer `}
+            className={`${
+              currentTab === "import"
+                ? "text-primary-700 underline underline-offset-4"
+                : ""
+            } cursor-pointer `}
           >
             Import
           </span>
@@ -271,13 +356,104 @@ export default function ImportExport() {
             onClick={() => {
               setCurrentTab("export");
             }}
-            className={`${currentTab === "export" ? "text-primary-700 underline underline-offset-4" : ""} cursor-pointer `}
+            className={`${
+              currentTab === "export"
+                ? "text-primary-700 underline underline-offset-4"
+                : ""
+            } cursor-pointer `}
           >
             Export
           </span>
         </div>
-        <div
-          className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50"
+        {currentTab === "import" ? (
+          <>
+            <div className="space-y-2">
+              <h1>Import Calendar</h1>
+              <div
+                className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50 "
+                onClick={() => {
+                  if (currentTab === "import") {
+                    return;
+                  }
+                  // setDialogOpen(true);
+                }}
+              >
+                <input
+                  onChange={handleFileInput}
+                  className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
+                  type="file"
+                  multiple={false}
+                />
+                <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
+                  <span
+                    className={`h-[24px] w-[24px] text-xl text-primary-600`}
+                  >
+                    <TbCloudDownload></TbCloudDownload>
+                  </span>
+                  <p className="text-center text-[13px] font-normal text-neutral-500">
+                    Browse and choose the file you want to import from your
+                    device
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h1>Import Members</h1>
+              <div
+                className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50"
+                onClick={() => {
+                  console.log("asdlf");
+                }}
+              >
+                <input
+                  onChange={(e: any) => {
+                    if (e.target.files.length === 0) return;
+                    const file = e.target.files[0];
+                    setSelectedFile(file);
+                    setMemberDialog(true);
+                  }}
+                  className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
+                  type="file"
+                  multiple={false}
+                />
+                <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
+                  <span
+                    className={`h-[24px] w-[24px] text-xl text-primary-600`}
+                  >
+                    <TbCloudDownload></TbCloudDownload>
+                  </span>
+                  <p className="text-center text-[13px] font-normal text-neutral-500">
+                    Browse and choose the file you want to import from your
+                    device
+                  </p>
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div
+              className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50 "
+              onClick={() => {
+                if (currentTab === "import") {
+                  return;
+                }
+                setDialogOpen(true);
+              }}
+            >
+              <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
+                <span className={`h-[24px] w-[24px] text-xl text-primary-600`}>
+                  <TbCloudUpload></TbCloudUpload>
+                </span>
+                <p className="text-center text-[13px] font-normal text-neutral-500">
+                  Browse and choose the file you want to export from your device
+                </p>
+              </div>
+            </div>
+          </>
+        )}
+        {/* <div
+          className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50 "
           onClick={() => {
             if (currentTab === "import") {
               return;
@@ -293,19 +469,32 @@ export default function ImportExport() {
               multiple={false}
             />
           )}
-          <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
-            <span className={`h-[24px] w-[24px] text-xl text-primary-600`}>
-              {currentTab === "import" ? (
-                <TbCloudUpload />
-              ) : (
-                <TbCloudDownload />
-              )}
-            </span>
-            <p className="text-center text-[13px] font-normal text-neutral-500">
-              Browse and choose the file you want to import from your device
-            </p>
-          </div>
-        </div>
+          {currentTab === "import" ? (
+            <>
+              <h1>Import Calendar</h1>
+              <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
+                <span className={`h-[24px] w-[24px] text-xl text-primary-600`}>
+                  {" "}
+                  <TbCloudDownload></TbCloudDownload>
+                </span>
+                <p className="text-center text-[13px] font-normal text-neutral-500">
+                  Browse and choose the file you want to import from your device
+                </p>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
+                <span className={`h-[24px] w-[24px] text-xl text-primary-600`}>
+                  <TbCloudUpload></TbCloudUpload>
+                </span>
+                <p className="text-center text-[13px] font-normal text-neutral-500">
+                  Browse and choose the file you want to export from your device
+                </p>
+              </div>
+            </>
+          )}
+        </div> */}
       </div>
     </div>
   );
