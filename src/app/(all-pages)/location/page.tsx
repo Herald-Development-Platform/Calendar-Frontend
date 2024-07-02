@@ -32,6 +32,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FaPlus } from "react-icons/fa6";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { RiDeleteBin6Line } from "react-icons/ri";
 
 export default function LocationPage() {
   const router = useRouter();
@@ -80,7 +82,7 @@ export default function LocationPage() {
     } catch (error) {
       toast.error("Failed to add location.");
     }
-  }
+  };
 
   return (
     <div className="ml-10 mt-[110px] flex max-w-[40vw] flex-col gap-6">
@@ -109,12 +111,12 @@ export default function LocationPage() {
               <span className="font-500 text-[14px]">
                 Short Description <br />
               </span>
-              <textarea
+              <input
                 {...registerLocation("description")}
-                className=" h-20 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
+                className=" py-2 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
               />
             </div>
-            <div className="mt-[32px]">
+            {/* <div className="mt-[32px]">
               <span className="font-500 text-[14px]">
                 Block <br />
               </span>
@@ -138,7 +140,7 @@ export default function LocationPage() {
                   ))}
                 </SelectContent>
               </Select>
-            </div>
+            </div> */}
           </form>
           <DialogFooter className=" flex flex-row items-center justify-end py-4">
             <button
@@ -168,7 +170,7 @@ export default function LocationPage() {
         {/* )} */}
       </div>
       <div className="flex w-full flex-col gap-5">
-        <div className=" w-28">
+        {/* <div className=" w-28">
           <Select onValueChange={(val) => {}}>
             <SelectTrigger>
               <SelectValue placeholder="All Blocks" />
@@ -182,33 +184,50 @@ export default function LocationPage() {
               ))}
             </SelectContent>
           </Select>
-        </div>
-        <div className="flex flex-col items-start justify-start">
+        </div> */}
+        <div className="flex flex-col items-start justify-start gap-5">
           {locations?.data?.length === 0 ? (
-            <div className="w-full text-center text-neutral-400">
-              No locations added.
-            </div>
+            <div className="w-full text-center">No locations added.</div>
           ) : (
-            locations?.data?.map((location: { name: string; _id: string }) => {
-              return (
-                <>
-                  <div className="flex w-full flex-row items-center justify-between rounded-[4px] bg-white px-5 py-3 shadow-md">
-                    <p className="text-[16px] font-semibold text-neutral-700">
-                      {location.name}
-                    </p>
-                    <div className="flex flex-row items-center gap-2">
-                      <button
-                        onClick={() => {}}
-                        className="flex items-center gap-2 rounded-[4px] bg-primary-600 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary-700"
-                      >
-                        <BiPencil />
-                        <span>Edit</span>
-                      </button>
+            locations?.data?.map(
+              (location: {
+                name: string;
+                block: string;
+                description: string;
+                _id: string;
+              }) => {
+                return (
+                  <>
+                    <div className="flex w-full flex-row items-center rounded-[4px] bg-neutral-100 px-3 py-1.5 gap-2">
+                      <span className="text-2xl text-neutral-600">
+                        <GrLocationPin />
+                      </span>
+                      <div className="flex flex-col items-start justify-center gap-1">
+                        <span className="text-[16px] font-semibold text-neutral-700">
+                          {location.name}
+                        </span>
+                        {location?.block && (
+                          <span className="text-[13px] font-normal text-neutral-400">
+                            {location.block}
+                          </span>
+                        )}
+                        {location?.description && (
+                          <span className="text-[13px] font-normal text-neutral-400">
+                            {location.description}
+                          </span>
+                        )}
+                      </div>
+                      <span  className="ml-auto cursor-pointer text-danger-400" onClick={async () => {
+                        await Axios.delete(`${Endpoints.location}/${location._id}`);
+                        queryClient.invalidateQueries({ queryKey: ["locations"] });
+                      }}>
+                        <RiDeleteBin6Line />
+                      </span>
                     </div>
-                  </div>
-                </>
-              );
-            })
+                  </>
+                );
+              },
+            )
           )}
         </div>
       </div>
