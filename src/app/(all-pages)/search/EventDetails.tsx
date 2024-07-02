@@ -92,7 +92,7 @@ export default function EventDetails({
                     <MdOutlineModeEditOutline />
                   </span>
                   Edit Event
-                  <span className={`fixed left-full `}>
+                  <span className={` `}>
                     {selectedEvent && (
                       <EditEventModal
                         defaultData={selectedEvent}

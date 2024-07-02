@@ -35,6 +35,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import Endpoints from "@/services/API_ENDPOINTS";
+import Locations from "./Locations";
 
 interface PickedDateType {
   startDate: Date | undefined;
@@ -328,11 +330,12 @@ export default function EventModal({
                     Object.keys(RecurringEventTypes) as Array<
                       keyof typeof RecurringEventTypes
                     >
-                  ).map((eventKey,i) => {
+                  ).map((eventKey, i) => {
                     return (
                       <label
                         className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"
-                        htmlFor={eventKey} key={i}
+                        htmlFor={eventKey}
+                        key={i}
                       >
                         <input
                           checked={
@@ -410,34 +413,7 @@ export default function EventModal({
               </div>
 
               {/* Location section  */}
-              <div>
-                <span className="text-sm">
-                  Location <br />
-                </span>
-                {/* <input
-                  type="text"
-                  className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
-                  name="location"
-                  value={newEvent.location}
-                  onChange={handleValueChange}
-                /> */}
-                <Select>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select a fruit" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectLabel>Fruits</SelectLabel>
-                      <SelectItem value="Lt-01">Lt-01</SelectItem>
-                      <SelectItem value="Lt-02">Lt-02</SelectItem>
-                      <SelectItem value="blueberry">Blueberry</SelectItem>
-                      <SelectItem value="grapes">Grapes</SelectItem>
-                      <SelectItem value="pineapple">Pineapple</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
-
+              <Locations handleValueChange={handleValueChange}></Locations>
               {/* Departments section  */}
               <div className="text-sm">
                 <span>Departments:</span>
