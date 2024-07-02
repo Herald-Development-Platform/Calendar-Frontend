@@ -47,6 +47,7 @@ import { NotificationList } from "../NotificationList";
 import { Popover, PopoverContent } from "../ui/popover";
 import { PopoverTrigger } from "@radix-ui/react-popover";
 import ProfileDropdown from "./ProfileDropdown";
+import EventModal from "../AddEventModal/EventModal";
 
 export function HomeHeader() {
   // const [redner, setredner] = useState<number>(1);
@@ -213,7 +214,7 @@ export function HomeHeader() {
             </SelectContent>
           </Select>
 
-          <AddEventModal />
+          <EventModal type={"Add"} defaultData={null} />
         </div>
       </div>
 
@@ -241,12 +242,6 @@ export function HomeHeader() {
   );
 }
 
-// function decodeJwt(token: string) {
-//   const base64Url = token.split(".")[1];
-//   const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-//   const jsonPayload = base64UrlDecode(base64);
-//   return JSON.parse(jsonPayload);
-// }
 const useHandleListViewToggle = (
   listView: boolean,
   calendarApi: CalendarApi | undefined,

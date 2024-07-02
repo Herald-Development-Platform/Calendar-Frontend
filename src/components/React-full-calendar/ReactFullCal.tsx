@@ -106,6 +106,9 @@ export default function ReactFullCal() {
           // eventLimit={true}
           initialView={`dayGridMonth`}
           events={eventsData as EventSourceInput}
+          eventDidMount={(info) => {
+            console.log("info", info);
+          }}
           headerToolbar={false}
           selectable={true}
           select={handleSelect}

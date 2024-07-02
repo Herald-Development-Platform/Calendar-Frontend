@@ -15,7 +15,11 @@ import ContextProvider, { Context } from "@/app/clientWrappers/ContextProvider";
 import { Axios, baseUrl } from "@/services/baseUrl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { postEvents, usePostEventMutation } from "@/services/api/eventsApi";
+import {
+  postEvents,
+  useEditEventMutation,
+  usePostEventMutation,
+} from "@/services/api/eventsApi";
 import { watch } from "fs";
 import { getDepartments } from "@/services/api/departments";
 import colors from "@/constants/Colors";
@@ -32,7 +36,7 @@ import DepartmentButton from "../DepartmentButton";
 //   endDate: Date | undefined;
 // }
 
-export default function AddEventModal({
+export default function EditEventModal({
   defaultData,
 }: {
   defaultData: eventType | null;
@@ -52,7 +56,7 @@ export default function AddEventModal({
     recurringType: RecurringEventTypes.ONCE,
     involvedUsers: [],
   });
-
+  const queryClient = useQueryClient();
   useEffect(() => {
     if (!defaultData) return;
     const modifiedData = {
@@ -75,11 +79,36 @@ export default function AddEventModal({
     queryFn: getDepartments,
   });
 
-  const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
+  const { mutate: updateEvent } = useEditEventMutation();
 
-  function handleAddEvent() {
-    // console.log("handle add event ", newEvent);
-    postNewEvent(newEvent);
+  function handleUpdateEvent() {
+    updateEvent(newEvent, {
+      onSuccess: (res) => {
+        console.log("Onsuccess", res);
+        queryClient.invalidateQueries({ queryKey: ["Events"] });
+
+        toast.success(`${res?.data?.message}`);
+
+        setNewEvent &&
+          setNewEvent({
+            title: "",
+            start: null,
+            end: null,
+            color: undefined,
+            duration: 0,
+            recurringType: RecurringEventTypes.ONCE,
+            location: "",
+            description: "",
+            departments: [],
+            notes: "",
+            involvedUsers: [],
+          });
+      },
+      onError: (err: any) => {
+        console.log("error", err);
+        toast.error(err?.data?.message || "something went wrong");
+      },
+    });
   }
 
   const handleValueChange = (e: any) => {
@@ -151,7 +180,7 @@ export default function AddEventModal({
           key={"my_modal_4"}
         >
           <AiOutlinePlus className="h-4 w-4 font-bold text-primary-50" />
-          Add Event
+          Edit Event
         </button>
         <dialog id="my_modal_4" className="modal z-[1111]">
           <div className="min-w-xl modal-box relative flex max-w-2xl flex-col gap-10 overflow-y-auto p-8 text-lg text-neutral-600">
@@ -163,7 +192,7 @@ export default function AddEventModal({
                   ✕
                 </button>
               </form>
-              <h3 className="text-lg font-bold">Add Event</h3>
+              <h3 className="text-lg font-bold">Edit Event</h3>
             </div>
 
             {/* input section  */}
@@ -181,9 +210,6 @@ export default function AddEventModal({
                     id="add-title"
                     name="title"
                     value={newEvent.title}
-                    // onChange={(e) =>
-                    //   setNewEvent({ ...newEvent, title: e.target.value })
-                    // }
                     onChange={handleValueChange}
                   />
                 </div>
@@ -399,7 +425,7 @@ export default function AddEventModal({
               </div>
 
               {/* Location section  */}
-              <div>
+              <div className="flex-start flex flex-col items-start">
                 <span className="text-sm">
                   Location <br />
                 </span>
@@ -416,7 +442,7 @@ export default function AddEventModal({
               </div>
 
               {/* Departments section  */}
-              <div className="text-sm">
+              <div className="flex flex-col items-start text-sm">
                 <span>Departments:</span>
                 <div className="my-2 flex flex-wrap items-center gap-1">
                   {departmentsRes?.data?.data?.map((department: Department) => {
@@ -442,16 +468,13 @@ export default function AddEventModal({
               ></InviteMembers>
 
               {/* Notes section  */}
-              <div className="">
-                <span>Notes</span> <br />
+              <div className=" flex flex-col items-start">
+                <span>Notes</span>
                 <input
                   type="text"
                   className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
                   name="notes"
                   value={newEvent.notes}
-                  // onChange={(e) =>
-                  //   setNewEvent({ ...newEvent, notes: e.target.value })
-                  // }
                   onChange={handleValueChange}
                 />
               </div>
@@ -464,9 +487,9 @@ export default function AddEventModal({
             >
               <button
                 className="btn btn-md  h-5 border-none bg-primary-600 text-base font-medium text-primary-50"
-                onClick={handleAddEvent}
+                onClick={handleUpdateEvent}
               >
-                Create
+                Edit
               </button>
             </form>
           </div>
@@ -478,29 +501,3 @@ export default function AddEventModal({
     </>
   );
 }
-
-// const handleInviteMembers = (user: User, action: "add" | "remove") => {
-//   switch (action) {
-//     case "add":
-//       if (newEvent?.involvedUsers.includes(user._id)) {
-//         console.log("adding", newEvent?.involvedUsers?.includes(user._id));
-//         return;
-//       }
-
-//       setNewEvent({
-//         ...newEvent,
-//         involvedUsers: [...newEvent?.involvedUsers, user._id],
-//       });
-//       break;
-//     case "remove":
-//       setNewEvent((prev) => ({
-//         ...prev,
-//         involvedUsers: [
-//           ...newEvent?.involvedUsers.filter(
-//             (memberId) => memberId !== user._id,
-//           ),
-//         ],
-//       }));
-//       break;
-//   }
-// };

@@ -43,10 +43,11 @@ interface PickedDateType {
 
 export default function EventModal({
   defaultData,
+  type,
 }: {
   defaultData: eventType | null;
+  type: "Edit" | "Add";
 }) {
-  // const [pickedDate, setPickedDate] = useState<any>();
   const [dateType, setDateType] = useState<"single" | "multi">("single");
   const [newEvent, setNewEvent] = useState<eventType>({
     title: "",
@@ -61,6 +62,7 @@ export default function EventModal({
     recurringType: RecurringEventTypes.ONCE,
     involvedUsers: [],
   });
+  console.log("eventmodal newEvent", newEvent);
 
   useEffect(() => {
     if (!defaultData) return;
@@ -160,7 +162,7 @@ export default function EventModal({
           key={"my_modal_3"}
         >
           <AiOutlinePlus className="h-4 w-4 font-bold text-primary-50" />
-          Add Event
+          {type} Event
         </button>
         <dialog id="my_modal_3" className="modal z-[1111]">
           <div className="min-w-xl modal-box relative flex max-w-2xl flex-col gap-10 overflow-y-auto p-8 text-lg text-neutral-600">
@@ -172,7 +174,7 @@ export default function EventModal({
                   ✕
                 </button>
               </form>
-              <h3 className="text-lg font-bold">Add Event</h3>
+              <h3 className="text-lg font-bold">{type} Event</h3>
             </div>
 
             {/* input section  */}
@@ -186,7 +188,7 @@ export default function EventModal({
                   <input
                     type="text"
                     className="w-full text-lg font-normal text-neutral-900 outline-none"
-                    placeholder="Add Title"
+                    placeholder={`${type} Title`}
                     id="add-title"
                     name="title"
                     value={newEvent.title}
@@ -487,12 +489,12 @@ export default function EventModal({
                 className="btn btn-md  h-5 border-none bg-primary-600 text-base font-medium text-primary-50"
                 onClick={handleAddEvent}
               >
-                Create
+                {type === "Add" ? "Create" : "Edit"}
               </button>
             </form>
           </div>
           <form method="dialog" className="modal-backdrop">
-            <button>close</button>
+            <button>Close</button>
           </form>
         </dialog>
       </LocalizationProvider>

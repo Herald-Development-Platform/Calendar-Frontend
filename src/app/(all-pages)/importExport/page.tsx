@@ -169,11 +169,6 @@ export default function ImportExport() {
                     type="text"
                     value={exportFilename}
                     onChange={(e) => {
-                      // if (e.target.value.includes(".ics")) {
-                      //   setExportFilename(e.target.value);
-                      // } else {
-                      //   setExportFilename(e.target.value + ".ics");
-                      // }
                       setExportFilename(e.target.value);
                     }}
                     placeholder="Enter Filename"
@@ -263,7 +258,11 @@ export default function ImportExport() {
             onClick={() => {
               setCurrentTab("import");
             }}
-            className={`${currentTab === "import" ? "text-primary-700 underline underline-offset-4" : ""} cursor-pointer `}
+            className={`${
+              currentTab === "import"
+                ? "text-primary-700 underline underline-offset-4"
+                : ""
+            } cursor-pointer `}
           >
             Import
           </span>
@@ -271,7 +270,11 @@ export default function ImportExport() {
             onClick={() => {
               setCurrentTab("export");
             }}
-            className={`${currentTab === "export" ? "text-primary-700 underline underline-offset-4" : ""} cursor-pointer `}
+            className={`${
+              currentTab === "export"
+                ? "text-primary-700 underline underline-offset-4"
+                : ""
+            } cursor-pointer `}
           >
             Export
           </span>

@@ -101,3 +101,13 @@ export const usePostEventMutation = ({
     },
   });
 };
+
+export const useEditEventMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: any) => {
+      return Axios.put(Endpoints.eventById(payload.id), payload);
+    },
+  });
+};

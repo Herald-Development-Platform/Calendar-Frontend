@@ -87,7 +87,7 @@ export default function InviteMembers({
 
   return (
     <>
-      <div className="text-sm">
+      <div className="flex flex-col items-start text-sm">
         <span>Invite Members:</span>
         <div className="flex">
           <div className=" relative flex h-fit w-fit gap-1">
@@ -217,33 +217,6 @@ export default function InviteMembers({
           showPopover ? "block" : "hidden"
         } absolute left-0 top-0 -z-0 h-[300%] w-full opacity-0 `}
       ></div>
-
-      {/* <div
-                        key={userData._id}
-                        className="group flex items-center gap-2 overflow-hidden overflow-y-auto py-[7.5px] pl-[10px] pr-[17px] transition-colors duration-0 hover:bg-neutral-100"
-                      >
-                        <Image
-                          src={"/images/LoginPage/HeraldLogo.png"}
-                          height={33}
-                          width={33}
-                          alt={"user image"}
-                          className="rounded-full"
-                        ></Image>
-                        <div className="flex flex-grow flex-col">
-                          <p className="text-sm font-semibold text-neutral-900">
-                            {userData?.username}
-                          </p>
-                          <p className="text-xs text-neutral-600">
-                            {userData?.role}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => handleInviteMembers(userData, "add")}
-                          className="hidden h-6 w-6 items-center justify-center rounded-full bg-white p-[7.5px] text-xl  group-hover:flex"
-                        >
-                          <FaPlus></FaPlus>
-                        </button>
-                      </div> */}
     </>
   );
 }
