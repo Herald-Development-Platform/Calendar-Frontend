@@ -109,6 +109,12 @@ export default function ReactFullCal() {
           eventDidMount={(info) => {
             console.log("info", info);
           }}
+          eventMouseEnter={(info) => {
+            console.log("eventMouseEnter", info);
+          }}
+          eventMouseLeave={(info) => {
+            console.log("eventMouseLeave", info);
+          }}
           headerToolbar={false}
           selectable={true}
           select={handleSelect}
