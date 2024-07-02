@@ -23,6 +23,7 @@ import { Context } from "@/app/clientWrappers/ContextProvider";
 import { profile } from "console";
 import { ROLES } from "@/constants/role";
 import { PERMISSIONS } from "@/constants/permissions";
+import { useGetEvents } from "@/services/api/eventsApi";
 
 export default function ManageDepartment() {
   const router = useRouter();
@@ -30,10 +31,7 @@ export default function ManageDepartment() {
 
   const { userData } = useContext(Context);
 
-  const { data: eventsData } = useQuery({
-    queryKey: ["Events"],
-    queryFn: () => Axios.get(Endpoints.event),
-  });
+  const { data: eventsData } = useGetEvents();
 
   const { data: departments, isLoading: departmentLoading } = useQuery({
     queryKey: ["Departments"],
@@ -54,8 +52,8 @@ export default function ManageDepartment() {
 
   let departmentEventsCount: any = {};
 
-  if (eventsData?.data?.data && departments && departments.length > 0) {
-    let idOnlyEvents = eventsData?.data?.data.map((e: any) => {
+  if (eventsData && departments && departments.length > 0) {
+    let idOnlyEvents = eventsData?.map((e: any) => {
       let newEvent = { ...e };
       newEvent.departments = newEvent?.departments?.map((d: any) => d._id);
       return newEvent;
@@ -170,10 +168,10 @@ export default function ManageDepartment() {
             );
           })}
         <div>
-          {sideBarDepartment && sideBarOpen && (
+          {sideBarDepartment && sideBarOpen && eventsData && (
             <DepartmentDetails
               department={sideBarDepartment}
-              events={eventsData?.data?.data}
+              events={eventsData}
               closeDetail={() => {
                 setSideBarOpen(false);
                 setSideBarDepartment(undefined);

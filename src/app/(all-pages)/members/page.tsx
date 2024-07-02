@@ -105,7 +105,11 @@ export default function Page() {
         return;
       } else {
         toast.success(
-          `User ${response.data?.data?.request?.status === "APPROVED" ? "approved successfully" : "rejected"}`,
+          `User ${
+            response.data?.data?.request?.status === "APPROVED"
+              ? "approved successfully"
+              : "rejected"
+          }`,
         );
       }
       queryClient.invalidateQueries({ queryKey: ["AllUsers"] });

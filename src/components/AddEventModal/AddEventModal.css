@@ -1,10 +1,22 @@
 /* to not display scrollbar in modal comopnent */
 /* Hide scrollbar for Chrome, Safari and Opera */
-.min-w-xl.modal-box.relative.flex.max-w-2xl.flex-col.gap-10.overflow-y-auto.p-8.text-lg.text-neutral-600::-webkit-scrollbar{
+/* .min-w-xl.modal-box.relative.flex.max-w-2xl.flex-col.gap-10.overflow-y-auto.p-8.text-lg.text-neutral-600::-webkit-scrollbar{
  display: none;
 }
 .min-w-xl.modal-box.relative.flex.max-w-2xl.flex-col.gap-10.overflow-y-auto.p-8.text-lg.text-neutral-600::-webkit-scrollbar{
-    -ms-overflow-style: none; /* for Internet Explorer, Edge */
-    scrollbar-width: none; /* for Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
     overflow-y: scroll; 
+} */
+
+
+.modal{
+    position: fixed; /* or absolute */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  
+    /* background-color: white; */
+    border: 1px solid #ccc;
+    z-index: 111; /* Set the desired z-index */
 }

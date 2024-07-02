@@ -15,11 +15,7 @@ import ContextProvider, { Context } from "@/app/clientWrappers/ContextProvider";
 import { Axios, baseUrl } from "@/services/baseUrl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import {
-  postEvents,
-  useEditEventMutation,
-  usePostEventMutation,
-} from "@/services/api/eventsApi";
+import { postEvents, usePostEventMutation } from "@/services/api/eventsApi";
 import { watch } from "fs";
 import { getDepartments } from "@/services/api/departments";
 import colors from "@/constants/Colors";
@@ -30,18 +26,28 @@ import "./AddEventModal.css";
 import CustomTimePicker from "./CustomTimePicker";
 import { makePascalCase } from "@/lib/utils";
 import DepartmentButton from "../DepartmentButton";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
-// interface PickedDateType {
-//   startDate: Date | undefined;
-//   endDate: Date | undefined;
-// }
+interface PickedDateType {
+  startDate: Date | undefined;
+  endDate: Date | undefined;
+}
 
-export default function EditEventModal({
+export default function EventModal({
   defaultData,
+  type,
 }: {
   defaultData: eventType | null;
+  type: "Edit" | "Add";
 }) {
-  // const [pickedDate, setPickedDate] = useState<any>();
   const [dateType, setDateType] = useState<"single" | "multi">("single");
   const [newEvent, setNewEvent] = useState<eventType>({
     title: "",
@@ -56,7 +62,8 @@ export default function EditEventModal({
     recurringType: RecurringEventTypes.ONCE,
     involvedUsers: [],
   });
-  const queryClient = useQueryClient();
+  console.log("eventmodal newEvent", newEvent);
+
   useEffect(() => {
     if (!defaultData) return;
     const modifiedData = {
@@ -79,36 +86,11 @@ export default function EditEventModal({
     queryFn: getDepartments,
   });
 
-  const { mutate: updateEvent } = useEditEventMutation();
+  const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
 
-  function handleUpdateEvent() {
-    updateEvent(newEvent, {
-      onSuccess: (res) => {
-        console.log("Onsuccess", res);
-        queryClient.invalidateQueries({ queryKey: ["Events"] });
-
-        toast.success(`${res?.data?.message}`);
-
-        setNewEvent &&
-          setNewEvent({
-            title: "",
-            start: null,
-            end: null,
-            color: undefined,
-            duration: 0,
-            recurringType: RecurringEventTypes.ONCE,
-            location: "",
-            description: "",
-            departments: [],
-            notes: "",
-            involvedUsers: [],
-          });
-      },
-      onError: (err: any) => {
-        console.log("error", err);
-        toast.error(err?.data?.message || "something went wrong");
-      },
-    });
+  function handleAddEvent() {
+    // console.log("handle add event ", newEvent);
+    postNewEvent(newEvent);
   }
 
   const handleValueChange = (e: any) => {
@@ -172,17 +154,17 @@ export default function EditEventModal({
           className="scale btn btn-sm
            relative flex h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
           onClick={() => {
-            const modal_4 = document.getElementById(
-              "my_modal_4",
+            const modal_3 = document.getElementById(
+              "my_modal_3",
             ) as HTMLDialogElement;
-            modal_4.showModal();
+            modal_3.showModal();
           }}
-          key={"my_modal_4"}
+          key={"my_modal_3"}
         >
           <AiOutlinePlus className="h-4 w-4 font-bold text-primary-50" />
-          Edit Event
+          {type} Event
         </button>
-        <dialog id="my_modal_4" className="modal z-[1111]">
+        <dialog id="my_modal_3" className="modal z-[1111]">
           <div className="min-w-xl modal-box relative flex max-w-2xl flex-col gap-10 overflow-y-auto p-8 text-lg text-neutral-600">
             {/* Heading  */}
             <div className="m-auto">
@@ -192,7 +174,7 @@ export default function EditEventModal({
                   ✕
                 </button>
               </form>
-              <h3 className="text-lg font-bold">Edit Event</h3>
+              <h3 className="text-lg font-bold">{type} Event</h3>
             </div>
 
             {/* input section  */}
@@ -206,10 +188,13 @@ export default function EditEventModal({
                   <input
                     type="text"
                     className="w-full text-lg font-normal text-neutral-900 outline-none"
-                    placeholder="Add Title"
+                    placeholder={`${type} Title`}
                     id="add-title"
                     name="title"
                     value={newEvent.title}
+                    // onChange={(e) =>
+                    //   setNewEvent({ ...newEvent, title: e.target.value })
+                    // }
                     onChange={handleValueChange}
                   />
                 </div>
@@ -343,7 +328,7 @@ export default function EditEventModal({
                     Object.keys(RecurringEventTypes) as Array<
                       keyof typeof RecurringEventTypes
                     >
-                  ).map((eventKey, i) => {
+                  ).map((eventKey,i) => {
                     return (
                       <label
                         className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"
@@ -425,24 +410,36 @@ export default function EditEventModal({
               </div>
 
               {/* Location section  */}
-              <div className="flex-start flex flex-col items-start">
+              <div>
                 <span className="text-sm">
                   Location <br />
                 </span>
-                <input
+                {/* <input
                   type="text"
                   className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
                   name="location"
                   value={newEvent.location}
-                  // onChange={(e) =>
-                  //   setNewEvent({ ...newEvent, location: e.target.value })
-                  // }
                   onChange={handleValueChange}
-                />
+                /> */}
+                <Select>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select a fruit" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Fruits</SelectLabel>
+                      <SelectItem value="Lt-01">Lt-01</SelectItem>
+                      <SelectItem value="Lt-02">Lt-02</SelectItem>
+                      <SelectItem value="blueberry">Blueberry</SelectItem>
+                      <SelectItem value="grapes">Grapes</SelectItem>
+                      <SelectItem value="pineapple">Pineapple</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Departments section  */}
-              <div className="flex flex-col items-start text-sm">
+              <div className="text-sm">
                 <span>Departments:</span>
                 <div className="my-2 flex flex-wrap items-center gap-1">
                   {departmentsRes?.data?.data?.map((department: Department) => {
@@ -468,13 +465,16 @@ export default function EditEventModal({
               ></InviteMembers>
 
               {/* Notes section  */}
-              <div className=" flex flex-col items-start">
-                <span>Notes</span>
+              <div className="">
+                <span>Notes</span> <br />
                 <input
                   type="text"
                   className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
                   name="notes"
                   value={newEvent.notes}
+                  // onChange={(e) =>
+                  //   setNewEvent({ ...newEvent, notes: e.target.value })
+                  // }
                   onChange={handleValueChange}
                 />
               </div>
@@ -487,17 +487,43 @@ export default function EditEventModal({
             >
               <button
                 className="btn btn-md  h-5 border-none bg-primary-600 text-base font-medium text-primary-50"
-                onClick={handleUpdateEvent}
+                onClick={handleAddEvent}
               >
-                Edit
+                {type === "Add" ? "Create" : "Edit"}
               </button>
             </form>
           </div>
           <form method="dialog" className="modal-backdrop">
-            <button>close</button>
+            <button>Close</button>
           </form>
         </dialog>
       </LocalizationProvider>
     </>
   );
 }
+
+// const handleInviteMembers = (user: User, action: "add" | "remove") => {
+//   switch (action) {
+//     case "add":
+//       if (newEvent?.involvedUsers.includes(user._id)) {
+//         console.log("adding", newEvent?.involvedUsers?.includes(user._id));
+//         return;
+//       }
+
+//       setNewEvent({
+//         ...newEvent,
+//         involvedUsers: [...newEvent?.involvedUsers, user._id],
+//       });
+//       break;
+//     case "remove":
+//       setNewEvent((prev) => ({
+//         ...prev,
+//         involvedUsers: [
+//           ...newEvent?.involvedUsers.filter(
+//             (memberId) => memberId !== user._id,
+//           ),
+//         ],
+//       }));
+//       break;
+//   }
+// };

@@ -18,12 +18,16 @@ export default function UpcommingEvents() {
 
   const { selectedDate, timeout } = useContext(Context);
 
-  const selectedStartTime = selectedDate.start.getTime();
+  const selectedStartTime = selectedDate?.start
+    ? selectedDate?.start.getTime()
+    : 0;
   const selectedEndTime = selectedDate?.end ? selectedDate.end.getTime() : 0;
 
   const upcommingEventRef = useRef<HTMLDivElement>(null);
 
   const { data: eventsData } = useGetEvents();
+
+  console.log("upcomgin", eventsData);
   const { mutate: deleteEvent } = useDeleteEvent({});
 
   const queryClient = useQueryClient();
@@ -60,37 +64,50 @@ export default function UpcommingEvents() {
       </div>
 
       <div className="flex flex-col gap-3">
-        {eventsData?.data?.data?.map((event: eventType, i: number) => {
-          const eventStart = event?.start ? new Date(event.start).getTime() : 0;
-          const eventEnd = event?.end ? new Date(event.end).getTime() : 0;
+        {eventsData &&
+          eventsData?.map((event: eventType, i: number) => {
+            let inFirstEdge = null;
+            let inBetween = null;
+            let inLastEdge = null;
 
-          if (eventStart < selectedStartTime || eventStart > selectedEndTime)
-            return;
+            const eventStart = event?.start
+              ? new Date(event.start).getTime()
+              : 0;
+            const eventEnd = event?.end ? new Date(event.end).getTime() : 0;
 
-          let displayDate = false;
-          if (lastDate !== format(new Date(eventStart), "MMMM d")) {
-            lastDate = format(new Date(eventStart), "MMMM d");
-            displayDate = true;
-          }
+            inFirstEdge =
+              eventStart < selectedStartTime && eventEnd > selectedStartTime;
+            inBetween =
+              eventStart > selectedStartTime && eventEnd < selectedEndTime;
+            inLastEdge =
+              eventStart < selectedEndTime && eventEnd > selectedEndTime;
 
-          return (
-            <>
-              {displayDate && (
-                <div className="relative flex h-5 w-full items-center">
-                  <div className="w-full border-t border-neutral-300"></div>
-                  <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-white px-2 text-sm text-neutral-600">
-                    {lastDate && format(new Date(lastDate), "MMMM d")}
-                  </h1>
-                </div>
-              )}
-              <EventCard
-                key={event._id}
-                event={event}
-                handleCardClick={handleCardClick}
-              />
-            </>
-          );
-        })}
+            if (!inFirstEdge && !inBetween && !inLastEdge) return;
+
+            let displayDate = false;
+            if (lastDate !== format(new Date(eventStart), "MMMM d")) {
+              lastDate = format(new Date(eventStart), "MMMM d");
+              displayDate = true;
+            }
+
+            return (
+              <>
+                {displayDate && (
+                  <div className="relative flex h-5 w-full items-center">
+                    <div className="w-full border-t border-neutral-300"></div>
+                    <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-white px-2 text-sm text-neutral-600">
+                      {lastDate && format(new Date(lastDate), "MMMM d")}
+                    </h1>
+                  </div>
+                )}
+                <EventCard
+                  key={event._id}
+                  event={event}
+                  handleCardClick={handleCardClick}
+                />
+              </>
+            );
+          })}
       </div>
       <EventDetails
         selectedEvent={selectedEvent}

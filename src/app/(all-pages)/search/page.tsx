@@ -94,7 +94,7 @@ export default function Page() {
         console.log("singledate", new Date(value).getTime());
         {
           const startDate = new Date(value);
-          const endDate = startDate;
+          const endDate = new Date(startDate);
           endDate.setDate(endDate.getDate() + 1);
 
           setQueryParams((prev) => ({
@@ -145,7 +145,7 @@ export default function Page() {
   });
 
   return (
-    <div className="flex h-full  flex-col gap-9 overflow-hidden pl-8 pt-10 ">
+    <div className="flex h-full flex-col gap-9 overflow-hidden pl-8 pt-10 ">
       <Headers.SearchHeader
         queryParams={queryParams}
         handleQueryParams={handleQueryParams}
@@ -156,7 +156,7 @@ export default function Page() {
           <p className="text-base text-neutral-500">Recent Searches</p>
           <div className="green-scrollbar flex flex-grow flex-col overflow-hidden overflow-y-auto">
             {!isFetching &&
-              filteredEvents?.data?.data?.map((event: eventType, i: number) => (
+              filteredEvents?.map((event: eventType, i: number) => (
                 <div
                   onClick={() => setSelectedEvent(event)}
                   key={i}

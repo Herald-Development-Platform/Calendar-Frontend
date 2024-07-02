@@ -208,11 +208,6 @@ export default function ImportExport() {
                     type="text"
                     value={exportFilename}
                     onChange={(e) => {
-                      // if (e.target.value.includes(".ics")) {
-                      //   setExportFilename(e.target.value);
-                      // } else {
-                      //   setExportFilename(e.target.value + ".ics");
-                      // }
                       setExportFilename(e.target.value);
                     }}
                     placeholder="Enter Filename"

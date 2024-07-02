@@ -5,12 +5,44 @@ import Cookies from "js-cookie";
 import Endpoints from "../API_ENDPOINTS";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { RecurringEventTypes } from "@/constants/RecurringEvents";
+import { Dispatch, SetStateAction } from "react";
 
 export const getEvents = () => Axios.get(Endpoints.event);
+
+export const getEventsByParams = (payload: eventByParamsType) =>
+  Axios.get(
+    Endpoints.eventByQuery({
+      q: payload.q,
+      departments: payload.departments,
+      colors: payload.colors,
+      eventFrom: "",
+      eventTo: "",
+    }),
+  );
+export const postEvents = (payload: any) =>
+  Axios.post(Endpoints.event, payload);
+
+export const updateEvents = (payload: any) => {
+  return Axios.put(Endpoints.eventById(payload.id), payload.newEvent);
+};
+export const updateUser = (payload: any) =>
+  Axios.put(Endpoints.updateUser(payload), payload);
+
 export const useGetEvents = () =>
-  useQuery({
+  useQuery<eventType[]>({
     queryKey: ["Events"],
-    queryFn: getEvents,
+    queryFn: async () => {
+      const axiosRes = await Axios.get(Endpoints.event);
+      if (axiosRes.statusText !== "OK") {
+        toast.error(
+          axiosRes?.data?.message ||
+            `Someting went wrong. Status Code: ${axiosRes?.status}`,
+        );
+        return axiosRes.data;
+      }
+      return axiosRes.data.data;
+    },
   });
 
 export const useDeleteEvent = ({
@@ -33,22 +65,49 @@ export const useDeleteEvent = ({
   });
 };
 
-export const getEventsByParams = (payload: eventByParamsType) =>
-  Axios.get(
-    Endpoints.eventByQuery({
-      q: payload.q,
-      departments: payload.departments,
-      colors: payload.colors,
-      eventFrom: "",
-      eventTo: "",
-    }),
-  );
+export const usePostEventMutation = ({
+  setNewEvent,
+}: {
+  setNewEvent?: Dispatch<SetStateAction<eventType>>;
+}) => {
+  const queryClient = useQueryClient();
 
-export const postEvents = (payload: any) =>
-  Axios.post(Endpoints.event, payload);
+  return useMutation({
+    mutationFn: postEvents,
+    onSuccess: (res) => {
+      console.log("Onsuccess", res);
+      queryClient.invalidateQueries({ queryKey: ["Events"] });
 
-export const updateEvents = (payload: any) => {
-  return Axios.put(Endpoints.eventById(payload.id), payload.newEvent);
+      toast.success(`${res?.data?.message}`);
+
+      setNewEvent &&
+        setNewEvent({
+          title: "",
+          start: null,
+          end: null,
+          color: undefined,
+          duration: 0,
+          recurringType: RecurringEventTypes.ONCE,
+          location: "",
+          description: "",
+          departments: [],
+          notes: "",
+          involvedUsers: [],
+        });
+    },
+    onError: (err: any) => {
+      console.log("error", err);
+      toast.error(err?.data?.message || "something went wrong");
+    },
+  });
 };
-export const updateUser = (payload: any) =>
-  Axios.put(Endpoints.updateUser(payload), payload);
+
+export const useEditEventMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: any) => {
+      return Axios.put(Endpoints.eventById(payload.id), payload);
+    },
+  });
+};

@@ -6,7 +6,8 @@ interface eventType {
   duration?: number;
   location?: string;
   description?: string;
-  departments: string[] | { code: string }[];
+  // departments: string[] | { code: string }[];
+  departments: string[];
   notes?: string;
   _id?: string;
   recurringType: string;
