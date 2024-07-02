@@ -187,7 +187,7 @@ export default function ImportExport() {
         // each event has "recurringEventId" field which is same for all recurring events
         // so we will filter out the unique events
 
-        events.forEach((event:any) => {
+        events.forEach((event: any) => {
           if (
             !uniqueEvents.find(
               (uniqueEvent) =>
@@ -363,33 +363,35 @@ export default function ImportExport() {
               Sync With Google
             </DialogTitle>
           </DialogHeader>
-          <div className="flex flex-col gap-8 max-h-[60vh] overflow-y-scroll">
-            <div className=" flex w-full flex-row items-start justify-start gap-[8px] rounded-md px-3 py-4 text-neutral-500">
+          <div className="flex max-h-[60vh] flex-col gap-8 overflow-y-scroll">
+            <div className=" flex w-full flex-col items-start justify-start gap-[8px] rounded-md px-3 py-4 text-neutral-500">
               {googleLocationsLoading ? (
                 <span>Loading</span>
               ) : (
-                <div>
-                  {googleLocations?.map((location: any) => (
-                    <div key={location.id} className="flex items-center gap-2 ">
-                      <div
-                        className={`h-8 w-8 rounded-md bg-[${location.color ?? "transparent"}]`}
-                      >
-                        {!location.color && (
-                          <Image
-                            src={"/images/google.logo.svg"}
-                            width={24}
-                            height={24}
-                            alt="GoogleIcon"
-                          ></Image>
-                        )}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className=" text-neutral-900 text-[16px] font-semibold">{location.summary}</span>
-                        <span className="text-[11px] text-neutral-500 ">{new Date(location.start.dateTime).toLocaleDateString()}</span>
-                      </div>
+                googleLocations?.map((location: any) => (
+                  <div key={location.id} className="flex items-center gap-2 ">
+                    <div
+                      className={`h-8 w-8 rounded-md bg-[${location.color ?? "transparent"}]`}
+                    >
+                      {!location.color && (
+                        <Image
+                          src={"/images/google.logo.svg"}
+                          width={24}
+                          height={24}
+                          alt="GoogleIcon"
+                        ></Image>
+                      )}
                     </div>
-                  ))}
-                </div>
+                    <div className="flex flex-col">
+                      <span className=" text-[16px] font-semibold text-neutral-900">
+                        {location.summary}
+                      </span>
+                      <span className="text-[11px] text-neutral-500 ">
+                        {new Date(location.start.dateTime).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))
               )}
             </div>
           </div>
@@ -400,10 +402,7 @@ export default function ImportExport() {
                   ? postMemberFiles(selectedFile)
                   : toast.error("File is not selected.");
               }}
-              className="btn btn-md h-5 border-none bg-primary-600 text-[13px] font-medium text-primary-50 hover:bg-primary-700"
-              style={{
-                textDecoration: "none",
-              }}
+              className="btn btn-md h-5 border-none bg-primary-600 text-[11px] font-medium text-primary-50 hover:bg-primary-700"
             >
               Sync
             </button>
