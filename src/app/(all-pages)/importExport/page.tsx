@@ -368,7 +368,7 @@ export default function ImportExport() {
               {googleLocationsLoading ? (
                 <span>Loading</span>
               ) : (
-                googleLocations?.map((location: any) => (
+                googleLocations && googleLocations?.map((location: any) => (
                   <div key={location.id} className="flex items-center gap-2 ">
                     <div
                       className={`h-8 w-8 rounded-md bg-[${location.color ?? "transparent"}]`}
