@@ -118,3 +118,23 @@
     border-radius: 20px;
 
 }
+
+.event-tooltip{
+    background-color: white;
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translate(-50%, -100%);
+    color: black;
+    padding: 0px 10px;
+    border-radius: 3px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    scale: 1.2; /* Transition the opacity */
+}
+
+
+.event-tooltip-transition{
+    opacity: 1;
+}
+

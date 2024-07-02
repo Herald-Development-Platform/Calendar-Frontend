@@ -106,13 +106,23 @@ export default function ReactFullCal() {
           // eventLimit={true}
           initialView={`dayGridMonth`}
           events={eventsData as EventSourceInput}
-          eventDidMount={(info) => {
-            console.log("info", info);
-          }}
+          // eventDidMount={(info) => {
+          //   console.log("info", info);
+          // }}
           eventMouseEnter={(info) => {
             console.log("eventMouseEnter", info);
+            const tooltipWrapper = document.createElement("div");
+            tooltipWrapper.innerText = info.event._def.title;
+            tooltipWrapper.classList.add("event-tooltip");
+            info.el.appendChild(tooltipWrapper);
+            tooltipWrapper.classList.add("event-tooltip-transition");
           }}
           eventMouseLeave={(info) => {
+            const tooltipEl = info?.el?.querySelector(".event-tooltip");
+
+            if (!tooltipEl) return;
+            tooltipEl.remove();
+
             console.log("eventMouseLeave", info);
           }}
           headerToolbar={false}
