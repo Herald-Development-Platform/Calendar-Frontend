@@ -6,6 +6,8 @@ import { IoIosSearch } from "react-icons/io";
 import { AiOutlineHome } from "react-icons/ai";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { MdImportExport } from "react-icons/md";
+import { IoLocationOutline } from "react-icons/io5";
+import { GrLocationPin } from "react-icons/gr";
 
 
 export default function Sidebar() {
@@ -36,6 +38,11 @@ export default function Sidebar() {
       name: "Import/Export",
       icon: <MdImportExport />,
       navigation: "/importExport",
+    },
+    {
+      name: "Location",
+      icon: <GrLocationPin />,
+      navigation: "/location",
     },
   ];
   return (
