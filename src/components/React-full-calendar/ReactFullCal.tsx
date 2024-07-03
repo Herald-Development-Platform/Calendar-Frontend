@@ -133,7 +133,7 @@ export default function ReactFullCal() {
           dayHeaderClassNames={"customStylesDayHeader"}
           dayCellClassNames={"customStylesDayCells"}
           eventMaxStack={2}
-          dayMaxEvents={2}
+          dayMaxEvents={4}
         />
       </div>
     </>

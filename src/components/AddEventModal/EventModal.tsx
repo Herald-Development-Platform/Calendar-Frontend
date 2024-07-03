@@ -37,6 +37,7 @@ import {
 } from "../ui/select";
 import Endpoints from "@/services/API_ENDPOINTS";
 import Locations from "./Locations";
+import DatePicker from "./DatePicker";
 
 interface PickedDateType {
   startDate: Date | undefined;
@@ -194,9 +195,6 @@ export default function EventModal({
                     id="add-title"
                     name="title"
                     value={newEvent.title}
-                    // onChange={(e) =>
-                    //   setNewEvent({ ...newEvent, title: e.target.value })
-                    // }
                     onChange={handleValueChange}
                   />
                 </div>
@@ -209,14 +207,6 @@ export default function EventModal({
                   className="w-full text-neutral-900 ring-ring focus:border-primary-600  focus-visible:ring-0"
                   id="message"
                   name="description"
-                  // onChange={(e) =>
-                  //   setNewEvent({
-                  //     ...newEvent,
-                  //     description: e?.target?.value
-                  //       ? e?.target?.value
-                  //       : undefined,
-                  //   })
-                  // }
                   onChange={handleValueChange}
                   value={newEvent?.description ? newEvent.description : ""}
                 />
@@ -251,75 +241,27 @@ export default function EventModal({
                   </button>
                 </div>
 
-                {dateType === "single" && (
-                  <Datepicker
-                    className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
-                    onChange={(datePicked) => {
-                      if (!datePicked) return;
-
-                      handleValueChange({
-                        target: { name: "start", value: new Date(datePicked) },
-                      });
-                      handleValueChange({
-                        target: { name: "end", value: new Date(datePicked) },
-                      });
+                {dateType === "single" ? (
+                  <DatePicker
+                    value={newEvent.start}
+                    handleValueChange={({ target: { name, value } }) => {
+                      handleValueChange({ target: { name: "start", value } });
+                      handleValueChange({ target: { name: "end", value } });
                     }}
-                    value={
-                      newEvent?.start
-                        ? format(newEvent.start, "EEEE, dd MMMM", {
-                            locale: US_LocaleData,
-                          })
-                        : undefined
-                    }
-                    placeholderText="Please select a date."
-                    required
+                    name={"start"}
                   />
-                )}
-
-                {dateType === "multi" && (
+                ) : (
                   <div className="flex w-full flex-row items-center gap-2 ">
-                    {/* <span className="w-full border border-blue-500"> */}
-                    <Datepicker
-                      className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
-                      onChange={(datePicked) => {
-                        if (!datePicked) return;
-
-                        handleValueChange({
-                          target: {
-                            name: "start",
-                            value: new Date(datePicked),
-                          },
-                        });
-                      }}
-                      value={
-                        newEvent?.start
-                          ? format(newEvent?.start, "EEEE, dd MMMM", {
-                              locale: US_LocaleData,
-                            })
-                          : undefined
-                      }
-                      placeholderText="Start Date."
-                      required
+                    <DatePicker
+                      value={newEvent.start}
+                      handleValueChange={handleValueChange}
+                      name={"start"}
                     />
                     <span className="text-neutral-600">-</span>
-                    <Datepicker
-                      className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
-                      onChange={(datePicked) => {
-                        if (!datePicked) return;
-                        handleValueChange({
-                          target: { name: "end", value: new Date(datePicked) },
-                        });
-                        // console.log("newEvent", datePicked);
-                      }}
-                      value={
-                        newEvent?.end
-                          ? format(newEvent?.end, "EEEE, dd MMMM", {
-                              locale: US_LocaleData,
-                            })
-                          : undefined
-                      }
-                      placeholderText="End Date."
-                      required
+                    <DatePicker
+                      value={newEvent.end}
+                      handleValueChange={handleValueChange}
+                      name={"end"}
                     />
                   </div>
                 )}
@@ -399,12 +341,6 @@ export default function EventModal({
                         type="radio"
                         className="absolute hidden"
                         value={Color.color}
-                        // onChange={() => {
-                        //   console.log(
-                        //     ` index addeventmodal ${i} clicked, Color.color: ${Color.color}`,
-                        //   );
-                        //   setNewEvent({ ...newEvent, color: Color.color });
-                        // }}
                         onChange={handleValueChange}
                       />
                     </label>
@@ -448,9 +384,6 @@ export default function EventModal({
                   className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
                   name="notes"
                   value={newEvent.notes}
-                  // onChange={(e) =>
-                  //   setNewEvent({ ...newEvent, notes: e.target.value })
-                  // }
                   onChange={handleValueChange}
                 />
               </div>
@@ -477,29 +410,3 @@ export default function EventModal({
     </>
   );
 }
-
-// const handleInviteMembers = (user: User, action: "add" | "remove") => {
-//   switch (action) {
-//     case "add":
-//       if (newEvent?.involvedUsers.includes(user._id)) {
-//         console.log("adding", newEvent?.involvedUsers?.includes(user._id));
-//         return;
-//       }
-
-//       setNewEvent({
-//         ...newEvent,
-//         involvedUsers: [...newEvent?.involvedUsers, user._id],
-//       });
-//       break;
-//     case "remove":
-//       setNewEvent((prev) => ({
-//         ...prev,
-//         involvedUsers: [
-//           ...newEvent?.involvedUsers.filter(
-//             (memberId) => memberId !== user._id,
-//           ),
-//         ],
-//       }));
-//       break;
-//   }
-// };

@@ -92,7 +92,7 @@ export default function EventDetails({
                     <MdOutlineModeEditOutline />
                   </span>
                   Edit Event
-                  <span className={` `}>
+                  <span>
                     {selectedEvent && (
                       <EditEventModal
                         defaultData={selectedEvent}
@@ -123,7 +123,6 @@ export default function EventDetails({
               onClick={() => {
                 setSelectedEvent(null);
               }}
-              // ref={crossBtnRef && crossBtnRef}
               className="cursor-pointer text-xl"
             >
               <RxCross2 />

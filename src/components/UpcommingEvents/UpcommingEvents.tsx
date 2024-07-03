@@ -21,6 +21,7 @@ export default function UpcommingEvents() {
   const selectedStartTime = selectedDate?.start
     ? selectedDate?.start.getTime()
     : 0;
+
   const selectedEndTime = selectedDate?.end ? selectedDate.end.getTime() : 0;
 
   const upcommingEventRef = useRef<HTMLDivElement>(null);
@@ -29,9 +30,6 @@ export default function UpcommingEvents() {
 
   console.log("upcomgin", eventsData);
   const { mutate: deleteEvent } = useDeleteEvent({});
-
-  const queryClient = useQueryClient();
-
   const { mutate: updateEvent } = useUpdateEvents();
 
   const handleCardClick = (eventData: eventType) => {
