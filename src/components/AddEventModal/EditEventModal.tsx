@@ -31,6 +31,7 @@ import CustomTimePicker from "./CustomTimePicker";
 import { makePascalCase } from "@/lib/utils";
 import DepartmentButton from "../DepartmentButton";
 import Locations from "./Locations";
+import DatePicker from "./DatePicker";
 
 // interface PickedDateType {
 //   startDate: Date | undefined;
@@ -265,75 +266,27 @@ export default function EditEventModal({
                   </button>
                 </div>
 
-                {dateType === "single" && (
-                  <Datepicker
-                    className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
-                    onChange={(datePicked) => {
-                      if (!datePicked) return;
-
-                      handleValueChange({
-                        target: { name: "start", value: new Date(datePicked) },
-                      });
-                      handleValueChange({
-                        target: { name: "end", value: new Date(datePicked) },
-                      });
+                {dateType === "single" ? (
+                  <DatePicker
+                    value={newEvent.start}
+                    handleValueChange={({ target: { name, value } }) => {
+                      handleValueChange({ target: { name: "start", value } });
+                      handleValueChange({ target: { name: "end", value } });
                     }}
-                    value={
-                      newEvent?.start
-                        ? format(newEvent.start, "EEEE, dd MMMM", {
-                            locale: US_LocaleData,
-                          })
-                        : undefined
-                    }
-                    placeholderText="Please select a date."
-                    required
+                    name={"start"}
                   />
-                )}
-
-                {dateType === "multi" && (
+                ) : (
                   <div className="flex w-full flex-row items-center gap-2 ">
-                    {/* <span className="w-full border border-blue-500"> */}
-                    <Datepicker
-                      className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
-                      onChange={(datePicked) => {
-                        if (!datePicked) return;
-
-                        handleValueChange({
-                          target: {
-                            name: "start",
-                            value: new Date(datePicked),
-                          },
-                        });
-                      }}
-                      value={
-                        newEvent?.start
-                          ? format(newEvent?.start, "EEEE, dd MMMM", {
-                              locale: US_LocaleData,
-                            })
-                          : undefined
-                      }
-                      placeholderText="Start Date."
-                      required
+                    <DatePicker
+                      value={newEvent.start}
+                      handleValueChange={handleValueChange}
+                      name={"start"}
                     />
                     <span className="text-neutral-600">-</span>
-                    <Datepicker
-                      className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
-                      onChange={(datePicked) => {
-                        if (!datePicked) return;
-                        handleValueChange({
-                          target: { name: "end", value: new Date(datePicked) },
-                        });
-                        // console.log("newEvent", datePicked);
-                      }}
-                      value={
-                        newEvent?.end
-                          ? format(newEvent?.end, "EEEE, dd MMMM", {
-                              locale: US_LocaleData,
-                            })
-                          : undefined
-                      }
-                      placeholderText="End Date."
-                      required
+                    <DatePicker
+                      value={newEvent.end}
+                      handleValueChange={handleValueChange}
+                      name={"end"}
                     />
                   </div>
                 )}
