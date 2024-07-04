@@ -254,7 +254,7 @@ export default function ImportExport() {
                     id={department._id}
                     key={department._id}
                     selectedCross={false}
-                    handleQueryParams={() => {
+                    onClick={() => {
                       if (
                         currentTab === "import" ||
                         userData?.role === "SUPER_ADMIN"
@@ -371,7 +371,9 @@ export default function ImportExport() {
                 googleLocations?.map((location: any) => (
                   <div key={location.id} className="flex items-center gap-2 ">
                     <div
-                      className={`h-8 w-8 rounded-md bg-[${location.color ?? "transparent"}]`}
+                      className={`h-8 w-8 rounded-md bg-[${
+                        location.color ?? "transparent"
+                      }]`}
                     >
                       {!location.color && (
                         <Image

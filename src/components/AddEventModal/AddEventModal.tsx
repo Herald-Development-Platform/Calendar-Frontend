@@ -17,7 +17,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { postEvents, usePostEventMutation } from "@/services/api/eventsApi";
 import { watch } from "fs";
-import { getDepartments } from "@/services/api/departments";
+import { getDepartments, useGetDepartments } from "@/services/api/departments";
 import colors from "@/constants/Colors";
 import { Textarea } from "../ui/textarea";
 import { RecurringEventTypes } from "@/constants/RecurringEvents";
@@ -79,10 +79,7 @@ export default function AddEventModal({
 
   const { userData } = useContext(Context);
 
-  const { data: departmentsRes } = useQuery({
-    queryKey: ["Departments"],
-    queryFn: getDepartments,
-  });
+  const { data: departmentsRes } = useGetDepartments();
 
   const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
 
@@ -326,7 +323,7 @@ export default function AddEventModal({
                     Object.keys(RecurringEventTypes) as Array<
                       keyof typeof RecurringEventTypes
                     >
-                  ).map((eventKey,i) => {
+                  ).map((eventKey, i) => {
                     return (
                       <label
                         className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"
@@ -441,7 +438,7 @@ export default function AddEventModal({
               <div className="text-sm">
                 <span>Departments:</span>
                 <div className="my-2 flex flex-wrap items-center gap-1">
-                  {departmentsRes?.data?.data?.map((department: Department) => {
+                  {departmentsRes?.map((department: Department) => {
                     const departmentExists =
                       newEvent.departments.includes(department._id) ||
                       department._id === userData?.department?._id;
@@ -449,7 +446,7 @@ export default function AddEventModal({
                       <DepartmentButton
                         key={department._id}
                         id={department._id}
-                        handleQueryParams={handleValueChange}
+                        onClick={handleValueChange}
                         value={department.code}
                         selected={departmentExists}
                       />

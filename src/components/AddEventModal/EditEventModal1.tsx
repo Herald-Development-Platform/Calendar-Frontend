@@ -32,7 +32,7 @@ import toast from "react-hot-toast";
 import { postEvents, updateEvents } from "@/services/api/eventsApi";
 import { watch } from "fs";
 import DepartmentBtn from "./DepartmentBtn";
-import { getDepartments } from "@/services/api/departments";
+import { getDepartments, useGetDepartments } from "@/services/api/departments";
 import colors from "@/constants/Colors";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -73,10 +73,7 @@ export default function EditEventModal({
     involvedUsers: [],
   });
 
-  const { data: departmentsRes } = useQuery({
-    queryKey: ["Departments"],
-    queryFn: getDepartments,
-  });
+  const { data: departmentsRes } = useGetDepartments();
 
   console.log("depar", departmentsRes);
   const { mutate: updateEvent } = useMutation({
@@ -447,17 +444,15 @@ export default function EditEventModal({
             <div className="text-sm">
               <span className="flex justify-start ">Departments:</span>
               <div className="my-2 flex flex-wrap items-center gap-1">
-                {departmentsRes?.data?.data?.map(
-                  (department: any, i: number) => (
-                    <DepartmentBtn
-                      key={i}
-                      selDepartments={editEvent.departments}
-                      setEditEvent={setEditEvent}
-                      index={i}
-                      department={department}
-                    />
-                  ),
-                )}
+                {departmentsRes?.map((department: any, i: number) => (
+                  <DepartmentBtn
+                    key={i}
+                    selDepartments={editEvent.departments}
+                    setEditEvent={setEditEvent}
+                    index={i}
+                    department={department}
+                  />
+                ))}
               </div>
             </div>
             {/* Notes section  */}

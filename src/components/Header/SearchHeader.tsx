@@ -110,7 +110,7 @@ export function SearchHeader({
                         <DepartmentButton
                           key={department._id}
                           id={department._id}
-                          handleQueryParams={handleQueryParams}
+                          onClick={handleQueryParams}
                           value={department.code}
                           selected={queryParams?.departments?.includes(
                             department?._id,

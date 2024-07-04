@@ -386,7 +386,7 @@ export default function Page() {
                       selected={true}
                       id={permission}
                       key={permission}
-                      handleQueryParams={() => {
+                      onClick={() => {
                         resetUserForm({
                           ...getUserValues(),
                           permissions: watchUserValues("permissions").filter(
@@ -420,56 +420,61 @@ export default function Page() {
                               {groupLabel}
                             </span>
                             <div className=" flex flex-col items-start justify-start gap-2.5">
-                              {(PERMISSION_GROUPS as any)[groupLabel].map((permission: string) => {
-                                return (
-                                  <div
-                                  key={permission}
-                                    className="flex flex-row items-center justify-start gap-1"
-                                    onClick={() => {
-                                      let newPermissions = [
-                                        ...watchUserValues("permissions"),
-                                      ];
-                                      if (newPermissions.includes(permission)) {
-                                        newPermissions = newPermissions.filter(
-                                          (perm: string) => perm !== permission,
-                                        );
-                                      } else {
-                                        newPermissions = [
-                                          ...newPermissions,
-                                          permission,
+                              {(PERMISSION_GROUPS as any)[groupLabel].map(
+                                (permission: string) => {
+                                  return (
+                                    <div
+                                      key={permission}
+                                      className="flex flex-row items-center justify-start gap-1"
+                                      onClick={() => {
+                                        let newPermissions = [
+                                          ...watchUserValues("permissions"),
                                         ];
-                                      }
+                                        if (
+                                          newPermissions.includes(permission)
+                                        ) {
+                                          newPermissions =
+                                            newPermissions.filter(
+                                              (perm: string) =>
+                                                perm !== permission,
+                                            );
+                                        } else {
+                                          newPermissions = [
+                                            ...newPermissions,
+                                            permission,
+                                          ];
+                                        }
 
-                                      resetUserForm({
-                                        ...getUserValues(),
-                                        permissions: newPermissions,
-                                      });
-                                    }}
-                                  >
-                                    <span className=" text-primary-500">
-                                      {watchUserValues("permissions").includes(
-                                        permission,
-                                      ) ? (
-                                        <MdCheckBox />
-                                      ) : (
-                                        <MdCheckBoxOutlineBlank />
-                                      )}
-                                    </span>
-                                    <span className=" text-[13px] font-[500] text-neutral-900">
-                                      {
-                                        (READABLE_PERMISSIONS as any)[
-                                          permission
-                                        ]
-                                      }
-                                    </span>
-                                  </div>
-                                );
-                              })}
+                                        resetUserForm({
+                                          ...getUserValues(),
+                                          permissions: newPermissions,
+                                        });
+                                      }}
+                                    >
+                                      <span className=" text-primary-500">
+                                        {watchUserValues(
+                                          "permissions",
+                                        ).includes(permission) ? (
+                                          <MdCheckBox />
+                                        ) : (
+                                          <MdCheckBoxOutlineBlank />
+                                        )}
+                                      </span>
+                                      <span className=" text-[13px] font-[500] text-neutral-900">
+                                        {
+                                          (READABLE_PERMISSIONS as any)[
+                                            permission
+                                          ]
+                                        }
+                                      </span>
+                                    </div>
+                                  );
+                                },
+                              )}
                             </div>
                           </>
                         );
                       })}
-                      
                     </div>
                   </PopoverContent>
                 </Popover>
