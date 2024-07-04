@@ -21,7 +21,7 @@ import {
   usePostEventMutation,
 } from "@/services/api/eventsApi";
 import { watch } from "fs";
-import { getDepartments } from "@/services/api/departments";
+import { getDepartments, useGetDepartments } from "@/services/api/departments";
 import colors from "@/constants/Colors";
 import { Textarea } from "../ui/textarea";
 import { RecurringEventTypes } from "@/constants/RecurringEvents";
@@ -76,10 +76,7 @@ export default function EditEventModal({
 
   const { userData } = useContext(Context);
 
-  const { data: departmentsRes } = useQuery({
-    queryKey: ["Departments"],
-    queryFn: getDepartments,
-  });
+  const { data: departmentsRes } = useGetDepartments();
 
   const { mutate: updateEvent } = useEditEventMutation();
 
@@ -366,12 +363,6 @@ export default function EditEventModal({
                         type="radio"
                         className="absolute hidden"
                         value={Color.color}
-                        // onChange={() => {
-                        //   console.log(
-                        //     ` index addeventmodal ${i} clicked, Color.color: ${Color.color}`,
-                        //   );
-                        //   setNewEvent({ ...newEvent, color: Color.color });
-                        // }}
                         onChange={handleValueChange}
                       />
                     </label>
@@ -386,7 +377,7 @@ export default function EditEventModal({
               <div className="flex flex-col items-start text-sm">
                 <span>Departments:</span>
                 <div className="my-2 flex flex-wrap items-center gap-1">
-                  {departmentsRes?.data?.data?.map((department: Department) => {
+                  {departmentsRes?.map((department: Department) => {
                     const departmentExists =
                       newEvent.departments.includes(department.code) ||
                       department.code === userData?.department?.code;
@@ -394,7 +385,7 @@ export default function EditEventModal({
                       <DepartmentButton
                         key={department._id}
                         id={department._id}
-                        handleQueryParams={handleValueChange}
+                        onClick={handleValueChange}
                         value={department.code}
                         selected={departmentExists}
                       />

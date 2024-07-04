@@ -15,8 +15,8 @@ export default function EventCard({
     : "NA";
   const endTime = event?.end ? format(new Date(event?.end), "h:mm aa") : "NA";
   if (!event?.start) return null;
+  console.log("EventCard", event);
 
-  // console.log("event", event);
   return (
     <>
       <div
@@ -33,31 +33,25 @@ export default function EventCard({
           handleCardClick && handleCardClick(event);
         }}
       >
+        <div className="flex w-full flex-wrap gap-1">
+          {event?.departments?.map((department: any, i: number) => {
+            return (
+              <div
+                className={`${
+                  i === 0
+                    ? "bg-neutral-400 text-white"
+                    : "bg-white text-neutral-400"
+                } flex h-[15px] items-center justify-center rounded-[20px] border-[0.4px] border-neutral-400  px-[5px] text-[11px] `}
+              >
+                <span className="flex h-full items-center justify-center pt-[1px]">
+                  {department?.code}
+                </span>
+              </div>
+            );
+          })}
+        </div>
         <h1 className="font-medium">{event?.title}</h1>
         <div className="flex items-center text-neutral-600">
-          {//  departments =event.departments;
-          event?.departments?.map((department: any, i: number) =>
-            i < 2 ? (
-              <>
-                <p className="whitespace-pre text-sm font-medium ">
-                  {department.code} {i < event.departments.length - 1 && "/ "}
-                </p>
-                {i == event.departments.length - 1 && (
-                  <span className="ml-[-5px] text-2xl">
-                    <LuDot />
-                  </span>
-                )}
-              </>
-            ) : (
-              <p
-                key={department._id}
-                className="whitespace-pre text-sm font-medium "
-              >
-                .
-              </p>
-            ),
-          )}
-
           <p className="text-sm font-medium ">
             {startTime} - {endTime}
           </p>
