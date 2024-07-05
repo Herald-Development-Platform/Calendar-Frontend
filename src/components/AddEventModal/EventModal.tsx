@@ -157,35 +157,56 @@ export default function EventModal({
     if (!newEvent?.title) {
       // @ts-ignore
       eventFormRef.current.querySelector("[name='title']")?.focus();
+
+      // @ts-ignore
+      eventFormRef.current.querySelector("#form-validation-msg").textContent =
+        "Title is a required field.";
       return false;
     }
     if (!newEvent?.description) {
       // @ts-ignore
       eventFormRef.current.querySelector("[name='description']")?.focus();
+
+      // @ts-ignore
+      eventFormRef.current.querySelector("#form-validation-msg").textContent =
+        "Description is requried for an event.";
       return false;
     }
     if (!newEvent?.start) {
       // @ts-ignore
       eventFormRef.current.querySelector("[name='start']")?.focus();
+
+      // @ts-ignore
+      eventFormRef.current.querySelector("#form-validation-msg").textContent =
+        "Select a start date.";
       return false;
     }
     if (!newEvent?.end) {
       // @ts-ignore
       eventFormRef.current.querySelector("[name='end']")?.focus();
+
+      // @ts-ignore
+      eventFormRef.current.querySelector("#form-validation-msg").textContent =
+        "Select a end date.";
       return false;
     }
-    if (!newEvent?.departments) {
+    if (!newEvent?.departments || newEvent?.departments?.length === 0) {
       // @ts-ignore
       eventFormRef.current.querySelector("[name='departments']")?.focus();
 
-      return false;
-    }
-    if (!newEvent.involvedUsers) {
       // @ts-ignore
-      eventFormRef.current.querySelector("[name='involvedUsers']")?.focus();
-
+      eventFormRef.current.querySelector("#form-validation-msg").textContent =
+        "Select a department.";
       return false;
     }
+    // if (!newEvent.involvedUsers || newEvent?.involvedUsers?.length === 0) {
+    //   // @ts-ignore
+    //   eventFormRef.current.querySelector("[name='involvedUsers']")?.focus();
+    //   // @ts-ignore
+    //   eventFormRef.current.querySelector("#form-validation-msg").textContent =
+    //     "Select at least one involved Users.";
+    //   return false;
+    // }
     return true;
   };
   return (
@@ -437,10 +458,8 @@ export default function EventModal({
             </div>
 
             {/* create btn  */}
-            <div
-              // method="dialog"
-              className=" flex h-16 w-full items-center justify-end "
-            >
+            <div className="flex h-16 w-full items-center justify-end gap-5 text-danger-700 ">
+              <p id="form-validation-msg" className=""></p>
               <button
                 className="btn btn-md  h-5 border-none bg-primary-600 text-base font-medium text-primary-50"
                 onClick={handleAddEvent}

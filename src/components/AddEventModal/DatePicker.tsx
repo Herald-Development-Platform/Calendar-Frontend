@@ -18,7 +18,7 @@ export default function DatePicker({
 
   return (
     <>
-      <div className="relative w-full">
+      <div className="relative w-full ">
         <input
           type="text"
           className="mb-2 h-10 w-full rounded border-[1px] border-neutral-300 px-4 text-base text-neutral-900 focus:border-primary-600"

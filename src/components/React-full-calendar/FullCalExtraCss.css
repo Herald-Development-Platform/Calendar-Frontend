@@ -116,10 +116,10 @@
     font-size: 9px;
     line-height: 12px;
     height: 11px; 
-       width:auto;  
-     padding: 0px 5px; 
+    width:auto;  
+    padding: 0px 5px;
+    padding-bottom: 12px; 
     border-radius: 20px;
-
 }
 
 .event-tooltip{

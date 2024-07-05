@@ -8,6 +8,8 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import Calendar, {
   DateSelectArg,
   DateUnselectArg,
+  EventHoveringArg,
+  EventMountArg,
   EventSourceInput,
 } from "@fullcalendar/core";
 import { Context, ContextType } from "@/app/clientWrappers/ContextProvider";
@@ -19,6 +21,15 @@ import Endpoints from "@/services/API_ENDPOINTS";
 import { useGetEvents } from "@/services/api/eventsApi";
 
 export default function ReactFullCal() {
+  const allPlugins = [
+    dayGridPlugin,
+    multiMonthPlugin,
+    interactionPlugin,
+    timeGridPlugin,
+    listPlugin,
+    multiMonthPlugin,
+  ];
+
   const { calendarRef, setSelectedDate, selectedDate, timeout, events } =
     useContext(Context);
   const calWrapper = useRef<HTMLDivElement>(null);
@@ -40,77 +51,112 @@ export default function ReactFullCal() {
     }, 250);
   };
 
-  useEffect(() => {
-    if (!calWrapper.current) return;
-    const dotEvents = calWrapper.current.querySelectorAll(
-      ".fc-daygrid-event.fc-daygrid-dot-event",
-    );
+  // useEffect(() => {
+  //   if (!calWrapper.current) return;
+  //   const dotEvents = calWrapper.current.querySelectorAll(
+  //     ".fc-daygrid-event.fc-daygrid-dot-event",
+  //   );
 
-    console.log("dotEvents", dotEvents);
+  //   console.log("dotEvents", dotEvents);
 
-    if (dotEvents.length === 0) return;
+  //   if (dotEvents.length === 0) return;
 
-    const dotEventsArray = Array.from(dotEvents);
+  //   const dotEventsArray = Array.from(dotEvents);
 
-    dotEventsArray?.map((dotEvent: any) => {
-      if (dotEvent.querySelector(".department-wrapper")) return;
-      const titleElement = dotEvent.querySelector(".fc-event-title");
-      const correctEventDepartments = events?.find(
-        (event: eventType) => event.title === titleElement.textContent,
-      )?.departments;
+  //   dotEventsArray?.map((dotEvent: any) => {
+  //     if (dotEvent.querySelector(".department-wrapper")) return;
+  //     const titleElement = dotEvent.querySelector(".fc-event-title");
+  //     const correctEventDepartments = events?.find(
+  //       (event: eventType) => event.title === titleElement.textContent,
+  //     )?.departments;
 
-      const departmentsWrapper = document.createElement("div");
-      departmentsWrapper.classList.add("department-wrapper");
+  //     const departmentsWrapper = document.createElement("div");
+  //     departmentsWrapper.classList.add("department-wrapper");
 
-      correctEventDepartments?.map((department: any, i: number) => {
-        console.log("department", department);
+  //     correctEventDepartments?.map((department: any, i: number) => {
+  //       console.log("department", department);
 
-        const departmentElement = document.createElement("div");
-        departmentElement.classList.add("department-item");
-        departmentElement.textContent = department?.code;
-        if (i === 0) {
-          departmentElement.style.backgroundColor = "#A3A3A3";
-        } else {
-          departmentElement.style.backgroundColor = "#F5F5F5";
-          departmentElement.style.color = "#A3A3A3";
-        }
-        departmentsWrapper.appendChild(departmentElement);
-      });
-      dotEvent?.insertBefore(departmentsWrapper, titleElement);
+  //       const departmentElement = document.createElement("div");
+  //       departmentElement.classList.add("department-item");
+  //       departmentElement.textContent = department?.code;
+  //       if (i === 0) {
+  //         departmentElement.style.backgroundColor = "#A3A3A3";
+  //       } else {
+  //         departmentElement.style.backgroundColor = "#F5F5F5";
+  //         departmentElement.style.color = "#A3A3A3";
+  //       }
+  //       departmentsWrapper.appendChild(departmentElement);
+  //     });
+  //     dotEvent?.insertBefore(departmentsWrapper, titleElement);
 
-      // console.log("dotEvent", dotEvent);
-      return;
+  //     // console.log("dotEvent", dotEvent);
+  //     return;
+  //   });
+  // }, [selectedDate, events]);
+
+  const handleEventDidMount = (info: EventMountArg) => {
+    const eventEl = info.el;
+    const departments = info?.event?._def?.extendedProps?.departments;
+    const titleElement = eventEl?.querySelector(".fc-event-title");
+    const isBlockEvent = eventEl?.classList.contains("fc-daygrid-block-event");
+
+    if (departments?.length === 0 || !titleElement || isBlockEvent) return;
+
+    const departmentsWrapper = document.createElement("div");
+    departmentsWrapper.classList.add("department-wrapper");
+
+    departments?.map((department: any, i: number) => {
+      console.log("department", department);
+
+      const departmentElement = document.createElement("div");
+      departmentElement.classList.add("department-item");
+      departmentElement.textContent = department?.code;
+      departmentElement.style.fontWeight = "400";
+
+      if (i === 0) {
+        departmentElement.style.backgroundColor = "#737373";
+        departmentElement.style.border = "0.4px solid #d4d4d4";
+      } else {
+        departmentElement.style.backgroundColor = "#F5F5F5";
+        departmentElement.style.color = "#737373";
+        departmentElement.style.border = "0.4px solid #d4d4d4";
+      }
+      departmentsWrapper.appendChild(departmentElement);
     });
-  }, [selectedDate, events]);
+    eventEl?.insertBefore(departmentsWrapper, titleElement);
 
+    return;
+    // });
+  };
+
+  const handleMouseLeave = (info: EventHoveringArg) => {
+    const tooltipEl = info?.el?.querySelector(".event-tooltip");
+
+    if (!tooltipEl) return;
+    tooltipEl.remove();
+  };
+  const handleMouseEnter = (info: EventHoveringArg) => {
+    const tooltipWrapper = document.createElement("div");
+    tooltipWrapper.innerText = info.event._def.title;
+    tooltipWrapper.classList.add("event-tooltip");
+    info.el.appendChild(tooltipWrapper);
+    tooltipWrapper.classList.add("event-tooltip-transition");
+  };
   return (
     <>
       <div ref={calWrapper} className="h-full w-full">
         <FullCalendar
           ref={calendarRef}
-          plugins={[
-            dayGridPlugin,
-            multiMonthPlugin,
-            interactionPlugin,
-            timeGridPlugin,
-            listPlugin,
-            multiMonthPlugin,
-          ]}
+          plugins={allPlugins}
           initialView={`dayGridMonth`}
           events={events as EventSourceInput}
-          eventMouseEnter={(info) => {
-            const tooltipWrapper = document.createElement("div");
-            tooltipWrapper.innerText = info.event._def.title;
-            tooltipWrapper.classList.add("event-tooltip");
-            info.el.appendChild(tooltipWrapper);
-            tooltipWrapper.classList.add("event-tooltip-transition");
+          eventMouseEnter={handleMouseEnter}
+          eventMouseLeave={handleMouseLeave}
+          eventDidMount={handleEventDidMount}
+          dateClick={(info) => {
+            console.log("info", info);
           }}
-          eventMouseLeave={(info) => {
-            const tooltipEl = info?.el?.querySelector(".event-tooltip");
-
-            if (!tooltipEl) return;
-            tooltipEl.remove();
-          }}
+          // dateR
           headerToolbar={false}
           selectable={true}
           select={handleSelect}

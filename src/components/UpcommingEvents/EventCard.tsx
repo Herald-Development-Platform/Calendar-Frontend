@@ -15,7 +15,6 @@ export default function EventCard({
     : "NA";
   const endTime = event?.end ? format(new Date(event?.end), "h:mm aa") : "NA";
   if (!event?.start) return null;
-  console.log("EventCard", event);
 
   return (
     <>
