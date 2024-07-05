@@ -19,10 +19,10 @@ import Endpoints from "@/services/API_ENDPOINTS";
 import { useGetEvents } from "@/services/api/eventsApi";
 
 export default function ReactFullCal() {
-  const { calendarRef, setSelectedDate, selectedDate, timeout } =
+  const { calendarRef, setSelectedDate, selectedDate, timeout, events } =
     useContext(Context);
   const calWrapper = useRef<HTMLDivElement>(null);
-  const { data: eventsData } = useGetEvents();
+  // const { data: events } = useGetEvents();
 
   const handleSelect = ({ start, end, startStr, endStr }: DateSelectArg) => {
     setSelectedDate({ start, end, startStr, endStr });
@@ -47,7 +47,6 @@ export default function ReactFullCal() {
     );
 
     console.log("dotEvents", dotEvents);
-    console.log("eventsData", eventsData);
 
     if (dotEvents.length === 0) return;
 
@@ -56,7 +55,7 @@ export default function ReactFullCal() {
     dotEventsArray?.map((dotEvent: any) => {
       if (dotEvent.querySelector(".department-wrapper")) return;
       const titleElement = dotEvent.querySelector(".fc-event-title");
-      const correctEventDepartments = eventsData?.find(
+      const correctEventDepartments = events?.find(
         (event: eventType) => event.title === titleElement.textContent,
       )?.departments;
 
@@ -82,7 +81,7 @@ export default function ReactFullCal() {
       // console.log("dotEvent", dotEvent);
       return;
     });
-  }, [selectedDate, eventsData]);
+  }, [selectedDate, events]);
 
   return (
     <>
@@ -97,20 +96,9 @@ export default function ReactFullCal() {
             listPlugin,
             multiMonthPlugin,
           ]}
-          // views={{
-          //   dayGridMonth: {
-          //     dayMaxEventRows: 3,
-          //     eventLimit: 3,
-          //   },
-          // }}
-          // eventLimit={true}
           initialView={`dayGridMonth`}
-          events={eventsData as EventSourceInput}
-          // eventDidMount={(info) => {
-          //   console.log("info", info);
-          // }}
+          events={events as EventSourceInput}
           eventMouseEnter={(info) => {
-            console.log("eventMouseEnter", info);
             const tooltipWrapper = document.createElement("div");
             tooltipWrapper.innerText = info.event._def.title;
             tooltipWrapper.classList.add("event-tooltip");
@@ -122,8 +110,6 @@ export default function ReactFullCal() {
 
             if (!tooltipEl) return;
             tooltipEl.remove();
-
-            console.log("eventMouseLeave", info);
           }}
           headerToolbar={false}
           selectable={true}
@@ -147,4 +133,16 @@ export default function ReactFullCal() {
 // dateClick={(dateClickInfo) => {
 //   console.log("dateclickinfo", dateClickInfo);
 //   setSelectedDate(dateClickInfo?.date);
+// }}
+
+// views={{
+//   dayGridMonth: {
+//     dayMaxEventRows: 3,
+//     eventLimit: 3,
+//   },
+// }}
+// eventLimit={true}
+
+// eventDidMount={(info) => {
+//   console.log("info", info);
 // }}

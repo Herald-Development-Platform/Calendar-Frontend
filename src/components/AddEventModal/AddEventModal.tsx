@@ -438,20 +438,21 @@ export default function AddEventModal({
               <div className="text-sm">
                 <span>Departments:</span>
                 <div className="my-2 flex flex-wrap items-center gap-1">
-                  {departmentsRes?.map((department: Department) => {
-                    const departmentExists =
-                      newEvent.departments.includes(department._id) ||
-                      department._id === userData?.department?._id;
-                    return (
-                      <DepartmentButton
-                        key={department._id}
-                        id={department._id}
-                        onClick={handleValueChange}
-                        value={department.code}
-                        selected={departmentExists}
-                      />
-                    );
-                  })}
+                  {Array.isArray(departmentsRes) &&
+                    departmentsRes?.map((department: Department) => {
+                      const departmentExists =
+                        newEvent.departments.includes(department._id) ||
+                        department._id === userData?.department?._id;
+                      return (
+                        <DepartmentButton
+                          key={department._id}
+                          id={department._id}
+                          onClick={handleValueChange}
+                          value={department.code}
+                          selected={departmentExists}
+                        />
+                      );
+                    })}
                 </div>
               </div>
 

@@ -43,7 +43,7 @@ export default function EventCard({
                     : "bg-white text-neutral-400"
                 } flex h-[15px] items-center justify-center rounded-[20px] border-[0.4px] border-neutral-400  px-[5px] text-[11px] `}
               >
-                <span className="flex h-full items-center justify-center pt-[1px]">
+                <span className="flex h-full items-center justify-center pt-[2px]">
                   {department?.code}
                 </span>
               </div>

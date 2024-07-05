@@ -29,8 +29,8 @@ interface eventByParamsType {
   q: string;
   departments: string[];
   colors: string[];
-  eventTo: number | string;
-  eventFrom: number | string;
+  eventTo: number | "";
+  eventFrom: number | "";
 }
 
 interface Department {
@@ -50,4 +50,11 @@ interface User {
   role: string;
   department?: Department;
   photo?: string;
+}
+
+interface Location {
+  _id: string;
+  name: string;
+  description?: string;
+  id?: string;
 }

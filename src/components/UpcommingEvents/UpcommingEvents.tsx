@@ -6,11 +6,11 @@ import {
   getEvents,
   useDeleteEvent,
   useGetEvents,
+  useUpdateEvents,
 } from "@/services/api/eventsApi";
 import EventCard from "./EventCard";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import EventDetails from "@/app/(all-pages)/search/EventDetails";
-import { useUpdateEvents } from "@/services/api/searchApi";
 
 export default function UpcommingEvents() {
   const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
@@ -28,7 +28,6 @@ export default function UpcommingEvents() {
 
   const { data: eventsData } = useGetEvents();
 
-  console.log("upcomgin", eventsData);
   const { mutate: deleteEvent } = useDeleteEvent({});
   const { mutate: updateEvent } = useUpdateEvents();
 

@@ -1,7 +1,7 @@
 "use client";
 import Datepicker from "react-datepicker";
 import Image from "next/image";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -65,6 +65,7 @@ export default function EventModal({
     recurringType: RecurringEventTypes.ONCE,
     involvedUsers: [],
   });
+  const eventFormRef = useRef<HTMLDivElement>(null);
 
   console.log("eventmodal newEvent", newEvent);
 
@@ -86,11 +87,12 @@ export default function EventModal({
   const { userData } = useContext(Context);
 
   const { data: departmentsRes } = useGetDepartments();
-
+  console.log("departmentsRes", departmentsRes);
   const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
 
   function handleAddEvent() {
-    // console.log("handle add event ", newEvent);
+    console.log("handleAddEvent ");
+    if (!validateAndFocus()) return;
     postNewEvent(newEvent);
   }
 
@@ -101,7 +103,7 @@ export default function EventModal({
       value = e.currentTarget.value;
     }
 
-    // console.log("name value", name, value);
+    console.log("name value", name, value);
 
     switch (name) {
       case "department":
@@ -148,6 +150,44 @@ export default function EventModal({
     }
   };
 
+  const validateAndFocus = () => {
+    console.log("validateAndFocus", eventFormRef.current);
+    if (!eventFormRef.current) return;
+
+    if (!newEvent?.title) {
+      // @ts-ignore
+      eventFormRef.current.querySelector("[name='title']")?.focus();
+      return false;
+    }
+    if (!newEvent?.description) {
+      // @ts-ignore
+      eventFormRef.current.querySelector("[name='description']")?.focus();
+      return false;
+    }
+    if (!newEvent?.start) {
+      // @ts-ignore
+      eventFormRef.current.querySelector("[name='start']")?.focus();
+      return false;
+    }
+    if (!newEvent?.end) {
+      // @ts-ignore
+      eventFormRef.current.querySelector("[name='end']")?.focus();
+      return false;
+    }
+    if (!newEvent?.departments) {
+      // @ts-ignore
+      eventFormRef.current.querySelector("[name='departments']")?.focus();
+
+      return false;
+    }
+    if (!newEvent.involvedUsers) {
+      // @ts-ignore
+      eventFormRef.current.querySelector("[name='involvedUsers']")?.focus();
+
+      return false;
+    }
+    return true;
+  };
   return (
     <>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -166,7 +206,10 @@ export default function EventModal({
           {type} Event
         </button>
         <dialog id="my_modal_3" className="modal z-[1111]">
-          <div className="min-w-xl modal-box relative flex max-w-2xl flex-col gap-10 overflow-y-auto p-8 text-lg text-neutral-600">
+          <div
+            ref={eventFormRef}
+            className="min-w-xl hide-scrollbar modal-box relative flex max-w-2xl flex-col gap-10 overflow-y-auto p-8 text-lg text-neutral-600"
+          >
             {/* Heading  */}
             <div className="m-auto">
               <form method="dialog">
@@ -179,7 +222,7 @@ export default function EventModal({
             </div>
 
             {/* input section  */}
-            <div className="flex flex-col gap-8 ">
+            <div className=" flex flex-col gap-8">
               {/* Title input section  */}
               <label htmlFor="add-title">
                 <div className="group flex h-11 w-full items-center gap-2  border-b-[1px] border-neutral-300 px-4 focus-within:border-primary-600">
@@ -197,6 +240,7 @@ export default function EventModal({
                   />
                 </div>
               </label>
+
               {/* Description section  */}
               <div className="w-full text-sm">
                 Description <br />
@@ -347,25 +391,30 @@ export default function EventModal({
               </div>
 
               {/* Location section  */}
-              <Locations handleValueChange={handleValueChange}></Locations>
+              <Locations
+                value={newEvent?.location ? newEvent.location : ""}
+                handleValueChange={handleValueChange}
+              ></Locations>
+
               {/* Departments section  */}
               <div className="text-sm">
                 <span>Departments:</span>
                 <div className="my-2 flex flex-wrap items-center gap-1">
-                  {departmentsRes?.map((department: Department) => {
-                    const departmentExists =
-                      newEvent.departments.includes(department._id) ||
-                      department._id === userData?.department?._id;
-                    return (
-                      <DepartmentButton
-                        key={department._id}
-                        id={department._id}
-                        onClick={handleValueChange}
-                        value={department.code}
-                        selected={departmentExists}
-                      />
-                    );
-                  })}
+                  {Array.isArray(departmentsRes) &&
+                    departmentsRes?.map((department: Department) => {
+                      const departmentExists =
+                        newEvent.departments.includes(department._id) ||
+                        department._id === userData?.department?._id;
+                      return (
+                        <DepartmentButton
+                          key={department._id}
+                          id={department._id}
+                          onClick={handleValueChange}
+                          value={department.code}
+                          selected={departmentExists}
+                        />
+                      );
+                    })}
                 </div>
               </div>
 
@@ -388,8 +437,8 @@ export default function EventModal({
             </div>
 
             {/* create btn  */}
-            <form
-              method="dialog"
+            <div
+              // method="dialog"
               className=" flex h-16 w-full items-center justify-end "
             >
               <button
@@ -398,7 +447,7 @@ export default function EventModal({
               >
                 {type === "Add" ? "Create" : "Edit"}
               </button>
-            </form>
+            </div>
           </div>
           <form method="dialog" className="modal-backdrop">
             <button>Close</button>

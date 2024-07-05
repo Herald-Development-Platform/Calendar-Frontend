@@ -7,6 +7,8 @@ import {
   getEventsByParams,
   updateEvents,
   useDeleteEvent,
+  useGetEventByQuery,
+  useUpdateEvents,
 } from "@/services/api/eventsApi";
 import { Axios } from "@/services/baseUrl";
 import Endpoints from "@/services/API_ENDPOINTS";
@@ -15,7 +17,6 @@ import { format } from "date-fns";
 import { RxArrowTopRight } from "react-icons/rx";
 import EventDetails from "./EventDetails";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useGetEventByQuery, useUpdateEvents } from "@/services/api/searchApi";
 import { useRouter } from "next/router";
 
 export default function Page() {
