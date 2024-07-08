@@ -14,11 +14,12 @@ import Calendar, {
 } from "@fullcalendar/core";
 import { Context, ContextType } from "@/app/clientWrappers/ContextProvider";
 import "./FullCalExtraCss.css";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Axios, baseUrl } from "@/services/baseUrl";
 import { getCookie } from "@/hooks/CookieHooks";
 import Endpoints from "@/services/API_ENDPOINTS";
 import { useGetEvents } from "@/services/api/eventsApi";
+import { parse, format } from "date-fns";
 
 export default function ReactFullCal() {
   const allPlugins = [
@@ -30,10 +31,22 @@ export default function ReactFullCal() {
     multiMonthPlugin,
   ];
 
-  const { calendarRef, setSelectedDate, selectedDate, timeout, events } =
-    useContext(Context);
+  const {
+    calendarRef,
+    userData,
+    setSelectedDate,
+    selectedDate,
+    timeout,
+    events,
+    users,
+  } = useContext(Context);
   const calWrapper = useRef<HTMLDivElement>(null);
-  // const { data: events } = useGetEvents();
+  const dayFrameRefs = useRef<HTMLDivElement[]>([]);
+  console.log("userdata", userData);
+
+  const { mutate: updateHighLightedEvents } = useMutation({
+    mutationFn: (payload: any) => Axios.patch("/profile", payload),
+  });
 
   const handleSelect = ({ start, end, startStr, endStr }: DateSelectArg) => {
     setSelectedDate({ start, end, startStr, endStr });
@@ -51,48 +64,87 @@ export default function ReactFullCal() {
     }, 250);
   };
 
-  // useEffect(() => {
-  //   if (!calWrapper.current) return;
-  //   const dotEvents = calWrapper.current.querySelectorAll(
-  //     ".fc-daygrid-event.fc-daygrid-dot-event",
-  //   );
+  useEffect(() => {
+    if (!calendarRef.current) return;
 
-  //   console.log("dotEvents", dotEvents);
+    dayFrameRefs.current = calendarRef.current.elRef.current.querySelectorAll(
+      ".fc-daygrid-day-frame",
+    );
+    const dayFrameEls = Array.from(dayFrameRefs.current);
 
-  //   if (dotEvents.length === 0) return;
+    // console.log("dayFrameRefs.current", dayFrameEls);
+    const queryClient = useQueryClient();
+    const listenerRefs: any[] = [];
 
-  //   const dotEventsArray = Array.from(dotEvents);
+    if (!Array.isArray(dayFrameEls)) return;
+    dayFrameEls.map((dayFrameEl: HTMLDivElement) => {
+      console.log("dayFrameEl", dayFrameEl);
+      const topEl = dayFrameEl.querySelector(".fc-daygrid-day-number");
+      const ariaLabelValue = topEl?.getAttribute("aria-label");
+      if (!ariaLabelValue) return;
+      const parsedDate = parse(ariaLabelValue, "MMMM d, yyyy", new Date());
+      const isoDate = format(parsedDate, "yyyy-MM-dd");
+      console.log("isoDate", isoDate);
 
-  //   dotEventsArray?.map((dotEvent: any) => {
-  //     if (dotEvent.querySelector(".department-wrapper")) return;
-  //     const titleElement = dotEvent.querySelector(".fc-event-title");
-  //     const correctEventDepartments = events?.find(
-  //       (event: eventType) => event.title === titleElement.textContent,
-  //     )?.departments;
+      const isHighLight = userData?.importantDates.some(
+        (date: any) => format(new Date(date), "yyyy-MM-dd") === isoDate,
+      );
 
-  //     const departmentsWrapper = document.createElement("div");
-  //     departmentsWrapper.classList.add("department-wrapper");
+      if (isHighLight) dayFrameEl.style.backgroundColor = "#fffdc3";
 
-  //     correctEventDepartments?.map((department: any, i: number) => {
-  //       console.log("department", department);
+      const contextMenuListener = (e: any) => {
+        e.preventDefault();
+        // console.log("dayFrameEl", dayFrameEl);
 
-  //       const departmentElement = document.createElement("div");
-  //       departmentElement.classList.add("department-item");
-  //       departmentElement.textContent = department?.code;
-  //       if (i === 0) {
-  //         departmentElement.style.backgroundColor = "#A3A3A3";
-  //       } else {
-  //         departmentElement.style.backgroundColor = "#F5F5F5";
-  //         departmentElement.style.color = "#A3A3A3";
-  //       }
-  //       departmentsWrapper.appendChild(departmentElement);
-  //     });
-  //     dotEvent?.insertBefore(departmentsWrapper, titleElement);
+        const contextWrapper = document.createElement("div");
+        contextWrapper.classList.add("day-frame-context-wrapper");
 
-  //     // console.log("dotEvent", dotEvent);
-  //     return;
-  //   });
-  // }, [selectedDate, events]);
+        const contextEl = document.createElement("button");
+        contextEl.classList.add("day-frame-context-el");
+        contextEl.textContent = "Highlight";
+        contextEl.addEventListener("click", (e) => {
+          // console.log("Hightlight");
+          // dayFrameEl.style.backgroundColor = "#fffdc3";
+          // console.log("datFrameEl---------", dayFrameEl);
+
+          updateHighLightedEvents(
+            {
+              importantDates: [...userData?.importantDates, isoDate],
+            },
+            {
+              onSuccess: () =>
+                queryClient.invalidateQueries({ queryKey: ["userData"] }),
+            },
+          );
+        });
+
+        const background = document.createElement("div");
+        background.classList.add("day-frame-context-bg");
+        background.addEventListener("click", (e) => {
+          // console.log("background click");
+          dayFrameEl.querySelector(".day-frame-context-bg")?.remove();
+          dayFrameEl.querySelector(".day-frame-context-wrapper")?.remove();
+        });
+        contextWrapper.appendChild(contextEl);
+
+        dayFrameEl.appendChild(contextWrapper);
+        dayFrameEl.appendChild(background);
+      };
+
+      dayFrameEl.addEventListener("contextmenu", contextMenuListener);
+      listenerRefs.push({
+        element: dayFrameEl,
+        type: "contextmenu",
+        listener: contextMenuListener,
+      });
+    });
+
+    return () => {
+      listenerRefs.forEach(({ element, type, listener }) => {
+        element.removeEventListener(type, listener);
+      });
+    };
+  }, [selectedDate, userData?.importantDates]);
 
   const handleEventDidMount = (info: EventMountArg) => {
     const eventEl = info.el;
@@ -106,7 +158,7 @@ export default function ReactFullCal() {
     departmentsWrapper.classList.add("department-wrapper");
 
     departments?.map((department: any, i: number) => {
-      console.log("department", department);
+      // console.log("department", department);
 
       const departmentElement = document.createElement("div");
       departmentElement.classList.add("department-item");
@@ -135,6 +187,7 @@ export default function ReactFullCal() {
     if (!tooltipEl) return;
     tooltipEl.remove();
   };
+
   const handleMouseEnter = (info: EventHoveringArg) => {
     const tooltipWrapper = document.createElement("div");
     tooltipWrapper.innerText = info.event._def.title;
@@ -142,8 +195,14 @@ export default function ReactFullCal() {
     info.el.appendChild(tooltipWrapper);
     tooltipWrapper.classList.add("event-tooltip-transition");
   };
+
   return (
     <>
+      {/* <div className="day-frame-context-wrapper">
+        <button className="day-frame-context-el">Highlight</button>
+        <button className="day-frame-context-el">Add Event</button>
+        <button className="day-frame-context-el">Delete Events</button>
+      </div> */}
       <div ref={calWrapper} className="h-full w-full">
         <FullCalendar
           ref={calendarRef}
@@ -153,10 +212,9 @@ export default function ReactFullCal() {
           eventMouseEnter={handleMouseEnter}
           eventMouseLeave={handleMouseLeave}
           eventDidMount={handleEventDidMount}
-          dateClick={(info) => {
-            console.log("info", info);
-          }}
-          // dateR
+          // dateClick={(info) => {
+          //   console.log("info", info);
+          // }}
           headerToolbar={false}
           selectable={true}
           select={handleSelect}

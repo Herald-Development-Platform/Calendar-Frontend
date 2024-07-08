@@ -1,0 +1,44 @@
+  // useEffect(() => {
+  //   if (!calendarRef.current) return;
+  //   dayFrameRefs.current = calendarRef.current.elRef.current.querySelectorAll(
+  //     ".fc-daygrid-day-frame",
+  //   );
+  //   const dayFrameEls = Array.from(dayFrameRefs.current);
+
+  //   const listenerRefs = [];
+
+  //   console.log("dayFrameRefs.current", dayFrameEls);
+
+  //   if (!dayFrameEls) return;
+  //   dayFrameEls.map((dayFrameEl: HTMLDivElement) => {
+  //     console.log("dayFrameEl", dayFrameEl);
+  //     dayFrameEl.addEventListener("contextmenu", (e: any) => {
+  //       e.preventDefault();
+  //       console.log("dayFrameEl", dayFrameEl);
+  //       const contextWrapper = document.createElement("div");
+  //       contextWrapper.classList.add("day-frame-context-wrapper");
+
+  //       const contextEl = document.createElement("button");
+  //       contextEl.classList.add("day-frame-context-el");
+  //       contextEl.textContent = "Highlight";
+  //       const background = document.createElement("div");
+  //       background.classList.add("day-frame-context-bg");
+  //       background.addEventListener("click", (e) => {
+  //         console.log("background click");
+  //         dayFrameEl.querySelector(".day-frame-context-bg")?.remove();
+  //         dayFrameEl.querySelector(".day-frame-context-wrapper")?.remove();
+  //       });
+
+  //       contextWrapper.appendChild(contextEl);
+
+  //       dayFrameEl.appendChild(contextWrapper);
+  //       dayFrameEl.appendChild(background);
+
+  //       //   const contextEl = `<div class="day-frame-context-wrapper">
+  //       //   <button class="day-frame-context-el">Highlight</button>
+  //       // </div>`;
+  //     });
+  //   });
+
+  //   return () => {};
+  // }, [selectedDate]);
