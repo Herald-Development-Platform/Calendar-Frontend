@@ -60,6 +60,7 @@ export default function AddEventModal({
     notes: "",
     recurringType: RecurringEventTypes.ONCE,
     involvedUsers: [],
+    recurrenceEnd: null,
   });
 
   useEffect(() => {

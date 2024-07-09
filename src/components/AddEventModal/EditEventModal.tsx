@@ -57,6 +57,7 @@ export default function EditEventModal({
     notes: "",
     recurringType: RecurringEventTypes.ONCE,
     involvedUsers: [],
+    recurrenceEnd: null,
   });
   const queryClient = useQueryClient();
   useEffect(() => {

@@ -71,6 +71,7 @@ export default function EditEventModal({
     departments: [],
     notes: "",
     involvedUsers: [],
+    recurrenceEnd: null,
   });
 
   const { data: departmentsRes } = useGetDepartments();
@@ -95,6 +96,7 @@ export default function EditEventModal({
         departments: [],
         notes: "",
         involvedUsers: [],
+        recurrenceEnd: null,
       });
     },
     onError: (err: any) => {
