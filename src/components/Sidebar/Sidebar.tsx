@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { IoIosSearch } from "react-icons/io";
 import { AiOutlineHome } from "react-icons/ai";
-import { HiOutlineUserGroup } from "react-icons/hi";
+import { HiOutlineDocumentReport, HiOutlineUserGroup } from "react-icons/hi";
 import { MdImportExport } from "react-icons/md";
 import { IoLocationOutline } from "react-icons/io5";
 import { GrLocationPin } from "react-icons/gr";
@@ -43,6 +43,11 @@ export default function Sidebar() {
       name: "Location",
       icon: <GrLocationPin />,
       navigation: "/location",
+    },
+    {
+      name: "Summary",
+      icon: <HiOutlineDocumentReport />,
+      navigation: "/summary",
     },
   ];
   return (

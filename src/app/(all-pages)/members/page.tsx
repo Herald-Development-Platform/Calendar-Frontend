@@ -329,7 +329,7 @@ export default function Page() {
                     id={department._id}
                     key={department._id}
                     selectedCross={false}
-                    handleQueryParams={() => {
+                    onClick={() => {
                       if (!profile) {
                         return;
                       }

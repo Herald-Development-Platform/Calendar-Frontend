@@ -21,6 +21,7 @@ export default function DepartmentFilter() {
     <div className="flex gap-2">
       {departments?.map((department: any) => (
         <DepartmentButton
+          key={department.code}
           onClick={handleDepartments}
           id={department.code}
           value={department.code}

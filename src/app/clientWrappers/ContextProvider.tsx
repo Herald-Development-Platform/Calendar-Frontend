@@ -60,6 +60,18 @@ export default function ContextProvider({
     }
   };
 
+  const syncWithGoogle = async () => {
+    try {
+      const response = await Axios.post("/google/sync");
+      console.log("SYNC response : ",response);
+      if (response.data.success) {
+        return response.data.data;
+      }
+    } catch (error) {
+      console.error("Error syncing with google:", error);
+    }
+  }
+
   const fetchUserData = async () => {
     try {
       const response = await Axios.get(`/profile`);
@@ -77,6 +89,7 @@ export default function ContextProvider({
   };
 
   useEffect(() => {
+    syncWithGoogle();
     fetchUserData();
   }, []);
 

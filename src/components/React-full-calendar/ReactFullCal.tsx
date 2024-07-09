@@ -110,7 +110,6 @@ export default function ReactFullCal() {
           //   console.log("info", info);
           // }}
           eventMouseEnter={(info) => {
-            console.log("eventMouseEnter", info);
             const tooltipWrapper = document.createElement("div");
             tooltipWrapper.innerText = info.event._def.title;
             tooltipWrapper.classList.add("event-tooltip");
