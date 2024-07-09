@@ -221,14 +221,6 @@ export default function EditEventModal({
                   className="w-full text-neutral-900 ring-ring focus:border-primary-600  focus-visible:ring-0"
                   id="message"
                   name="description"
-                  // onChange={(e) =>
-                  //   setNewEvent({
-                  //     ...newEvent,
-                  //     description: e?.target?.value
-                  //       ? e?.target?.value
-                  //       : undefined,
-                  //   })
-                  // }
                   onChange={handleValueChange}
                   value={newEvent?.description ? newEvent.description : ""}
                 />
@@ -371,26 +363,27 @@ export default function EditEventModal({
               </div>
 
               {/* Location section  */}
-              <Locations handleValueChange={handleValueChange} />
+              <Locations value={newEvent?.location ?? ""} handleValueChange={handleValueChange} />
 
               {/* Departments section  */}
               <div className="flex flex-col items-start text-sm">
                 <span>Departments:</span>
                 <div className="my-2 flex flex-wrap items-center gap-1">
-                  {departmentsRes?.map((department: Department) => {
-                    const departmentExists =
-                      newEvent.departments.includes(department.code) ||
-                      department.code === userData?.department?.code;
-                    return (
-                      <DepartmentButton
-                        key={department._id}
-                        id={department._id}
-                        onClick={handleValueChange}
-                        value={department.code}
-                        selected={departmentExists}
-                      />
-                    );
-                  })}
+                  {Array.isArray(departmentsRes) &&
+                    departmentsRes?.map((department: Department) => {
+                      const departmentExists =
+                        newEvent.departments.includes(department.code) ||
+                        department.code === userData?.department?.code;
+                      return (
+                        <DepartmentButton
+                          key={department._id}
+                          id={department._id}
+                          onClick={handleValueChange}
+                          value={department.code}
+                          selected={departmentExists}
+                        />
+                      );
+                    })}
                 </div>
               </div>
 

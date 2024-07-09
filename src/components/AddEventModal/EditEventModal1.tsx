@@ -444,15 +444,16 @@ export default function EditEventModal({
             <div className="text-sm">
               <span className="flex justify-start ">Departments:</span>
               <div className="my-2 flex flex-wrap items-center gap-1">
-                {departmentsRes?.map((department: any, i: number) => (
-                  <DepartmentBtn
-                    key={i}
-                    selDepartments={editEvent.departments}
-                    setEditEvent={setEditEvent}
-                    index={i}
-                    department={department}
-                  />
-                ))}
+                {Array.isArray(departmentsRes) &&
+                  departmentsRes?.map((department: any, i: number) => (
+                    <DepartmentBtn
+                      key={i}
+                      selDepartments={editEvent.departments}
+                      setEditEvent={setEditEvent}
+                      index={i}
+                      department={department}
+                    />
+                  ))}
               </div>
             </div>
             {/* Notes section  */}

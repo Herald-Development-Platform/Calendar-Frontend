@@ -79,7 +79,7 @@ export default function InviteMembers({
   useDebounce({
     dependency: [filterQuery],
     debounceFn: () => applyFilters(filterQuery),
-    time: 200,
+    time: 150,
   });
 
   // console.log("userData?.data.data --", filteredUserData);
@@ -105,7 +105,8 @@ export default function InviteMembers({
               .map((selMembers: User, i: number) => {
                 if (selMembers?.photo) {
                   return (
-                    <div key={i}
+                    <div
+                      key={i}
                       className="tooltip bg-white text-black"
                       data-tip={selMembers?.username}
                     >
@@ -121,7 +122,8 @@ export default function InviteMembers({
                   );
                 } else {
                   return (
-                    <div key={i}
+                    <div
+                      key={i}
                       className="tooltip  bg-white text-black "
                       data-tip={selMembers?.username}
                     >
@@ -141,9 +143,9 @@ export default function InviteMembers({
             <div
               className={`${
                 showPopover ? "flex" : "hidden"
-              } absolute bottom-10 left-5 z-10 h-[600px] max-h-80 w-[500px] flex-col overflow-hidden overflow-y-auto rounded-xl border border-[#d4d4d4] bg-white px-6 py-4`}
+              }  absolute bottom-10 left-5 z-10 h-[600px] max-h-80 w-[500px] flex-col gap-[10px] overflow-hidden rounded-xl border border-[#d4d4d4] bg-white px-6 py-4`}
             >
-              <div className="flex-grow">
+              <div className="green-scrollbar flex-grow overflow-y-auto">
                 {filteredUserData &&
                   filteredUserData?.map((userData: User, i) => (
                     <div

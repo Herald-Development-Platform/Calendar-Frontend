@@ -2,6 +2,7 @@ import { CalendarApi } from "@fullcalendar/core/index.js";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { CalendarViews, ListViews } from "@/constants/CalendarViews";
+import { Axios } from "@/services/baseUrl";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -64,3 +65,15 @@ export function makePascalCase(original_string: string) {
 
   return final_str.trim();
 }
+
+export const generateNewToken = async () => {
+  try {
+    const response = await Axios.get("/generateNewToken");
+    if (response.data.success) {
+      return response.data.data;
+    }
+    return null;
+  } catch (error) {
+    return null;
+  }
+};

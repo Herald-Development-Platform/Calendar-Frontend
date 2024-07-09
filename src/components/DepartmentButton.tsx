@@ -13,7 +13,6 @@ export default function DepartmentButton({
   onClick: (e: any) => void;
   selectedCross?: boolean;
 }) {
-  console.log("onclick", onClick);
   return (
     <>
       <button

@@ -1,6 +1,7 @@
 "use client";
 
 import { setCookie } from "@/hooks/CookieHooks";
+import { generateNewToken } from "@/lib/utils";
 import { Axios } from "@/services/baseUrl";
 import { CalendarApi, EventInput } from "@fullcalendar/core/index.js";
 import FullCalendar from "@fullcalendar/react";
