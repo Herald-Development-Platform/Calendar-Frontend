@@ -738,9 +738,9 @@ export default function Page() {
                     <TableRow key={user._id}>
                       <TableCell className="w-[437px]">
                         <div className="flex flex-row items-center justify-start gap-3">
-                          {user.photo ? (
+                          {user?.photo ? (
                             <img
-                              src={user.photo}
+                              src={user?.photo}
                               alt={`Photo of ${user?.username}`}
                               className=" w-10 rounded-full"
                             />
@@ -801,7 +801,7 @@ export default function Page() {
                         ) : (
                           <div className=" flex flex-col items-start justify-center">
                             <p>
-                              {user.role === ROLES.STAFF
+                              {user?.role === ROLES.STAFF
                                 ? "Officer"
                                 : "Head of Department"}
                             </p>
