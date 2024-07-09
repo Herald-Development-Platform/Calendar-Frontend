@@ -50,6 +50,7 @@ export default function DepartmentFilter() {
       {Array.isArray(departments) &&
         departments?.map((department: any) => (
           <DepartmentButton
+            key={department._id}
             onClick={handleDepartments}
             id={department._id}
             value={department.code}

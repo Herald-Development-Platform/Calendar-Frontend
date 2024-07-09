@@ -329,7 +329,7 @@ export default function Page() {
                     id={department._id}
                     key={department._id}
                     selectedCross={false}
-                    handleQueryParams={() => {
+                    onClick={() => {
                       if (!profile) {
                         return;
                       }
@@ -639,7 +639,7 @@ export default function Page() {
                 value={"All"}
                 selected={selDepartments.includes("All")}
                 id={"All"}
-                handleQueryParams={() => {
+                onClick={() => {
                   if (selDepartments.includes("All")) {
                     setSelDepartments([]);
                   } else {
@@ -660,7 +660,7 @@ export default function Page() {
                     key={department._id}
                     selectedCross={false}
                     value={department.code}
-                    handleQueryParams={() => {
+                    onClick={() => {
                       let newSelectedDepartments = [...selDepartments];
                       if (newSelectedDepartments.includes("All")) {
                         newSelectedDepartments = newSelectedDepartments.filter(

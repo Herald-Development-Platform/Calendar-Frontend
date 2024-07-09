@@ -363,7 +363,7 @@ export default function EditEventModal({
               </div>
 
               {/* Location section  */}
-              <Locations handleValueChange={handleValueChange} />
+              <Locations value={newEvent?.location ?? ""} handleValueChange={handleValueChange} />
 
               {/* Departments section  */}
               <div className="flex flex-col items-start text-sm">

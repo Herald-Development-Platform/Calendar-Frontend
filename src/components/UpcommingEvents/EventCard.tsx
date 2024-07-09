@@ -36,6 +36,7 @@ export default function EventCard({
           {event?.departments?.map((department: any, i: number) => {
             return (
               <div
+                key={i}
                 className={`${
                   i === 0
                     ? "bg-neutral-400 text-white"
