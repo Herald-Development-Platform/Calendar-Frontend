@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import React from "react";
+import React, { useRef } from "react";
 import "react-big-calendar/lib/sass/styles.scss";
 import "react-datepicker/dist/react-datepicker.css";
 import UpcommingEvents from "@/components/UpcommingEvents";
@@ -14,8 +14,9 @@ export default function page() {
   const { data: departments } = useQuery<eventType[]>({
     queryKey: ["Departments"],
   });
+  // const filAndCal = useRef<HTMLDivElement>(null);
 
-  console.log("departments", departments);
+  // console.log("filAndCal.current.offsetHeight", filAndCal.current.offsetHeight);
 
   return (
     <div className="flex h-full w-full flex-col gap-8">
@@ -23,7 +24,7 @@ export default function page() {
         <Headers.HomeHeader />
       </div>
 
-      <div className=" flex h-full w-full justify-between overflow-hidden overflow-y-auto">
+      <div className="flex h-full w-full justify-between overflow-hidden overflow-y-auto">
         <div className="flex w-full flex-col">
           <DepartmentFilter />
           <ReactFullCalendar />

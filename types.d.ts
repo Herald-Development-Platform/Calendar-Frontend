@@ -12,6 +12,7 @@ interface eventType {
   _id?: string;
   recurringType: string;
   involvedUsers: string[];
+  recurrenceEnd: Date | null;
 }
 interface SelectedDate {
   start?: Date;

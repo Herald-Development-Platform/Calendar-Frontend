@@ -93,6 +93,7 @@ export const usePostEventMutation = ({
           departments: [],
           notes: "",
           involvedUsers: [],
+          recurrenceEnd: null,
         });
     },
     onError: (err: any) => {

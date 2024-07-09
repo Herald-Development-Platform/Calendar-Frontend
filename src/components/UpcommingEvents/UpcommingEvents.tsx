@@ -1,3 +1,4 @@
+//tsoding daily
 import { Axios } from "@/services/baseUrl";
 import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useContext, useRef, useState } from "react";
@@ -50,10 +51,10 @@ export default function UpcommingEvents() {
       ref={upcommingEventRef}
       className={`${
         selectedEvent ? "" : "overflow-y-auto"
-      } hide-scrollbar relative flex h-full w-1/3 flex-col gap-10 overflow-hidden px-6`}
+      } hide-scrollbar relative flex h-auto w-1/3 flex-col gap-10 overflow-hidden px-6`}
     >
       <div className="flex flex-col gap-1 text-neutral-600 ">
-        <h2 className="font-semibold ">Upcomming Events</h2>
+        <h2 className="font-semibold">Upcomming Events</h2>
         <h3 className="text-lg ">
           {selectedStartTime && format(new Date(selectedStartTime), "MMMM d")} -
           {selectedEndTime && format(new Date(selectedEndTime), "MMMM d")}
@@ -76,11 +77,11 @@ export default function UpcommingEvents() {
             const eventEnd = event?.end ? new Date(event.end).getTime() : 0;
 
             inFirstEdge =
-              eventStart < selectedStartTime && eventEnd > selectedStartTime;
+              eventStart <= selectedStartTime && eventEnd > selectedStartTime;
             inBetween =
               eventStart > selectedStartTime && eventEnd < selectedEndTime;
             inLastEdge =
-              eventStart < selectedEndTime && eventEnd > selectedEndTime;
+              eventStart < selectedEndTime && eventEnd >= selectedEndTime;
 
             if (!inFirstEdge && !inBetween && !inLastEdge) return;
 

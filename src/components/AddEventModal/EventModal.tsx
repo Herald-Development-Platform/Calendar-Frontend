@@ -64,6 +64,7 @@ export default function EventModal({
     notes: "",
     recurringType: RecurringEventTypes.ONCE,
     involvedUsers: [],
+    recurrenceEnd: null,
   });
   const eventFormRef = useRef<HTMLDivElement>(null);
 
@@ -90,10 +91,18 @@ export default function EventModal({
   console.log("departmentsRes", departmentsRes);
   const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
 
+  const queryClient = useQueryClient();
   function handleAddEvent() {
     console.log("handleAddEvent ");
     if (!validateAndFocus()) return;
-    postNewEvent(newEvent);
+    postNewEvent(newEvent, {
+      onSuccess: () => {
+        const modal_3 = document.getElementById(
+          "my_modal_3",
+        ) as HTMLDialogElement;
+        modal_3.close();
+      },
+    });
   }
 
   const handleValueChange = (e: any) => {
@@ -373,6 +382,18 @@ export default function EventModal({
                   handleTimeChange={handleValueChange}
                 />
               </div>
+
+              {/* Recurrence End */}
+              {newEvent.recurringType !== "NONE" && (
+                <div className="w-full text-sm">
+                  <span>Recurrence End Date:</span>
+                  <DatePicker
+                    name={"recurrenceEnd"}
+                    value={newEvent.recurrenceEnd}
+                    handleValueChange={handleValueChange}
+                  />
+                </div>
+              )}
 
               {/* Color input section  */}
               <div className=" flex flex-col items-start">

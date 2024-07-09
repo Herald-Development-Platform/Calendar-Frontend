@@ -37,8 +37,9 @@ export default function ReactFullCal() {
   const calWrapper = useRef<HTMLDivElement>(null);
   const dayFrameRefs = useRef<HTMLDivElement[]>([]);
 
-  const queryClient = useQueryClient();
+  const monthValue = calendarRef?.current?.getApi().getDate().getMonth();
 
+  const queryClient = useQueryClient();
   const { mutate: updateHighLightedEvents } = useMutation({
     mutationFn: (payload: any) => Axios.patch("/profile", payload),
   });
@@ -49,7 +50,6 @@ export default function ReactFullCal() {
       try {
         const response = await Axios.get(`/profile`);
         const user = response.data.data;
-        console.log("user---------", user);
         const token = await generateNewToken();
         if (token) {
           setCookie("token", token, 5);
@@ -60,11 +60,14 @@ export default function ReactFullCal() {
       }
     },
   });
-  console.log("userdata", userData);
+  // console.log(
+  //   " calendarRef?.current",
+  //   calendarRef?.current?.getApi().getDate().getMonth(),
+  // );
 
   const handleSelect = ({ start, end, startStr, endStr }: DateSelectArg) => {
     setSelectedDate({ start, end, startStr, endStr });
-    console.log("eventselect", { start, end, startStr, endStr });
+    // console.log("eventselect", { start, end, startStr, endStr });
     clearTimeout(timeout.current);
   };
 
@@ -92,17 +95,13 @@ export default function ReactFullCal() {
     if (!Array.isArray(dayFrameEls)) return;
 
     dayFrameEls.map((dayFrameEl: HTMLDivElement) => {
-      console.log("dayFrameEl", dayFrameEl);
+      // console.log("dayFrameEl", dayFrameEl);
       const topEl = dayFrameEl.querySelector(".fc-daygrid-day-number");
       const ariaLabelValue = topEl?.getAttribute("aria-label");
       if (!ariaLabelValue) return;
       const parsedDate = parse(ariaLabelValue, "MMMM d, yyyy", new Date());
       const isoDate = format(parsedDate, "yyyy-MM-dd");
-      console.log("isoDate", new Date(isoDate).toISOString());
-
-      // const isHighLight = userData?.importantDates.some(
-      //   (date: any) => format(new Date(date), "yyyy-MM-dd") === isoDate,
-      // );
+      // console.log("isoDate", new Date(isoDate).toISOString());
 
       const isHighLight = userData?.importantDates.includes(
         new Date(isoDate).toISOString(),
@@ -119,9 +118,6 @@ export default function ReactFullCal() {
         const contextEl = document.createElement("button");
         contextEl.classList.add("day-frame-context-el");
 
-        // const isHighLighted = userData?.importantDates.some(
-        //   (date: any) => format(new Date(date), "yyyy-MM-dd") === isoDate,
-        // );
         const isHighLighted = userData?.importantDates.includes(
           new Date(isoDate).toISOString(),
         );
@@ -142,8 +138,9 @@ export default function ReactFullCal() {
                 ],
               },
               {
-                onSuccess: () =>
-                  queryClient.invalidateQueries({ queryKey: ["ProfileData"] }),
+                onSuccess: () => {
+                  queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
+                },
               },
             );
           } else {
@@ -152,8 +149,9 @@ export default function ReactFullCal() {
                 importantDates: [...userData?.importantDates, isoDate],
               },
               {
-                onSuccess: () =>
-                  queryClient.invalidateQueries({ queryKey: ["ProfileData"] }),
+                onSuccess: () => {
+                  queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
+                },
               },
             );
           }
@@ -162,7 +160,6 @@ export default function ReactFullCal() {
         const background = document.createElement("div");
         background.classList.add("day-frame-context-bg");
         background.addEventListener("click", (e) => {
-          // console.log("background click");
           dayFrameEl.querySelector(".day-frame-context-bg")?.remove();
           dayFrameEl.querySelector(".day-frame-context-wrapper")?.remove();
         });
@@ -185,31 +182,8 @@ export default function ReactFullCal() {
         element.removeEventListener(type, listener);
       });
     };
-  }, [selectedDate, userData?.importantDates]);
+  }, [userData?.importantDates, monthValue]);
 
-  // useEffect(() => {
-  //   dayFrameRefs.current = calendarRef.current.elRef.current.querySelectorAll(
-  //     ".fc-daygrid-day-frame",
-  //   );
-  //   const dayFrameEls = Array.from(dayFrameRefs.current);
-
-  //   if (!Array.isArray(dayFrameEls)) return;
-  //   const isHighLight = userData?.importantDates.includes(
-  //     new Date(isoDate).toISOString(),
-  //   );
-  //   dayFrameEls.map((dayFrameEl: HTMLDivElement) => {
-  //     const topEl = dayFrameEl.querySelector(".fc-daygrid-day-number");
-  //     const ariaLabelValue = topEl?.getAttribute("aria-label");
-  //     if (!ariaLabelValue) return;
-  //     const parsedDate = parse(ariaLabelValue, "MMMM d, yyyy", new Date());
-  //     const isoDate = format(parsedDate, "yyyy-MM-dd");
-
-  //     if (isHighLight) dayFrameEl.style.backgroundColor = "#fffdc3";
-  //     else {
-  //       dayFrameEl.style.backgroundColor = "#ffffff";
-  //     }
-  //   });
-  // }, [userData?.importantDates]);
   const handleEventDidMount = (info: EventMountArg) => {
     const eventEl = info.el;
     const departments = info?.event?._def?.extendedProps?.departments;
@@ -314,3 +288,27 @@ export default function ReactFullCal() {
 // eventDidMount={(info) => {
 //   console.log("info", info);
 // }}
+
+// useEffect(() => {
+//   dayFrameRefs.current = calendarRef.current.elRef.current.querySelectorAll(
+//     ".fc-daygrid-day-frame",
+//   );
+//   const dayFrameEls = Array.from(dayFrameRefs.current);
+
+//   if (!Array.isArray(dayFrameEls)) return;
+//   const isHighLight = userData?.importantDates.includes(
+//     new Date(isoDate).toISOString(),
+//   );
+//   dayFrameEls.map((dayFrameEl: HTMLDivElement) => {
+//     const topEl = dayFrameEl.querySelector(".fc-daygrid-day-number");
+//     const ariaLabelValue = topEl?.getAttribute("aria-label");
+//     if (!ariaLabelValue) return;
+//     const parsedDate = parse(ariaLabelValue, "MMMM d, yyyy", new Date());
+//     const isoDate = format(parsedDate, "yyyy-MM-dd");
+
+//     if (isHighLight) dayFrameEl.style.backgroundColor = "#fffdc3";
+//     else {
+//       dayFrameEl.style.backgroundColor = "#ffffff";
+//     }
+//   });
+// }, [userData?.importantDates]);

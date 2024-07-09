@@ -26,6 +26,8 @@ import React, {
 import { FaPlus } from "react-icons/fa6";
 import { IoIosSearch } from "react-icons/io";
 import { Span } from "next/dist/trace";
+import { GoDash } from "react-icons/go";
+import { RxCross2 } from "react-icons/rx";
 
 interface User {
   email: string;
@@ -107,7 +109,7 @@ export default function InviteMembers({
                   return (
                     <div
                       key={i}
-                      className="tooltip bg-white text-black"
+                      className="group tooltip relative bg-white text-black"
                       data-tip={selMembers?.username}
                     >
                       <Image
@@ -118,13 +120,23 @@ export default function InviteMembers({
                         height={33}
                         className="rounded-full"
                       ></Image>
+                      <button
+                        name={"removeMember"}
+                        value={selMembers._id}
+                        onClick={handleInviteMembers}
+                        className="absolute left-0 top-0 box-border flex h-full w-full items-center  justify-center rounded-full border border-neutral-300 bg-danger-600 text-xl font-bold text-white opacity-0 transition-opacity duration-300 hover:border group-hover:opacity-100 "
+                        data-tip={"Remove Member"}
+                      >
+                        <RxCross2 />
+                      </button>
                     </div>
                   );
                 } else {
                   return (
                     <div
                       key={i}
-                      className="tooltip  bg-white text-black "
+                      // className="tooltip  bg-white text-black "
+                      className="group tooltip relative bg-white text-black"
                       data-tip={selMembers?.username}
                     >
                       <Image
@@ -135,6 +147,15 @@ export default function InviteMembers({
                         height={33}
                         className="rounded-full"
                       ></Image>
+                      <button
+                        name={"removeMember"}
+                        value={selMembers._id}
+                        onClick={handleInviteMembers}
+                        className="absolute left-0 top-0 box-border flex h-full w-full items-center  justify-center rounded-full border border-neutral-300 bg-danger-600 text-xl font-bold text-white opacity-0 transition-opacity duration-300 hover:border group-hover:opacity-100 "
+                        data-tip={"Remove Member"}
+                      >
+                        <RxCross2 />
+                      </button>
                     </div>
                   );
                 }
@@ -146,7 +167,7 @@ export default function InviteMembers({
               }  absolute bottom-10 left-5 z-10 h-[600px] max-h-80 w-[500px] flex-col gap-[10px] overflow-hidden rounded-xl border border-[#d4d4d4] bg-white px-6 py-4`}
             >
               <div className="green-scrollbar flex-grow overflow-y-auto">
-                {filteredUserData &&
+                {Array.isArray(filteredUserData) &&
                   filteredUserData?.map((userData: User, i) => (
                     <div
                       key={i}
@@ -192,6 +213,7 @@ export default function InviteMembers({
                     </div>
                   ))}
               </div>
+
               <label htmlFor="date-search" className="w-full">
                 <div className="group flex h-11 w-full items-center gap-2  rounded-sm border-[1px] border-primary-50 bg-neutral-100 px-4 focus-within:border-primary-600">
                   <span className="text-xl">
