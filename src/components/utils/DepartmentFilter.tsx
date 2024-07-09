@@ -46,7 +46,7 @@ export default function DepartmentFilter() {
   };
 
   return (
-    <div className=" mb-2 flex gap-2">
+    <div className=" mb-4 ml-2 flex gap-2">
       {Array.isArray(departments) &&
         departments?.map((department: any) => (
           <DepartmentButton

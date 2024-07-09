@@ -101,6 +101,7 @@ export default function EditEventModal({
             departments: [],
             notes: "",
             involvedUsers: [],
+            recurrenceEnd: null,
           });
       },
       onError: (err: any) => {
@@ -195,7 +196,7 @@ export default function EditEventModal({
             </div>
 
             {/* input section  */}
-            <div className="flex flex-col gap-8 ">
+            <div className="flex flex-col gap-8 font-normal ">
               {/* Title input section  */}
               <label htmlFor="add-title">
                 <div className="group flex h-11 w-full items-center gap-2  border-b-[1px] border-neutral-300 px-4 focus-within:border-primary-600">
@@ -218,7 +219,7 @@ export default function EditEventModal({
                 Description <br />
                 <Textarea
                   placeholder="Type your message here."
-                  className="w-full text-neutral-900 ring-ring focus:border-primary-600  focus-visible:ring-0"
+                  className="w-full font-normal text-neutral-900 ring-ring focus:border-primary-600  focus-visible:ring-0"
                   id="message"
                   name="description"
                   onChange={handleValueChange}
@@ -363,7 +364,10 @@ export default function EditEventModal({
               </div>
 
               {/* Location section  */}
-              <Locations value={newEvent?.location ?? ""} handleValueChange={handleValueChange} />
+              <Locations
+                value={newEvent?.location ?? ""}
+                handleValueChange={handleValueChange}
+              />
 
               {/* Departments section  */}
               <div className="flex flex-col items-start text-sm">
