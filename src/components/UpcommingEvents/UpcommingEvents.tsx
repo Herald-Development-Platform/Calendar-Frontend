@@ -26,7 +26,7 @@ export default function UpcommingEvents() {
 
   const upcommingEventRef = useRef<HTMLDivElement>(null);
 
-  const { data: eventsData } = useGetEvents();
+  const { data: eventsData, isLoading: eventsLoading } = useGetEvents();
 
   const { mutate: deleteEvent } = useDeleteEvent({});
   const { mutate: updateEvent } = useUpdateEvents();
@@ -61,7 +61,10 @@ export default function UpcommingEvents() {
       </div>
 
       <div className="flex flex-col gap-3">
-        {eventsData &&
+        {eventsLoading ? (
+          <div></div>
+        ) : (
+          eventsData && eventsData.length && eventsData.length>0 &&
           eventsData?.map((event: eventType, i: number) => {
             let inFirstEdge = null;
             let inBetween = null;
@@ -104,7 +107,8 @@ export default function UpcommingEvents() {
                 />
               </>
             );
-          })}
+          })
+        )}
       </div>
       <EventDetails
         selectedEvent={selectedEvent}

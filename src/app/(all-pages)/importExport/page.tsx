@@ -445,8 +445,11 @@ export default function ImportExport() {
           </span>
           <span className="ml-auto">
             <button
-              onClick={() => {
-                setSyncDialogOpen(true);
+              onClick={async () => {
+                const response = await Axios.post(`/google/sync`);
+                if (response.data.success) {
+                  toast.success(response.data.message);
+                }
               }}
               className="ml-7 flex items-center gap-2 rounded-[4px] bg-primary-600 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary-700"
             >

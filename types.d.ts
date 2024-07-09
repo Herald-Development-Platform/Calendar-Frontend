@@ -50,6 +50,8 @@ interface User {
   role: string;
   department?: Department;
   photo?: string;
+  importantDates?: Date[];
+  syncWithGoogle: boolean;
 }
 
 interface Location {
