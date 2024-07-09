@@ -1,6 +1,7 @@
 "use client";
 
 import { setCookie } from "@/hooks/CookieHooks";
+import { generateNewToken } from "@/lib/utils";
 import { Axios } from "@/services/baseUrl";
 import { CalendarApi, EventInput } from "@fullcalendar/core/index.js";
 import FullCalendar from "@fullcalendar/react";
@@ -48,18 +49,6 @@ export default function ContextProvider({
 
   const [userData, setUserData] = useState<User>();
 
-  const generateNewToken = async () => {
-    try {
-      const response = await Axios.get("/generateNewToken");
-      if (response.data.success) {
-        return response.data.data;
-      }
-      return null;
-    } catch (error) {
-      return null;
-    }
-  };
-
   const fetchUserData = async () => {
     try {
       const response = await Axios.get(`/profile`);
@@ -76,9 +65,9 @@ export default function ContextProvider({
     }
   };
 
-  useEffect(() => {
-    fetchUserData();
-  }, []);
+  // useEffect(() => {
+  //   fetchUserData();
+  // }, []);
 
   const [selectedDate, setSelectedDate] = useState<SelectedDate | undefined>({
     start: new Date(),

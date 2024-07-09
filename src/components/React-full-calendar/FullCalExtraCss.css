@@ -161,7 +161,7 @@
 
 }
 .day-frame-context-el{
-    height: 1.4rem;
+    height: auto;
     /* border: 1px solid black; */
     text-align: start;
     font-size: 12px;
