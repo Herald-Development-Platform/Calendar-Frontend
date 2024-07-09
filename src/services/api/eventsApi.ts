@@ -147,7 +147,7 @@ export const useGetEventByQuery = (queryParams: eventByParamsType) =>
         );
         if (res.statusText !== "OK") {
           toast.error(res.data.message);
-          return res.data;
+          return res.data.data;
         }
         return res.data.data;
       } catch (err: any) {
