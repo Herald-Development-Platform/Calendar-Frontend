@@ -95,7 +95,7 @@ export default function Page() {
       Axios.put(`/department/request/${payload?._id}`, {
         status: payload?.status,
       }),
-    onSuccess: async (response) => {
+    onSuccess: async (response: any) => {
       if (response.status >= 400 && response.status < 500) {
         toast.error(
           response?.data?.message ||
@@ -583,7 +583,7 @@ export default function Page() {
                   className="flex items-center justify-between gap-2.5 rounded-[4px] bg-neutral-100 px-9 py-4"
                 >
                   <div className="flex flex-row items-center justify-start gap-3">
-                    {request?.user.photo ? (
+                    {request?.user?.photo ? (
                       <img
                         src={request?.user.photo}
                         alt={`Photo of ${request?.user?.username}`}

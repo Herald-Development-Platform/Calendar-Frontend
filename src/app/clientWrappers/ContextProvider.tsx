@@ -79,6 +79,9 @@ export default function ContextProvider({
       const user = response.data.data;
       if (user) {
         setUserData(user);
+        if (user.syncWithGoogle && user.department && user.department.length > 0) {
+          syncWithGoogle();
+        }
         const token = await generateNewToken();
         if (token) {
           setCookie("token", token, 5);
@@ -90,7 +93,6 @@ export default function ContextProvider({
   };
 
   useEffect(() => {
-    syncWithGoogle();
     fetchUserData();
   }, []);
 
