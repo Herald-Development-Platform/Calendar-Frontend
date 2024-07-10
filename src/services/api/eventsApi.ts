@@ -33,11 +33,12 @@ export const useGetEvents = () =>
   useQuery<eventType[]>({
     queryKey: ["Events"],
     queryFn: async () => {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       const axiosRes = await Axios.get(Endpoints.event);
       if (axiosRes.statusText !== "OK") {
         toast.error(
           axiosRes?.data?.message ||
-            `Someting went wrong. Status Code: ${axiosRes?.status}`,
+            `Someting went wrong.`,
         );
         return axiosRes.data;
       }

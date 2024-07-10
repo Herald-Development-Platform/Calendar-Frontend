@@ -33,7 +33,7 @@ export default function SummaryPage() {
   const [filteredEvents, setFilteredEvents] = useState<any[]>([]);
 
   useEffect(() => {
-    if (!events || !(events.length > 0)) return;
+    if (!Array.isArray(events)) return;
     const filteredEvents = events?.filter((e: any) => {
       const date = new Date(e.start);
       const lastDays = new Date(Date.now()-(parseInt(filter)*86400000));

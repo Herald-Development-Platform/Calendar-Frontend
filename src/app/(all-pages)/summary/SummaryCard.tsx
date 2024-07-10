@@ -33,7 +33,7 @@ export default function SummaryCard({
                 {title}
               </span>
               <div className="flex flex-col">
-                {events && events.length>1 && events.slice(0, 2)?.map((event: eventType, index:number) => (
+                {events && events.length>0 && events.slice(0, 2)?.map((event: eventType, index:number) => (
                   <div
                     key={index}
                     style={{ borderColor: event.color }}
