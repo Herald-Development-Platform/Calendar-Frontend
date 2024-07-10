@@ -36,7 +36,7 @@ export const useGetEvents = () =>
       await new Promise((resolve) => setTimeout(resolve, 1000));
       const axiosRes = await Axios.get(Endpoints.event);
       console.log("axiosRes EVENTS:::: ", axiosRes);
-      if (axiosRes.status >= 200 && axiosRes.status < 300) {
+      if (!(axiosRes.status >= 200 && axiosRes.status < 300)) {
         toast.error(
           axiosRes?.data?.message ||
             `Someting went wrong.`,
