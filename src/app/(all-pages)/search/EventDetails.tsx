@@ -179,9 +179,20 @@ export default function EventDetails({
 
         <div>
           <h3>Description</h3>
-          <p className="text-base font-normal text-neutral-500 ">
-            {selectedEvent?.description}
-          </p>
+          <div
+            dangerouslySetInnerHTML={{
+              __html: selectedEvent?.description
+                ? new DOMParser().parseFromString(
+                    selectedEvent?.description.replaceAll(
+                      /<\s*script\s*>/i,
+                      "<p>",
+                    ),
+                    "text/html",
+                  )
+                : selectedEvent?.description || "",
+            }}
+            className="text-base font-normal text-neutral-500 "
+          ></div>
         </div>
 
         <div>
