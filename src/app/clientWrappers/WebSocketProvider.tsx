@@ -52,12 +52,17 @@ export default function WebSocketProvider({
         `New Notification`,
         {
           body: notification.message,
-          data: notification,
+          data: new Date(notification.date).toLocaleString(),
         }
       );
       queryClient.invalidateQueries({
         queryKey: ["Notification"],
       });
+      if (notification.context === "NEW_EVENT") {
+        queryClient.invalidateQueries({
+          queryKey: ["Events"],
+        });
+      }
     });
     connection.on("disconnect", () => {
       console.log("disconnected");
