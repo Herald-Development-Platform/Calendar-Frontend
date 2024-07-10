@@ -36,9 +36,9 @@ export default function SummaryPage() {
     if (!events || events.length === undefined || events.length === 0) return;
     const filteredEvents = events?.filter((e: any) => {
       const date = new Date(e.start);
-      const currentDate = new Date();
-      currentDate.setDate(currentDate.getDate() - parseInt(filter));
-      return date > currentDate;
+      const lastDays = new Date(Date.now()-(parseInt(filter)*86400000));
+      const futureDays = new Date(Date.now()+(parseInt(filter)*86400000));
+      return date >= lastDays && date <= futureDays;
     });
     setFilteredEvents(filteredEvents as any[]);
 
