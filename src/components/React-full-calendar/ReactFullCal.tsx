@@ -43,6 +43,7 @@ export default function ReactFullCal() {
   const { mutate: updateHighLightedEvents } = useMutation({
     mutationFn: (payload: any) => Axios.patch("/profile", payload),
   });
+
   const { data: userData } = useQuery({
     queryKey: ["ProfileData"],
     // queryFn: async () => await Axios.get(Endpoints.profile),

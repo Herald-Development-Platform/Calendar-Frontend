@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import DepartmentButton from "../DepartmentButton";
 import { useGetEventByQuery } from "@/services/api/eventsApi";
 import { Context } from "@/app/clientWrappers/ContextProvider";
+import { useGetDepartments } from "@/services/api/departments";
 
 // interface eventByParamsType {
 //   q: string;
@@ -13,11 +14,10 @@ import { Context } from "@/app/clientWrappers/ContextProvider";
 // }
 
 export default function DepartmentFilter() {
-  const { data: departments } = useQuery<eventType[]>({
-    queryKey: ["Departments"],
-  });
+  const { data: departments } = useGetDepartments();
+
   const [selDepartments, setSelDepartments] = useState<string[]>([""]);
-  console.log("selDepartments", selDepartments);
+
   const { setEvents } = useContext(Context);
 
   const { data: filteredEvents, refetch: refetchEventByQuery } =
@@ -29,9 +29,12 @@ export default function DepartmentFilter() {
       eventFrom: "",
     });
 
+  // const handleFilterEvents () {
+  // }
+
   useEffect(() => setEvents(filteredEvents), [filteredEvents]);
   useEffect(() => {
-    refetchEventByQuery();
+    console.log("events", filteredEvents);
   }, [selDepartments]);
 
   console.log("filteredEvents", filteredEvents);

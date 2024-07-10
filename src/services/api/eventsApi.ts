@@ -145,10 +145,11 @@ export const useGetEventByQuery = (queryParams: eventByParamsType) =>
             eventFrom: queryParams.eventFrom,
           }),
         );
-        // if (res.statusText !== "OK") {
-        //   toast.error(res.data.message);
-        //   return res.data.data;
-        // }
+
+        if (res.statusText.toUpperCase().trim() !== "OK") {
+          toast.error(res.data.message);
+          return res.data;
+        }
         return res.data.data;
       } catch (err: any) {
         console.error(err);
