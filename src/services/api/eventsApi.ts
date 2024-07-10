@@ -35,6 +35,7 @@ export const useGetEvents = () =>
     queryFn: async () => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       const axiosRes = await Axios.get(Endpoints.event);
+      console.log("axiosRes EVENTS:::: ", axiosRes);
       if (axiosRes.statusText !== "OK") {
         toast.error(
           axiosRes?.data?.message ||
