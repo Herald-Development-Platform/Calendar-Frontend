@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 "use client";
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import "react-big-calendar/lib/sass/styles.scss";
 import "react-datepicker/dist/react-datepicker.css";
 import UpcommingEvents from "@/components/UpcommingEvents";
@@ -9,15 +9,41 @@ import ReactFullCalendar from "@/components/React-full-calendar";
 import { useQuery } from "@tanstack/react-query";
 import DepartmentButton from "@/components/DepartmentButton";
 import DepartmentFilter from "@/components/utils/DepartmentFilter";
+import { Context } from "../clientWrappers/ContextProvider";
 
 export default function page() {
   const { data: departments } = useQuery<eventType[]>({
     queryKey: ["Departments"],
   });
-  // const filAndCal = useRef<HTMLDivElement>(null);
 
-  // console.log("filAndCal.current.offsetHeight", filAndCal.current.offsetHeight);
+  const depFilterRef = useRef<HTMLDivElement>(null);
+  const { calendarRef } = useContext(Context);
+  console.log(
+    "depFilterRef.current?.offsetHeight",
+    calendarRef?.current?.elRef?.current?.offsetHeight,
+  );
 
+  console.log(
+    "getComputedStyle",
+    depFilterRef.current && getComputedStyle(depFilterRef.current),
+  );
+  const calendarHeight = calendarRef?.current?.elRef?.current?.offsetHeight
+    ? calendarRef?.current?.elRef?.current?.offsetHeight
+    : 0;
+  const UpEventsHeight = depFilterRef.current?.offsetHeight
+    ? depFilterRef.current?.offsetHeight
+    : 0;
+  const UpEventsMarginY = depFilterRef.current
+    ? parseInt(
+        getComputedStyle(depFilterRef.current).marginTop +
+          getComputedStyle(depFilterRef.current).marginTop,
+      )
+    : 0;
+
+  // console.log(
+  //   "total height",
+  //   UpEventsMarginY + UpEventsHeight + calendarHeight,
+  // );
   return (
     <div className="flex h-full w-full flex-col gap-8">
       <div className="w-full">
@@ -26,10 +52,12 @@ export default function page() {
 
       <div className="flex h-full w-full justify-between overflow-hidden overflow-y-auto">
         <div className="flex w-full flex-col">
-          <DepartmentFilter />
+          <DepartmentFilter ref={depFilterRef} />
           <ReactFullCalendar />
         </div>
-        <UpcommingEvents />
+        <UpcommingEvents
+          elHeight={calendarHeight + UpEventsHeight + UpEventsMarginY}
+        />
       </div>
     </div>
   );

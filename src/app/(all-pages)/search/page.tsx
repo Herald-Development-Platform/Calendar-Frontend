@@ -10,8 +10,7 @@ import {
   useGetEventByQuery,
   useUpdateEvents,
 } from "@/services/api/eventsApi";
-import { Axios } from "@/services/baseUrl";
-import Endpoints from "@/services/API_ENDPOINTS";
+
 import { BsDot } from "react-icons/bs";
 import { format } from "date-fns";
 import { RxArrowTopRight } from "react-icons/rx";
@@ -36,6 +35,7 @@ export default function Page() {
     refetch,
     isFetching,
   } = useGetEventByQuery(queryParams);
+
   const { mutate: deleteEvent } = useDeleteEvent({});
   const { mutate: updateEvent } = useUpdateEvents();
 

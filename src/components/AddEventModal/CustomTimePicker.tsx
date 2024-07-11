@@ -36,14 +36,14 @@ export default function CustomTimePicker({
             type === "start" ? "left-0" : "right-0"
           } absolute top-12 z-20 rounded-sm `}
           value={value}
-          onAccept={(value) => {
+          onChange={(value) => {
             if (!value) return;
 
-            setShowTimePicker(false);
             handleTimeChange({
               target: { name: type, value: new Date(value) },
             });
           }}
+          onAccept={() => setShowTimePicker(false)}
         />
       </div>
       <div

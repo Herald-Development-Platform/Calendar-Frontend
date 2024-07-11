@@ -61,10 +61,6 @@ export default function ReactFullCal() {
       }
     },
   });
-  // console.log(
-  //   " calendarRef?.current",
-  //   calendarRef?.current?.getApi().getDate().getMonth(),
-  // );
 
   const handleSelect = ({ start, end, startStr, endStr }: DateSelectArg) => {
     setSelectedDate({ start, end, startStr, endStr });
@@ -99,7 +95,9 @@ export default function ReactFullCal() {
       // console.log("dayFrameEl", dayFrameEl);
       const topEl = dayFrameEl.querySelector(".fc-daygrid-day-number");
       const ariaLabelValue = topEl?.getAttribute("aria-label");
+
       if (!ariaLabelValue) return;
+
       const parsedDate = parse(ariaLabelValue, "MMMM d, yyyy", new Date());
       const isoDate = format(parsedDate, "yyyy-MM-dd");
       // console.log("isoDate", new Date(isoDate).toISOString());
@@ -109,7 +107,7 @@ export default function ReactFullCal() {
       );
       if (isHighLight) dayFrameEl.style.backgroundColor = "#fffdc3";
       else dayFrameEl.style.backgroundColor = "#ffffff";
-
+      // setHeightOfDayFrame(dayFrameEl);
       const contextMenuListener = (e: any) => {
         e.preventDefault();
 
@@ -234,6 +232,8 @@ export default function ReactFullCal() {
     info.el.appendChild(tooltipWrapper);
     tooltipWrapper.classList.add("event-tooltip-transition");
   };
+  // console.log("calendarRef", calendarRef?.current?.elRef.current?.offsetHeight);
+  // console.log("calendarRef", calWrapper.current?.offsetHeight);
 
   return (
     <>
@@ -242,7 +242,7 @@ export default function ReactFullCal() {
         <button className="day-frame-context-el">Add Event</button>
         <button className="day-frame-context-el">Delete Events</button>
       </div> */}
-      <div ref={calWrapper} className="h-full w-full">
+      <div ref={calWrapper} className="h-full w-auto ">
         <FullCalendar
           ref={calendarRef}
           plugins={allPlugins}
@@ -262,13 +262,22 @@ export default function ReactFullCal() {
           dayHeaderClassNames={"customStylesDayHeader"}
           dayCellClassNames={"customStylesDayCells"}
           eventMaxStack={2}
-          dayMaxEvents={4}
+          dayMaxEvents={3}
         />
       </div>
     </>
   );
-}
 
+  const setHeightOfDayFrame = (node: HTMLDivElement) => {
+    const dateNumberHeight = // @ts-ignore
+      node.querySelector(".fc-daygrid-day-top")?.offsetHeight;
+    const eventsTotalHeight = // @ts-ignore
+      node.querySelector(".fc-daygrid-day-events")?.offsetHeight;
+
+    node.style.minHeight = `${dateNumberHeight + eventsTotalHeight}px`;
+  };
+}
+}
 // eventDragStart={(e) => {
 //   console.log("eventDragStart", e);
 // }}
