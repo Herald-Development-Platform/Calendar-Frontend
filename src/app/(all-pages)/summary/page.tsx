@@ -16,6 +16,8 @@ import { Chart } from "chart.js/auto";
 import PieChart from "@/components/Chartjs/PieChart";
 import colors from "@/constants/Colors";
 import BarChart from "@/components/Chartjs/BarChart";
+import { useGetDepartments } from "@/services/api/departments";
+import DepartmentButton from "@/components/DepartmentButton";
 
 export default function SummaryPage() {
   const [filter, setFilter] = useState("7");
@@ -30,14 +32,29 @@ export default function SummaryPage() {
   }>({ labels: [], datasets: [] });
 
   const { data: events, isLoading: eventsLoading } = useGetEvents();
+  const { data: departments, isLoading: departmentsLoading } =
+    useGetDepartments();
   const [filteredEvents, setFilteredEvents] = useState<any[]>([]);
+  const [selDepartments, setSelDepartments] = useState<string[]>(["All"]);
 
   useEffect(() => {
     if (!Array.isArray(events)) return;
     const filteredEvents = events?.filter((e: any) => {
+      if (!selDepartments.includes("All")) {
+        let match = false;
+        for (let department of e.departments) {
+          if (selDepartments.includes(department.code)) {
+            match = true;
+            break;
+          }
+        }
+        if (!match) {
+          return false;
+        }
+      }
       const date = new Date(e.start);
-      const lastDays = new Date(Date.now()-(parseInt(filter)*86400000));
-      const futureDays = new Date(Date.now()+(parseInt(filter)*86400000));
+      const lastDays = new Date(Date.now() - parseInt(filter) * 86400000);
+      const futureDays = new Date(Date.now() + parseInt(filter) * 86400000);
       return date >= lastDays && date <= futureDays;
     });
     setFilteredEvents(filteredEvents as any[]);
@@ -86,12 +103,12 @@ export default function SummaryPage() {
         },
       ],
     });
-  }, [filter, events]);
+  }, [filter, events, selDepartments]);
 
   return (
     <div className="flex flex-col gap-9 px-[70px] pl-9">
       <Toaster />
-      <div className=" mt-[80px] flex flex-col gap-[37px]">
+      <div className=" mt-[80px] flex flex-col gap-[18px]">
         <div className="flex flex-row justify-between">
           <h1 className=" text-[28px] font-[700] text-neutral-700">Summary</h1>
           <span className="ml-auto w-40 text-neutral-500">
@@ -121,11 +138,61 @@ export default function SummaryPage() {
             </Select>
           </span>
         </div>
+        <div className=" flex gap-2 ">
+          <DepartmentButton
+            selectedCross={false}
+            value={"All"}
+            selected={selDepartments.includes("All")}
+            id={"All"}
+            onClick={() => {
+              if (selDepartments.includes("All")) {
+                setSelDepartments([]);
+              } else {
+                setSelDepartments(["All"]);
+              }
+            }}
+          />
+          {Array.isArray(departments) &&
+            departments?.map((department: any) => (
+              <DepartmentButton
+                id={department._id}
+                key={department._id}
+                selectedCross={false}
+                value={department.code}
+                onClick={() => {
+                  let newSelectedDepartments = [...selDepartments];
+                  if (newSelectedDepartments.includes("All")) {
+                    newSelectedDepartments = newSelectedDepartments.filter(
+                      (dep) => dep !== "All",
+                    );
+                  }
+                  if (newSelectedDepartments.includes(department.code)) {
+                    newSelectedDepartments = newSelectedDepartments.filter(
+                      (dep) => dep !== department.code,
+                    );
+                  } else {
+                    newSelectedDepartments = [
+                      ...newSelectedDepartments,
+                      department.code,
+                    ];
+                  }
+                  if (newSelectedDepartments.length === 0) {
+                    newSelectedDepartments = ["All"];
+                    return;
+                  }
+                  setSelDepartments(newSelectedDepartments);
+                }}
+                selected={selDepartments.includes(department.code)}
+              />
+            ))}
+        </div>
         <div className={`flex flex-row justify-between gap-14`}>
           <SummaryCard
             title="Upcoming Events"
             loading={eventsLoading}
-            events={filteredEvents?.filter((e: any) => new Date(e.start) > new Date())}
+            events={filteredEvents?.filter(
+              (e: any) => new Date(e.start) > new Date(),
+            )}
           />
           <SummaryCard
             title="Ongoing Events"
@@ -137,10 +204,12 @@ export default function SummaryPage() {
           <SummaryCard
             title="Closed Events"
             loading={eventsLoading}
-            events={filteredEvents?.filter((e: any) => new Date(e.start) < new Date())}
+            events={filteredEvents?.filter(
+              (e: any) => new Date(e.start) < new Date(),
+            )}
           />
         </div>
-        <div className="flex w-full flex-row items-start justify-center gap-[50px]">
+        <div className="flex w-full flex-row mt-4 items-start justify-center gap-[50px]">
           {/** Card */}
           <div className="flex h-full w-full flex-col">
             <div className="flex w-full flex-row  items-center justify-start gap-3.5 rounded-md border-[0.6px] bg-neutral-100 px-5 py-1 text-neutral-700">
@@ -153,7 +222,10 @@ export default function SummaryPage() {
                 </div>
                 <div className="flex flex-col items-start justify-center gap-3">
                   {pieChartData.labels.map((label, index) => (
-                    <div className="flex flex-row items-center justify-start" key={index}>
+                    <div
+                      className="flex flex-row items-center justify-start"
+                      key={index}
+                    >
                       <span
                         className={`h-6 w-6 rounded-md`}
                         style={{
