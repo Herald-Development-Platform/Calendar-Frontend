@@ -56,7 +56,7 @@ export function HomeHeader() {
   // const [redner, setredner] = useState<number>(1);
   const [calendarApi, setCalendarApi] = useState<CalendarApi>();
   const [listView, setListView] = useState<boolean>(false);
-
+  const [toggleSidebar, setToggleSidebar] = useState<boolean>(false);
   const { notifications } = useContext(Context);
 
   let newNotifications = false;
@@ -125,14 +125,32 @@ export function HomeHeader() {
   };
 
   useHandleListViewToggle(listView, calendarApi);
+  console.log("toogle", toggleSidebar);
   return (
     <>
       <div className="ml-8 mr-16 mt-8 flex h-12 w-auto items-center justify-between ">
-        <div>
+        <div
+          className={`${
+            toggleSidebar
+              ? "left-0 top-0 z-50 -translate-x-0"
+              : "-z-50 -translate-x-full"
+          } duration-400 fixed transition`}
+        >
           <Sidebar hasBreakpoint={false}></Sidebar>
         </div>
+        <div
+          onClick={() => {
+            setToggleSidebar(false);
+          }}
+          className={`${
+            toggleSidebar ? "" : "hidden"
+          } fixed left-0 top-0 z-40 h-full w-full bg-black bg-opacity-0`}
+        ></div>
         <div className="flex items-center gap-2 xl:hidden">
-          <button className="flex h-8 w-8 items-center justify-center rounded-sm border border-gray-300">
+          <button
+            onClick={() => setToggleSidebar(true)}
+            className="flex h-8 w-8 items-center justify-center rounded-sm border border-gray-300"
+          >
             <Menu />
           </button>
           <Link href={"/"} className="h-fit w-fit">
