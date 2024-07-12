@@ -87,4 +87,6 @@ const DepartmentFilter = forwardRef(
     );
   },
 );
+DepartmentFilter.displayName = "DepartmentFilter";
+
 export default DepartmentFilter;
