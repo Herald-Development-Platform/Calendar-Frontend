@@ -51,7 +51,7 @@ export default function page() {
       </div>
 
       <div className="flex h-full w-full justify-between overflow-hidden overflow-y-auto">
-        <div className="flex w-full flex-col">
+        <div className="flex h-fit w-full flex-col">
           <DepartmentFilter ref={depFilterRef} />
           <ReactFullCalendar />
         </div>

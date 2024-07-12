@@ -73,7 +73,7 @@ const DepartmentFilter = forwardRef(
 
     return (
       <div ref={ref} className="mb-4 ml-2 flex gap-2 ">
-        {Array.isArray(departments) &&
+        {/* {Array.isArray(departments) &&
           departments?.map((department: any) => (
             <DepartmentButton
               key={department._id}
@@ -82,7 +82,7 @@ const DepartmentFilter = forwardRef(
               value={department.code}
               selected={selDepartments?.includes(department._id)}
             />
-          ))}
+          ))} */}
       </div>
     );
   },

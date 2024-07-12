@@ -9,8 +9,7 @@ import { MdImportExport } from "react-icons/md";
 import { IoLocationOutline } from "react-icons/io5";
 import { GrLocationPin } from "react-icons/gr";
 
-
-export default function Sidebar() {
+export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   const currentRoute = usePathname();
 
   const highlightedStyles =
@@ -51,7 +50,10 @@ export default function Sidebar() {
     },
   ];
   return (
-    <div className="relative h-screen w-60 bg-neutral-50 px-4 py-10">
+    <div
+      className={`${hasBreakpoint ? "relative hidden" : " block"}  
+    h-screen w-60 bg-neutral-50 px-4 py-10 transition duration-1000 xl:block`}
+    >
       <div className="flex h-full w-[213px] flex-col items-center gap-16  font-medium">
         <div className="flex gap-3 text-lg text-neutral-600 ">
           <Image

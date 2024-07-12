@@ -9,7 +9,6 @@
 }
 
 .fc-event.fc-daygrid-dot-event{
-    height: 16px;
 }
 
 .fc-daygrid-event-dot {
@@ -71,7 +70,7 @@
 }
 
 .fc-daygrid-day-frame{
-    overflow: hidden; 
+    height: 100%
 }
 
 .customStylesDayCells:hover{
@@ -84,14 +83,16 @@
     justify-content: space-between;
     align-items: flex-start;
     text-overflow: ellipsis;
-    /* overflow: hidden; */
-}
-
-.fc-event.fc-daygrid-dot-event{
+    overflow: hidden;
     min-height: 16px; 
     height: auto;
+    /* height: 16px; */
     padding-left: 17px;
 }
+
+/* .fc-event.fc-daygrid-dot-event{
+ 
+} */
 
 .fc-event-title{ 
     overflow: hidden;
