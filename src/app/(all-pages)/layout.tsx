@@ -7,7 +7,7 @@ export default function RootLayout({
 }) {
   return (
     <div className="flex">
-      <Sidebar></Sidebar>
+      <Sidebar hasBreakpoint={true}></Sidebar>
       <div className="flex h-screen w-full flex-col">{children}</div>
     </div>
   );

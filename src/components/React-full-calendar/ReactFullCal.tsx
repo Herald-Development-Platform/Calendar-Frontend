@@ -244,11 +244,6 @@ export default function ReactFullCal() {
   };
   return (
     <>
-      {/* <div className="day-frame-context-wrapper">
-        <button className="day-frame-context-el">Highlight</button>
-        <button className="day-frame-context-el">Add Event</button>
-        <button className="day-frame-context-el">Delete Events</button>
-      </div> */}
       <div ref={calWrapper} className="h-full w-auto ">
         <FullCalendar
           ref={calendarRef}
