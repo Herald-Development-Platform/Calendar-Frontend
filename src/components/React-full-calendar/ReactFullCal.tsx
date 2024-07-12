@@ -107,7 +107,7 @@ export default function ReactFullCal() {
       );
       if (isHighLight) dayFrameEl.style.backgroundColor = "#fffdc3";
       else dayFrameEl.style.backgroundColor = "#ffffff";
-      // setHeightOfDayFrame(dayFrameEl);
+      setHeightOfDayFrame(dayFrameEl);
       const contextMenuListener = (e: any) => {
         e.preventDefault();
 
@@ -234,7 +234,14 @@ export default function ReactFullCal() {
   };
   // console.log("calendarRef", calendarRef?.current?.elRef.current?.offsetHeight);
   // console.log("calendarRef", calWrapper.current?.offsetHeight);
+  const setHeightOfDayFrame = (node: HTMLDivElement) => {
+    const dateNumberHeight = // @ts-ignore
+      node.querySelector(".fc-daygrid-day-top")?.offsetHeight;
+    const eventsTotalHeight = // @ts-ignore
+      node.querySelector(".fc-daygrid-day-events")?.offsetHeight;
 
+    node.style.minHeight = `${dateNumberHeight + eventsTotalHeight}px`;
+  };
   return (
     <>
       {/* <div className="day-frame-context-wrapper">
@@ -262,21 +269,11 @@ export default function ReactFullCal() {
           dayHeaderClassNames={"customStylesDayHeader"}
           dayCellClassNames={"customStylesDayCells"}
           eventMaxStack={2}
-          dayMaxEvents={3}
+          dayMaxEvents={4}
         />
       </div>
     </>
   );
-
-  const setHeightOfDayFrame = (node: HTMLDivElement) => {
-    const dateNumberHeight = // @ts-ignore
-      node.querySelector(".fc-daygrid-day-top")?.offsetHeight;
-    const eventsTotalHeight = // @ts-ignore
-      node.querySelector(".fc-daygrid-day-events")?.offsetHeight;
-
-    node.style.minHeight = `${dateNumberHeight + eventsTotalHeight}px`;
-  };
-}
 }
 // eventDragStart={(e) => {
 //   console.log("eventDragStart", e);

@@ -71,7 +71,7 @@
 }
 
 .fc-daygrid-day-frame{
-    max-height: 100px;
+    overflow: hidden; 
 }
 
 .customStylesDayCells:hover{
