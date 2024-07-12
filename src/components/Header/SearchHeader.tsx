@@ -63,7 +63,7 @@ export function SearchHeader({
   const { notifications } = useContext(Context);
 
   let newNotifications = false;
-  console.log("notifications", notifications);
+  // console.log("notifications", notifications);
   if (notifications) {
     newNotifications = notifications.some(
       (notification: any) => !notification.isRead,

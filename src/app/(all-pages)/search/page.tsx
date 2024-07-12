@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import * as Headers from "@/components/Header";
 import RecentSearches from "@/components/RecentSearches/RecentSearches";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -10,40 +10,39 @@ import {
   useGetEventByQuery,
   useUpdateEvents,
 } from "@/services/api/eventsApi";
-import { Axios } from "@/services/baseUrl";
-import Endpoints from "@/services/API_ENDPOINTS";
+
 import { BsDot } from "react-icons/bs";
 import { format } from "date-fns";
 import { RxArrowTopRight } from "react-icons/rx";
 import EventDetails from "./EventDetails";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useRouter } from "next/router";
+import { Context } from "@/app/clientWrappers/ContextProvider";
 
 export default function Page() {
   const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
   const [queryParams, setQueryParams] = useState<eventByParamsType>({
     q: "",
-    departments: [""],
-    colors: [""],
+    departments: [],
+    colors: [],
     eventTo: "",
     eventFrom: "",
   });
-  // const crossBtnRef = useRef<HTMLButtonElement>(null);
+  const [filteredEvents, setFilteredEvents] = useState<eventType[]>();
+
+  const {
+    data: eventsData,
+    refetch,
+    isFetching,
+  } = useGetEventByQuery(queryParams);
 
   const { mutate: deleteEvent } = useDeleteEvent({});
+  const { mutate: updateEvent } = useUpdateEvents();
 
   const handleDelete = (e: any) => {
     const { value } = e.target;
     deleteEvent({ id: value });
   };
-
-  const {
-    data: filteredEvents,
-    refetch,
-    isFetching,
-  } = useGetEventByQuery(queryParams);
-
-  const { mutate: updateEvent } = useUpdateEvents();
 
   console.log("queryParams", queryParams);
   console.log("filteredEvents", filteredEvents);
@@ -139,10 +138,58 @@ export default function Page() {
     }
   };
 
+  const handleFilterEvent = () => {
+    let filteredData = eventsData?.filter((event: eventType) => {
+      const reg = new RegExp(queryParams.q, "ig");
+
+      const isRegexValid =
+        reg.test(event.title) ||
+        (event.description && reg.test(event.description));
+
+      const departmentExist: boolean =
+        queryParams.departments.length === 0 ||
+        event.departments.some((department: any) =>
+          queryParams.departments.includes(department._id),
+        );
+
+      const isColor =
+        queryParams.colors.length === 0 ||
+        (event.color && queryParams.colors.includes(event.color));
+
+      const selectedStartTime = queryParams.eventFrom
+        ? queryParams.eventFrom
+        : 0;
+      const selectedEndTime = queryParams.eventTo ? queryParams.eventTo : 0;
+
+      const eventStart = event?.start ? new Date(event.start).getTime() : 0;
+      const eventEnd = event?.end ? new Date(event.end).getTime() : 0;
+      console.log("eventStart", eventStart, "eventEnd", eventEnd);
+      const inFirstEdge =
+        eventStart <= selectedStartTime && eventEnd > selectedStartTime;
+      const inBetween =
+        eventStart > selectedStartTime && eventEnd < selectedEndTime;
+      const inLastEdge =
+        eventStart < selectedEndTime && eventEnd >= selectedEndTime;
+
+      const isDateValid =
+        selectedStartTime === 0 ||
+        selectedEndTime === 0 ||
+        inFirstEdge ||
+        inBetween ||
+        inLastEdge;
+
+      return isRegexValid && departmentExist && isColor && isDateValid;
+
+      // const
+    });
+
+    setFilteredEvents(filteredData);
+  };
+
   useDebounce({
-    dependency: [queryParams],
-    debounceFn: () => refetch(),
-    time: 650,
+    dependency: [queryParams, eventsData],
+    debounceFn: () => handleFilterEvent(),
+    time: 150,
   });
 
   return (
@@ -156,7 +203,7 @@ export default function Page() {
         <div className="flex h-full w-1/2 flex-col gap-2 pb-20">
           <p className="text-base text-neutral-500">Recent Searches</p>
           <div className="green-scrollbar flex flex-grow flex-col overflow-hidden overflow-y-auto">
-            {!isFetching &&
+            {Boolean(filteredEvents) &&
               filteredEvents?.map((event: eventType, i: number) => (
                 <div
                   onClick={() => setSelectedEvent(event)}
