@@ -18,6 +18,7 @@ import colors from "@/constants/Colors";
 import BarChart from "@/components/Chartjs/BarChart";
 import { useGetDepartments } from "@/services/api/departments";
 import DepartmentButton from "@/components/DepartmentButton";
+import * as Headers from "@/components/Header";
 
 export default function SummaryPage() {
   const [filter, setFilter] = useState("7");
@@ -106,164 +107,173 @@ export default function SummaryPage() {
   }, [filter, events, selDepartments]);
 
   return (
-    <div className="flex flex-col gap-9 px-[70px] pl-9">
-      <Toaster />
-      <div className=" mt-[80px] flex flex-col gap-[18px]">
-        <div className="flex flex-row justify-between">
-          <h1 className=" text-[28px] font-[700] text-neutral-700">Summary</h1>
-          <span className="ml-auto w-40 text-neutral-500">
-            <Select
-              value={filter}
-              onValueChange={(value) => {
-                setFilter(value);
-              }}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Choose filter" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem
-                  value="7"
-                  className={`${filter.toLowerCase() === "7" && "text-primary-600"}`}
-                >
-                  7 Days
-                </SelectItem>
-                <SelectItem
-                  value="30"
-                  className={`${filter.toLowerCase() === "30" && "text-primary-600"}`}
-                >
-                  30 Days
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </span>
-        </div>
-        <div className=" flex gap-2 ">
-          <DepartmentButton
-            selectedCross={false}
-            value={"All"}
-            selected={selDepartments.includes("All")}
-            id={"All"}
-            onClick={() => {
-              if (selDepartments.includes("All")) {
-                setSelDepartments([]);
-              } else {
-                setSelDepartments(["All"]);
-              }
-            }}
-          />
-          {Array.isArray(departments) &&
-            departments?.map((department: any) => (
-              <DepartmentButton
-                id={department._id}
-                key={department._id}
-                selectedCross={false}
-                value={department.code}
-                onClick={() => {
-                  let newSelectedDepartments = [...selDepartments];
-                  if (newSelectedDepartments.includes("All")) {
-                    newSelectedDepartments = newSelectedDepartments.filter(
-                      (dep) => dep !== "All",
-                    );
-                  }
-                  if (newSelectedDepartments.includes(department.code)) {
-                    newSelectedDepartments = newSelectedDepartments.filter(
-                      (dep) => dep !== department.code,
-                    );
-                  } else {
-                    newSelectedDepartments = [
-                      ...newSelectedDepartments,
-                      department.code,
-                    ];
-                  }
-                  if (newSelectedDepartments.length === 0) {
-                    newSelectedDepartments = ["All"];
-                    return;
-                  }
-                  setSelDepartments(newSelectedDepartments);
+    <>
+      <Headers.GeneralHeader />
+      <div className="flex flex-col gap-9 px-[70px] pl-9">
+        <Toaster />
+        <div className=" mt-[40px] flex flex-col gap-[18px]">
+          <div className="flex flex-row justify-between">
+            <h1 className=" text-[28px] font-[700] text-neutral-700">
+              Summary
+            </h1>
+            <span className="ml-auto w-40 text-neutral-500">
+              <Select
+                value={filter}
+                onValueChange={(value) => {
+                  setFilter(value);
                 }}
-                selected={selDepartments.includes(department.code)}
-              />
-            ))}
-        </div>
-        <div className={`flex flex-row justify-between gap-14`}>
-          <SummaryCard
-            title="Upcoming Events"
-            loading={eventsLoading}
-            events={filteredEvents?.filter(
-              (e: any) => new Date(e.start) > new Date(),
-            )}
-          />
-          <SummaryCard
-            title="Ongoing Events"
-            loading={eventsLoading}
-            events={filteredEvents?.filter(
-              (e: any) => new Date(e.start).getDate() === new Date().getDate(),
-            )}
-          />
-          <SummaryCard
-            title="Closed Events"
-            loading={eventsLoading}
-            events={filteredEvents?.filter(
-              (e: any) => new Date(e.start) < new Date(),
-            )}
-          />
-        </div>
-        <div className="flex w-full flex-row mt-4 items-start justify-center gap-[50px]">
-          {/** Card */}
-          <div className="flex h-full w-full flex-col">
-            <div className="flex w-full flex-row  items-center justify-start gap-3.5 rounded-md border-[0.6px] bg-neutral-100 px-5 py-1 text-neutral-700">
-              <span className="text-[16px]">Events by Priority</span>
-            </div>
-            <div className="bg-neutral-50">
-              <div className="flex flex-row items-center gap-16 p-5 px-7">
-                <div style={{ width: 200, height: 200 }}>
-                  <PieChart data={pieChartData}></PieChart>
-                </div>
-                <div className="flex flex-col items-start justify-center gap-3">
-                  {pieChartData.labels.map((label, index) => (
-                    <div
-                      className="flex flex-row items-center justify-start"
-                      key={index}
-                    >
-                      <span
-                        className={`h-6 w-6 rounded-md`}
-                        style={{
-                          backgroundColor:
-                            pieChartData.datasets[0].backgroundColor[index],
-                        }}
-                      />
-                      <span className="ml-3 text-[16px]">{label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose filter" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem
+                    value="7"
+                    className={`${
+                      filter.toLowerCase() === "7" && "text-primary-600"
+                    }`}
+                  >
+                    7 Days
+                  </SelectItem>
+                  <SelectItem
+                    value="30"
+                    className={`${
+                      filter.toLowerCase() === "30" && "text-primary-600"
+                    }`}
+                  >
+                    30 Days
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </span>
           </div>
-
-          <div className="flex h-full w-full flex-col">
-            <div className="flex h-full w-full flex-row  items-center justify-start gap-3.5 rounded-md border-[0.6px] bg-neutral-100 px-5 py-1 text-neutral-700">
-              <span className="text-[16px]">Events by Department</span>
-            </div>
-            <div className="bg-neutral-50">
-              <div className="flex flex-row items-center gap-16 p-5 px-7">
-                <div
-                  style={{
-                    width: 600,
-                    height: 200,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
+          <div className=" flex gap-2 ">
+            <DepartmentButton
+              selectedCross={false}
+              value={"All"}
+              selected={selDepartments.includes("All")}
+              id={"All"}
+              onClick={() => {
+                if (selDepartments.includes("All")) {
+                  setSelDepartments([]);
+                } else {
+                  setSelDepartments(["All"]);
+                }
+              }}
+            />
+            {Array.isArray(departments) &&
+              departments?.map((department: any) => (
+                <DepartmentButton
+                  id={department._id}
+                  key={department._id}
+                  selectedCross={false}
+                  value={department.code}
+                  onClick={() => {
+                    let newSelectedDepartments = [...selDepartments];
+                    if (newSelectedDepartments.includes("All")) {
+                      newSelectedDepartments = newSelectedDepartments.filter(
+                        (dep) => dep !== "All",
+                      );
+                    }
+                    if (newSelectedDepartments.includes(department.code)) {
+                      newSelectedDepartments = newSelectedDepartments.filter(
+                        (dep) => dep !== department.code,
+                      );
+                    } else {
+                      newSelectedDepartments = [
+                        ...newSelectedDepartments,
+                        department.code,
+                      ];
+                    }
+                    if (newSelectedDepartments.length === 0) {
+                      newSelectedDepartments = ["All"];
+                      return;
+                    }
+                    setSelDepartments(newSelectedDepartments);
                   }}
-                >
-                  <BarChart data={barChartData}></BarChart>
+                  selected={selDepartments.includes(department.code)}
+                />
+              ))}
+          </div>
+          <div className={`flex flex-row justify-between gap-14`}>
+            <SummaryCard
+              title="Upcoming Events"
+              loading={eventsLoading}
+              events={filteredEvents?.filter(
+                (e: any) => new Date(e.start) > new Date(),
+              )}
+            />
+            <SummaryCard
+              title="Ongoing Events"
+              loading={eventsLoading}
+              events={filteredEvents?.filter(
+                (e: any) =>
+                  new Date(e.start).getDate() === new Date().getDate(),
+              )}
+            />
+            <SummaryCard
+              title="Closed Events"
+              loading={eventsLoading}
+              events={filteredEvents?.filter(
+                (e: any) => new Date(e.start) < new Date(),
+              )}
+            />
+          </div>
+          <div className="mt-4 flex w-full flex-row items-start justify-center gap-[50px]">
+            {/** Card */}
+            <div className="flex h-full w-full flex-col">
+              <div className="flex w-full flex-row  items-center justify-start gap-3.5 rounded-md border-[0.6px] bg-neutral-100 px-5 py-1 text-neutral-700">
+                <span className="text-[16px]">Events by Priority</span>
+              </div>
+              <div className="bg-neutral-50">
+                <div className="flex flex-row items-center gap-16 p-5 px-7">
+                  <div style={{ width: 200, height: 200 }}>
+                    <PieChart data={pieChartData}></PieChart>
+                  </div>
+                  <div className="flex flex-col items-start justify-center gap-3">
+                    {pieChartData.labels.map((label, index) => (
+                      <div
+                        className="flex flex-row items-center justify-start"
+                        key={index}
+                      >
+                        <span
+                          className={`h-6 w-6 rounded-md`}
+                          style={{
+                            backgroundColor:
+                              pieChartData.datasets[0].backgroundColor[index],
+                          }}
+                        />
+                        <span className="ml-3 text-[16px]">{label}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/** Card */}
-          {/* <div className="flex h-full w-full flex-col">
+            <div className="flex h-full w-full flex-col">
+              <div className="flex h-full w-full flex-row  items-center justify-start gap-3.5 rounded-md border-[0.6px] bg-neutral-100 px-5 py-1 text-neutral-700">
+                <span className="text-[16px]">Events by Department</span>
+              </div>
+              <div className="bg-neutral-50">
+                <div className="flex flex-row items-center gap-16 p-5 px-7">
+                  <div
+                    style={{
+                      width: 600,
+                      height: 200,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <BarChart data={barChartData}></BarChart>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/** Card */}
+            {/* <div className="flex h-full w-full flex-col">
             <div className="flex w-full flex-row  items-center justify-start gap-3.5 rounded-md border-[0.6px] bg-neutral-100 px-5 py-1 text-neutral-700">
               <span className="text-[16px]">Recent Activities</span>
             </div>
@@ -276,8 +286,9 @@ export default function SummaryPage() {
               ></Image>
             </div>
           </div> */}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

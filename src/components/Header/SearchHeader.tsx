@@ -37,9 +37,10 @@ import { CgProfile } from "react-icons/cg";
 import { MdOutlineSettings } from "react-icons/md";
 import Cookies from "js-cookie";
 import { format } from "date-fns";
-import { Router } from "lucide-react";
+import { Menu, Router } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ProfileDropdown from "./ProfileDropdown";
+import ToggleSidebar from "../Sidebar/ToggleSidebar";
 
 export function SearchHeader({
   queryParams,
@@ -71,7 +72,13 @@ export function SearchHeader({
   }
 
   return (
-    <div className=" flex h-12 w-[95%] justify-between">
+    <div
+      className=" flex h-12
+     w-[95%] items-center justify-between"
+    >
+      <ToggleSidebar>
+        <Menu />
+      </ToggleSidebar>
       <div className="flex w-9/12 justify-between">
         {/* Navigation btns and Date */}
         <label htmlFor="add-title" className="w-9/12">

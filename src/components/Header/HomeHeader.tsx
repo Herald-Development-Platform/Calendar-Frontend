@@ -51,6 +51,7 @@ import EventModal from "../AddEventModal/EventModal";
 import { Menu, SquareMenu } from "lucide-react";
 import Link from "next/link";
 import Sidebar from "../Sidebar";
+import ToggleSidebar from "../Sidebar/ToggleSidebar";
 
 export function HomeHeader() {
   // const [redner, setredner] = useState<number>(1);
@@ -126,15 +127,14 @@ export function HomeHeader() {
 
   useHandleListViewToggle(listView, calendarApi);
   console.log("toogle", toggleSidebar);
+
   return (
     <>
       <div className="ml-8 mr-16 mt-8 flex h-12 w-auto items-center justify-between ">
-        <div
+        {/* <div
           className={`${
-            toggleSidebar
-              ? "left-0 top-0 z-50 -translate-x-0"
-              : "-z-50 -translate-x-full"
-          } duration-400 fixed transition`}
+            toggleSidebar ? "-translate-x-0" : "-translate-x-full"
+          } duration-400 fixed left-0  top-0 z-50  bg-green-500 bg-opacity-50 transition`}
         >
           <Sidebar hasBreakpoint={false}></Sidebar>
         </div>
@@ -144,15 +144,13 @@ export function HomeHeader() {
           }}
           className={`${
             toggleSidebar ? "" : "hidden"
-          } fixed left-0 top-0 z-40 h-full w-full bg-black bg-opacity-0`}
-        ></div>
+          } fixed left-0 top-0 z-40 h-full w-full bg-black bg-opacity-5`}
+        ></div> */}
         <div className="flex items-center gap-2 xl:hidden">
-          <button
-            onClick={() => setToggleSidebar(true)}
-            className="flex h-8 w-8 items-center justify-center rounded-sm border border-gray-300"
-          >
+          <ToggleSidebar>
             <Menu />
-          </button>
+          </ToggleSidebar>
+
           <Link href={"/"} className="h-fit w-fit">
             <Image
               src={"/images/LoginPage/HeraldLogo.png"}
