@@ -1,5 +1,4 @@
 "use client";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import { RxCross2 } from "react-icons/rx";
 import EventCard from "@/components/UpcommingEvents/EventCard";
 import {
@@ -11,6 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { CgArrowsExpandRight } from "react-icons/cg";
+import { BsThreeDotsVertical } from "react-icons/bs";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,6 +35,15 @@ import {
 import EditEventModal from "@/components/AddEventModal/EditEventModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import AddEventModal from "@/components/AddEventModal";
 import EventModal from "@/components/AddEventModal/EventModal";
 
@@ -53,7 +64,10 @@ export default function EventDetails({
     selectedEvent?.color,
   );
   const [dropDown, setDropDown] = useState<boolean>(false);
-  const queryClient = useQueryClient();
+  const [dropDown2, setDropDown2] = useState<boolean>(false);
+  const [expandDetails, setExpandDetails] = useState<boolean>(false);
+
+  // const queryClient = useQueryClient();
 
   useEffect(() => {
     setSelectedColor(selectedEvent?.color);
@@ -70,6 +84,13 @@ export default function EventDetails({
         <div className="font flex items-center transition">
           <span className="text-base">Event Details</span>
           <span className="ml-auto flex items-center gap-[6px] text-black">
+            <button
+              className="text-base"
+              onClick={() => setExpandDetails(true)}
+            >
+              <CgArrowsExpandRight />
+            </button>
+
             <DropdownMenu open={dropDown} onOpenChange={setDropDown}>
               <DropdownMenuTrigger>
                 <button className="cursor-pointer text-base">
@@ -129,8 +150,9 @@ export default function EventDetails({
             </button>
           </span>
         </div>
+
         <div>
-          <div className="relative flex h-5 w-full items-center">
+          <div className="relative mb-3 flex h-5 w-full items-center">
             <div className="w-full border-t border-neutral-300"></div>
             <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-white px-2 text-sm text-neutral-600">
               {selectedEvent?.start &&
@@ -180,19 +202,17 @@ export default function EventDetails({
         <div>
           <h3>Description</h3>
           <div
-            dangerouslySetInnerHTML={
-              {
+            dangerouslySetInnerHTML={{
               __html: selectedEvent?.description
                 ? new DOMParser().parseFromString(
                     selectedEvent?.description.replaceAll(
-                      /<\s*script\s*>/ig,
+                      /<\s*script\s*>/gi,
                       "<p>",
                     ),
                     "text/html",
-                  )
+                  ).body.innerHTML
                 : selectedEvent?.description || "",
-            }
-          }
+            }}
             className="text-base font-normal text-neutral-500 "
           ></div>
         </div>
@@ -203,6 +223,7 @@ export default function EventDetails({
             {selectedEvent?.notes}
           </p>
         </div>
+
         <div>
           <h3>Location</h3>
           <p className="text-base font-normal text-neutral-500 ">
@@ -216,6 +237,151 @@ export default function EventDetails({
         } fixed left-0 top-0 z-10 h-full w-full opacity-0`}
         onClick={() => setSelectedEvent(null)}
       ></div>
+
+      <Dialog open={expandDetails} onOpenChange={setExpandDetails}>
+        {/* <DialogTrigger asChild></DialogTrigger> */}
+        <DialogContent className="min-w-[60%]">
+          <DialogHeader className="flex w-full flex-row justify-between ">
+            <DialogTitle className="flex w-fit  text-lg font-medium">
+              Event Details
+            </DialogTitle>
+            <span className="flex w-fit text-lg">
+              <DropdownMenu open={dropDown2} onOpenChange={setDropDown2}>
+                <DropdownMenuTrigger>
+                  <button className="cursor-pointer text-base">
+                    <BsThreeDotsVertical />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="h-[115px] w-[300px] px-5 py-4 text-sm font-semibold">
+                  <button
+                    onClick={(e: any) => {
+                      const modal_4 = document.getElementById(
+                        "my_modal_4",
+                      ) as HTMLDialogElement;
+                      console.log("modal elemenet", modal_4);
+                      modal_4.showModal();
+                      // setDropDown(false);
+                    }}
+                    className="flex w-full items-center justify-start gap-2 px-2 py-1 text-neutral-700 transition-colors duration-150 hover:bg-neutral-100  hover:text-neutral-800"
+                  >
+                    <span className="text-2xl">
+                      <MdOutlineModeEditOutline />
+                    </span>
+                    Edit Event
+                    <span>
+                      {selectedEvent && (
+                        <EditEventModal
+                          defaultData={selectedEvent}
+                        ></EditEventModal>
+                      )}
+                    </span>
+                  </button>
+                  <DropdownMenuSeparator />
+                  <button
+                    onClick={(e: any) => {
+                      setDropDown(false);
+                      setTimeout(() => {
+                        setSelectedEvent(null);
+                        handleDelete(e);
+                      }, 200);
+                    }}
+                    className="flex w-full items-center justify-start gap-2 px-2 py-1 text-danger-400 transition-colors duration-150 hover:bg-neutral-100  hover:text-danger-500"
+                    value={selectedEvent?._id}
+                  >
+                    <span className="text-2xl">
+                      <RiDeleteBin6Line />
+                    </span>
+                    Delete Event
+                  </button>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <button onClick={() => setExpandDetails(false)}>
+                <RxCross2 />
+              </button>
+            </span>
+          </DialogHeader>
+          <div className="flex flex-col gap-6">
+            <div>
+              <div className="relative mb-3 flex h-5 w-full items-center">
+                <div className="w-full border-t border-neutral-300"></div>
+                <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-white px-2 text-sm text-neutral-600">
+                  {selectedEvent?.start &&
+                    format(new Date(selectedEvent?.start), "MMMM d")}
+                </h1>
+              </div>
+              {selectedEvent && <EventCard event={selectedEvent} />}
+            </div>
+            <div className="flex w-4/12 items-center justify-between">
+              <p>Priority</p>
+              <Select
+                defaultValue={selectedEvent?.color}
+                onValueChange={(value) => {
+                  updateEvent({
+                    id: selectedEvent?._id,
+                    newEvent: { ...selectedEvent, color: value },
+                  });
+                  setSelectedColor(value);
+                }}
+              >
+                <SelectTrigger className="h-7 w-14 border-none p-0 focus:ring-0">
+                  <div
+                    className="h-7 w-7"
+                    style={{ backgroundColor: selectedColor }}
+                  ></div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Colors</SelectLabel>
+                    {colors.map((color: any, i) => (
+                      <SelectItem value={color?.color} key={color?.color}>
+                        <div className="flex items-center justify-between gap-2">
+                          <div
+                            className="h-7 w-7"
+                            style={{ backgroundColor: color?.color }}
+                          ></div>
+                          <span>{color?.priority}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <h3>Description</h3>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: selectedEvent?.description
+                    ? new DOMParser().parseFromString(
+                        selectedEvent?.description.replaceAll(
+                          /<\s*script\s*>/gi,
+                          "<p>",
+                        ),
+                        "text/html",
+                      ).body.innerHTML
+                    : selectedEvent?.description || "",
+                }}
+                className="text-base font-normal text-neutral-500 "
+              ></div>
+            </div>
+
+            <div>
+              <h3>Notes</h3>
+              <p className="text-base font-normal text-neutral-500 ">
+                {selectedEvent?.notes}
+              </p>
+            </div>
+
+            <div>
+              <h3>Location</h3>
+              <p className="text-base font-normal text-neutral-500 ">
+                {selectedEvent?.location}
+              </p>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

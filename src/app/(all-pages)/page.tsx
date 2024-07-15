@@ -50,7 +50,7 @@ export default function page() {
         <Headers.HomeHeader />
       </div>
 
-      <div className="flex h-full w-full justify-between overflow-hidden overflow-y-auto">
+      <div className="flex h-full w-full justify-between overflow-hidden overflow-y-auto pl-8">
         <div className="flex h-fit w-full flex-col">
           <DepartmentFilter ref={depFilterRef} />
           <ReactFullCalendar />

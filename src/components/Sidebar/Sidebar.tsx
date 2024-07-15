@@ -55,14 +55,14 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
     h-screen w-60 bg-neutral-50 px-4 py-10 transition duration-1000 xl:block`}
     >
       <div className="flex h-full w-[213px] flex-col items-center gap-16  font-medium">
-        <div className="flex gap-3 text-lg text-neutral-600 ">
+        <div className="flex gap-3 text-lg font-medium text-neutral-600 ">
           <Image
             width={32}
             height={32}
             src={"/images/LoginPage/HeraldLogo.png"}
             alt="HeraldLogo"
           />
-          Calendar
+          Event Calendar
         </div>
 
         <div className="flex w-full flex-col gap-3">

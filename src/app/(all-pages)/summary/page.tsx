@@ -219,9 +219,9 @@ export default function SummaryPage() {
               )}
             />
           </div>
-          <div className="mt-4 flex w-full flex-row items-start justify-center gap-[50px]">
+          <div className="mt-4 flex w-full flex-row flex-wrap items-start justify-between gap-10 ">
             {/** Card */}
-            <div className="flex h-full w-full flex-col">
+            <div className="flex h-auto w-fit flex-col">
               <div className="flex w-full flex-row  items-center justify-start gap-3.5 rounded-md border-[0.6px] bg-neutral-100 px-5 py-1 text-neutral-700">
                 <span className="text-[16px]">Events by Priority</span>
               </div>
@@ -251,41 +251,24 @@ export default function SummaryPage() {
               </div>
             </div>
 
-            <div className="flex h-full w-full flex-col">
+            <div className="flex h-auto w-fit flex-col">
               <div className="flex h-full w-full flex-row  items-center justify-start gap-3.5 rounded-md border-[0.6px] bg-neutral-100 px-5 py-1 text-neutral-700">
                 <span className="text-[16px]">Events by Department</span>
               </div>
-              <div className="bg-neutral-50">
-                <div className="flex flex-row items-center gap-16 p-5 px-7">
-                  <div
-                    style={{
-                      width: 600,
-                      height: 200,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <BarChart data={barChartData}></BarChart>
-                  </div>
+              <div className=" bg-neutral-50 px-7 py-5">
+                <div
+                  style={{
+                    width: "fit-content",
+                    height: 200,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <BarChart data={barChartData}></BarChart>
                 </div>
               </div>
             </div>
-
-            {/** Card */}
-            {/* <div className="flex h-full w-full flex-col">
-            <div className="flex w-full flex-row  items-center justify-start gap-3.5 rounded-md border-[0.6px] bg-neutral-100 px-5 py-1 text-neutral-700">
-              <span className="text-[16px]">Recent Activities</span>
-            </div>
-            <div className="flex h-full items-center justify-center bg-neutral-50">
-              <Image
-                src={`/images/noActivities.svg`}
-                width={377 - 150}
-                height={250 - 150}
-                alt={"No activities"}
-              ></Image>
-            </div>
-          </div> */}
           </div>
         </div>
       </div>
