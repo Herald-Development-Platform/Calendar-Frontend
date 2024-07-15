@@ -292,7 +292,7 @@ export default function ManageDepartment() {
             {profileData?.photo ? (
               <Image
                 alt={"profile pic"}
-                className="rounded-full max-h-[84px] max-w-[84px] min-h-[84px] min-w-[84px] max-h-[84px] max-w-[84px] min-h-[84px] min-w-[84px]"
+                className="rounded-full max-h-[84px] max-w-[84px] min-h-[84px] min-w-[84px]"
                 src={profileData?.photo}
                 width={84}
                 height={84}
