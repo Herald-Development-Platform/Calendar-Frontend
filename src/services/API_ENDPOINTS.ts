@@ -5,6 +5,8 @@ const Endpoints = {
   signup: "/signup",
   admin: "/admin/login",
   oauth: `${baseUrl}/googleAuth`,
+  changePassword: "/changePassword",
+  uploadToCloudinary: "https://api.cloudinary.com/v1_1/danupdbmd/image/upload",
   event: `/event`,
   location: `/location`,
   block: `/block`,
@@ -34,6 +36,7 @@ const Endpoints = {
     return `/event?q=${q}&departments=${departmentsSearchParam}&colors=${colorsSearchParam}&eventFrom=${eventFrom}&eventTo=${eventTo}`;
   },
   profile: `/profile/all`,
+  updateProfile: `/profile`,
   department: "/department",
   departmentById: (id: string) => `/department/${id}`,
 };

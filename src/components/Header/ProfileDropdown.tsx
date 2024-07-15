@@ -33,7 +33,9 @@ export default function ProfileDropdown({ userData }: { userData: User }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuLabel>My Profile</DropdownMenuLabel>
-        <DropdownMenuItem className="flex gap-2 text-sm font-semibold">
+        <DropdownMenuItem onClick={()=>{
+          router.push("/profile")
+        }} className=" cursor-pointer flex gap-2 text-sm font-semibold">
           <span className="text-xl">
             <CgProfile />
           </span>{" "}

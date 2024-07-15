@@ -47,7 +47,36 @@ export default function ContextProvider({
     queryFn: () => Axios.get("/notification"),
   });
 
-  const [userData, setUserData] = useState<User>();
+  // const [userData, setUserData] = useState<User>();
+
+  const {
+    data: userData,
+  } = useQuery({
+    queryKey: ["profile"],
+    queryFn: async () => {
+      try {
+        const response = await Axios.get(`/profile`);
+        const user = response.data.data;
+        if (user) {
+          if (
+            user.syncWithGoogle &&
+            user.department &&
+            user.department.length > 0
+          ) {
+            syncWithGoogle();
+          }
+          const token = await generateNewToken();
+          if (token) {
+            setCookie("token", token, 5);
+          }
+        }
+        return user;
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        return {};
+      }
+    },
+  });
 
   const generateNewToken = async () => {
     try {
@@ -73,28 +102,32 @@ export default function ContextProvider({
     }
   };
 
-  const fetchUserData = async () => {
-    try {
-      const response = await Axios.get(`/profile`);
-      const user = response.data.data;
-      if (user) {
-        setUserData(user);
-        if (user.syncWithGoogle && user.department && user.department.length > 0) {
-          syncWithGoogle();
-        }
-        const token = await generateNewToken();
-        if (token) {
-          setCookie("token", token, 5);
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-    }
-  };
+  // const fetchUserData = async () => {
+  //   try {
+  //     const response = await Axios.get(`/profile`);
+  //     const user = response.data.data;
+  //     if (user) {
+  //       setUserData(user);
+  //       if (
+  //         user.syncWithGoogle &&
+  //         user.department &&
+  //         user.department.length > 0
+  //       ) {
+  //         syncWithGoogle();
+  //       }
+  //       const token = await generateNewToken();
+  //       if (token) {
+  //         setCookie("token", token, 5);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching user data:", error);
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchUserData();
-  }, []);
+  // useEffect(() => {
+  //   fetchUserData();
+  // }, []);
 
   const [selectedDate, setSelectedDate] = useState<SelectedDate | undefined>({
     start: new Date(),
