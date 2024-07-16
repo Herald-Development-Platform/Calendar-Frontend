@@ -103,6 +103,7 @@ export default function EditEventModal({
             notes: "",
             involvedUsers: [],
             recurrenceEnd: null,
+            notifyUpdate: false,
           });
       },
       onError: (err: any) => {
@@ -407,6 +408,27 @@ export default function EditEventModal({
                   value={newEvent.notes}
                   onChange={handleValueChange}
                 />
+              </div>
+
+              <div className="flex gap-[14px]">
+                Notify
+                <label
+                  className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"
+                  htmlFor={eventKey}
+                  key={i}
+                >
+                  <input
+                    checked={
+                      RecurringEventTypes[eventKey] === newEvent.recurringType
+                    }
+                    id={eventKey}
+                    type="checkbox"
+                    name={"recurringType"}
+                    value={RecurringEventTypes[eventKey]}
+                    onClick={handleValueChange}
+                  />
+                  <span>{makePascalCase(eventKey)}</span>
+                </label>
               </div>
             </div>
 

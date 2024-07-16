@@ -29,7 +29,11 @@ export default function Page() {
     eventFrom: "",
   });
   const [filteredEvents, setFilteredEvents] = useState<eventType[]>();
+  const filteredEventsRef = useRef<HTMLDivElement>(null);
 
+  const widthOfEventDetail = filteredEventsRef.current
+    ? filteredEventsRef.current?.offsetWidth / 1.3
+    : null;
   const {
     data: eventsData,
     refetch,
@@ -200,7 +204,10 @@ export default function Page() {
       />
 
       <div className="relative flex h-full w-full flex-grow flex-col">
-        <div className="flex h-full w-1/2 flex-col gap-2 pb-20">
+        <div
+          ref={filteredEventsRef}
+          className="flex h-full w-1/2 flex-col gap-2 pb-20"
+        >
           <p className="text-base text-neutral-500">Recent Searches</p>
           <div className="green-scrollbar flex flex-grow flex-col overflow-hidden overflow-y-auto">
             {Boolean(filteredEvents) &&
@@ -243,7 +250,7 @@ export default function Page() {
           selectedEvent={selectedEvent}
           setSelectedEvent={setSelectedEvent}
           updateEvent={updateEvent}
-          width={null}
+          width={widthOfEventDetail}
           handleDelete={handleDelete}
         ></EventDetails>
       </div>

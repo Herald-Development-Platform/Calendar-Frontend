@@ -13,6 +13,7 @@ interface eventType {
   recurringType: string;
   involvedUsers: string[];
   recurrenceEnd: Date | null;
+  notifyUpdate?: boolean;
 }
 interface SelectedDate {
   start?: Date;

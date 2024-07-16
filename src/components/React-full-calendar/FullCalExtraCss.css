@@ -180,3 +180,8 @@
     left:0;
     z-index: 20;
 }
+
+.fc-scroller::-webkit-scrollbar{
+    display: none; 
+    scrollbar-width: none;
+}

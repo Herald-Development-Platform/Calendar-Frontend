@@ -312,7 +312,7 @@ export default function EventDetails({
               </div>
               {selectedEvent && <EventCard event={selectedEvent} />}
             </div>
-            <div className="flex w-4/12 items-center justify-between">
+            <div className="flex w-5/12 items-center justify-between">
               <p>Priority</p>
               <Select
                 defaultValue={selectedEvent?.color}
