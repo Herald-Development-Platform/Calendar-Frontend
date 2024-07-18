@@ -73,6 +73,10 @@
     height: 100%
 }
 
+.fc-daygrid-day-top{
+    align-items: center;
+}
+
 .customStylesDayCells:hover{
     background-color: #f5f5f5;
 }
@@ -184,4 +188,12 @@
 .fc-scroller::-webkit-scrollbar{
     display: none; 
     scrollbar-width: none;
+}
+
+.fc-custom-semester-dot{
+    height: 10px; 
+    width: 10px;
+    border-radius: 999px;
+    margin-right: 3px;
+    z-index: 4;
 }

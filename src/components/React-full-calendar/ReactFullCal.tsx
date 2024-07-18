@@ -8,6 +8,7 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import Calendar, {
   DateSelectArg,
   DateUnselectArg,
+  DayCellMountArg,
   EventHoveringArg,
   EventMountArg,
   EventSourceInput,
@@ -20,7 +21,8 @@ import { getCookie, setCookie } from "@/hooks/CookieHooks";
 import Endpoints from "@/services/API_ENDPOINTS";
 import { useGetEvents } from "@/services/api/eventsApi";
 import { parse, format } from "date-fns";
-import { generateNewToken } from "@/lib/utils";
+import { delay, generateNewToken } from "@/lib/utils";
+import { useGetSemester } from "@/services/api/semester";
 
 const allPlugins = [
   dayGridPlugin,
@@ -37,7 +39,7 @@ export default function ReactFullCal() {
   const calWrapper = useRef<HTMLDivElement>(null);
   const dayFrameRefs = useRef<HTMLDivElement[]>([]);
 
-  const monthValue = calendarRef?.current?.getApi().getDate().getMonth();
+  const monthValue = new Date(selectedDate.start).getMonth();
 
   const queryClient = useQueryClient();
   const { mutate: updateHighLightedEvents } = useMutation({
@@ -62,6 +64,8 @@ export default function ReactFullCal() {
     },
   });
 
+  const { data: semesterData } = useGetSemester();
+
   const handleSelect = ({ start, end, startStr, endStr }: DateSelectArg) => {
     setSelectedDate({ start, end, startStr, endStr });
     // console.log("eventselect", { start, end, startStr, endStr });
@@ -70,7 +74,6 @@ export default function ReactFullCal() {
 
   const handleUnselect = (arg: DateUnselectArg) => {
     timeout.current = setTimeout(function () {
-      console.log("arg", arg);
       setSelectedDate({
         start: new Date(),
         end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
@@ -91,11 +94,11 @@ export default function ReactFullCal() {
 
     if (!Array.isArray(dayFrameEls)) return;
 
-    dayFrameEls.map((dayFrameEl: HTMLDivElement) => {
-      // console.log("dayFrameEl", dayFrameEl);
-      const topEl = dayFrameEl.querySelector(".fc-daygrid-day-number");
-      const ariaLabelValue = topEl?.getAttribute("aria-label");
+    dayFrameEls.forEach((dayFrameEl: HTMLDivElement) => {
+      const dayGridNumber = dayFrameEl.querySelector(".fc-daygrid-day-number");
+      const ariaLabelValue = dayGridNumber?.getAttribute("aria-label");
 
+      // addSemesterView(dayFrameEl, semesterData);
       if (!ariaLabelValue) return;
 
       const parsedDate = parse(ariaLabelValue, "MMMM d, yyyy", new Date());
@@ -105,9 +108,11 @@ export default function ReactFullCal() {
       const isHighLight = userData?.importantDates.includes(
         new Date(isoDate).toISOString(),
       );
+
       if (isHighLight) dayFrameEl.style.backgroundColor = "#fffdc3";
       else dayFrameEl.style.backgroundColor = "#ffffff";
-      setHeightOfDayFrame(dayFrameEl);
+
+      // setHeightOfDayFrame(dayFrameEl);
       const contextMenuListener = (e: any) => {
         e.preventDefault();
 
@@ -234,6 +239,7 @@ export default function ReactFullCal() {
   };
   // console.log("calendarRef", calendarRef?.current?.elRef.current?.offsetHeight);
   // console.log("calendarRef", calWrapper.current?.offsetHeight);
+
   const setHeightOfDayFrame = (node: HTMLDivElement) => {
     const dateNumberHeight = // @ts-ignore
       node.querySelector(".fc-daygrid-day-top")?.offsetHeight;
@@ -242,6 +248,74 @@ export default function ReactFullCal() {
 
     node.style.minHeight = `${dateNumberHeight + eventsTotalHeight}px`;
   };
+
+  useEffect(() => {
+    dayFrameRefs.current = calendarRef.current.elRef.current.querySelectorAll(
+      ".fc-daygrid-day-frame",
+    );
+    const dayFrameEls = Array.from(dayFrameRefs.current);
+
+    dayFrameEls.forEach((dayFrameEl, elIndex: number) => {
+      const dayGridTopEl = dayFrameEl.querySelector(".fc-daygrid-day-top");
+      const semesterDotExists = Boolean(
+        dayFrameEl.querySelector(".fc-custom-semester-dot"),
+      );
+      // @ts-ignore
+      const dayFrameDate = dayFrameEl.parentElement.getAttribute("data-date");
+
+      if (
+        !semesterData ||
+        !dayFrameDate ||
+        !Array.isArray(semesterData) ||
+        semesterDotExists
+      )
+        return;
+
+      // console.log(
+      //   "dayFrameDate end",
+      //   new Date(dayFrameDate),
+      //   new Date("2024-07-28T08:15:48.988Z"),
+      // );
+
+      semesterData?.forEach((semester: SemesterType) => {
+        // console.log(
+        //   "  new Date(dayFrameDate) > new Date(semester.end)",
+        //   new Date(dayFrameDate).getTime(),
+        //   new Date(semester.end).getTime(),
+        // );
+        if (
+          new Date(dayFrameDate) < new Date(semester.start) ||
+          new Date(dayFrameDate) > new Date(semester.end)
+        )
+          return;
+
+        const semesterDot = document.createElement("div");
+        semesterDot.classList.add("fc-custom-semester-dot");
+        semesterDot.setAttribute("data-course", semester.course);
+        semesterDot.setAttribute("data-semester", semester.semester);
+        semesterDot.style.backgroundColor = semester.color;
+
+        dayGridTopEl?.appendChild(semesterDot);
+      });
+    });
+    return () => {
+      if (!calendarRef.current) return;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      let allDotElements = calendarRef.current.elRef.current.querySelectorAll(
+        ".fc-custom-semester-dot",
+      );
+      allDotElements = Array.from(allDotElements);
+      console.log("allDotElements", allDotElements);
+
+      Array.isArray(allDotElements) &&
+        allDotElements?.forEach((dotEl: any) => dotEl.remove());
+    };
+  }, [calendarRef, semesterData, monthValue]);
+
+  // useEffect(() => {
+  //   console.log("month", monthValue);
+  //   return () => console.log("unmonth", monthValue);
+  // }, [monthValue]);
   return (
     <>
       <div ref={calWrapper} className="h-full w-auto ">
@@ -252,6 +326,12 @@ export default function ReactFullCal() {
           events={events as EventSourceInput}
           eventMouseEnter={handleMouseEnter}
           eventMouseLeave={handleMouseLeave}
+          dayCellDidMount={(cellObjRef: DayCellMountArg) => {
+            const dayGridCellEl = cellObjRef.el.querySelector(
+              "div",
+            ) as HTMLDivElement;
+            addSemesterDots(dayGridCellEl, semesterData);
+          }}
           eventDidMount={handleEventDidMount}
           // dateClick={(info) => {
           //   console.log("info", info);
@@ -264,12 +344,38 @@ export default function ReactFullCal() {
           dayHeaderClassNames={"customStylesDayHeader"}
           dayCellClassNames={"customStylesDayCells"}
           eventMaxStack={2}
-          dayMaxEvents={4}
+          dayMaxEvents={2}
         />
       </div>
     </>
   );
 }
+
+function addSemesterDots(
+  dayGridEl: HTMLDivElement,
+  semesterData: SemesterType[] | undefined,
+) {
+  const semsterDot = dayGridEl.querySelector(".fc-custom-semester-dot");
+
+  if (!semesterData || !Array.isArray(semesterData) || semsterDot) return;
+
+  const dayGridTopEl = dayGridEl.querySelector(".fc-daygrid-day-top");
+  semesterData?.forEach((semester: SemesterType) => {
+    const semesterDot = document.createElement("div");
+    semesterDot.classList.add("fc-custom-semester-dot");
+    semesterDot.setAttribute("data-course", semester.course);
+    semesterDot.setAttribute("data-semester", semester.semester);
+    semesterDot.style.backgroundColor = semester.color;
+
+    dayGridTopEl?.appendChild(semesterDot);
+  });
+
+  // const semesterWrapper = document.createElement("div");
+
+  // semesterWrapper.classList.add("");
+  // dayGridEl.appendChild(semesterWrapper);
+}
+
 // eventDragStart={(e) => {
 //   console.log("eventDragStart", e);
 // }}

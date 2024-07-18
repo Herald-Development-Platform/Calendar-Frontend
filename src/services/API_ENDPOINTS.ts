@@ -7,6 +7,7 @@ const Endpoints = {
   oauth: `${baseUrl}/googleAuth`,
   event: `/event`,
   location: `/location`,
+  semester: `/semester`,
   block: `/block`,
   eventById: (id: string) => `/event/${id}`,
   updateUser: (payload: any) => `/user/${payload.id}`,

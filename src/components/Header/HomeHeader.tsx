@@ -126,7 +126,6 @@ export function HomeHeader() {
   };
 
   useHandleListViewToggle(listView, calendarApi);
-  console.log("toogle", toggleSidebar);
 
   return (
     <>

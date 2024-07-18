@@ -19,7 +19,6 @@ export default function Locations({
 }) {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [filterQuery, setFilterQuery] = useState("");
-  console.log("filterquery", filterQuery);
   const { data: locations, isLoading } = useGetLocation();
   useEffect(() => setFilteredLocations(locations), [isLoading]);
 

@@ -28,6 +28,7 @@ export function findListView(calView: string, calendarApi: CalendarApi) {
       return calendarApi.changeView(ListViews.listViewDay);
   }
 }
+
 export function findNormalView(calView: string, calendarApi: CalendarApi) {
   switch (calView) {
     case ListViews.listViewYear:
@@ -42,6 +43,7 @@ export function findNormalView(calView: string, calendarApi: CalendarApi) {
       return calendarApi.changeView(CalendarViews.timeGrid.day);
   }
 }
+
 export function checkListView(currentView: string | undefined): boolean {
   if (
     currentView === ListViews.listViewDay ||
@@ -76,3 +78,7 @@ export const generateNewToken = async () => {
     return null;
   }
 };
+
+export function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

@@ -38,7 +38,6 @@ const DepartmentFilter = forwardRef(
       });
 
     const handleFilterEvents = () => {
-      console.log("selDepartments", selDepartments);
       if (!Array.isArray(eventsData)) return;
       if (selDepartments.length === 0) {
         setEvents(eventsData);
@@ -53,14 +52,12 @@ const DepartmentFilter = forwardRef(
 
           return departmentExist;
         });
-        console.log("filteredEvents", filteredEvents);
+
         setEvents(filteredEvents);
       }
     };
 
     useEffect(() => handleFilterEvents(), [eventsData, selDepartments]);
-
-    console.log("eventsData", eventsData);
 
     const handleDepartments = (e: any) => {
       const { name, value } = e.currentTarget;

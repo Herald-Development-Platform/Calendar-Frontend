@@ -15,6 +15,13 @@ interface eventType {
   recurrenceEnd: Date | null;
   notifyUpdate?: boolean;
 }
+interface SemesterType {
+  semester: string;
+  course: string;
+  start: Date;
+  end: Date;
+  color: string;
+}
 interface SelectedDate {
   start?: Date;
   end?: Date;
