@@ -1,3 +1,3 @@
 export { HomeHeader } from "./HomeHeader";
 export { SearchHeader } from "./SearchHeader";
-export { DepartmentHeader } from "./DepartmentHeader";
+export { GeneralHeader } from "./GeneralHeader";

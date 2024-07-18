@@ -58,6 +58,7 @@ export default function EditEventModal({
     recurringType: RecurringEventTypes.ONCE,
     involvedUsers: [],
     recurrenceEnd: null,
+    notifyUpdate: false,
   });
   const queryClient = useQueryClient();
   useEffect(() => {
@@ -103,6 +104,7 @@ export default function EditEventModal({
             notes: "",
             involvedUsers: [],
             recurrenceEnd: null,
+            notifyUpdate: false,
           });
       },
       onError: (err: any) => {
@@ -165,7 +167,7 @@ export default function EditEventModal({
         setNewEvent((prev) => ({ ...prev, [name]: value }));
     }
   };
-
+  console.log("neweent", newEvent);
   return (
     <>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -398,8 +400,8 @@ export default function EditEventModal({
               ></InviteMembers>
 
               {/* Notes section  */}
-              <div className=" flex flex-col items-start">
-                <span>Notes</span>
+              <div className=" flex flex-col items-start text-sm">
+                <span className="">Notes</span>
                 <input
                   type="text"
                   className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
@@ -408,6 +410,26 @@ export default function EditEventModal({
                   onChange={handleValueChange}
                 />
               </div>
+
+              {/* <div className="flex items-center gap-2"> */}
+              <label
+                className="flex cursor-pointer items-center gap-1 text-sm font-medium text-neutral-500"
+                htmlFor={"notify"}
+              >
+                <input
+                  checked={newEvent?.notifyUpdate || false}
+                  id={"notify"}
+                  type="checkbox"
+                  name={"notifyUpdate"}
+                  onChange={(e) =>
+                    handleValueChange({
+                      target: { name: e.target.name, value: e.target.checked },
+                    })
+                  }
+                />
+                Notify
+              </label>
+              {/* </div> */}
             </div>
 
             {/* create btn  */}

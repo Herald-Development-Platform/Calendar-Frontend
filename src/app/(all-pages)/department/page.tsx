@@ -85,6 +85,7 @@ export default function ManageDepartment() {
       description: "",
     },
   });
+
   const onDepartmentSubmit = async (data: any) => {
     const response = await postDepartment(data);
     if (response.status >= 400 && response.status < 500) {
@@ -128,7 +129,8 @@ export default function ManageDepartment() {
         )}
       </div>
       <div className="flex w-full flex-col gap-5">
-        {departments && departments.length > 0 &&
+        {departments &&
+          departments.length > 0 &&
           departments.map((department: Department) => {
             return (
               <>
@@ -154,9 +156,10 @@ export default function ManageDepartment() {
                         {departmentEventsCount
                           ? departmentEventsCount[department._id]
                           : 0}{" "}
-                        Events{" "}•{" "}</span>
+                        Events •{" "}
+                      </span>
                       <span className=" text-[11px] font-normal text-neutral-500">
-                        {department.membersCount}{" "}members
+                        {department.membersCount} members
                       </span>
                     </p>
                   </div>

@@ -38,7 +38,6 @@ const DepartmentFilter = forwardRef(
       });
 
     const handleFilterEvents = () => {
-      console.log("selDepartments", selDepartments);
       if (!Array.isArray(eventsData)) return;
       if (selDepartments.length === 0) {
         setEvents(eventsData);
@@ -53,14 +52,12 @@ const DepartmentFilter = forwardRef(
 
           return departmentExist;
         });
-        console.log("filteredEvents", filteredEvents);
+
         setEvents(filteredEvents);
       }
     };
 
     useEffect(() => handleFilterEvents(), [eventsData, selDepartments]);
-
-    console.log("eventsData", eventsData);
 
     const handleDepartments = (e: any) => {
       const { name, value } = e.currentTarget;
@@ -72,8 +69,8 @@ const DepartmentFilter = forwardRef(
     };
 
     return (
-      <div ref={ref} className="mb-4 ml-2 flex gap-2 ">
-        {/* {Array.isArray(departments) &&
+      <div ref={ref} className="mb-4 ml-2  flex gap-2 ">
+        {Array.isArray(departments) &&
           departments?.map((department: any) => (
             <DepartmentButton
               key={department._id}
@@ -82,7 +79,7 @@ const DepartmentFilter = forwardRef(
               value={department.code}
               selected={selDepartments?.includes(department._id)}
             />
-          ))} */}
+          ))}
       </div>
     );
   },

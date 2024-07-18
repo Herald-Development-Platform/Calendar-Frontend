@@ -20,6 +20,9 @@ import {
 } from "@/components/ui/dialog";
 import { BiPencil } from "react-icons/bi";
 import { Context } from "@/app/clientWrappers/ContextProvider";
+// import Headers form "@/components/ui/dialog"
+import * as Headers from "@/components/Header";
+
 import { profile } from "console";
 import { ROLES } from "@/constants/role";
 import { PERMISSIONS } from "@/constants/permissions";
@@ -85,7 +88,79 @@ export default function LocationPage() {
   };
 
   return (
-    <div className="ml-10 mt-[110px] flex max-w-[40vw] flex-col gap-6">
+    <>
+      <Headers.GeneralHeader />
+      <div className="ml-10 mt-[50px] flex min-w-[470px] max-w-[40vw] flex-col gap-6">
+        <div className="flex flex-row items-center justify-start gap-2">
+          <p className="text-[28px] font-semibold text-neutral-700">
+            Locations
+          </p>
+          {/* {userData?.permissions.includes(PERMISSIONS.CREATE_DEPARTMENT) && ( */}
+          <button
+            onClick={() => {
+              setShowAddLocation(true);
+            }}
+            className="ml-7 flex items-center gap-2 rounded-[4px] bg-primary-600 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary-700"
+          >
+            <FaPlus />
+            <span>Add Location</span>
+          </button>
+        </div>
+        <div className="flex w-full flex-col gap-5">
+          <div className="flex flex-col items-start justify-start gap-5">
+            {locations?.data?.length === 0 ? (
+              <div className="w-full text-center">No locations added.</div>
+            ) : (
+              locations?.data?.map(
+                (location: {
+                  name: string;
+                  block: string;
+                  description: string;
+                  _id: string;
+                }) => {
+                  return (
+                    <>
+                      <div className="flex w-full flex-row items-center gap-2 rounded-[4px] bg-neutral-100 px-3 py-1.5">
+                        <span className="text-2xl text-neutral-600">
+                          <GrLocationPin />
+                        </span>
+                        <div className="flex flex-col items-start justify-center gap-1">
+                          <span className="text-[16px] font-semibold text-neutral-700">
+                            {location.name}
+                          </span>
+                          {location?.block && (
+                            <span className="text-[13px] font-normal text-neutral-400">
+                              {location.block}
+                            </span>
+                          )}
+                          {location?.description && (
+                            <span className="text-[13px] font-normal text-neutral-400">
+                              {location.description}
+                            </span>
+                          )}
+                        </div>
+                        <span
+                          className="ml-auto cursor-pointer text-danger-400"
+                          onClick={async () => {
+                            await Axios.delete(
+                              `${Endpoints.location}/${location._id}`,
+                            );
+                            queryClient.invalidateQueries({
+                              queryKey: ["locations"],
+                            });
+                          }}
+                        >
+                          <RiDeleteBin6Line />
+                        </span>
+                      </div>
+                    </>
+                  );
+                },
+              )
+            )}
+          </div>
+        </div>
+      </div>
       <Dialog open={showAddLocation} onOpenChange={setShowAddLocation}>
         <DialogContent>
           <DialogHeader>

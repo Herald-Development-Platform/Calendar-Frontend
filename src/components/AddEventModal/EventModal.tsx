@@ -68,8 +68,6 @@ export default function EventModal({
   });
   const eventFormRef = useRef<HTMLDivElement>(null);
 
-  console.log("eventmodal newEvent", newEvent);
-
   useEffect(() => {
     if (!defaultData) return;
     const modifiedData = {
@@ -88,12 +86,10 @@ export default function EventModal({
   const { userData } = useContext(Context);
 
   const { data: departmentsRes } = useGetDepartments();
-  console.log("departmentsRes", departmentsRes);
   const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
 
   const queryClient = useQueryClient();
   function handleAddEvent() {
-    console.log("handleAddEvent ");
     if (!validateAndFocus()) return;
     postNewEvent(newEvent, {
       onSuccess: () => {

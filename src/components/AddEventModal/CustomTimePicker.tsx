@@ -16,7 +16,6 @@ export default function CustomTimePicker({
 }) {
   const [showTimePicker, setShowTimePicker] = useState<boolean>(false);
 
-  console.log("showTimePicker", showTimePicker);
   return (
     <>
       <div className="relative flex-grow">

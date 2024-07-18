@@ -18,15 +18,7 @@ export default function page() {
 
   const depFilterRef = useRef<HTMLDivElement>(null);
   const { calendarRef } = useContext(Context);
-  console.log(
-    "depFilterRef.current?.offsetHeight",
-    calendarRef?.current?.elRef?.current?.offsetHeight,
-  );
 
-  console.log(
-    "getComputedStyle",
-    depFilterRef.current && getComputedStyle(depFilterRef.current),
-  );
   const calendarHeight = calendarRef?.current?.elRef?.current?.offsetHeight
     ? calendarRef?.current?.elRef?.current?.offsetHeight
     : 0;
@@ -40,17 +32,13 @@ export default function page() {
       )
     : 0;
 
-  // console.log(
-  //   "total height",
-  //   UpEventsMarginY + UpEventsHeight + calendarHeight,
-  // );
   return (
     <div className="flex h-full w-full flex-col gap-8">
       <div className="w-full">
         <Headers.HomeHeader />
       </div>
 
-      <div className="flex h-full w-full justify-between overflow-hidden overflow-y-auto">
+      <div className="flex h-full w-full justify-between overflow-hidden overflow-y-auto pl-8">
         <div className="flex h-fit w-full flex-col">
           <DepartmentFilter ref={depFilterRef} />
           <ReactFullCalendar />
