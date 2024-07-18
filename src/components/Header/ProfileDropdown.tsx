@@ -31,26 +31,22 @@ export default function ProfileDropdown({ userData }: { userData: User }) {
         </div>
         {userData?.username} <IoMdArrowDropdown />
       </DropdownMenuTrigger>
-      <DropdownMenuContent>
-        <DropdownMenuLabel>My Profile</DropdownMenuLabel>
-        <DropdownMenuItem onClick={()=>{
-          router.push("/profile")
-        }} className=" cursor-pointer flex gap-2 text-sm font-semibold">
-          <span className="text-xl">
-            <CgProfile />
-          </span>{" "}
-          My Profile
-        </DropdownMenuItem>
-        <DropdownMenuItem className="flex gap-2 text-sm font-semibold">
+      <DropdownMenuContent align="end">
+        <DropdownMenuItem
+          onClick={() => {
+            router.push("/profile");
+          }}
+          className="flex cursor-pointer gap-2 text-sm font-semibold"
+        >
           <span className="text-xl">
             <MdOutlineSettings />
           </span>
-          My Settings
+          Profile and Settings
         </DropdownMenuItem>
 
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="flex gap-2 text-base font-semibold"
+          className="flex cursor-pointer gap-2 text-base font-semibold"
           onClick={() => {
             Cookies.remove("token");
             router.push("/login");

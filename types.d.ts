@@ -61,3 +61,12 @@ interface Location {
   description?: string;
   id?: string;
 }
+
+interface Semester {
+  _id?: string;
+  semester: string;
+  course: string;
+  start: Date;
+  end: Date;
+  color: string;
+}

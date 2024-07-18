@@ -18,6 +18,8 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { BiPencil } from "react-icons/bi";
+import { PiClockUserBold } from "react-icons/pi";
+
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import { profile } from "console";
 import { ROLES } from "@/constants/role";
@@ -33,6 +35,8 @@ import {
 } from "@/components/ui/popover";
 import { TbCloudUpload } from "react-icons/tb";
 import axios from "axios";
+import Link from "next/link";
+import { GrLocationPin } from "react-icons/gr";
 
 export default function ManageDepartment() {
   const router = useRouter();
@@ -100,14 +104,17 @@ export default function ManageDepartment() {
     const formData = new FormData();
     formData.append("file", uploadedImage as File);
     formData.append("upload_preset", "calendar");
-    const cloudinaryResponse = await axios.post(Endpoints.uploadToCloudinary,formData);
+    const cloudinaryResponse = await axios.post(
+      Endpoints.uploadToCloudinary,
+      formData,
+    );
     const photoUrl = cloudinaryResponse.data.secure_url;
 
     updateProfileMutation.mutate({ photo: photoUrl });
   };
 
   return (
-    <div className="ml-10 mt-[110px] flex max-w-[40vw] flex-col gap-6 pb-3">
+    <div className="mb-32 ml-10 mt-[110px] flex max-w-[40vw] flex-col gap-6 pb-3">
       <Dialog
         open={updateProfileDialogOpen}
         onOpenChange={setUpdateProfileDialogOpen}
@@ -120,7 +127,7 @@ export default function ManageDepartment() {
             {uploadedImage ? (
               <Image
                 alt={"profile pic"}
-                className="rounded-full max-h-[84px] max-w-[84px] min-h-[84px] min-w-[84px]"
+                className="max-h-[84px] min-h-[84px] min-w-[84px] max-w-[84px] rounded-full"
                 src={URL.createObjectURL(uploadedImage)}
                 width={128}
                 height={128}
@@ -128,7 +135,7 @@ export default function ManageDepartment() {
             ) : profileData?.photo ? (
               <Image
                 alt={"profile pic"}
-                className="rounded-full max-h-[84px] max-w-[84px] min-h-[84px] min-w-[84px]"
+                className="max-h-[84px] min-h-[84px] min-w-[84px] max-w-[84px] rounded-full"
                 src={profileData?.photo}
                 width={128}
                 height={128}
@@ -292,11 +299,10 @@ export default function ManageDepartment() {
             {profileData?.photo ? (
               <Image
                 alt={"profile pic"}
-                className="rounded-full max-h-[84px] max-w-[84px] min-h-[84px] min-w-[84px]"
+                className="max-h-[84px] min-h-[84px] min-w-[84px] max-w-[84px] rounded-full"
                 src={profileData?.photo}
                 width={84}
                 height={84}
-                
               />
             ) : (
               <span className=" flex h-[84px] w-[84px] items-center justify-center rounded-full bg-neutral-300 text-3xl font-semibold text-neutral-50">
@@ -385,6 +391,28 @@ export default function ManageDepartment() {
                 Change Password
               </span>
             </div>
+            <Link
+              href={"/semesters"}
+              className="flex w-full flex-row items-center justify-start gap-4 rounded-md bg-neutral-100 px-3 py-1.5"
+            >
+              <div className=" flex h-11 w-11 items-center justify-center rounded-md bg-neutral-200 text-[20px] text-neutral-400">
+                <PiClockUserBold />
+              </div>
+              <span className="text-[16px] font-semibold text-neutral-900">
+                Semesters
+              </span>
+            </Link>
+            <Link
+              href={"/location"}
+              className="flex w-full flex-row items-center justify-start gap-4 rounded-md bg-neutral-100 px-3 py-1.5"
+            >
+              <div className=" flex h-11 w-11 items-center justify-center rounded-md bg-neutral-200 text-[20px] text-neutral-400">
+                <GrLocationPin />
+              </div>
+              <span className="text-[16px] font-semibold text-neutral-900">
+                Location
+              </span>
+            </Link>
             {profileData?.syncWithGoogle ? (
               <div className="flex w-full flex-row items-center justify-start gap-4 rounded-md bg-neutral-100 px-3 py-1.5">
                 <div className="flex h-11 w-11 items-center justify-center rounded-md bg-neutral-200 text-[20px] text-neutral-400">

@@ -1,20 +1,39 @@
 import React, { useState } from "react";
 import { Calendar } from "../ui/calendar";
-import { Input } from "../ui/input";
 import { format } from "date-fns";
 
 export default function DatePicker({
   value,
   handleValueChange,
+  align = "bottom",
   name,
 }: {
   value: Date | null;
   handleValueChange: (e: any) => void;
   name: string;
+  align?: string;
 }) {
   // console.log('date', new Date())
   // const [date, setDate] = useState<Date|null>(null);
   const [displayCal, setDisplayCal] = useState<boolean>(false);
+
+  let alignmentStyle = "";
+  switch (align) {
+    case "top":
+      alignmentStyle = "bottom-full ";
+      break;
+    case "bottom":
+      alignmentStyle = "top-full";
+      break;
+    case "left":
+      alignmentStyle = "right-full transform -translate-y-1/2";
+      break;
+    case "right":
+      alignmentStyle = "left-full transform -translate-y-1/2";
+      break;
+    default:
+      alignmentStyle = "bottom-full";
+  }
 
   return (
     <>
@@ -31,12 +50,12 @@ export default function DatePicker({
         <Calendar
           className={`${
             displayCal ? "block" : "hidden"
-          } absolute left-0 top-full z-20 w-fit rounded-md border bg-white`}
+          } absolute ${alignmentStyle} z-20 w-fit rounded-md border bg-white`}
           mode="single"
           selected={value || new Date()}
-          onSelect={(val) =>
-            handleValueChange({ target: { name, value: val } })
-          }
+          onSelect={(val) => {
+            handleValueChange({ target: { name, value: val } });
+          }}
         />
       </div>
       <div

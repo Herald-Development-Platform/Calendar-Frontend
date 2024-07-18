@@ -39,11 +39,6 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       navigation: "/importExport",
     },
     {
-      name: "Location",
-      icon: <GrLocationPin />,
-      navigation: "/location",
-    },
-    {
       name: "Summary",
       icon: <HiOutlineDocumentReport />,
       navigation: "/summary",

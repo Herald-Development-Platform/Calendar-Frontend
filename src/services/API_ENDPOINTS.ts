@@ -8,6 +8,7 @@ const Endpoints = {
   changePassword: "/changePassword",
   uploadToCloudinary: "https://api.cloudinary.com/v1_1/danupdbmd/image/upload",
   event: `/event`,
+  semester: `/semester`,
   location: `/location`,
   block: `/block`,
   eventById: (id: string) => `/event/${id}`,

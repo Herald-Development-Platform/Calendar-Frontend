@@ -156,6 +156,14 @@ export default function LocationPage() {
       </Dialog>
 
       <div className="flex flex-row items-center justify-start gap-2">
+        <span
+          onClick={() => {
+            router.back();
+          }}
+          className="cursor-pointer text-4xl font-bold text-neutral-600"
+        >
+          <IoMdArrowBack />
+        </span>
         <p className="text-[28px] font-semibold text-neutral-700">Locations</p>
         {/* {userData?.permissions.includes(PERMISSIONS.CREATE_DEPARTMENT) && ( */}
         <button
