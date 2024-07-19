@@ -305,6 +305,6 @@ export default function LocationPage() {
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -237,8 +237,11 @@ export default function ReactFullCal() {
     info.el.appendChild(tooltipWrapper);
     tooltipWrapper.classList.add("event-tooltip-transition");
   };
-  // console.log("calendarRef", calendarRef?.current?.elRef.current?.offsetHeight);
-  // console.log("calendarRef", calWrapper.current?.offsetHeight);
+
+  const handleDayCellMount = (cellObjRef: DayCellMountArg) => {
+    const dayGridCellEl = cellObjRef.el.querySelector("div") as HTMLDivElement;
+    addSemesterDots(dayGridCellEl, semesterData);
+  };
 
   const setHeightOfDayFrame = (node: HTMLDivElement) => {
     const dateNumberHeight = // @ts-ignore
@@ -271,18 +274,7 @@ export default function ReactFullCal() {
       )
         return;
 
-      // console.log(
-      //   "dayFrameDate end",
-      //   new Date(dayFrameDate),
-      //   new Date("2024-07-28T08:15:48.988Z"),
-      // );
-
       semesterData?.forEach((semester: SemesterType) => {
-        // console.log(
-        //   "  new Date(dayFrameDate) > new Date(semester.end)",
-        //   new Date(dayFrameDate).getTime(),
-        //   new Date(semester.end).getTime(),
-        // );
         if (
           new Date(dayFrameDate) < new Date(semester.start) ||
           new Date(dayFrameDate) > new Date(semester.end)
@@ -294,10 +286,11 @@ export default function ReactFullCal() {
         semesterDot.setAttribute("data-course", semester.course);
         semesterDot.setAttribute("data-semester", semester.semester);
         semesterDot.style.backgroundColor = semester.color;
-
+        semesterDot.addEventListener("hover", (e) => {});
         dayGridTopEl?.appendChild(semesterDot);
       });
     });
+
     return () => {
       if (!calendarRef.current) return;
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -312,10 +305,6 @@ export default function ReactFullCal() {
     };
   }, [calendarRef, semesterData, monthValue]);
 
-  // useEffect(() => {
-  //   console.log("month", monthValue);
-  //   return () => console.log("unmonth", monthValue);
-  // }, [monthValue]);
   return (
     <>
       <div ref={calWrapper} className="h-full w-auto ">
@@ -326,16 +315,7 @@ export default function ReactFullCal() {
           events={events as EventSourceInput}
           eventMouseEnter={handleMouseEnter}
           eventMouseLeave={handleMouseLeave}
-          dayCellDidMount={(cellObjRef: DayCellMountArg) => {
-            const dayGridCellEl = cellObjRef.el.querySelector(
-              "div",
-            ) as HTMLDivElement;
-            addSemesterDots(dayGridCellEl, semesterData);
-          }}
           eventDidMount={handleEventDidMount}
-          // dateClick={(info) => {
-          //   console.log("info", info);
-          // }}
           headerToolbar={false}
           selectable={true}
           select={handleSelect}
@@ -420,3 +400,7 @@ function addSemesterDots(
 //     }
 //   });
 // }, [userData?.importantDates]);
+// dayCellDidMount={handleDayCellMount}
+// dateClick={(info) => {
+//   console.log("info", info);
+// }}

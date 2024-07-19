@@ -10,7 +10,6 @@ const Endpoints = {
   event: `/event`,
   semester: `/semester`,
   location: `/location`,
-  semester: `/semester`,
   block: `/block`,
   eventById: (id: string) => `/event/${id}`,
   updateUser: (payload: any) => `/user/${payload.id}`,
