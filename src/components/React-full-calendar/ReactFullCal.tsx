@@ -186,6 +186,7 @@ export default function ReactFullCal() {
         element.removeEventListener(type, listener);
       });
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData?.importantDates, monthValue]);
 
   const handleEventDidMount = (info: EventMountArg) => {
@@ -286,7 +287,14 @@ export default function ReactFullCal() {
         semesterDot.setAttribute("data-course", semester.course);
         semesterDot.setAttribute("data-semester", semester.semester);
         semesterDot.style.backgroundColor = semester.color;
-        semesterDot.addEventListener("hover", (e) => {});
+
+        semesterDot.addEventListener("mouseenter", (e) => {
+          console.log(
+            "-------------------------------- hover --------------------------------",
+          );
+        });
+        console.log("semesterdot");
+
         dayGridTopEl?.appendChild(semesterDot);
       });
     });
@@ -304,9 +312,33 @@ export default function ReactFullCal() {
         allDotElements?.forEach((dotEl: any) => dotEl.remove());
     };
   }, [calendarRef, semesterData, monthValue]);
+  const tooltip = document.createElement("div");
+  tooltip.a;
+  const innerhtml = `
+    <div class="semester-tooltip-wrapper">
+      <div class="semester-tooltip-data">
+        <div class="semester-tooltip-dot"></div>
+        <span class="semester-tooltip-semTitle">Semester 1</span>
+      </div>
+      <span class="semester-tooltip-course">BIT</span>
+    </div>`;
+  tooltip.innerHTML = innerhtml;
 
+  const dotref = useRef<any>(null);
   return (
     <>
+      <div
+        ref={dotref}
+        className="semester-tooltip-dot"
+        onMouseEnter={(e) => {
+          console.log("hover", dotref.current);
+          dotref.current.appendChild(tooltip);
+        }}
+        onMouseLeave={(e) =>
+          dotref.current.querySelector(".semester-tooltip-wrapper").remove()
+        }
+      ></div>
+
       <div ref={calWrapper} className="h-full w-auto ">
         <FullCalendar
           ref={calendarRef}
