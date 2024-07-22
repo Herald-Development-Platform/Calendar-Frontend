@@ -287,7 +287,26 @@ export default function ReactFullCal() {
         semesterDot.setAttribute("data-course", semester.course);
         semesterDot.setAttribute("data-semester", semester.semester);
         semesterDot.style.backgroundColor = semester.color;
+        semesterDot.innerHTML = `
+        <div class="semester-tooltip-wrapper">
+          <div class="semester-tooltip-data">
+            <div class="semester-tooltip-dot" style="background-color: ${semester.color}"></div>
+            <span class="semester-tooltip-semTitle">${semester.semester}</span>
+          </div>
+          <span class="semester-tooltip-course">${semester.course}</span>
+        </div>
+     `;
 
+        const tooltipDot = semesterDot.querySelector(".semester-tooltip-dot");
+        console.log("tooltipDot", tooltipDot);
+        // @ts-ignore
+        if (tooltipDot.style.backgroundColor)
+          // @ts-ignore
+          tooltipDot.style.backgroundColor = `${semester.color}`;
+
+        // semesterDot.querySelector(
+        //   ".semester-tooltip-dot",
+        // ).style.backgroundColor = `${semester.color}`;
         semesterDot.addEventListener("mouseenter", (e) => {
           console.log(
             "-------------------------------- hover --------------------------------",
@@ -312,32 +331,29 @@ export default function ReactFullCal() {
         allDotElements?.forEach((dotEl: any) => dotEl.remove());
     };
   }, [calendarRef, semesterData, monthValue]);
-  const tooltip = document.createElement("div");
-  tooltip.a;
-  const innerhtml = `
-    <div class="semester-tooltip-wrapper">
-      <div class="semester-tooltip-data">
-        <div class="semester-tooltip-dot"></div>
-        <span class="semester-tooltip-semTitle">Semester 1</span>
-      </div>
-      <span class="semester-tooltip-course">BIT</span>
-    </div>`;
-  tooltip.innerHTML = innerhtml;
 
-  const dotref = useRef<any>(null);
+  // const tooltip = document.createElement("div");
+  // tooltip.classList.add("semester-tooltip-wrapper");
+  // const innerhtml = `
+  //     <div class="semester-tooltip-data">
+  //       <div class="semester-tooltip-dot"></div>
+  //       <span class="semester-tooltip-semTitle">Semester 1</span>
+  //     </div>
+  //     <span class="semester-tooltip-course">BIT</span>
+  //  `;
+  // tooltip.innerHTML = innerhtml;
+
   return (
     <>
-      <div
-        ref={dotref}
-        className="semester-tooltip-dot"
-        onMouseEnter={(e) => {
-          console.log("hover", dotref.current);
-          dotref.current.appendChild(tooltip);
-        }}
-        onMouseLeave={(e) =>
-          dotref.current.querySelector(".semester-tooltip-wrapper").remove()
-        }
-      ></div>
+      {/* <div className="semester-tooltip-dot">
+        <div className="semester-tooltip-wrapper">
+          <div className="semester-tooltip-data">
+            <div className="semester-tooltip-dot"></div>
+            <span className="semester-tooltip-semTitle">Semester 1</span>
+          </div>
+          <span className="semester-tooltip-course">BIT</span>
+        </div>
+      </div> */}
 
       <div ref={calWrapper} className="h-full w-auto ">
         <FullCalendar
@@ -351,6 +367,26 @@ export default function ReactFullCal() {
           headerToolbar={false}
           selectable={true}
           select={handleSelect}
+          viewDidMount={(info: any) => {
+            const scrollerEl = info.el.querySelector(
+              ".fc-scroller-liquid-absolute",
+            );
+            scrollerEl.style.overflow = "visible";
+            console.log("viewdidmount", scrollerEl);
+          }}
+          windowResize={async (arg) => {
+            // console.log(
+            //   "resize",
+            //   calendarRef.current.elRef.current.querySelector(
+            //     ".fc-scroller-liquid-absolute",
+            //   ),
+            // );
+            await delay(200);
+            const scrollerEl = calendarRef.current.elRef.current.querySelector(
+              ".fc-scroller-liquid-absolute",
+            );
+            scrollerEl.style.overflow = "visible";
+          }}
           unselect={handleUnselect}
           displayEventTime={false}
           dayHeaderClassNames={"customStylesDayHeader"}
