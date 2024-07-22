@@ -208,7 +208,7 @@ export default function Page() {
           ref={filteredEventsRef}
           className="flex h-full w-1/2 flex-col gap-2 pb-20"
         >
-          <p className="text-base text-neutral-500">Recent Searches</p>
+          <p className="text-base text-neutral-500">All Events</p>
           <div className="green-scrollbar flex flex-grow flex-col overflow-hidden overflow-y-auto">
             {Boolean(filteredEvents) &&
               filteredEvents?.map((event: eventType, i: number) => (
