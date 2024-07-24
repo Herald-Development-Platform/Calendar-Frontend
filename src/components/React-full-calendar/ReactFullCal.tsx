@@ -403,7 +403,8 @@ export default function ReactFullCal({} // eventDetailWidth,
           headerToolbar={false}
           selectable={true}
           select={handleSelect}
-          viewDidMount={(info: any) => {
+          viewDidMount={async (info: any) => {
+            await delay(200);
             if (calendarRef?.current?.getApi()?.view?.type !== "dayGridMonth")
               return;
             const scrollerEl = info.el.querySelector(
