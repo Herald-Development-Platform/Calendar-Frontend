@@ -361,7 +361,12 @@ export default function ReactFullCal({} // eventDetailWidth,
     monthValue,
     currentView,
   });
-
+  useApplySemesterDot({
+    calendarRef,
+    semesterData,
+    monthValue,
+    currentView,
+  });
   return (
     <>
       <div ref={calWrapper} className="h-full w-auto ">
