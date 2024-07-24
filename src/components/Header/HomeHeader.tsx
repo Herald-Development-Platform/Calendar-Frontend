@@ -12,6 +12,12 @@ import { MdOutlineSettings } from "react-icons/md";
 import { IoMdLogOut } from "react-icons/io";
 import { MdListAlt } from "react-icons/md";
 import { Toggle } from "@/components/ui/toggle";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 import {
   DropdownMenu,
@@ -186,7 +192,7 @@ export function HomeHeader() {
 
           {/* listview, month and addEventModal  */}
           <div className="flex max-h-8 w-fit items-center justify-between gap-3 overflow-hidden text-sm font-medium">
-            <button
+            {/* <button
               className={`${
                 listView ? "bg-primary-500 text-white" : "text-neutral-500"
               } max-w-32 h-full rounded-sm border border-neutral-300 px-3 text-2xl font-semibold transition duration-200 `}
@@ -195,7 +201,29 @@ export function HomeHeader() {
               }}
             >
               <MdListAlt />
-            </button>
+            </button> */}
+            <TooltipProvider>
+              <Tooltip delayDuration={250}>
+                <TooltipTrigger asChild>
+                  {/* <Button variant="outline">Hover</Button> */}
+                  <button
+                    className={`${
+                      listView
+                        ? "bg-primary-500 text-white"
+                        : "text-neutral-500"
+                    } max-w-32 h-full rounded-sm border border-neutral-300 px-3 text-2xl font-semibold transition duration-200 `}
+                    onClick={(e) => {
+                      setListView((prev) => !prev);
+                    }}
+                  >
+                    <MdListAlt />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>List View</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <Select
               onValueChange={(calView) => {
                 if (listView && calendarApi)

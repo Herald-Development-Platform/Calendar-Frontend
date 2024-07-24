@@ -48,6 +48,7 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
   return (
     <div
       ref={upcommingEventRef}
+      id="upcomming-events"
       className={`${
         selectedEvent ? "" : "overflow-y-auto"
       } hide-scrollbar relative flex h-auto w-1/3 flex-col gap-10 overflow-hidden px-6`}

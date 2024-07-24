@@ -17,6 +17,9 @@ export default function page() {
   });
 
   const depFilterRef = useRef<HTMLDivElement>(null);
+  const calLayoutRef = useRef<HTMLDivElement>(null);
+  const calContainerRef = useRef<HTMLDivElement>(null);
+
   const { calendarRef } = useContext(Context);
 
   const calendarHeight = calendarRef?.current?.elRef?.current?.offsetHeight
@@ -32,14 +35,22 @@ export default function page() {
       )
     : 0;
 
+  const calLayoutWidth = calLayoutRef.current?.offsetWidth || 0;
+  const calContainerWidth = calContainerRef.current?.offsetWidth || 0;
+  const eventDetailWidth = calLayoutWidth - calContainerWidth - 56;
+
+  console.log("eventDetailWidth", eventDetailWidth);
   return (
     <div className="flex h-full w-full flex-col gap-8">
       <div className="w-full">
         <Headers.HomeHeader />
       </div>
 
-      <div className="flex h-full w-full justify-between overflow-hidden overflow-y-auto pl-8">
-        <div className="flex h-fit w-full flex-col">
+      <div
+        ref={calLayoutRef}
+        className="relative flex h-full w-full justify-between overflow-hidden overflow-y-auto pl-8"
+      >
+        <div ref={calContainerRef} className="flex h-fit w-full flex-col">
           <DepartmentFilter ref={depFilterRef} />
           <ReactFullCalendar />
         </div>

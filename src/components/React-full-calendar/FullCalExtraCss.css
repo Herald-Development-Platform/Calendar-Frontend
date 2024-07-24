@@ -260,3 +260,15 @@
     line-height: 16px;
     /* line-height: 12px; */
 }
+
+.fc-multimonth-title{ 
+    position: relative;
+}
+.semester-yearly-wrapper{
+    display: flex; 
+    gap: 3px; 
+    position: absolute; 
+    left: 50%;
+    top: 75%;
+    transform: translateX(-50%);
+}
