@@ -219,7 +219,7 @@ export default function SummaryPage() {
               )}
             />
           </div>
-          <div className="mt-4 flex w-full flex-row flex-wrap items-start justify-between gap-10 ">
+          <div className="mt-4 flex w-full flex-row flex-wrap items-start gap-4 ">
             {/** Card */}
             <div className="flex h-auto w-fit flex-col">
               <div className="flex w-full flex-row  items-center justify-start gap-3.5 rounded-md border-[0.6px] bg-neutral-100 px-5 py-1 text-neutral-700">
@@ -227,7 +227,7 @@ export default function SummaryPage() {
               </div>
               <div className="bg-neutral-50">
                 <div className="flex flex-row items-center gap-16 p-5 px-7">
-                  <div style={{ width: 200, height: 200 }}>
+                  <div style={{ width: "100%", height: 200 }}>
                     <PieChart data={pieChartData}></PieChart>
                   </div>
                   <div className="flex flex-col items-start justify-center gap-3">
@@ -258,8 +258,9 @@ export default function SummaryPage() {
               <div className=" bg-neutral-50 px-7 py-5">
                 <div
                   style={{
-                    width: "fit-content",
+                    width: "100%",
                     height: 200,
+                    minWidth: 400,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",

@@ -35,7 +35,7 @@ export default function Page() {
     const otp = `${payload.otp1}${payload.otp2}${payload.otp3}${payload.otp4}${payload.otp5}${payload.otp6}`;
     if (!email || !otp) {
       toast.error("Email and OTP is required");
-      console.log("Toast is required")
+      console.log("Toast is required");
       return;
     }
     if (forgetPassword) {
@@ -54,7 +54,7 @@ export default function Page() {
           setTimeout(() => {
             router.push(`/resetPassword?email=${email}&OTP=${otp}`);
           }, 200);
-        })
+        });
       return;
     }
     fetch(`${baseUrl}/verifyOtp?email=${email}&OTP=${otp}`)
@@ -68,7 +68,7 @@ export default function Page() {
           router.push("/login");
         }, 1000);
       })
-      .catch((err) => toast.error(err.message || "Something went wrong"));
+      .catch((err) => {});
   };
 
   const handleOTPChange = (e: any) => {
@@ -76,14 +76,32 @@ export default function Page() {
     if (parseInt(otpNumber) < 6 && e.target.value.length === 1) {
       console.log("e.target.nextSibling", e.target.nextSibling);
       e.target.nextSibling.focus();
-    }
-    else if (parseInt(otpNumber) > 1 && e.target.value.length === 0){
+    } else if (parseInt(otpNumber) > 1 && e.target.value.length === 0) {
       e.target.previousSibling.focus();
-    }
-    else if (parseInt(otpNumber) === 6 && e.target.value.length === 1){
+    } else if (parseInt(otpNumber) === 6 && e.target.value.length === 1) {
       handleSubmit(verifyOtp)();
     }
-  }
+  };
+
+  const handleOtpPaste = (e:any) => {
+    if (e) {e.preventDefault();}
+    navigator.clipboard.readText().then((text) => {
+      text = text.trim()
+      if (text.length > 6) {
+        for (let i = 1; i <= 6; i++) {
+          setValue(`otp${i}`, "");
+        }
+        return toast.error("Cannot paste more than 6 characters");
+      }
+      if (text.length === 6) {
+        const otp = text.split("");
+        otp.forEach((value, index) => {
+          setValue(`otp${index + 1}`, value);
+        });
+        handleSubmit(verifyOtp)();
+      }
+    });
+  };
   return (
     <>
       <div className="relative mx-auto my-[60px] flex h-auto w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 pb-[84px] pt-12 font-medium">
@@ -138,9 +156,13 @@ export default function Page() {
                 paddingLeft: 8,
                 paddingRight: 8,
                 fontSize: 24,
-                textAlign: "center"
+                textAlign: "center",
               }}
-              {...register("otp1", { required: "OTP is required", onChange: handleOTPChange,})}
+              onPaste={handleOtpPaste}
+              {...register("otp1", {
+                required: "OTP is required",
+                onChange: handleOTPChange,
+              })}
             />
             <input
               type="text"
@@ -151,23 +173,13 @@ export default function Page() {
                 paddingLeft: 8,
                 paddingRight: 8,
                 fontSize: 24,
-                textAlign: "center"
+                textAlign: "center",
               }}
-              {...register("otp2", { required: "OTP is required", onChange: handleOTPChange })}
-            />
-            <input
-              type="text"
-              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
-              style={{
-                backgroundColor: "",
-                borderRadius: "6px",
-                outlineColor: "transparent",
-                paddingLeft: 8,
-                paddingRight: 8,
-                fontSize: 24,
-                textAlign: "center"
-              }}
-              {...register("otp3", { required: "OTP is required", onChange: handleOTPChange })}
+              onPaste={handleOtpPaste}
+              {...register("otp2", {
+                required: "OTP is required",
+                onChange: handleOTPChange,
+              })}
             />
             <input
               type="text"
@@ -179,9 +191,13 @@ export default function Page() {
                 paddingLeft: 8,
                 paddingRight: 8,
                 fontSize: 24,
-                textAlign: "center"
+                textAlign: "center",
               }}
-              {...register("otp4", { required: "OTP is required", onChange: handleOTPChange })}
+              onPaste={handleOtpPaste}
+              {...register("otp3", {
+                required: "OTP is required",
+                onChange: handleOTPChange,
+              })}
             />
             <input
               type="text"
@@ -193,9 +209,13 @@ export default function Page() {
                 paddingLeft: 8,
                 paddingRight: 8,
                 fontSize: 24,
-                textAlign: "center"
+                textAlign: "center",
               }}
-              {...register("otp5", { required: "OTP is required", onChange: handleOTPChange })}
+              onPaste={handleOtpPaste}
+              {...register("otp4", {
+                required: "OTP is required",
+                onChange: handleOTPChange,
+              })}
             />
             <input
               type="text"
@@ -207,9 +227,31 @@ export default function Page() {
                 paddingLeft: 8,
                 paddingRight: 8,
                 fontSize: 24,
-                textAlign: "center"
+                textAlign: "center",
               }}
-              {...register("otp6", { required: "OTP is required", onChange: handleOTPChange })}
+              onPaste={handleOtpPaste}
+              {...register("otp5", {
+                required: "OTP is required",
+                onChange: handleOTPChange,
+              })}
+            />
+            <input
+              type="text"
+              className="input h-[40px] w-[40px] bg-neutral-100 text-sm text-neutral-800"
+              style={{
+                backgroundColor: "",
+                borderRadius: "6px",
+                outlineColor: "transparent",
+                paddingLeft: 8,
+                paddingRight: 8,
+                fontSize: 24,
+                textAlign: "center",
+              }}
+              onPaste={handleOtpPaste}
+              {...register("otp6", {
+                required: "OTP is required",
+                onChange: handleOTPChange,
+              })}
             />
           </div>
           <div className="space-y-4" style={{ marginTop: 40 }}>
