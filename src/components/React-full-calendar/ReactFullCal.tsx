@@ -554,8 +554,10 @@ const useApplySemesterDotYearly = ({
       semesterData?.forEach((semester: SemesterType) => {
         // console.log("semester?.start", new Date(semester?.start)?.getMonth());
         if (
-          new Date(semester?.start)?.getMonth() !== i &&
-          new Date(semester?.end)?.getMonth() !== i
+          !(
+            new Date(semester?.start)?.getMonth() >= i &&
+            new Date(semester?.end)?.getMonth() <= i
+          )
         )
           return;
         const semesterDot = document.createElement("div");
