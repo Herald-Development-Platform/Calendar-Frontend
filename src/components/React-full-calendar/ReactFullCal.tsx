@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, {
+  RefObject,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -19,10 +25,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Axios, baseUrl } from "@/services/baseUrl";
 import { getCookie, setCookie } from "@/hooks/CookieHooks";
 import Endpoints from "@/services/API_ENDPOINTS";
-import { useGetEvents } from "@/services/api/eventsApi";
+import {
+  useDeleteEvent,
+  useGetEvents,
+  useUpdateEvents,
+} from "@/services/api/eventsApi";
 import { parse, format } from "date-fns";
 import { delay, generateNewToken } from "@/lib/utils";
 import { useGetSemester } from "@/services/api/semester";
+import EventDetails from "@/app/(all-pages)/search/EventDetails";
 
 const allPlugins = [
   dayGridPlugin,
@@ -36,10 +47,13 @@ const allPlugins = [
 export default function ReactFullCal() {
   const { calendarRef, setSelectedDate, selectedDate, timeout, events, users } =
     useContext(Context);
+
   const calWrapper = useRef<HTMLDivElement>(null);
   const dayFrameRefs = useRef<HTMLDivElement[]>([]);
 
   const monthValue = new Date(selectedDate.start).getMonth();
+  const [currentView, setCurrentView] = useState<string>("");
+  const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
 
   const queryClient = useQueryClient();
   const { mutate: updateHighLightedEvents } = useMutation({
@@ -48,7 +62,6 @@ export default function ReactFullCal() {
 
   const { data: userData } = useQuery({
     queryKey: ["ProfileData"],
-    // queryFn: async () => await Axios.get(Endpoints.profile),
     queryFn: async () => {
       try {
         const response = await Axios.get(`/profile`);
@@ -65,6 +78,8 @@ export default function ReactFullCal() {
   });
 
   const { data: semesterData } = useGetSemester();
+  const { mutate: updateEvent } = useUpdateEvents();
+  const { mutate: deleteEvent } = useDeleteEvent({});
 
   const handleSelect = ({ start, end, startStr, endStr }: DateSelectArg) => {
     setSelectedDate({ start, end, startStr, endStr });
@@ -190,6 +205,9 @@ export default function ReactFullCal() {
   }, [userData?.importantDates, monthValue]);
 
   const handleEventDidMount = (info: EventMountArg) => {
+    // if (calendar)
+    if (calendarRef?.current?.getApi()?.view.type !== "dayGridMonth") return;
+    console.log("current view :: ", calendarRef?.current?.getApi()?.view.type);
     const eventEl = info.el;
     const departments = info?.event?._def?.extendedProps?.departments;
     const titleElement = eventEl?.querySelector(".fc-event-title");
@@ -201,8 +219,6 @@ export default function ReactFullCal() {
     departmentsWrapper.classList.add("department-wrapper");
 
     departments?.map((department: any, i: number) => {
-      // console.log("department", department);
-
       const departmentElement = document.createElement("div");
       departmentElement.classList.add("department-item");
       departmentElement.textContent = department?.code;
@@ -218,10 +234,10 @@ export default function ReactFullCal() {
       }
       departmentsWrapper.appendChild(departmentElement);
     });
+
     eventEl?.insertBefore(departmentsWrapper, titleElement);
 
     return;
-    // });
   };
 
   const handleMouseLeave = (info: EventHoveringArg) => {
@@ -252,14 +268,188 @@ export default function ReactFullCal() {
 
     node.style.minHeight = `${dateNumberHeight + eventsTotalHeight}px`;
   };
+  const handleDelete = (e: any) => {
+    const { value } = e.target;
+    deleteEvent({ id: value });
+  };
 
-  useEffect(() => {
-    dayFrameRefs.current = calendarRef.current.elRef.current.querySelectorAll(
+  // useEffect(() => {
+  //   dayFrameRefs.current = calendarRef.current.elRef.current.querySelectorAll(
+  //     ".fc-daygrid-day-frame",
+  //   );
+  //   const dayFrameEls = Array.from(dayFrameRefs.current);
+
+  //   dayFrameEls.forEach((dayFrameEl, elIndex: number) => {
+  //     const dayGridTopEl = dayFrameEl.querySelector(".fc-daygrid-day-top");
+  //     const semesterDotExists = Boolean(
+  //       dayFrameEl.querySelector(".fc-custom-semester-dot"),
+  //     );
+  //     // @ts-ignore
+  //     const dayFrameDate = dayFrameEl.parentElement.getAttribute("data-date");
+
+  //     if (
+  //       !semesterData ||
+  //       !dayFrameDate ||
+  //       !Array.isArray(semesterData) ||
+  //       semesterDotExists
+  //     )
+  //       return;
+
+  //     semesterData?.forEach((semester: SemesterType) => {
+  //       if (
+  //         new Date(dayFrameDate) < new Date(semester.start) ||
+  //         new Date(dayFrameDate) > new Date(semester.end)
+  //       )
+  //         return;
+
+  //       const semesterDot = document.createElement("div");
+  //       semesterDot.classList.add("fc-custom-semester-dot");
+  //       semesterDot.setAttribute("data-course", semester.course);
+  //       semesterDot.setAttribute("data-semester", semester.semester);
+  //       semesterDot.style.backgroundColor = semester.color;
+  //       semesterDot.innerHTML = `
+  //       <div class="semester-tooltip-wrapper">
+  //         <div class="semester-tooltip-data">
+  //           <div class="semester-tooltip-dot" style="background-color: ${semester.color}"></div>
+  //           <span class="semester-tooltip-semTitle">${semester.semester}</span>
+  //         </div>
+  //         <span class="semester-tooltip-course">${semester.course}</span>
+  //       </div>
+  //    `;
+
+  //       const tooltipDot = semesterDot.querySelector(".semester-tooltip-dot");
+  //       console.log("tooltipDot", tooltipDot);
+  //       // @ts-ignore
+  //       if (tooltipDot.style.backgroundColor)
+  //         // @ts-ignore
+  //         tooltipDot.style.backgroundColor = `${semester.color}`;
+
+  //       // semesterDot.querySelector(
+  //       //   ".semester-tooltip-dot",
+  //       // ).style.backgroundColor = `${semester.color}`;
+  //       semesterDot.addEventListener("mouseenter", (e) => {
+  //         console.log(
+  //           "-------------------------------- hover --------------------------------",
+  //         );
+  //       });
+  //       console.log("semesterdot");
+
+  //       dayGridTopEl?.appendChild(semesterDot);
+  //     });
+  //   });
+
+  //   return () => {
+  //     if (!calendarRef.current) return;
+  //     // eslint-disable-next-line react-hooks/exhaustive-deps
+  //     let allDotElements = calendarRef.current.elRef.current.querySelectorAll(
+  //       ".fc-custom-semester-dot",
+  //     );
+  //     allDotElements = Array.from(allDotElements);
+  //     console.log("allDotElements", allDotElements);
+
+  //     Array.isArray(allDotElements) &&
+  //       allDotElements?.forEach((dotEl: any) => dotEl.remove());
+  //   };
+  // }, [calendarRef, semesterData, monthValue]);
+  useApplySemesterDot({
+    calendarRef,
+    semesterData,
+    monthValue,
+    currentView,
+  });
+  console.log(
+    "rednder after changing view?",
+    calendarRef?.current?.getApi()?.view.type,
+  );
+  return (
+    <>
+      <div ref={calWrapper} className="h-full w-auto ">
+        <FullCalendar
+          ref={calendarRef}
+          plugins={allPlugins}
+          datesSet={(info) => {
+            // console.log("datesSet ---- view ----", info.view.type);
+            if (currentView === info.view.type) return;
+            setCurrentView(info.view.type);
+          }}
+          eventClick={(info) => {
+            // const selectedEventObj = {...info?.event?._def?.extendedProps,
+            //    info?.event?._def?.title,
+            //   };
+            const selectedEventObj = {
+              ...info?.event?._instance?.range,
+              ...info?.event?._def?.extendedProps,
+              title: info?.event?._def?.title,
+            };
+            console.log("eventclick", selectedEventObj);
+            setSelectedEvent(selectedEventObj as eventType);
+            // console.log()
+          }}
+          initialView={`dayGridMonth`}
+          events={events as EventSourceInput}
+          // eventMouseEnter={handleMouseEnter}
+          // eventMouseLeave={handleMouseLeave}
+          eventDidMount={handleEventDidMount}
+          headerToolbar={false}
+          selectable={true}
+          select={handleSelect}
+          viewDidMount={(info: any) => {
+            if (calendarRef?.current?.getApi()?.view?.type !== "dayGridMonth")
+              return;
+            const scrollerEl = info.el.querySelector(
+              ".fc-scroller-liquid-absolute",
+            );
+            if (!scrollerEl) return;
+            scrollerEl.style.overflow = "visible";
+            console.log("viewdidmount", scrollerEl);
+          }}
+          windowResize={async (arg) => {
+            await delay(200);
+            const scrollerEl = calendarRef.current.elRef.current.querySelector(
+              ".fc-scroller-liquid-absolute",
+            );
+            scrollerEl.style.overflow = "visible";
+          }}
+          unselect={handleUnselect}
+          displayEventTime={false}
+          dayHeaderClassNames={"customStylesDayHeader"}
+          dayCellClassNames={"customStylesDayCells"}
+          eventMaxStack={2}
+          dayMaxEvents={2}
+        />
+      </div>
+      <EventDetails
+        selectedEvent={selectedEvent}
+        setSelectedEvent={setSelectedEvent}
+        updateEvent={updateEvent}
+        handleDelete={handleDelete}
+        width={null}
+      ></EventDetails>
+    </>
+  );
+}
+
+const useApplySemesterDot = ({
+  calendarRef,
+  semesterData,
+  monthValue,
+  currentView,
+}: {
+  calendarRef: RefObject<FullCalendar>;
+  semesterData: SemesterType[] | undefined;
+  monthValue: number;
+  currentView?: string;
+}) => {
+  return useEffect(() => {
+    console.log("err where useapply semester dot ----", currentView);
+    if (!calendarRef.current) return;
+
+    // @ts-ignore
+    const dayFrameElements = calendarRef.current.elRef.current.querySelectorAll(
       ".fc-daygrid-day-frame",
     );
-    const dayFrameEls = Array.from(dayFrameRefs.current);
-
-    dayFrameEls.forEach((dayFrameEl, elIndex: number) => {
+    const dayFrameEls = Array.from(dayFrameElements);
+    dayFrameEls.forEach((dayFrameEl: any, elIndex: number) => {
       const dayGridTopEl = dayFrameEl.querySelector(".fc-daygrid-day-top");
       const semesterDotExists = Boolean(
         dayFrameEl.querySelector(".fc-custom-semester-dot"),
@@ -307,11 +497,11 @@ export default function ReactFullCal() {
         // semesterDot.querySelector(
         //   ".semester-tooltip-dot",
         // ).style.backgroundColor = `${semester.color}`;
-        semesterDot.addEventListener("mouseenter", (e) => {
-          console.log(
-            "-------------------------------- hover --------------------------------",
-          );
-        });
+        // semesterDot.addEventListener("mouseenter", (e) => {
+        //   console.log(
+        //     "-------------------------------- hover --------------------------------",
+        //   );
+        // });
         console.log("semesterdot");
 
         dayGridTopEl?.appendChild(semesterDot);
@@ -320,6 +510,7 @@ export default function ReactFullCal() {
 
     return () => {
       if (!calendarRef.current) return;
+      // @ts-ignore
       // eslint-disable-next-line react-hooks/exhaustive-deps
       let allDotElements = calendarRef.current.elRef.current.querySelectorAll(
         ".fc-custom-semester-dot",
@@ -330,74 +521,8 @@ export default function ReactFullCal() {
       Array.isArray(allDotElements) &&
         allDotElements?.forEach((dotEl: any) => dotEl.remove());
     };
-  }, [calendarRef, semesterData, monthValue]);
-
-  // const tooltip = document.createElement("div");
-  // tooltip.classList.add("semester-tooltip-wrapper");
-  // const innerhtml = `
-  //     <div class="semester-tooltip-data">
-  //       <div class="semester-tooltip-dot"></div>
-  //       <span class="semester-tooltip-semTitle">Semester 1</span>
-  //     </div>
-  //     <span class="semester-tooltip-course">BIT</span>
-  //  `;
-  // tooltip.innerHTML = innerhtml;
-
-  return (
-    <>
-      {/* <div className="semester-tooltip-dot">
-        <div className="semester-tooltip-wrapper">
-          <div className="semester-tooltip-data">
-            <div className="semester-tooltip-dot"></div>
-            <span className="semester-tooltip-semTitle">Semester 1</span>
-          </div>
-          <span className="semester-tooltip-course">BIT</span>
-        </div>
-      </div> */}
-
-      <div ref={calWrapper} className="h-full w-auto ">
-        <FullCalendar
-          ref={calendarRef}
-          plugins={allPlugins}
-          initialView={`dayGridMonth`}
-          events={events as EventSourceInput}
-          eventMouseEnter={handleMouseEnter}
-          eventMouseLeave={handleMouseLeave}
-          eventDidMount={handleEventDidMount}
-          headerToolbar={false}
-          selectable={true}
-          select={handleSelect}
-          viewDidMount={(info: any) => {
-            const scrollerEl = info.el.querySelector(
-              ".fc-scroller-liquid-absolute",
-            );
-            scrollerEl.style.overflow = "visible";
-            console.log("viewdidmount", scrollerEl);
-          }}
-          windowResize={async (arg) => {
-            // console.log(
-            //   "resize",
-            //   calendarRef.current.elRef.current.querySelector(
-            //     ".fc-scroller-liquid-absolute",
-            //   ),
-            // );
-            await delay(200);
-            const scrollerEl = calendarRef.current.elRef.current.querySelector(
-              ".fc-scroller-liquid-absolute",
-            );
-            scrollerEl.style.overflow = "visible";
-          }}
-          unselect={handleUnselect}
-          displayEventTime={false}
-          dayHeaderClassNames={"customStylesDayHeader"}
-          dayCellClassNames={"customStylesDayCells"}
-          eventMaxStack={2}
-          dayMaxEvents={2}
-        />
-      </div>
-    </>
-  );
-}
+  }, [calendarRef, semesterData, monthValue, currentView]);
+};
 
 function addSemesterDots(
   dayGridEl: HTMLDivElement,
@@ -446,7 +571,7 @@ function addSemesterDots(
 // }}
 
 // useEffect(() => {
-//   dayFrameRefs.current = calendarRef.current.elRef.current.querySelectorAll(
+//   dayFrameEls = calendarRef.current.elRef.current.querySelectorAll(
 //     ".fc-daygrid-day-frame",
 //   );
 //   const dayFrameEls = Array.from(dayFrameRefs.current);

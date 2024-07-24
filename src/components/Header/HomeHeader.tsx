@@ -92,7 +92,7 @@ export function HomeHeader() {
       nextMonth.setMonth(nextMonth.getMonth() + 1);
       return {
         start: nextMonth,
-        end: nextMonth,
+        end: new Date(nextMonth.getTime() + 1000 * 60 * 60 * 24 * 7),
         endStr: "",
         startStr: "",
       };
@@ -105,11 +105,11 @@ export function HomeHeader() {
     setSelectedDate((prev: any) => {
       if (!prev?.start) return prev;
 
-      const nextMonth = new Date(prev.start);
-      nextMonth.setMonth(nextMonth.getMonth() - 1);
+      const prevMonth = new Date(prev.start);
+      prevMonth.setMonth(prevMonth.getMonth() - 1);
       return {
-        start: nextMonth,
-        end: nextMonth,
+        start: prevMonth,
+        end: new Date(prevMonth.getTime() + 1000 * 60 * 60 * 24 * 7),
         endStr: "",
         startStr: "",
       };
@@ -130,21 +130,6 @@ export function HomeHeader() {
   return (
     <>
       <div className="ml-8 mr-16 mt-8 flex h-12 w-auto items-center justify-between ">
-        {/* <div
-          className={`${
-            toggleSidebar ? "-translate-x-0" : "-translate-x-full"
-          } duration-400 fixed left-0  top-0 z-50  bg-green-500 bg-opacity-50 transition`}
-        >
-          <Sidebar hasBreakpoint={false}></Sidebar>
-        </div>
-        <div
-          onClick={() => {
-            setToggleSidebar(false);
-          }}
-          className={`${
-            toggleSidebar ? "" : "hidden"
-          } fixed left-0 top-0 z-40 h-full w-full bg-black bg-opacity-5`}
-        ></div> */}
         <div className="flex items-center gap-2 xl:hidden">
           <ToggleSidebar>
             <Menu />

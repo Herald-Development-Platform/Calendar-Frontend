@@ -33,14 +33,11 @@ export const useGetEvents = () =>
   useQuery<eventType[]>({
     queryKey: ["Events"],
     queryFn: async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // await new Promise((resolve) => setTimeout(resolve, 1000));
       const axiosRes = await Axios.get(Endpoints.event);
       console.log("axiosRes EVENTS:::: ", axiosRes);
       if (!(axiosRes.status >= 200 && axiosRes.status < 300)) {
-        toast.error(
-          axiosRes?.data?.message ||
-            `Someting went wrong.`,
-        );
+        toast.error(axiosRes?.data?.message || `Someting went wrong.`);
         return axiosRes.data;
       }
       return axiosRes.data.data;
@@ -147,8 +144,8 @@ export const useGetEventByQuery = (queryParams: eventByParamsType) =>
             eventFrom: queryParams.eventFrom,
           }),
         );
-
-        if (res.statusText.toUpperCase().trim() !== "OK") {
+        console.log("eventby query", res);
+        if (!(res.status >= 200 && res.status < 300)) {
           toast.error(res.data.message);
           return res.data;
         }

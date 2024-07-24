@@ -42,7 +42,6 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
 
   const handleDelete = (e: any) => {
     const { value } = e.target;
-    // setSelectedEvent(null);
     deleteEvent({ id: value });
   };
 
