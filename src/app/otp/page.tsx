@@ -39,7 +39,12 @@ export default function Page() {
       return;
     }
     if (forgetPassword) {
-      fetch(`${baseUrl}/validateResetPasswordOTP?email=${email}&OTP=${otp}`)
+      fetch(`${baseUrl}/validateResetPasswordOTP?email=${email}&OTP=${otp}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
         .then((res) => res.json())
         .then((data) => {
           if (!data.success) {
@@ -50,7 +55,6 @@ export default function Page() {
             router.push(`/resetPassword?email=${email}&OTP=${otp}`);
           }, 200);
         })
-        .catch((err) => toast.error(err.message || "Something went wrong"));
       return;
     }
     fetch(`${baseUrl}/verifyOtp?email=${email}&OTP=${otp}`)

@@ -29,6 +29,9 @@ export default function Page() {
       toast.success(response.data.message || "Reset OTP sent to your email.");
       router.push(`/otp?email=${response.data.data}&forgetPassword=true`);
     },
+    onError: (error:any) => {
+      toast.error(error?.response?.data?.message || "Something went wrong.");
+    }
   });
 
   const forgetPassword = (payload: any) => {
