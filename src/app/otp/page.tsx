@@ -25,6 +25,8 @@ export default function Page() {
   const searchParams = useSearchParams();
 
   const email = searchParams.get("email");
+  const forgetPassword = searchParams.get("forgetPassword");
+
   console.log(email);
   // if (!email) {
   //   router.push("/login");
@@ -34,6 +36,21 @@ export default function Page() {
     if (!email || !otp) {
       toast.error("Email and OTP is required");
       console.log("Toast is required")
+      return;
+    }
+    if (forgetPassword) {
+      fetch(`${baseUrl}/validateResetPasswordOTP?email=${email}&OTP=${otp}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (!data.success) {
+            toast.error(data.message || "Something went wrong");
+          }
+          toast.success(data.message || "OTP verified successfully");
+          setTimeout(() => {
+            router.push(`/resetPassword?email=${email}&OTP=${otp}`);
+          }, 200);
+        })
+        .catch((err) => toast.error(err.message || "Something went wrong"));
       return;
     }
     fetch(`${baseUrl}/verifyOtp?email=${email}&OTP=${otp}`)

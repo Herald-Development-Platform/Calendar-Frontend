@@ -106,21 +106,13 @@ export default function Page() {
               />
             </div>
           </label>
-
-          <div className="relative bottom-2 flex h-9 w-auto flex-row items-center gap-3">
-            <input
-              type="checkbox"
-              className="toggle-primary-600 toggle toggle-xs checked:bg-primary-600"
-              checked={rememberMe}
-              onChange={() => setRememberMe(!rememberMe)}
-              id="checkbox"
-            />
-            <label
-              htmlFor="checkbox"
-              className="label cursor-pointer text-base text-neutral-500"
+          <div className="relative  flex w-auto flex-row items-center gap-3 justify-end">
+            <Link
+              href={"/forgetPassword"}
+              className="label cursor-pointer text-sm decoration-from-font decoration-primary-500 underline underline-offset-3 text-primary-500"
             >
-              <span className="">Remember me</span>
-            </label>
+              <span className="">Forget Password</span>
+            </Link>
           </div>
           <div className="space-y-4">
             <button className="btn w-full rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">

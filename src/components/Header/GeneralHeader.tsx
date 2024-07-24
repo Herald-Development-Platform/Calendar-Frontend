@@ -3,14 +3,6 @@ import Image from "next/image";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { NotificationList } from "../NotificationList";
 import ProfileDropdown from "./ProfileDropdown";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
-import EventModal from "../AddEventModal/EventModal";
 import Link from "next/link";
 import ToggleSidebar from "../Sidebar/ToggleSidebar";
 import { Menu } from "lucide-react";

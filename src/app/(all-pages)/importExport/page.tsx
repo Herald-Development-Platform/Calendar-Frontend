@@ -17,13 +17,14 @@ import ContextProvider, { Context } from "@/app/clientWrappers/ContextProvider";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import * as Headers from "@/components/Header";
+import { IoMdArrowBack } from "react-icons/io";
+import { useRouter } from "next/navigation";
 
 export default function ImportExport() {
   const [currentTab, setCurrentTab] = useState("import");
   const [importFileData, setImportFileData] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [memberDialog, setMemberDialog] = useState(false);
-  const [syncDialogOpen, setSyncDialogOpen] = useState(false);
 
   const [departments, setDepartments] = useState<Department[]>([]);
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
@@ -202,6 +203,7 @@ export default function ImportExport() {
       },
     },
   );
+  const router = useRouter();
 
   return (
     <>
@@ -363,67 +365,16 @@ export default function ImportExport() {
           </DialogContent>
         </Dialog>
 
-        <Dialog open={syncDialogOpen} onOpenChange={setSyncDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle className=" text-[19px] font-semibold ">
-                Sync With Google
-              </DialogTitle>
-            </DialogHeader>
-            <div className="flex max-h-[60vh] flex-col gap-8 overflow-y-scroll">
-              <div className=" flex w-full flex-col items-start justify-start gap-[8px] rounded-md px-3 py-4 text-neutral-500">
-                {googleLocationsLoading ? (
-                  <span>Loading</span>
-                ) : (
-                  googleLocations &&
-                  googleLocations?.map((location: any) => (
-                    <div key={location.id} className="flex items-center gap-2 ">
-                      <div
-                        className={`h-8 w-8 rounded-md bg-[${
-                          location.color ?? "transparent"
-                        }]`}
-                      >
-                        {!location.color && (
-                          <Image
-                            src={"/images/google.logo.svg"}
-                            width={24}
-                            height={24}
-                            alt="GoogleIcon"
-                          ></Image>
-                        )}
-                      </div>
-                      <div className="flex flex-col">
-                        <span className=" text-[16px] font-semibold text-neutral-900">
-                          {location.summary}
-                        </span>
-                        <span className="text-[11px] text-neutral-500 ">
-                          {new Date(
-                            location.start.dateTime,
-                          ).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-            <DialogFooter className=" flex flex-row items-center justify-end py-4">
-              <button
-                onClick={() => {
-                  selectedFile
-                    ? postMemberFiles(selectedFile)
-                    : toast.error("File is not selected.");
-                }}
-                className="btn btn-md h-5 border-none bg-primary-600 text-[11px] font-medium text-primary-50 hover:bg-primary-700"
-              >
-                Sync
-              </button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
         <div className=" mt-[20px] flex flex-col gap-[37px]">
-          <div className="flex flex-row justify-between">
+          <div className="flex flex-row justify-start gap-3 items-center">
+            <span
+              onClick={() => {
+                router.back();
+              }}
+              className="cursor-pointer text-4xl font-bold text-neutral-600"
+            >
+              <IoMdArrowBack />
+            </span>
             <h1 className=" text-[28px] font-[700] text-neutral-700">
               Import/ Export
             </h1>
@@ -452,25 +403,6 @@ export default function ImportExport() {
               } cursor-pointer `}
             >
               Export
-            </span>
-            <span className="ml-auto">
-              <button
-                onClick={async () => {
-                  const response = await Axios.post(`/google/sync`);
-                  if (response.data.success) {
-                    toast.success(response.data.message);
-                  }
-                }}
-                className="ml-7 flex items-center gap-2 rounded-[4px] bg-primary-600 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary-700"
-              >
-                <Image
-                  src={"/images/google.logo.svg"}
-                  width={24}
-                  height={24}
-                  alt="GoogleIcon"
-                ></Image>{" "}
-                <span>Sync With Google</span>
-              </button>
             </span>
           </div>
           {currentTab === "import" ? (

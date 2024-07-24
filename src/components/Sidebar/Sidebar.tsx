@@ -34,16 +34,6 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       navigation: "/members",
     },
     {
-      name: "Import/Export",
-      icon: <MdImportExport />,
-      navigation: "/importExport",
-    },
-    {
-      name: "Location",
-      icon: <VscLocation />,
-      navigation: "/location",
-    },
-    {
       name: "Summary",
       icon: <HiOutlineDocumentReport />,
       navigation: "/summary",
