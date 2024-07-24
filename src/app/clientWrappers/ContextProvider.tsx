@@ -1,5 +1,6 @@
 "use client";
 
+import { ROLES } from "@/constants/role";
 import { setCookie } from "@/hooks/CookieHooks";
 import { generateNewToken } from "@/lib/utils";
 import { Axios } from "@/services/baseUrl";
@@ -49,9 +50,7 @@ export default function ContextProvider({
 
   // const [userData, setUserData] = useState<User>();
 
-  const {
-    data: userData,
-  } = useQuery({
+  const { data: userData } = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
       try {
@@ -60,8 +59,10 @@ export default function ContextProvider({
         if (user) {
           if (
             user.syncWithGoogle &&
-            user.department &&
-            user.department.length > 0
+            (
+              user.role === ROLES.SUPER_ADMIN ||
+              (user.department && user.department.length > 0)
+            )
           ) {
             syncWithGoogle();
           }
