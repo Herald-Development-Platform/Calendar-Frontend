@@ -60,8 +60,7 @@ export default function ContextProvider({
           if (
             user.syncWithGoogle &&
             (
-              user.role === ROLES.SUPER_ADMIN ||
-              (user.department && user.department.length > 0)
+              user.role === ROLES.SUPER_ADMIN || user.department
             )
           ) {
             syncWithGoogle();
