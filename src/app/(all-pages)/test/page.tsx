@@ -4,8 +4,7 @@ import React from "react";
 export default function Page() {
   return (
     <div>
-      sadf
-      <SemesterMonth></SemesterMonth>
+      <SemesterMonth year={2024} month={5}></SemesterMonth>
     </div>
   );
 }

@@ -259,10 +259,10 @@ export default function ReactFullCal({} // eventDetailWidth,
     tooltipWrapper.classList.add("event-tooltip-transition");
   };
 
-  const handleDayCellMount = (cellObjRef: DayCellMountArg) => {
-    const dayGridCellEl = cellObjRef.el.querySelector("div") as HTMLDivElement;
-    addSemesterDots(dayGridCellEl, semesterData);
-  };
+  // const handleDayCellMount = (cellObjRef: DayCellMountArg) => {
+  //   const dayGridCellEl = cellObjRef.el.querySelector("div") as HTMLDivElement;
+  //   addSemesterDots(dayGridCellEl, semesterData);
+  // };
 
   const setHeightOfDayFrame = (node: HTMLDivElement) => {
     const dateNumberHeight = // @ts-ignore
