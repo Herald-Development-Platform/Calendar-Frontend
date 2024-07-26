@@ -1,0 +1,10 @@
+    .sem-grid{
+        width: 500px;
+        height: auto;
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        grid-template-columns: 7;
+        border: 1px solid black; 
+        grid-auto-rows: 45px; 
+        gap: 0;
+    }

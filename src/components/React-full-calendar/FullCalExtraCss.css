@@ -272,3 +272,9 @@
     top: 75%;
     transform: translateX(-50%);
 }
+
+.fc-semester-cell{
+    width: 200%;
+    height: 100%; 
+    background-color: black;
+}

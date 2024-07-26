@@ -367,6 +367,14 @@ export default function ReactFullCal({} // eventDetailWidth,
     monthValue,
     currentView,
   });
+
+  useApplyYearlySemesterView({
+    multiMonthEls: calendarRef?.current?.elRef?.current?.querySelectorAll(
+      ".fc-multimonth-month",
+    ),
+    currentView: currentView,
+  });
+
   return (
     <>
       <div ref={calWrapper} className="h-full w-auto ">
@@ -540,7 +548,7 @@ const useApplySemesterDotYearly = ({
 }) => {
   return useEffect(() => {
     if (!calendarRef.current || currentView !== "multiMonthYear") return;
-    console.log("err where useapply semester dot ----", currentView);
+    // console.log("err where useapply semester dot ----", currentView);
 
     // @ts-ignore
     const titleNodeList = calendarRef.current.elRef.current.querySelectorAll(
@@ -590,98 +598,84 @@ const useApplySemesterDotYearly = ({
 
       titleEl.appendChild(semesterWrapper);
     });
-
-    // dayFrameEls.forEach((dayFrameEl: any, elIndex: number) => {
-    //   const dayGridTopEl = dayFrameEl.querySelector(".fc-daygrid-day-top");
-    //   const semesterDotExists = Boolean(
-    //     dayFrameEl.querySelector(".fc-custom-semester-dot"),
-    //   );
-    //   // @ts-ignore
-    //   const dayFrameDate = dayFrameEl.parentElement.getAttribute("data-date");
-
-    //   if (
-    //     !semesterData ||
-    //     !dayFrameDate ||
-    //     !Array.isArray(semesterData) ||
-    //     semesterDotExists
-    //   )
-    //     return;
-
-    //   semesterData?.forEach((semester: SemesterType) => {
-    //     if (
-    //       new Date(dayFrameDate) < new Date(semester.start) ||
-    //       new Date(dayFrameDate) > new Date(semester.end)
-    //     )
-    //       return;
-
-    //     const semesterDot = document.createElement("div");
-    //     semesterDot.classList.add("fc-custom-semester-dot");
-    //     semesterDot.setAttribute("data-course", semester.course);
-    //     semesterDot.setAttribute("data-semester", semester.semester);
-    //     semesterDot.style.backgroundColor = semester.color;
-    //     semesterDot.innerHTML = `
-    //     <div class="semester-tooltip-wrapper">
-    //       <div class="semester-tooltip-data">
-    //         <div class="semester-tooltip-dot" style="background-color: ${semester.color}"></div>
-    //         <span class="semester-tooltip-semTitle">${semester.semester}</span>
-    //       </div>
-    //       <span class="semester-tooltip-course">${semester.course}</span>
-    //     </div>
-    //  `;
-
-    //     const tooltipDot = semesterDot.querySelector(".semester-tooltip-dot");
-    //     console.log("tooltipDot", tooltipDot);
-    //     // @ts-ignore
-    //     if (tooltipDot.style.backgroundColor)
-    //       // @ts-ignore
-    //       tooltipDot.style.backgroundColor = `${semester.color}`;
-
-    //     console.log("semesterdot");
-
-    //     dayGridTopEl?.appendChild(semesterDot);
-    //   });
-    // });
-
-    // return () => {
-    //   if (!calendarRef.current) return;
-    //   // @ts-ignore
-    //   // eslint-disable-next-line react-hooks/exhaustive-deps
-    //   let allDotElements = calendarRef.current.elRef.current.querySelectorAll(
-    //     ".fc-custom-semester-dot",
-    //   );
-    //   allDotElements = Array.from(allDotElements);
-    //   console.log("allDotElements", allDotElements);
-
-    //   Array.isArray(allDotElements) &&
-    //     allDotElements?.forEach((dotEl: any) => dotEl.remove());
-    // };
   }, [calendarRef, semesterData, monthValue, currentView]);
 };
 
-function addSemesterDots(
-  dayGridEl: HTMLDivElement,
-  semesterData: SemesterType[] | undefined,
-) {
-  const semsterDot = dayGridEl.querySelector(".fc-custom-semester-dot");
+const useApplyYearlySemesterView = ({
+  multiMonthEls,
+  currentView,
+}: {
+  multiMonthEls: HTMLDivElement[];
+  currentView: string;
+}) => {
+  // console.log("multimonthels", multiMonthEls);
+  return useEffect(() => {
+    if (!Boolean(multiMonthEls)) return;
+    const multiMonthElsArr = Array.from(multiMonthEls);
+    const tbody = multiMonthElsArr[0]
+      ?.querySelector("tbody")
+      ?.querySelectorAll("tr");
+    const trEls = tbody && Array.from(tbody);
+    if (!trEls) return;
 
-  if (!semesterData || !Array.isArray(semesterData) || semsterDot) return;
+    console.log("multiMonthElsArr[0]", trEls && trEls[0]);
 
-  const dayGridTopEl = dayGridEl.querySelector(".fc-daygrid-day-top");
-  semesterData?.forEach((semester: SemesterType) => {
-    const semesterDot = document.createElement("div");
-    semesterDot.classList.add("fc-custom-semester-dot");
-    semesterDot.setAttribute("data-course", semester.course);
-    semesterDot.setAttribute("data-semester", semester.semester);
-    semesterDot.style.backgroundColor = semester.color;
+    const dayCells = trEls[0].querySelectorAll(".fc-daygrid-day");
+    dayCells.forEach((cell) => {
+      // trEls[0].removeChild(cell);
+      if (cell.classList.contains("fc-day-disabled")) return;
+      cell.remove();
+    });
+    const semCell = document.createElement("div");
+    semCell.classList.add("fc-semester-cell");
+    trEls[0].appendChild(semCell);
+    // const parentElement = document.getElementById("parent");
+    // const childrenToRemove = parentElement.querySelectorAll(".child");
 
-    dayGridTopEl?.appendChild(semesterDot);
-  });
+    // trEls?.forEach(() => {
+    //   tbody.removeChild(child);
+    // });
 
-  // const semesterWrapper = document.createElement("div");
+    // tbody.
+    // const tbody = multi
+    // multiMonthElsArr.forEach((monthEl: any) => {
+    //   const tbody = monthEl.querySelector("tbody");
+    //   tbody.forEach();
+    // });
+  }, [currentView]);
+};
 
-  // semesterWrapper.classList.add("");
-  // dayGridEl.appendChild(semesterWrapper);
+function applySemesterBox({ trEl }: { trEl: HTMLTableRowElement }) {
+  // remove borders in table cell
+  // add another layer above cells
+  //make new calendar comopnent
+  // /\/\/\ remove existing cells and replace it with a new div.
 }
+
+// function addSemesterDots(
+//   dayGridEl: HTMLDivElement,
+//   semesterData: SemesterType[] | undefined,
+// ) {
+//   const semsterDot = dayGridEl.querySelector(".fc-custom-semester-dot");
+
+//   if (!semesterData || !Array.isArray(semesterData) || semsterDot) return;
+
+//   const dayGridTopEl = dayGridEl.querySelector(".fc-daygrid-day-top");
+//   semesterData?.forEach((semester: SemesterType) => {
+//     const semesterDot = document.createElement("div");
+//     semesterDot.classList.add("fc-custom-semester-dot");
+//     semesterDot.setAttribute("data-course", semester.course);
+//     semesterDot.setAttribute("data-semester", semester.semester);
+//     semesterDot.style.backgroundColor = semester.color;
+
+//     dayGridTopEl?.appendChild(semesterDot);
+//   });
+
+//   // const semesterWrapper = document.createElement("div");
+
+//   // semesterWrapper.classList.add("");
+//   // dayGridEl.appendChild(semesterWrapper);
+// }
 
 // eventDragStart={(e) => {
 //   console.log("eventDragStart", e);
