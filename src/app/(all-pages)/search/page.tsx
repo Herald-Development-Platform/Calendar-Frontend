@@ -1,11 +1,7 @@
 "use client";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import * as Headers from "@/components/Header";
-import RecentSearches from "@/components/RecentSearches/RecentSearches";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  getEventsByParams,
-  updateEvents,
   useDeleteEvent,
   useGetEventByQuery,
   useUpdateEvents,
@@ -16,8 +12,6 @@ import { format } from "date-fns";
 import { RxArrowTopRight } from "react-icons/rx";
 import EventDetails from "./EventDetails";
 import { useDebounce } from "@/hooks/useDebounce";
-import { useRouter } from "next/router";
-import { Context } from "@/app/clientWrappers/ContextProvider";
 
 export default function Page() {
   const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);

@@ -461,7 +461,6 @@ const useApplySemesterDot = ({
 }) => {
   return useEffect(() => {
     if (!calendarRef.current || currentView !== "dayGridMonth") return;
-    console.log("err where useapply semester dot ----", currentView);
 
     // @ts-ignore
     const dayFrameElements = calendarRef.current.elRef.current.querySelectorAll(
@@ -507,13 +506,10 @@ const useApplySemesterDot = ({
      `;
 
         const tooltipDot = semesterDot.querySelector(".semester-tooltip-dot");
-        console.log("tooltipDot", tooltipDot);
         // @ts-ignore
         if (tooltipDot.style.backgroundColor)
           // @ts-ignore
           tooltipDot.style.backgroundColor = `${semester.color}`;
-
-        console.log("semesterdot");
 
         dayGridTopEl?.appendChild(semesterDot);
       });
@@ -548,14 +544,13 @@ const useApplySemesterDotYearly = ({
 }) => {
   return useEffect(() => {
     if (!calendarRef.current || currentView !== "multiMonthYear") return;
-    // console.log("err where useapply semester dot ----", currentView);
 
     // @ts-ignore
     const titleNodeList = calendarRef.current.elRef.current.querySelectorAll(
       ".fc-multimonth-title",
     );
     const titleEls = Array.from(titleNodeList);
-    console.log("titleEls", titleEls);
+    // console.log("titleEls", titleEls);
     titleEls.forEach((titleEl: any, i: number) => {
       const semesterWrapper = document.createElement("div");
       semesterWrapper.classList.add("semester-yearly-wrapper");
@@ -585,7 +580,7 @@ const useApplySemesterDotYearly = ({
      `;
 
         const tooltipDot = semesterDot.querySelector(".semester-tooltip-dot");
-        console.log("tooltipDot", tooltipDot);
+        // console.log("tooltipDot", tooltipDot);
         // @ts-ignore
         if (tooltipDot.style.backgroundColor)
           // @ts-ignore

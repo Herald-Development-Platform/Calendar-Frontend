@@ -74,7 +74,7 @@ export const usePostEventMutation = ({
   return useMutation({
     mutationFn: postEvents,
     onSuccess: (res) => {
-      console.log("Onsuccess", res);
+      // console.log("Onsuccess", res);
       queryClient.invalidateQueries({ queryKey: ["Events"] });
 
       toast.success(`${res?.data?.message}`);

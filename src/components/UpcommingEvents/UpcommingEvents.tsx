@@ -89,6 +89,7 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
             if (!inFirstEdge && !inBetween && !inLastEdge) return;
 
             let displayDate = false;
+
             if (lastDate !== format(new Date(eventStart), "MMMM d")) {
               lastDate = format(new Date(eventStart), "MMMM d");
               displayDate = true;
