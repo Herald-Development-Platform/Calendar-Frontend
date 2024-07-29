@@ -5,17 +5,21 @@ import React from "react";
 
 export default function SemesterView({
   year,
-  eventsData,
+  events,
 }: {
   year: number;
-  eventsData: eventType[];
+  events: eventType[];
 }) {
-  // const { data: eventsData } = useGetEvents();
+  // const year = new Date().getFullYear();
+  //   const { data: eventsData } = useGetEvents();
 
+  // console.log(
+  //   " getParsedDateForSemView({ events: eventsData })",
+  //   getParsedDateForSemView({ events: eventsData }),
+  // );
   const eventsAccordingToMonth = getParsedDateForSemView({
     events: eventsData,
   });
-
   return (
     <>
       <div className="my-20 flex h-screen flex-wrap gap-5 overflow-y-scroll">
@@ -42,27 +46,23 @@ function getParsedDateForSemView({
 }) {
   const dateObj: any = {};
   events?.forEach((event: eventType) => {
-    // console.log("event?.start.getMonth()", event);
-    // console.log(
-    //   "event?.start.getMonth()",
-    //   event.start && new Date(event.start).getMonth(),
-    // );
-
     if (!event?.start) return;
 
     const monthIndex =
       (event?.start && new Date(event?.start)?.getMonth()) || -1;
 
-    if (!Array.isArray(dateObj[monthIndex])) {
-      dateObj[monthIndex] = [event];
-      return;
-    }
-    dateObj[monthIndex].push(event);
+    !Array.isArray(dateObj[monthIndex])
+      ? (dateObj[monthIndex] = [event])
+      : dateObj[monthIndex].push(event);
 
     const monthEndIndex =
       (event?.end && new Date(event?.end)?.getMonth()) || -1;
 
-    monthEndIndex !== monthIndex && dateObj[monthEndIndex].push(event);
+    if (monthEndIndex !== monthIndex) {
+      !Array.isArray(dateObj[monthEndIndex])
+        ? (dateObj[monthEndIndex] = [event])
+        : dateObj[monthEndIndex].push(event);
+    }
   });
 
   return dateObj;
