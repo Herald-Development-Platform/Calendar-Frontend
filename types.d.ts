@@ -13,6 +13,7 @@ interface eventType {
   recurringType: string;
   involvedUsers: string[];
   recurrenceEnd: Date | null;
+  exceptionRanges?: { start: Date; end: Date }[];
   notifyUpdate?: boolean;
 }
 interface SemesterType {

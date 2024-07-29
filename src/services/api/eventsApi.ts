@@ -102,13 +102,14 @@ export const usePostEventMutation = ({
   });
 };
 
-export const useEditEventMutation = () => {
+export const useEditEventMutation = (onSuccess?: () => void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (payload: any) => {
-      return Axios.put(Endpoints.eventById(payload.id), payload);
+      return Axios.put(Endpoints.eventById(payload.id ?? payload._id), payload);
     },
+    onSuccess,
   });
 };
 

@@ -386,6 +386,7 @@ export default function ReactFullCal({} // eventDetailWidth,
               ...info?.event?._instance?.range,
               ...info?.event?._def?.extendedProps,
               title: info?.event?._def?.title,
+              color: info?.event?._def?.ui?.backgroundColor || info?.event?._def?.ui?.borderColor,
             };
             const upcommingEventWidth =
               // @ts-ignore

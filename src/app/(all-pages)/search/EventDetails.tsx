@@ -34,7 +34,7 @@ import {
 } from "react";
 import EditEventModal from "@/components/AddEventModal/EditEventModal";
 import { useQueryClient } from "@tanstack/react-query";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 import {
   Dialog,
   DialogContent,
@@ -46,6 +46,11 @@ import {
 } from "@/components/ui/dialog";
 import AddEventModal from "@/components/AddEventModal";
 import EventModal from "@/components/AddEventModal/EventModal";
+import RecurrenceType from "@/components/AddEventModal/RecurrenceType";
+import { RecurringEventTypes } from "@/constants/RecurringEvents";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import toast from "react-hot-toast";
+import { useEditEventMutation } from "@/services/api/eventsApi";
 
 export default function EventDetails({
   selectedEvent,
@@ -66,6 +71,9 @@ export default function EventDetails({
   const [dropDown, setDropDown] = useState<boolean>(false);
   const [dropDown2, setDropDown2] = useState<boolean>(false);
   const [expandDetails, setExpandDetails] = useState<boolean>(false);
+  const [recurringDialogOpen, setRecurringDialogOpen] =
+    useState<boolean>(false);
+  const [deleteType, setDeleteType] = useState<string>("all");
 
   // const queryClient = useQueryClient();
 
@@ -73,8 +81,97 @@ export default function EventDetails({
     setSelectedColor(selectedEvent?.color);
   }, [selectedEvent]);
 
+  const { mutate: updateEventDetail } = useEditEventMutation();
+
   return (
     <>
+      <Dialog open={recurringDialogOpen} onOpenChange={setRecurringDialogOpen}>
+        <DialogContent className="w-80">
+          <DialogHeader>
+            <h3 className="text-lg font-bold">Delete Recurring Event</h3>
+          </DialogHeader>
+          <RadioGroup
+            defaultValue={deleteType}
+            onValueChange={(value) => {
+              setDeleteType(value);
+            }}
+          >
+            <div className="flex items-center gap-3 space-x-2">
+              <RadioGroupItem value="all" id="all" />
+              <label htmlFor="all">Delete All Events</label>
+            </div>
+            <div className="flex items-center gap-3 space-x-2">
+              <RadioGroupItem value="this" id="this" />
+              <label htmlFor="this">Delete Only This</label>
+            </div>
+            <div className="flex items-center gap-3 space-x-2">
+              <RadioGroupItem value="following" id="following" />
+              <label htmlFor="following">Delete All Following</label>
+            </div>
+          </RadioGroup>
+          <DialogFooter>
+            <button
+              onClick={async () => {
+                if (deleteType === "all") {
+                  handleDelete({
+                    target: {
+                      value:
+                        selectedEvent?._id ||
+                        // @ts-ignore
+                        selectedEvent?.id,
+                    },
+                  });
+                  setRecurringDialogOpen(false);
+                  return;
+                }
+                // handle exception ranges
+                let exceptionStart, exceptionEnd;
+                if (deleteType === "this") {
+                  exceptionStart = new Date(
+                    new Date(selectedEvent?.start ?? "").getTime() - 60000,
+                  );
+                  exceptionEnd = new Date(
+                    new Date(selectedEvent?.end ?? "").getTime() + 60000,
+                  );
+                } else if (deleteType === "following") {
+                  exceptionStart = new Date(
+                    new Date(selectedEvent?.start ?? "").getTime() - 60000,
+                  );
+                  exceptionEnd = new Date(
+                    new Date(selectedEvent?.recurrenceEnd ?? "").getTime() +
+                      60000,
+                  );
+                }
+                console.log("SELECTED EVENT::::", selectedEvent);
+                console.log("EXCEPTION START::::", exceptionStart);
+                console.log("EXCEPTION END::::", exceptionEnd);
+                let newEvent = {
+                  ...selectedEvent,
+                  exceptionRanges: [
+                    ...(selectedEvent?.exceptionRanges ?? []),
+                    {
+                      start: exceptionStart,
+                      end: exceptionEnd,
+                    },
+                  ],
+                };
+                delete newEvent.start;
+                delete newEvent.end;
+                updateEventDetail(newEvent, {
+                  onSuccess: () => {
+                    setRecurringDialogOpen(false);
+                    setSelectedEvent(null);
+                  },
+                });
+              }}
+              className=" rounded-md bg-neutral-300 p-3 py-1.5 text-sm font-medium text-neutral-900"
+            >
+              OK
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <section
         className={`${
           selectedEvent ? "" : "translate-x-full"
@@ -125,10 +222,17 @@ export default function EventDetails({
                 <button
                   onClick={(e: any) => {
                     setDropDown(false);
-                    setTimeout(() => {
-                      setSelectedEvent(null);
-                      handleDelete(e);
-                    }, 200);
+
+                    if (
+                      selectedEvent?.recurringType === RecurringEventTypes.ONCE
+                    ) {
+                      setTimeout(() => {
+                        handleDelete(e);
+                        setSelectedEvent(null);
+                      }, 200);
+                    } else {
+                      setRecurringDialogOpen(true);
+                    }
                   }}
                   className="flex w-full items-center justify-start gap-2 px-2 py-1 text-danger-400 transition-colors duration-150 hover:bg-neutral-100  hover:text-danger-500"
                   value={selectedEvent?._id}
