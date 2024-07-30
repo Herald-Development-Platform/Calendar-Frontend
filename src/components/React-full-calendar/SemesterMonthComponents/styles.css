@@ -1,0 +1,13 @@
+    .sem-grid{
+        width: 400px;
+        height: auto;
+        display: grid;
+        grid-template-columns: repeat(7, minmax(56.89px, 1fr));
+        /* grid-template-columns:repeat(56.89px, minmax(7, 1fr)); */
+        
+        grid-template-columns: 7;
+        border: 0.5px solid #DDDDDD; 
+        grid-template-rows: 22px;
+        grid-auto-rows:45px; 
+        gap: 0;
+    }

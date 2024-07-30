@@ -128,6 +128,8 @@ export function HomeHeader() {
     setSelectedDate({
       start: new Date(),
       end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
+      startStr: "",
+      endStr: "",
     });
   };
 

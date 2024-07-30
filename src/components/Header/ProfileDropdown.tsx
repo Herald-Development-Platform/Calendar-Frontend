@@ -14,7 +14,11 @@ import { MdOutlineSettings } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 
-export default function ProfileDropdown({ userData }: { userData: User }) {
+export default function ProfileDropdown({
+  userData,
+}: {
+  userData: User | undefined;
+}) {
   const router = useRouter();
   return (
     <DropdownMenu>

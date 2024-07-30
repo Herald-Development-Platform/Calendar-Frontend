@@ -278,10 +278,13 @@ export default function EventDetails({
           <Select
             defaultValue={selectedEvent?.color}
             onValueChange={(value) => {
-              updateEvent({
-                id: selectedEvent?._id,
-                newEvent: { ...selectedEvent, color: value },
-              });
+              updateEvent(
+                {
+                  id: selectedEvent?._id,
+                  newEvent: { ...selectedEvent, color: value },
+                },
+                { onSuccess: () => {} },
+              );
               setSelectedColor(value);
             }}
           >
