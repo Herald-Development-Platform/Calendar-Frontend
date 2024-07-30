@@ -10,19 +10,14 @@ export default function SemesterView({
   year: number;
   events: eventType[];
 }) {
-  // const year = new Date().getFullYear();
-  //   const { data: eventsData } = useGetEvents();
-
-  // console.log(
-  //   " getParsedDateForSemView({ events: eventsData })",
-  //   getParsedDateForSemView({ events: eventsData }),
-  // );
+  console.log("SemesterViewSemesterView", year);
   const eventsAccordingToMonth = getParsedDateForSemView({
-    events: eventsData,
+    events,
   });
+
   return (
     <>
-      <div className="my-20 flex h-screen flex-wrap gap-5 overflow-y-scroll">
+      <div className="hide-scrollbar mx-auto flex h-[calc(100vh-165px)] w-fit flex-wrap gap-5 overflow-y-scroll pb-20">
         {[...Array(12)].map((_, i) => {
           return (
             <>

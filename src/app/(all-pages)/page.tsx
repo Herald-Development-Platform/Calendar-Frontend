@@ -21,14 +21,15 @@ export default function page() {
   const calContainerRef = useRef<HTMLDivElement>(null);
 
   const { calendarRef } = useContext(Context);
-
+  // @ts-ignore
   const calendarHeight = calendarRef?.current?.elRef?.current?.offsetHeight
-    ? calendarRef?.current?.elRef?.current?.offsetHeight
+    ? // @ts-ignore
+      calendarRef?.current?.elRef?.current?.offsetHeight
     : 0;
-  const UpEventsHeight = depFilterRef.current?.offsetHeight
+  const DepFilHeight = depFilterRef.current?.offsetHeight
     ? depFilterRef.current?.offsetHeight
     : 0;
-  const UpEventsMarginY = depFilterRef.current
+  const DepFilMarginY = depFilterRef.current
     ? parseInt(
         getComputedStyle(depFilterRef.current).marginTop +
           getComputedStyle(depFilterRef.current).marginTop,
@@ -45,7 +46,6 @@ export default function page() {
       <div className="w-full">
         <Headers.HomeHeader />
       </div>
-
       <div
         ref={calLayoutRef}
         className="relative flex h-full w-full justify-between overflow-hidden overflow-y-auto pl-8"
@@ -55,7 +55,7 @@ export default function page() {
           <ReactFullCalendar />
         </div>
         <UpcommingEvents
-          elHeight={calendarHeight + UpEventsHeight + UpEventsMarginY}
+          elHeight={calendarHeight + DepFilHeight + DepFilMarginY}
         />
       </div>
     </div>

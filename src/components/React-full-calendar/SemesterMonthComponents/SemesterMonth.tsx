@@ -1,8 +1,9 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useContext, useRef } from "react";
 import "./styles.css";
 import { format, lastDayOfMonth } from "date-fns";
 import { BsDot } from "react-icons/bs";
+import { Context } from "@/app/clientWrappers/ContextProvider";
 
 export default function SemesterMonth({
   year = new Date().getFullYear(),
@@ -21,17 +22,7 @@ export default function SemesterMonth({
     new Date(firstDaysOfWeeks[firstDaysOfWeeks.length - 1]).getDate() +
     1;
 
-  // console.log("events", events);
-  // console.log(
-  //   "new Date(firstDaysOfWeeks[firstDaysOfWeeks.length - 1]).getDate()",
-  //   new Date(firstDaysOfWeeks[firstDaysOfWeeks.length - 1]).getDate(),
-  // );
-
-  // console.log("finalSectionLength", finalSectionLength);
-  // console.log("firstDaysOfWeeks", firstDaysOfWeeks);
-
-  // console.log("firstDaysOfWeeks", firstDaysOfWeeks);
-  // console.log("year", year, "month", month, new Date(year, month));
+  const { setSelectedDate } = useContext(Context);
 
   return (
     <>
@@ -124,8 +115,23 @@ export default function SemesterMonth({
                     })}
 
                   <div
-                    className="flex flex-nowrap items-center overflow-hidden truncate border-[0.5px] border-[#DDDDDD] bg-[#ffffff] pl-5 text-xl text-neutral-600"
+                    className="flex flex-nowrap items-center overflow-hidden truncate border-[0.5px] border-[#DDDDDD] bg-[#ffffff] pl-5 text-xl text-neutral-600 focus:border-primary-600"
                     style={{ gridColumn: `span ${gridSpanValue}` }}
+                    tabIndex={0}
+                    onClick={() => {
+                      const start = new Date(firstDaysOfWeeks[i]);
+                      const end =
+                        i !== firstDaysOfWeeks.length - 1
+                          ? new Date(firstDaysOfWeeks[i + 1])
+                          : new Date(year, month, 0);
+                      // console.log("start end", start, end);
+                      setSelectedDate({
+                        start: start,
+                        end: end,
+                        startStr: format(start, "yyyy-MM-dd"),
+                        endStr: format(end, "yyyy-MM-dd"),
+                      });
+                    }}
                   >
                     <span className="text-sm font-medium ">
                       {totalEvents} {gridSpanValue > 1 ? "Events" : "E..."}
@@ -177,6 +183,7 @@ function getFirstDaysOfWeeks({ year, month }: { year: number; month: number }) {
   const firstDayOfWeek = [];
 
   let date = new Date(year, month - 1, 1);
+  // console.log("--------------date-ddddddddddddd", date, year, month);
   firstDayOfWeek.push(date.toISOString());
   // console.log("date.getDay()", date.getDay());
 

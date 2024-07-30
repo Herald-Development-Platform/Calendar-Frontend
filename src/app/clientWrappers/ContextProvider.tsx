@@ -15,21 +15,49 @@ import {
   Dispatch,
   LegacyRef,
   useEffect,
+  RefObject,
 } from "react";
 
+interface SelectedDateType {
+  start: Date | undefined;
+  end: Date | undefined;
+  startStr: string | undefined;
+  endStr: string | undefined;
+}
 export interface ContextType {
-  events: EventInput[];
-  setEvents: Dispatch<SetStateAction<EventInput[]>>;
-  calendarRef: LegacyRef<FullCalendar> | undefined;
-  selectedDate: Date | undefined;
-  setSelectedDate: Dispatch<SetStateAction<Date | undefined>>;
+  events: eventType[] | undefined;
+  setEvents: Dispatch<SetStateAction<eventType[] | undefined>>;
+  calendarRef: RefObject<FullCalendar>;
+  selectedDate: SelectedDateType | undefined;
+  setSelectedDate: Dispatch<SetStateAction<SelectedDateType | undefined>>;
   calendarApi: CalendarApi | undefined;
   userData: User | undefined;
   notifications: any[];
+  timeout: any;
   notificationsLoading: boolean;
+  currentView: string;
+  setCurrentView: Dispatch<SetStateAction<string>>;
 }
 
-export const Context = createContext<any>({});
+export const Context = createContext<ContextType>({
+  events: [],
+  setEvents: () => {},
+  calendarRef: { current: null },
+  timeout: null,
+  selectedDate: {
+    start: undefined,
+    end: undefined,
+    startStr: undefined,
+    endStr: undefined,
+  },
+  setSelectedDate: () => {},
+  calendarApi: undefined,
+  userData: undefined,
+  notifications: [],
+  notificationsLoading: true,
+  currentView: "",
+  setCurrentView: () => {},
+});
 // const calendarRef = createRef(undefined);
 
 export default function ContextProvider({
@@ -38,17 +66,16 @@ export default function ContextProvider({
   children: React.ReactNode;
 }) {
   const calendarRef = useRef<FullCalendar | null>(null);
-  const [events, setEvents] = useState<EventInput[]>();
+  const [events, setEvents] = useState<eventType[] | undefined>();
+  const [currentView, setCurrentView] = useState<string>("");
+
   const calendarApi = calendarRef?.current?.getApi();
   const timeout = useRef<any>();
-  // calendarApi.
 
   const { data: notifications, isLoading: notificationsLoading } = useQuery({
     queryKey: ["Notification"],
     queryFn: () => Axios.get("/notification"),
   });
-
-  // const [userData, setUserData] = useState<User>();
 
   const { data: userData } = useQuery({
     queryKey: ["profile"],
@@ -59,10 +86,8 @@ export default function ContextProvider({
         if (user) {
           if (
             user.syncWithGoogle &&
-            (
-              user.role === ROLES.SUPER_ADMIN ||
-              (user.department && user.department.length > 0)
-            )
+            (user.role === ROLES.SUPER_ADMIN ||
+              (user.department && user.department.length > 0))
           ) {
             syncWithGoogle();
           }
@@ -103,34 +128,9 @@ export default function ContextProvider({
     }
   };
 
-  // const fetchUserData = async () => {
-  //   try {
-  //     const response = await Axios.get(`/profile`);
-  //     const user = response.data.data;
-  //     if (user) {
-  //       setUserData(user);
-  //       if (
-  //         user.syncWithGoogle &&
-  //         user.department &&
-  //         user.department.length > 0
-  //       ) {
-  //         syncWithGoogle();
-  //       }
-  //       const token = await generateNewToken();
-  //       if (token) {
-  //         setCookie("token", token, 5);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching user data:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchUserData();
-  // }, []);
-
-  const [selectedDate, setSelectedDate] = useState<SelectedDate | undefined>({
+  const [selectedDate, setSelectedDate] = useState<
+    SelectedDateType | undefined
+  >({
     start: new Date(),
     end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
     endStr: "",
@@ -140,6 +140,8 @@ export default function ContextProvider({
   return (
     <Context.Provider
       value={{
+        currentView,
+        setCurrentView,
         events,
         setEvents,
         calendarRef,

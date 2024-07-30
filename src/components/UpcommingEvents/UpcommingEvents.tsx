@@ -17,12 +17,10 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
   const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
   let lastDate: string;
 
-  const { selectedDate, timeout } = useContext(Context);
-
+  const { selectedDate, timeout, currentView } = useContext(Context);
   const selectedStartTime = selectedDate?.start
     ? selectedDate?.start.getTime()
     : 0;
-
   const selectedEndTime = selectedDate?.end ? selectedDate.end.getTime() : 0;
 
   const upcommingEventRef = useRef<HTMLDivElement>(null);
@@ -52,7 +50,9 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
       className={`${
         selectedEvent ? "" : "overflow-y-auto"
       } hide-scrollbar relative flex h-auto w-1/3 flex-col gap-10 overflow-hidden px-6`}
-      style={{ height: `${elHeight}px` }}
+      style={{
+        height: currentView !== "multiMonthYear" ? `${elHeight}px` : `100%`,
+      }}
     >
       <div className="flex flex-col gap-1 text-neutral-600 ">
         <h2 className="font-semibold">Upcomming Events</h2>
@@ -64,11 +64,10 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
 
       <div className="flex flex-col gap-3">
         {eventsLoading ? (
-          <div></div>
+          <></>
         ) : (
-          eventsData &&
-          eventsData.length &&
-          eventsData.length > 0 &&
+          eventsData?.length &&
+          eventsData?.length > 0 &&
           eventsData?.map((event: eventType, i: number) => {
             let inFirstEdge = null;
             let inBetween = null;
@@ -94,9 +93,13 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
               lastDate = format(new Date(eventStart), "MMMM d");
               displayDate = true;
             }
-
+            console.log(
+              "selectedDate selectedDate selectedDate",
+              selectedDate,
+              eventsData,
+            );
             return (
-              <>
+              <React.Fragment key={event._id}>
                 {displayDate && (
                   <div className="relative flex h-5 w-full items-center">
                     <div className="w-full border-t border-neutral-300"></div>
@@ -110,11 +113,12 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
                   event={event}
                   handleCardClick={handleCardClick}
                 />
-              </>
+              </React.Fragment>
             );
           })
         )}
       </div>
+
       <EventDetails
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
