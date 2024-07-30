@@ -282,6 +282,7 @@ export default function ManageDepartment() {
             </form>
           </DialogContent>
         </Dialog>
+        
         <div className="flex flex-row items-center justify-start gap-2">
           <span
             onClick={() => {

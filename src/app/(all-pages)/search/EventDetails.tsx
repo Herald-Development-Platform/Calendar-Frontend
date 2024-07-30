@@ -75,7 +75,7 @@ export default function EventDetails({
     useState<boolean>(false);
   const [deleteType, setDeleteType] = useState<string>("all");
 
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     setSelectedColor(selectedEvent?.color);
@@ -122,24 +122,28 @@ export default function EventDetails({
                     },
                   });
                   setRecurringDialogOpen(false);
+                  setSelectedEvent(null);
+                  queryClient.invalidateQueries({
+                    queryKey: ["Events"]
+                  });
                   return;
                 }
                 // handle exception ranges
                 let exceptionStart, exceptionEnd;
                 if (deleteType === "this") {
                   exceptionStart = new Date(
-                    new Date(selectedEvent?.start ?? "").getTime() - 60000,
+                    new Date(selectedEvent?.start ?? "").getTime() - 60000 - 5*60*60*1000 - 45*60*1000,
                   );
                   exceptionEnd = new Date(
-                    new Date(selectedEvent?.end ?? "").getTime() + 60000,
+                    new Date(selectedEvent?.end ?? "").getTime() + 60000 - 5*60*60*1000 - 45*60*1000,
                   );
                 } else if (deleteType === "following") {
                   exceptionStart = new Date(
-                    new Date(selectedEvent?.start ?? "").getTime() - 60000,
+                    new Date(selectedEvent?.start ?? "").getTime() - 60000 - 5*60*60*1000 - 45*60*1000,
                   );
                   exceptionEnd = new Date(
                     new Date(selectedEvent?.recurrenceEnd ?? "").getTime() +
-                      60000,
+                      60000 - 5*60*60*1000 - 45*60*1000,
                   );
                 }
                 console.log("SELECTED EVENT::::", selectedEvent);
@@ -161,6 +165,9 @@ export default function EventDetails({
                   onSuccess: () => {
                     setRecurringDialogOpen(false);
                     setSelectedEvent(null);
+                    queryClient.invalidateQueries({
+                      queryKey: ["Events"]
+                    });
                   },
                 });
               }}
