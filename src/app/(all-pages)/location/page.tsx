@@ -60,7 +60,7 @@ export default function LocationPage() {
     },
   });
 
-  const { userData } = useContext(Context);
+  const { userData: profile } = useContext(Context);
 
   const {
     register: registerLocation,
@@ -103,16 +103,18 @@ export default function LocationPage() {
           <p className="text-[28px] font-semibold text-neutral-700">
             Locations
           </p>
-          {/* {userData?.permissions.includes(PERMISSIONS.CREATE_DEPARTMENT) && ( */}
-          <button
-            onClick={() => {
-              setShowAddLocation(true);
-            }}
-            className="ml-7 flex items-center gap-2 rounded-[4px] bg-primary-600 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary-700"
-          >
-            <FaPlus />
-            <span>Add Location</span>
-          </button>
+          {profile &&
+            profile.permissions.includes(PERMISSIONS.CREATE_LOCATION) && (
+              <button
+                onClick={() => {
+                  setShowAddLocation(true);
+                }}
+                className="ml-7 flex items-center gap-2 rounded-[4px] bg-primary-600 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary-700"
+              >
+                <FaPlus />
+                <span>Add Location</span>
+              </button>
+            )}
         </div>
         <div className="flex w-full flex-col gap-5">
           <div className="flex flex-col items-start justify-start gap-5">
@@ -147,19 +149,24 @@ export default function LocationPage() {
                             </span>
                           )}
                         </div>
-                        <span
-                          className="ml-auto cursor-pointer text-danger-400"
-                          onClick={async () => {
-                            await Axios.delete(
-                              `${Endpoints.location}/${location._id}`,
-                            );
-                            queryClient.invalidateQueries({
-                              queryKey: ["locations"],
-                            });
-                          }}
-                        >
-                          <RiDeleteBin6Line />
-                        </span>
+                        {profile &&
+                          profile.permissions.includes(
+                            PERMISSIONS.DELETE_LOCATION,
+                          ) && (
+                            <span
+                              className="ml-auto cursor-pointer text-danger-400"
+                              onClick={async () => {
+                                await Axios.delete(
+                                  `${Endpoints.location}/${location._id}`,
+                                );
+                                queryClient.invalidateQueries({
+                                  queryKey: ["locations"],
+                                });
+                              }}
+                            >
+                              <RiDeleteBin6Line />
+                            </span>
+                          )}
                       </div>
                     </>
                   );

@@ -12,6 +12,15 @@ const PERMISSIONS = {
 
   // Event management
   VIEW_EVENTS_FOR_ALL_DEPARTMENT: "VIEW_EVENTS_FOR_ALL_DEPARTMENT",
+
+  //Semester Permission
+  CREATE_SEMESTER: "CREATE_SEMESTER",
+  UPDATE_SEMESTER: "UPDATE_SEMESTER",
+  DELETE_SEMESTER: "DELETE_SEMESTER",
+
+  //Location Permissions
+  CREATE_LOCATION: "CREATE_LOCATION",
+  DELETE_LOCATION: "DELETE_LOCATION",
 };
 
 const READABLE_PERMISSIONS = {
@@ -28,6 +37,15 @@ const READABLE_PERMISSIONS = {
 
   // Event management
   VIEW_EVENTS_FOR_ALL_DEPARTMENT: "Access events of all departments",
+
+  //Semester Permission
+  CREATE_SEMESTER: "Add Semester",
+  UPDATE_SEMESTER: "Update Semester Details",
+  DELETE_SEMESTER: "Delete Semester",
+
+  //Location Permissions
+  CREATE_LOCATION: "Add location shortcut",
+  DELETE_LOCATION: "Remove location shortcut",
 };
 
 const PERMISSION_GROUPS = {
@@ -43,6 +61,6 @@ const PERMISSION_GROUPS = {
     PERMISSIONS.MANAGE_DEPARTMENT_REQUEST,
   ],
   "Event permissions": [PERMISSIONS.VIEW_EVENTS_FOR_ALL_DEPARTMENT],
-}
+};
 
 export { PERMISSIONS, READABLE_PERMISSIONS, PERMISSION_GROUPS };

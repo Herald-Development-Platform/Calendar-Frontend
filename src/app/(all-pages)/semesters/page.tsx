@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaPlus } from "react-icons/fa6";
 import { IoMdArrowBack } from "react-icons/io";
@@ -32,6 +32,8 @@ import { BsThreeDots, BsThreeDotsVertical } from "react-icons/bs";
 import { MdOutlineEdit } from "react-icons/md";
 import { LuTrash2 } from "react-icons/lu";
 import { useQueryClient } from "@tanstack/react-query";
+import { Context } from "@/app/clientWrappers/ContextProvider";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export default function SemestersPage() {
   const router = useRouter();
@@ -44,6 +46,7 @@ export default function SemestersPage() {
     getValues: getValuesSemester,
     watch: watchSemester,
   } = useForm<Semester>();
+  const { userData: profile } = useContext(Context);
 
   const queryClient = useQueryClient();
 
@@ -241,16 +244,19 @@ export default function SemestersPage() {
           <p className="text-[28px] font-semibold text-neutral-700">
             Semesters
           </p>
-          <button
-            onClick={() => {
-              setCurrentMutation("create");
-              setSemesterDialogOpen(true);
-            }}
-            className="ml-7 flex items-center gap-2 rounded-[4px] bg-primary-600 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary-700"
-          >
-            <FaPlus />
-            <span>Add Semester Period</span>
-          </button>
+          {profile &&
+            profile.permissions.includes(PERMISSIONS.CREATE_SEMESTER) && (
+              <button
+                onClick={() => {
+                  setCurrentMutation("create");
+                  setSemesterDialogOpen(true);
+                }}
+                className="ml-7 flex items-center gap-2 rounded-[4px] bg-primary-600 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary-700"
+              >
+                <FaPlus />
+                <span>Add Semester Period</span>
+              </button>
+            )}
         </div>
         <div className="flex max-w-[40vw] flex-col items-start justify-start gap-5">
           {isLoading ? (
@@ -286,38 +292,48 @@ export default function SemestersPage() {
                         align="start"
                         className="flex flex-col gap-2.5 rounded-[8px] px-5 py-4"
                       >
-                        <div
-                          onClick={() => {
-                            setCurrentMutation("update");
-                            resetSemester({
-                              course: semester.course,
-                              semester: semester.semester,
-                              start: new Date(semester.start),
-                              end: new Date(semester.end),
-                              color: semester.color,
-                              _id: semester._id,
-                            });
-                            setSemesterDialogOpen(true);
-                          }}
-                          className="flex cursor-pointer items-center justify-start gap-1.5 px-1.5 text-neutral-700 "
-                        >
-                          <span className="text-xl">
-                            <MdOutlineEdit />
-                          </span>
-                          <span className="ml-2">Edit Semester</span>
-                        </div>
+                        {profile &&
+                          profile.permissions.includes(
+                            PERMISSIONS.UPDATE_SEMESTER,
+                          ) && (
+                            <div
+                              onClick={() => {
+                                setCurrentMutation("update");
+                                resetSemester({
+                                  course: semester.course,
+                                  semester: semester.semester,
+                                  start: new Date(semester.start),
+                                  end: new Date(semester.end),
+                                  color: semester.color,
+                                  _id: semester._id,
+                                });
+                                setSemesterDialogOpen(true);
+                              }}
+                              className="flex cursor-pointer items-center justify-start gap-1.5 px-1.5 text-neutral-700 "
+                            >
+                              <span className="text-xl">
+                                <MdOutlineEdit />
+                              </span>
+                              <span className="ml-2">Edit Semester</span>
+                            </div>
+                          )}
                         <hr />
-                        <div
-                          onClick={() => {
-                            deleteSemester(semester._id ?? "");
-                          }}
-                          className="flex cursor-pointer items-center justify-start gap-1.5 px-1.5 text-danger-400 "
-                        >
-                          <span className="text-xl">
-                            <LuTrash2 />
-                          </span>
-                          <span className="ml-2">Delete Semester</span>
-                        </div>
+                        {profile &&
+                          profile.permissions.includes(
+                            PERMISSIONS.DELETE_SEMESTER,
+                          ) && (
+                            <div
+                              onClick={() => {
+                                deleteSemester(semester._id ?? "");
+                              }}
+                              className="flex cursor-pointer items-center justify-start gap-1.5 px-1.5 text-danger-400 "
+                            >
+                              <span className="text-xl">
+                                <LuTrash2 />
+                              </span>
+                              <span className="ml-2">Delete Semester</span>
+                            </div>
+                          )}
                       </PopoverContent>
                     </Popover>
                   </div>
