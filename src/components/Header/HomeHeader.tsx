@@ -56,7 +56,7 @@ import ProfileDropdown from "./ProfileDropdown";
 import EventModal from "../AddEventModal/EventModal";
 import { Menu, SquareMenu } from "lucide-react";
 import Link from "next/link";
-import Sidebar from "../Sidebar";
+
 import ToggleSidebar from "../Sidebar/ToggleSidebar";
 
 export function HomeHeader() {
@@ -64,7 +64,7 @@ export function HomeHeader() {
   const [calendarApi, setCalendarApi] = useState<CalendarApi>();
   const [listView, setListView] = useState<boolean>(false);
   const [toggleSidebar, setToggleSidebar] = useState<boolean>(false);
-  const { notifications } = useContext(Context);
+  const { notifications, setCurrentView } = useContext(Context);
 
   let newNotifications = false;
   if (notifications) {
@@ -148,7 +148,6 @@ export function HomeHeader() {
               src={"/images/LoginPage/HeraldLogo.png"}
               width={32}
               height={32}
-              // className="rounded-xs"
               alt="Herald Logo"
             ></Image>
           </Link>
@@ -194,16 +193,6 @@ export function HomeHeader() {
 
           {/* listview, month and addEventModal  */}
           <div className="flex max-h-8 w-fit items-center justify-between gap-3 overflow-hidden text-sm font-medium">
-            {/* <button
-              className={`${
-                listView ? "bg-primary-500 text-white" : "text-neutral-500"
-              } max-w-32 h-full rounded-sm border border-neutral-300 px-3 text-2xl font-semibold transition duration-200 `}
-              onClick={(e) => {
-                setListView((prev) => !prev);
-              }}
-            >
-              <MdListAlt />
-            </button> */}
             <TooltipProvider>
               <Tooltip delayDuration={250}>
                 <TooltipTrigger asChild>
@@ -213,9 +202,9 @@ export function HomeHeader() {
                       listView
                         ? "bg-primary-500 text-white"
                         : "text-neutral-500"
-                    } max-w-32 h-full rounded-sm border border-neutral-300 px-3 text-2xl font-semibold transition duration-200 `}
+                    } max-w-32 h-full rounded-sm border border-neutral-300 px-3 text-2xl font-semibold transition duration-200`}
                     onClick={(e) => {
-                      setListView((prev) => !prev);
+                      (prev) => !prev;
                     }}
                   >
                     <MdListAlt />
@@ -231,6 +220,7 @@ export function HomeHeader() {
                 if (listView && calendarApi)
                   return findListView(calView, calendarApi);
                 calendarApi?.changeView(calView);
+                setCurrentView(calView);
               }}
               defaultValue={CalendarViews.monthView}
             >

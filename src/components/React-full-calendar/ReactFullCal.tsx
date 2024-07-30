@@ -95,7 +95,6 @@ export default function ReactFullCal({} // eventDetailWidth,
 
   const handleSelect = ({ start, end, startStr, endStr }: DateSelectArg) => {
     setSelectedDate({ start, end, startStr, endStr });
-    // console.log("eventselect", { start, end, startStr, endStr });
     clearTimeout(timeout.current);
   };
 
@@ -120,7 +119,6 @@ export default function ReactFullCal({} // eventDetailWidth,
     );
     const dayFrameEls = Array.from(dayFrameRefs.current);
 
-    // console.log("dayFrameRefs.current", dayFrameEls);
     const listenerRefs: any[] = [];
 
     if (!Array.isArray(dayFrameEls)) return;
@@ -134,7 +132,6 @@ export default function ReactFullCal({} // eventDetailWidth,
 
       const parsedDate = parse(ariaLabelValue, "MMMM d, yyyy", new Date());
       const isoDate = format(parsedDate, "yyyy-MM-dd");
-      // console.log("isoDate", new Date(isoDate).toISOString());
 
       const isHighLight = userData?.importantDates.includes(
         new Date(isoDate).toISOString(),
@@ -223,7 +220,6 @@ export default function ReactFullCal({} // eventDetailWidth,
   const handleEventDidMount = (info: EventMountArg) => {
     // if (calendar)
     if (calendarRef?.current?.getApi()?.view.type !== "dayGridMonth") return;
-    // console.log("current view :: ", calendarRef?.current?.getApi()?.view.type);
     const eventEl = info.el;
     const departments = info?.event?._def?.extendedProps?.departments;
     const titleElement = eventEl?.querySelector(".fc-event-title");
@@ -307,17 +303,16 @@ export default function ReactFullCal({} // eventDetailWidth,
     currentView: currentView,
   });
 
-  console.log("new Date(selectedDate).getFullYear()", selectedDate);
+  console.log("currentView", currentView);
   return (
     <>
-      <div ref={calWrapper} className="h-full w-auto ">
+      <div ref={calWrapper} className="relative h-full w-auto">
         {currentView !== "multiMonthYear" ? (
           <>
             <FullCalendar
               ref={calendarRef}
               plugins={allPlugins}
               datesSet={(info) => {
-                // console.log("datesSet ---- view ----", info.view.type);
                 if (currentView === info.view.type) return;
                 setCurrentView(info.view.type);
               }}
@@ -335,8 +330,6 @@ export default function ReactFullCal({} // eventDetailWidth,
                   document.querySelector("#upcomming-events")?.offsetWidth;
                 setEventDetailWidth(upcommingEventWidth);
                 setSelectedEvent(selectedEventObj as eventType);
-
-                // console.log("upcommingEventWidth", upcommingEventWidth);
               }}
               initialView={`dayGridMonth`}
               events={events as EventSourceInput}
@@ -384,12 +377,14 @@ export default function ReactFullCal({} // eventDetailWidth,
               ></SemesterView>
             ) : (
               <p>
-                Error: events --- {Boolean(events)}, selDate ---
-                {Boolean(selectedDate?.start)}
+                Error: <br /> events: {Boolean(events).toString()} <br />{" "}
+                selDate:
+                {Boolean(selectedDate?.start).toString()}
               </p>
             )}
           </>
         )}
+        {/* <div className="absolute left-0 top-0 h-80 w-80 bg-primary-500 z-10"></div> */}
       </div>
       <EventDetails
         selectedEvent={selectedEvent}
@@ -506,13 +501,11 @@ const useApplySemesterDotYearly = ({
       ".fc-multimonth-title",
     );
     const titleEls = Array.from(titleNodeList);
-    // console.log("titleEls", titleEls);
     titleEls.forEach((titleEl: any, i: number) => {
       const semesterWrapper = document.createElement("div");
       semesterWrapper.classList.add("semester-yearly-wrapper");
 
       semesterData?.forEach((semester: SemesterType) => {
-        // console.log("semester?.start", new Date(semester?.start)?.getMonth());
         if (
           !(
             new Date(semester?.start)?.getMonth() >= i &&
@@ -536,13 +529,10 @@ const useApplySemesterDotYearly = ({
      `;
 
         const tooltipDot = semesterDot.querySelector(".semester-tooltip-dot");
-        // console.log("tooltipDot", tooltipDot);
         // @ts-ignore
         if (tooltipDot.style.backgroundColor)
           // @ts-ignore
           tooltipDot.style.backgroundColor = `${semester.color}`;
-
-        // console.log("semesterdot");
 
         semesterWrapper?.appendChild(semesterDot);
       });
@@ -559,7 +549,6 @@ const useApplyYearlySemesterView = ({
   multiMonthEls: HTMLDivElement[];
   currentView: string;
 }) => {
-  // console.log("multimonthels", multiMonthEls);
   return useEffect(() => {
     if (!Boolean(multiMonthEls)) return;
     const multiMonthElsArr = Array.from(multiMonthEls);
