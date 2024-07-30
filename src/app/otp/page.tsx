@@ -85,6 +85,9 @@ export default function Page() {
 
   const handleOtpPaste = (e:any) => {
     if (e) {e.preventDefault();}
+    if (!navigator.clipboard) {
+      return toast.error("Cannot access clipboard");
+    }
     navigator.clipboard.readText().then((text) => {
       text = text.trim()
       if (text.length > 6) {
