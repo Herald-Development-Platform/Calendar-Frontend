@@ -62,6 +62,8 @@ interface User {
   photo?: string;
   importantDates?: Date[];
   syncWithGoogle: boolean;
+  donotDisturbState?: string,
+  notificationExpiry?: Date,
 }
 
 interface Location {

@@ -1,8 +1,17 @@
 import { Context } from "@/app/clientWrappers/ContextProvider";
+import { useUpdateProfileMutation } from "@/services/api/profile";
 import { Axios } from "@/services/baseUrl";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import { useContext } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import toast from "react-hot-toast";
 
 const NOTIFICATION_CONTEXT = {
   DEPARTMENT_REQUEST: "DEPARTMENT_REQUEST",
@@ -13,6 +22,16 @@ const NOTIFICATION_CONTEXT = {
   UPCOMING_EVENT: "UPCOMING_EVENT",
   EVENT_CANCELLED: "EVENT_CANCELLED",
   EVENT_RESCHEDULED: "EVENT_RESCHEDULED",
+};
+
+const DONOT_DISTURB_STATE = {
+  DEFAULT: "-",
+  ONE_HOUR: "1",
+  THREE_HOUR: "3",
+  SIX_HOUR: "6",
+  TWELVE_HOUR: "12",
+  TWENTYFOUR_FOUR: "24",
+  UNTIL: "UNTIL",
 };
 
 export const NotificationList = (props: any) => {
@@ -55,6 +74,10 @@ export const NotificationList = (props: any) => {
       console.error("Error marking all as read", error);
     }
   };
+
+  const { userData: profile } = useContext(Context);
+
+  const { mutate: updateProfile } = useUpdateProfileMutation();
 
   return (
     <div className="flex flex-col">
@@ -157,6 +180,82 @@ export const NotificationList = (props: any) => {
             );
           })
         )}
+      </div>
+      <div className="flex items-center justify-end gap-2 py-2">
+        <span className="text-[14px] font-semibold text-neutral-700">
+          Don&apos;t disturb for
+        </span>
+        <div className="w-fit text-[11px] font-normal text-black">
+          <Select
+            onValueChange={(value) => {
+              let plusHour = 0;
+              switch(value) {
+                case DONOT_DISTURB_STATE.DEFAULT:
+                  plusHour = -1;
+                  break;
+                case DONOT_DISTURB_STATE.ONE_HOUR:
+                  plusHour = 1;
+                  break;
+                case DONOT_DISTURB_STATE.THREE_HOUR:
+                  plusHour = 3;
+                  break;
+                case DONOT_DISTURB_STATE.SIX_HOUR:
+                  plusHour = 6;
+                  break;
+                case DONOT_DISTURB_STATE.TWELVE_HOUR:
+                  plusHour = 12;
+                  break;
+                case DONOT_DISTURB_STATE.TWENTYFOUR_FOUR:
+                  plusHour = 24;
+                  break;
+                case DONOT_DISTURB_STATE.UNTIL:
+                  plusHour = 8766; // 1 year
+                  break;
+              }
+              let expiryDate = new Date(new Date().getTime() + (1000 * 60 * 60 * plusHour));
+              updateProfile({
+                ...profile,
+                donotDisturbState: value,
+                notificationExpiry: expiryDate,
+              }, {
+                onSuccess: () => {
+                  toast.success("Don't disturb state updated successfully.");
+                  queryClient.invalidateQueries({
+                    queryKey: ["profile"],
+                  });
+                }
+              });
+            }}
+            value={profile?.donotDisturbState ?? DONOT_DISTURB_STATE.DEFAULT}
+          >
+            <SelectTrigger className="gap-5 ring-0 outline-none border-none">
+              <SelectValue placeholder="" />
+            </SelectTrigger>
+            <SelectContent className="h-fit py-0 pr-2  ring-0 outline-none border-none ">
+              <SelectItem value={DONOT_DISTURB_STATE.DEFAULT}>
+                Not set
+              </SelectItem>
+              <SelectItem value={DONOT_DISTURB_STATE.ONE_HOUR}>
+                1 hrs
+              </SelectItem>
+              <SelectItem value={DONOT_DISTURB_STATE.THREE_HOUR}>
+                3 hrs
+              </SelectItem>
+              <SelectItem value={DONOT_DISTURB_STATE.SIX_HOUR}>
+                6 hrs
+              </SelectItem>
+              <SelectItem value={DONOT_DISTURB_STATE.TWELVE_HOUR}>
+                12 hrs
+              </SelectItem>
+              <SelectItem value={DONOT_DISTURB_STATE.TWENTYFOUR_FOUR}>
+                24 hrs
+              </SelectItem>
+              <SelectItem value={DONOT_DISTURB_STATE.UNTIL}>
+                Until turned on
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
     </div>
   );
