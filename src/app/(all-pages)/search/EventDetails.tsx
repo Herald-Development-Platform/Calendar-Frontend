@@ -124,7 +124,7 @@ export default function EventDetails({
                   setRecurringDialogOpen(false);
                   setSelectedEvent(null);
                   queryClient.invalidateQueries({
-                    queryKey: ["Events"]
+                    queryKey: ["Events"],
                   });
                   return;
                 }
@@ -132,18 +132,29 @@ export default function EventDetails({
                 let exceptionStart, exceptionEnd;
                 if (deleteType === "this") {
                   exceptionStart = new Date(
-                    new Date(selectedEvent?.start ?? "").getTime() - 60000 - 5*60*60*1000 - 45*60*1000,
+                    new Date(selectedEvent?.start ?? "").getTime() -
+                      60000 -
+                      5 * 60 * 60 * 1000 -
+                      45 * 60 * 1000,
                   );
                   exceptionEnd = new Date(
-                    new Date(selectedEvent?.end ?? "").getTime() + 60000 - 5*60*60*1000 - 45*60*1000,
+                    new Date(selectedEvent?.end ?? "").getTime() +
+                      60000 -
+                      5 * 60 * 60 * 1000 -
+                      45 * 60 * 1000,
                   );
                 } else if (deleteType === "following") {
                   exceptionStart = new Date(
-                    new Date(selectedEvent?.start ?? "").getTime() - 60000 - 5*60*60*1000 - 45*60*1000,
+                    new Date(selectedEvent?.start ?? "").getTime() -
+                      60000 -
+                      5 * 60 * 60 * 1000 -
+                      45 * 60 * 1000,
                   );
                   exceptionEnd = new Date(
                     new Date(selectedEvent?.recurrenceEnd ?? "").getTime() +
-                      60000 - 5*60*60*1000 - 45*60*1000,
+                      60000 -
+                      5 * 60 * 60 * 1000 -
+                      45 * 60 * 1000,
                   );
                 }
                 console.log("SELECTED EVENT::::", selectedEvent);
@@ -166,7 +177,7 @@ export default function EventDetails({
                     setRecurringDialogOpen(false);
                     setSelectedEvent(null);
                     queryClient.invalidateQueries({
-                      queryKey: ["Events"]
+                      queryKey: ["Events"],
                     });
                   },
                 });
@@ -421,7 +432,11 @@ export default function EventDetails({
                 <div className="w-full border-t border-neutral-300"></div>
                 <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-white px-2 text-sm text-neutral-600">
                   {selectedEvent?.start &&
-                    format(new Date(selectedEvent?.start), "MMMM d")}
+                    (
+                      new Date(selectedEvent.start).getDate() !== new Date(selectedEvent.end ?? "").getDate()
+                    ? `${format(new Date(selectedEvent?.start), "MMMM d")} - ${format(new Date(selectedEvent?.end ?? ""), "MMMM d")}`
+                    : 
+                    format(new Date(selectedEvent?.start), "MMMM d"))}
                 </h1>
               </div>
               {selectedEvent && <EventCard event={selectedEvent} />}
