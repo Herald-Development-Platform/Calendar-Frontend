@@ -278,7 +278,10 @@ export default function EventDetails({
             <div className="w-full border-t border-neutral-300"></div>
             <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-white px-2 text-sm text-neutral-600">
               {selectedEvent?.start &&
-                format(new Date(selectedEvent?.start), "MMMM d")}
+                (new Date(selectedEvent.start).getDate() !==
+                new Date(selectedEvent.end ?? "").getDate()
+                  ? `${format(new Date(selectedEvent?.start), "MMMM d")} - ${format(new Date(selectedEvent?.end ?? ""), "MMMM d")}`
+                  : format(new Date(selectedEvent?.start), "MMMM d"))}
             </h1>
           </div>
           {selectedEvent && <EventCard event={selectedEvent} />}
@@ -432,11 +435,10 @@ export default function EventDetails({
                 <div className="w-full border-t border-neutral-300"></div>
                 <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-white px-2 text-sm text-neutral-600">
                   {selectedEvent?.start &&
-                    (
-                      new Date(selectedEvent.start).getDate() !== new Date(selectedEvent.end ?? "").getDate()
-                    ? `${format(new Date(selectedEvent?.start), "MMMM d")} - ${format(new Date(selectedEvent?.end ?? ""), "MMMM d")}`
-                    : 
-                    format(new Date(selectedEvent?.start), "MMMM d"))}
+                    (new Date(selectedEvent.start).getDate() !==
+                    new Date(selectedEvent.end ?? "").getDate()
+                      ? `${format(new Date(selectedEvent?.start), "MMMM d")} - ${format(new Date(selectedEvent?.end ?? ""), "MMMM d")}`
+                      : format(new Date(selectedEvent?.start), "MMMM d"))}
                 </h1>
               </div>
               {selectedEvent && <EventCard event={selectedEvent} />}

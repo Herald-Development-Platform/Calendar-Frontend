@@ -109,7 +109,7 @@ export default function InviteMembers({
                   return (
                     <div
                       key={i}
-                      className="group tooltip relative bg-white text-black"
+                      className=" flex flex-col items-start justify-start group tooltip relative bg-white text-black"
                       data-tip={selMembers?.username}
                     >
                       <Image
@@ -136,7 +136,7 @@ export default function InviteMembers({
                     <div
                       key={i}
                       // className="tooltip  bg-white text-black "
-                      className="group tooltip relative bg-white text-black"
+                      className=" flex flex-col items-start justify-start group tooltip relative bg-white text-black"
                       data-tip={selMembers?.username}
                     >
                       <Image
@@ -194,11 +194,11 @@ export default function InviteMembers({
                           ></Image>
                         </>
                       )}
-                      <div className="flex flex-grow flex-col">
-                        <p className="text-sm font-semibold text-neutral-900">
+                      <div className="flex flex-grow justify-start flex-col">
+                        <p className="text-sm font-semibold text-neutral-900 text-left">
                           {userData?.username}
                         </p>
-                        <p className="text-xs text-neutral-600">
+                        <p className="text-xs text-neutral-600 text-left">
                           {userData?.role}
                         </p>
                       </div>
