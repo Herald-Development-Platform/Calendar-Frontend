@@ -278,3 +278,13 @@
     height: 100%; 
     background-color: black;
 }
+
+.fc-timegrid-event-harness-inset > a {
+/* background-color: black !important; */
+/* background-color: transparent !important; */
+/* color:  */
+
+border-left: 15px solid black !important;
+}
+
+/* .fc-v-event{background-color: black !important;} */
