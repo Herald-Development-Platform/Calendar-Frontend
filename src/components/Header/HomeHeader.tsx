@@ -204,7 +204,7 @@ export function HomeHeader() {
                         : "text-neutral-500"
                     } max-w-32 h-full rounded-sm border border-neutral-300 px-3 text-2xl font-semibold transition duration-200`}
                     onClick={(e) => {
-                      (prev) => !prev;
+                      setListView((prev) => !prev);
                     }}
                   >
                     <MdListAlt />

@@ -35,6 +35,11 @@ import { delay, generateNewToken } from "@/lib/utils";
 import { useGetSemester } from "@/services/api/semester";
 import EventDetails from "@/app/(all-pages)/search/EventDetails";
 import SemesterView from "./SemesterMonthComponents/SemesterView";
+import {
+  useApplySemesterDot,
+  useApplySemesterDotYearly,
+  useApplyYearlySemesterView,
+} from "./utils";
 
 const allPlugins = [
   dayGridPlugin,
@@ -218,14 +223,16 @@ export default function ReactFullCal({} // eventDetailWidth,
   }, [userData?.importantDates, monthValue]);
 
   const handleEventDidMount = (info: EventMountArg) => {
-    // if (calendar)
-    if (calendarRef?.current?.getApi()?.view.type !== "dayGridMonth") return;
+    if (currentView !== "dayGridMonth") return;
+
+    // console.log("handleEventDidMount -----");
     const eventEl = info.el;
     const departments = info?.event?._def?.extendedProps?.departments;
     const titleElement = eventEl?.querySelector(".fc-event-title");
     const isBlockEvent = eventEl?.classList.contains("fc-daygrid-block-event");
 
     if (departments?.length === 0 || !titleElement || isBlockEvent) return;
+    console.log("--- handleEventDidMount ", currentView);
 
     const departmentsWrapper = document.createElement("div");
     departmentsWrapper.classList.add("department-wrapper");
@@ -303,73 +310,71 @@ export default function ReactFullCal({} // eventDetailWidth,
     currentView: currentView,
   });
 
-  console.log("currentView", currentView);
+  // console.log("currentView", currentView);
   return (
     <>
       <div ref={calWrapper} className="relative h-full w-auto">
-        {currentView !== "multiMonthYear" ? (
-          <>
-            <FullCalendar
-              ref={calendarRef}
-              plugins={allPlugins}
-              datesSet={(info) => {
-                if (currentView === info.view.type) return;
-                setCurrentView(info.view.type);
-              }}
-              eventClick={(info) => {
-                const selectedEventObj = {
-                  ...info?.event?._instance?.range,
-                  ...info?.event?._def?.extendedProps,
-                  title: info?.event?._def?.title,
-                  color:
-                    info?.event?._def?.ui?.backgroundColor ||
-                    info?.event?._def?.ui?.borderColor,
-                };
-                const upcommingEventWidth =
-                  // @ts-ignore
-                  document.querySelector("#upcomming-events")?.offsetWidth;
-                setEventDetailWidth(upcommingEventWidth);
-                setSelectedEvent(selectedEventObj as eventType);
-              }}
-              initialView={`dayGridMonth`}
-              events={events as EventSourceInput}
-              // eventMouseEnter={handleMouseEnter}
-              // eventMouseLeave={handleMouseLeave}
-              eventDidMount={handleEventDidMount}
-              headerToolbar={false}
-              selectable={true}
-              select={handleSelect}
-              viewDidMount={async (info: any) => {
-                await delay(200);
-                if (
-                  calendarRef?.current?.getApi()?.view?.type !== "dayGridMonth"
-                )
-                  return;
-                const scrollerEl = info.el.querySelector(
+        <>
+          <FullCalendar
+            ref={calendarRef}
+            plugins={allPlugins}
+            datesSet={(info) => {
+              if (currentView === info.view.type) return;
+              setCurrentView(info.view.type);
+            }}
+            eventClick={(info) => {
+              const selectedEventObj = {
+                ...info?.event?._instance?.range,
+                ...info?.event?._def?.extendedProps,
+                title: info?.event?._def?.title,
+                color:
+                  info?.event?._def?.ui?.backgroundColor ||
+                  info?.event?._def?.ui?.borderColor,
+              };
+              const upcommingEventWidth =
+                // @ts-ignore
+                document.querySelector("#upcomming-events")?.offsetWidth;
+              setEventDetailWidth(upcommingEventWidth);
+              setSelectedEvent(selectedEventObj as eventType);
+            }}
+            initialView={`dayGridMonth`}
+            events={events as EventSourceInput}
+            // eventMouseEnter={handleMouseEnter}
+            // eventMouseLeave={handleMouseLeave}
+            eventDidMount={handleEventDidMount}
+            headerToolbar={false}
+            selectable={true}
+            select={handleSelect}
+            viewDidMount={async (info: any) => {
+              await delay(200);
+              if (calendarRef?.current?.getApi()?.view?.type !== "dayGridMonth")
+                return;
+              const scrollerEl = info.el.querySelector(
+                ".fc-scroller-liquid-absolute",
+              );
+              if (!scrollerEl) return;
+              scrollerEl.style.overflow = "visible";
+              console.log("viewdidmount ------------------", scrollerEl);
+            }}
+            windowResize={async (arg) => {
+              await delay(200);
+              const scrollerEl = // @ts-ignore
+                calendarRef?.current?.elRef?.current.querySelector(
                   ".fc-scroller-liquid-absolute",
                 );
-                if (!scrollerEl) return;
-                scrollerEl.style.overflow = "visible";
-                console.log("viewdidmount", scrollerEl);
-              }}
-              windowResize={async (arg) => {
-                await delay(200);
-                const scrollerEl = // @ts-ignore
-                  calendarRef?.current?.elRef?.current.querySelector(
-                    ".fc-scroller-liquid-absolute",
-                  );
-                scrollerEl.style.overflow = "visible";
-              }}
-              unselect={handleUnselect}
-              displayEventTime={false}
-              dayHeaderClassNames={"customStylesDayHeader"}
-              dayCellClassNames={"customStylesDayCells"}
-              eventMaxStack={2}
-              dayMaxEvents={2}
-            />
-          </>
-        ) : (
-          <>
+              scrollerEl.style.overflow = "visible";
+            }}
+            unselect={handleUnselect}
+            displayEventTime={false}
+            dayHeaderClassNames={"customStylesDayHeader"}
+            dayCellClassNames={"customStylesDayCells"}
+            eventMaxStack={2}
+            dayMaxEvents={2}
+          />
+        </>
+
+        {currentView === "multiMonthYear" && (
+          <div className="absolute left-0 top-0 z-10 h-full w-full bg-white">
             {events && selectedDate?.start ? (
               <SemesterView
                 events={events}
@@ -382,9 +387,8 @@ export default function ReactFullCal({} // eventDetailWidth,
                 {Boolean(selectedDate?.start).toString()}
               </p>
             )}
-          </>
+          </div>
         )}
-        {/* <div className="absolute left-0 top-0 h-80 w-80 bg-primary-500 z-10"></div> */}
       </div>
       <EventDetails
         selectedEvent={selectedEvent}
@@ -396,194 +400,6 @@ export default function ReactFullCal({} // eventDetailWidth,
     </>
   );
 }
-
-const useApplySemesterDot = ({
-  calendarRef,
-  semesterData,
-  monthValue,
-  currentView,
-}: {
-  calendarRef: RefObject<FullCalendar> | undefined;
-  semesterData: SemesterType[] | undefined;
-  monthValue: number | undefined;
-  currentView?: string;
-}) => {
-  return useEffect(() => {
-    if (!calendarRef?.current || currentView !== "dayGridMonth") return;
-
-    // @ts-ignore
-    const dayFrameElements = calendarRef.current.elRef.current.querySelectorAll(
-      ".fc-daygrid-day-frame",
-    );
-
-    const dayFrameEls = Array.from(dayFrameElements);
-
-    dayFrameEls.forEach((dayFrameEl: any, elIndex: number) => {
-      const dayGridTopEl = dayFrameEl.querySelector(".fc-daygrid-day-top");
-      const semesterDotExists = Boolean(
-        dayFrameEl.querySelector(".fc-custom-semester-dot"),
-      );
-      // @ts-ignore
-      const dayFrameDate = dayFrameEl.parentElement.getAttribute("data-date");
-
-      if (
-        !semesterData ||
-        !dayFrameDate ||
-        !Array.isArray(semesterData) ||
-        semesterDotExists
-      )
-        return;
-
-      semesterData?.forEach((semester: SemesterType) => {
-        if (
-          new Date(dayFrameDate) < new Date(semester.start) ||
-          new Date(dayFrameDate) > new Date(semester.end)
-        )
-          return;
-
-        const semesterDot = document.createElement("div");
-        semesterDot.classList.add("fc-custom-semester-dot");
-        semesterDot.setAttribute("data-course", semester.course);
-        semesterDot.setAttribute("data-semester", semester.semester);
-        semesterDot.style.backgroundColor = semester.color;
-        semesterDot.innerHTML = `
-        <div class="semester-tooltip-wrapper">
-          <div class="semester-tooltip-data">
-            <div class="semester-tooltip-dot" style="background-color: ${semester.color}"></div>
-            <span class="semester-tooltip-semTitle">${semester.semester}</span>
-          </div>
-          <span class="semester-tooltip-course">${semester.course}</span>
-        </div>
-     `;
-
-        const tooltipDot = semesterDot.querySelector(".semester-tooltip-dot");
-        // @ts-ignore
-        if (tooltipDot.style.backgroundColor)
-          // @ts-ignore
-          tooltipDot.style.backgroundColor = `${semester.color}`;
-
-        dayGridTopEl?.appendChild(semesterDot);
-      });
-    });
-
-    return () => {
-      if (!calendarRef.current) return;
-      // @ts-ignore
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      let allDotElements = calendarRef.current.elRef.current.querySelectorAll(
-        ".fc-custom-semester-dot",
-      );
-      allDotElements = Array.from(allDotElements);
-      console.log("allDotElements", allDotElements);
-
-      Array.isArray(allDotElements) &&
-        allDotElements?.forEach((dotEl: any) => dotEl.remove());
-    };
-  }, [calendarRef, semesterData, monthValue, currentView]);
-};
-
-const useApplySemesterDotYearly = ({
-  calendarRef,
-  semesterData,
-  monthValue,
-  currentView,
-}: {
-  calendarRef: RefObject<FullCalendar>;
-  semesterData: SemesterType[] | undefined;
-  monthValue: number | undefined;
-  currentView?: string;
-}) => {
-  return useEffect(() => {
-    if (!calendarRef.current || currentView !== "multiMonthYear") return;
-
-    // @ts-ignore
-    const titleNodeList = calendarRef.current.elRef.current.querySelectorAll(
-      ".fc-multimonth-title",
-    );
-    const titleEls = Array.from(titleNodeList);
-    titleEls.forEach((titleEl: any, i: number) => {
-      const semesterWrapper = document.createElement("div");
-      semesterWrapper.classList.add("semester-yearly-wrapper");
-
-      semesterData?.forEach((semester: SemesterType) => {
-        if (
-          !(
-            new Date(semester?.start)?.getMonth() >= i &&
-            new Date(semester?.end)?.getMonth() <= i
-          )
-        )
-          return;
-        const semesterDot = document.createElement("div");
-        semesterDot.classList.add("fc-custom-semester-dot");
-        semesterDot.setAttribute("data-course", semester.course);
-        semesterDot.setAttribute("data-semester", semester.semester);
-        semesterDot.style.backgroundColor = semester.color;
-        semesterDot.innerHTML = `
-        <div class="semester-tooltip-wrapper">
-          <div class="semester-tooltip-data">
-            <div class="semester-tooltip-dot" style="background-color: ${semester.color}"></div>
-            <span class="semester-tooltip-semTitle">${semester.semester}</span>
-          </div>
-          <span class="semester-tooltip-course">${semester.course}</span>
-        </div>
-     `;
-
-        const tooltipDot = semesterDot.querySelector(".semester-tooltip-dot");
-        // @ts-ignore
-        if (tooltipDot.style.backgroundColor)
-          // @ts-ignore
-          tooltipDot.style.backgroundColor = `${semester.color}`;
-
-        semesterWrapper?.appendChild(semesterDot);
-      });
-
-      titleEl.appendChild(semesterWrapper);
-    });
-  }, [calendarRef, semesterData, monthValue, currentView]);
-};
-
-const useApplyYearlySemesterView = ({
-  multiMonthEls,
-  currentView,
-}: {
-  multiMonthEls: HTMLDivElement[];
-  currentView: string;
-}) => {
-  return useEffect(() => {
-    if (!Boolean(multiMonthEls)) return;
-    const multiMonthElsArr = Array.from(multiMonthEls);
-    const tbody = multiMonthElsArr[0]
-      ?.querySelector("tbody")
-      ?.querySelectorAll("tr");
-    const trEls = tbody && Array.from(tbody);
-    if (!trEls) return;
-
-    console.log("multiMonthElsArr[0]", trEls && trEls[0]);
-
-    const dayCells = trEls[0].querySelectorAll(".fc-daygrid-day");
-    dayCells.forEach((cell) => {
-      // trEls[0].removeChild(cell);
-      if (cell.classList.contains("fc-day-disabled")) return;
-      cell.remove();
-    });
-    const semCell = document.createElement("div");
-    semCell.classList.add("fc-semester-cell");
-    trEls[0].appendChild(semCell);
-    // const parentElement = document.getElementById("parent");
-    // const childrenToRemove = parentElement.querySelectorAll(".child");
-
-    // trEls?.forEach(() => {
-    //   tbody.removeChild(child);
-    // });
-
-    // tbody.
-    // const tbody = multi
-    // multiMonthElsArr.forEach((monthEl: any) => {
-    //   const tbody = monthEl.querySelector("tbody");
-    //   tbody.forEach();
-    // });
-  }, [currentView]);
-};
 
 function applySemesterBox({ trEl }: { trEl: HTMLTableRowElement }) {
   // remove borders in table cell

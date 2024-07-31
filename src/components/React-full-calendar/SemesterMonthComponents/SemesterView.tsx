@@ -17,7 +17,7 @@ export default function SemesterView({
 
   return (
     <>
-      <div className="hide-scrollbar mx-auto flex h-[calc(100vh-165px)] w-fit flex-wrap gap-5 overflow-y-scroll pb-20">
+      <div className="hide-scrollbar mx-auto flex h-[calc(100vh-165px)] w-fit flex-wrap justify-center gap-5 overflow-y-scroll pb-20">
         {[...Array(12)].map((_, i) => {
           return (
             <>

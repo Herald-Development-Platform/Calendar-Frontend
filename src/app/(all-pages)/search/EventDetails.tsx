@@ -124,7 +124,7 @@ export default function EventDetails({
                   setRecurringDialogOpen(false);
                   setSelectedEvent(null);
                   queryClient.invalidateQueries({
-                    queryKey: ["Events"]
+                    queryKey: ["Events"],
                   });
                   return;
                 }
@@ -132,18 +132,29 @@ export default function EventDetails({
                 let exceptionStart, exceptionEnd;
                 if (deleteType === "this") {
                   exceptionStart = new Date(
-                    new Date(selectedEvent?.start ?? "").getTime() - 60000 - 5*60*60*1000 - 45*60*1000,
+                    new Date(selectedEvent?.start ?? "").getTime() -
+                      60000 -
+                      5 * 60 * 60 * 1000 -
+                      45 * 60 * 1000,
                   );
                   exceptionEnd = new Date(
-                    new Date(selectedEvent?.end ?? "").getTime() + 60000 - 5*60*60*1000 - 45*60*1000,
+                    new Date(selectedEvent?.end ?? "").getTime() +
+                      60000 -
+                      5 * 60 * 60 * 1000 -
+                      45 * 60 * 1000,
                   );
                 } else if (deleteType === "following") {
                   exceptionStart = new Date(
-                    new Date(selectedEvent?.start ?? "").getTime() - 60000 - 5*60*60*1000 - 45*60*1000,
+                    new Date(selectedEvent?.start ?? "").getTime() -
+                      60000 -
+                      5 * 60 * 60 * 1000 -
+                      45 * 60 * 1000,
                   );
                   exceptionEnd = new Date(
                     new Date(selectedEvent?.recurrenceEnd ?? "").getTime() +
-                      60000 - 5*60*60*1000 - 45*60*1000,
+                      60000 -
+                      5 * 60 * 60 * 1000 -
+                      45 * 60 * 1000,
                   );
                 }
                 console.log("SELECTED EVENT::::", selectedEvent);
@@ -166,7 +177,7 @@ export default function EventDetails({
                     setRecurringDialogOpen(false);
                     setSelectedEvent(null);
                     queryClient.invalidateQueries({
-                      queryKey: ["Events"]
+                      queryKey: ["Events"],
                     });
                   },
                 });
@@ -182,7 +193,7 @@ export default function EventDetails({
       <section
         className={`${
           selectedEvent ? "" : "translate-x-full"
-        } absolute right-0 top-0 z-20 flex h-full  w-80 flex-col gap-6 overflow-y-auto bg-white p-6 font-medium text-neutral-600 transition-all duration-150`}
+        } fixed bottom-0 right-0 z-20 flex h-[85%]  w-80 flex-col gap-6 overflow-y-auto bg-white p-6 font-medium text-neutral-600 transition-all duration-150`}
         style={{ width: `${width}px` }}
       >
         <div className="font flex items-center transition">
