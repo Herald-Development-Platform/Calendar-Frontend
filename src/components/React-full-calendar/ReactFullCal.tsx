@@ -30,6 +30,8 @@ import {
   useGetEvents,
   useUpdateEvents,
 } from "@/services/api/eventsApi";
+import { CalendarApi } from "@fullcalendar/core/index.js";
+
 import { parse, format } from "date-fns";
 import { delay, generateNewToken } from "@/lib/utils";
 import { useGetSemester } from "@/services/api/semester";
@@ -222,7 +224,9 @@ export default function ReactFullCal({} // eventDetailWidth,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData?.importantDates, monthValue]);
 
-  const handleEventDidMount = (info: EventMountArg) => {
+  const handleEventDidMount = async (info: EventMountArg) => {
+    await delay(1000);
+    console.log("--- handleEventDidMount ", currentView);
     if (currentView !== "dayGridMonth") return;
 
     // console.log("handleEventDidMount -----");
@@ -232,7 +236,6 @@ export default function ReactFullCal({} // eventDetailWidth,
     const isBlockEvent = eventEl?.classList.contains("fc-daygrid-block-event");
 
     if (departments?.length === 0 || !titleElement || isBlockEvent) return;
-    console.log("--- handleEventDidMount ", currentView);
 
     const departmentsWrapper = document.createElement("div");
     departmentsWrapper.classList.add("department-wrapper");
@@ -254,7 +257,7 @@ export default function ReactFullCal({} // eventDetailWidth,
       departmentsWrapper.appendChild(departmentElement);
     });
 
-    eventEl?.insertBefore(departmentsWrapper, titleElement);
+    // eventEl?.insertBefore(departmentsWrapper, titleElement);
 
     return;
   };
@@ -310,7 +313,12 @@ export default function ReactFullCal({} // eventDetailWidth,
     currentView: currentView,
   });
 
-  // console.log("currentView", currentView);
+  useEffect(() => {
+    if (!calendarRef?.current) return;
+    console.log("calendarRef.current?.getApi()", calendarRef.current?.getApi());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentView, calendarRef]);
+
   return (
     <>
       <div ref={calWrapper} className="relative h-full w-auto">

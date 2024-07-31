@@ -219,8 +219,8 @@ export function HomeHeader() {
               onValueChange={(calView) => {
                 if (listView && calendarApi)
                   return findListView(calView, calendarApi);
-                calendarApi?.changeView(calView);
                 setCurrentView(calView);
+                // calendarApi?.changeView(calView);
               }}
               defaultValue={CalendarViews.monthView}
             >
