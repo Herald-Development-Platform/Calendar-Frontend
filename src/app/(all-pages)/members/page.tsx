@@ -457,7 +457,7 @@ export default function Page() {
                                         <span className=" text-primary-500">
                                           {watchUserValues(
                                             "permissions",
-                                          ).includes(permission) ? (
+                                          ) && watchUserValues("permissions")?.includes(permission) ? (
                                             <MdCheckBox />
                                           ) : (
                                             <MdCheckBoxOutlineBlank />
