@@ -17,6 +17,7 @@ import {
 import { allPlugins, CalendarViews } from "@/constants/CalendarViews";
 import FullCalendar from "@fullcalendar/react";
 import { EventSourceInput } from "@fullcalendar/core/index.js";
+import { useGetCalendarApi } from "../utils";
 // import { Input } from "@/components/ui/input";
 // import { Label } from "@/components/ui/label";
 
@@ -29,11 +30,13 @@ export default function SemesterMonth({
   month: number;
   events: eventType[];
 }) {
-  const gridRef = useRef<HTMLDivElement>(null);
   const [isDoubleClick, setIsDoubleClick] = useState<number>(-1);
+  const [openWeekView, setOpenWeekView] = useState<boolean>(false);
+
+  const gridRef = useRef<HTMLDivElement>(null);
   const calRef = useRef<FullCalendar>(null);
 
-  const [openWeekView, setOpenWeekView] = useState<boolean>(false);
+  const { calendarApi } = useGetCalendarApi(calRef);
 
   const firstDaysOfWeeks = getFirstDaysOfWeeks({ year: year, month: month });
   const lastMonthDate = getLastDayOfMonth({ year: year, month: month });
@@ -42,7 +45,7 @@ export default function SemesterMonth({
     new Date(firstDaysOfWeeks[firstDaysOfWeeks.length - 1]).getDate() +
     1;
 
-  const { setSelectedDate } = useContext(Context);
+  const { setSelectedDate, selectedDate } = useContext(Context);
   useEffect(() => {
     console.log("render", openWeekView);
     if (!calRef.current) return;
@@ -149,14 +152,20 @@ export default function SemesterMonth({
                     style={{ gridColumn: `span ${gridSpanValue}` }}
                     tabIndex={0}
                     onClick={(e: any) => {
+                      const start = new Date(firstDaysOfWeeks[i]);
                       // console.log("isDoubleClick", i, isDoubleClick.current);
-                      if (isDoubleClick === i) setOpenWeekView(true);
+                      if (isDoubleClick === i) {
+                        setOpenWeekView(true);
+                        // calendarApi?.gotoDate(
+                        //   new Date(firstDaysOfWeeks[i]).getTime(),
+                        // );
+                      }
+
                       setIsDoubleClick(i);
                       setTimeout(() => {
                         setIsDoubleClick(-1);
                       }, 600);
 
-                      const start = new Date(firstDaysOfWeeks[i]);
                       const end =
                         i !== firstDaysOfWeeks.length - 1
                           ? new Date(firstDaysOfWeeks[i + 1])
