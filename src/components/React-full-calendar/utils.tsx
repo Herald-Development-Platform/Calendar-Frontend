@@ -1,6 +1,7 @@
+import { CalendarApi } from "@fullcalendar/core/index.js";
 import { RefObject } from "@fullcalendar/core/preact.js";
 import FullCalendar from "@fullcalendar/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const useApplySemesterDot = ({
   calendarRef,
@@ -189,9 +190,19 @@ const useApplyYearlySemesterView = ({
     // });
   }, [currentView]);
 };
+const useGetCalendarApi = (calendarRef: RefObject<FullCalendar>) => {
+  const [calendarApi, setCalendarApi] = useState<CalendarApi>();
+  useEffect(() => {
+    // @ts-ignore
+    if (!calendarRef.current) return;
+    setCalendarApi(calendarRef.current?.getApi());
+  }, [calendarRef]);
+  return { calendarApi };
+};
 
 export {
   useApplySemesterDot,
   useApplySemesterDotYearly,
   useApplyYearlySemesterView,
+  useGetCalendarApi,
 };

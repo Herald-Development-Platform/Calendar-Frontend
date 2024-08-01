@@ -82,3 +82,14 @@ export const generateNewToken = async () => {
 export function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+function generateRandomId(length: number) {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters[randomIndex];
+  }
+  return result;
+}

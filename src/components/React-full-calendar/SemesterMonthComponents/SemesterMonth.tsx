@@ -1,9 +1,25 @@
 "use client";
-import React, { useContext, useRef } from "react";
+import React, { useContext, useEffect, useId, useRef, useState } from "react";
 import "./styles.css";
 import { format, lastDayOfMonth } from "date-fns";
 import { BsDot } from "react-icons/bs";
 import { Context } from "@/app/clientWrappers/ContextProvider";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { allPlugins, CalendarViews } from "@/constants/CalendarViews";
+import FullCalendar from "@fullcalendar/react";
+import { EventSourceInput } from "@fullcalendar/core/index.js";
+import { useGetCalendarApi } from "../utils";
+// import { Input } from "@/components/ui/input";
+// import { Label } from "@/components/ui/label";
 
 export default function SemesterMonth({
   year = new Date().getFullYear(),
@@ -14,7 +30,14 @@ export default function SemesterMonth({
   month: number;
   events: eventType[];
 }) {
+  const [isDoubleClick, setIsDoubleClick] = useState<number>(-1);
+  const [openWeekView, setOpenWeekView] = useState<boolean>(false);
+
   const gridRef = useRef<HTMLDivElement>(null);
+  const calRef = useRef<FullCalendar>(null);
+
+  const { calendarApi } = useGetCalendarApi(calRef);
+
   const firstDaysOfWeeks = getFirstDaysOfWeeks({ year: year, month: month });
   const lastMonthDate = getLastDayOfMonth({ year: year, month: month });
   const finalSectionLength =
@@ -22,7 +45,16 @@ export default function SemesterMonth({
     new Date(firstDaysOfWeeks[firstDaysOfWeeks.length - 1]).getDate() +
     1;
 
-  const { setSelectedDate } = useContext(Context);
+  const { setSelectedDate, selectedDate } = useContext(Context);
+  useEffect(() => {
+    console.log("render", openWeekView);
+    if (!calRef.current) return;
+    // @ts-ignore
+    console.log("calRef", calRef.current.elRef.current.children[0]);
+    // @ts-ignore
+    const TableEl = calRef.current.elRef.current.children[0];
+    TableEl.style.height = `590px`;
+  }, [calRef, isDoubleClick, openWeekView]);
 
   return (
     <>
@@ -56,6 +88,7 @@ export default function SemesterMonth({
           </>
           <>
             {firstDaysOfWeeks.map((checkpointDays, i) => {
+              const id = window.crypto.randomUUID().split("-").join("");
               const date = new Date(checkpointDays);
               const day = date.getDay();
               const gridSpanValue =
@@ -106,7 +139,7 @@ export default function SemesterMonth({
                 <>
                   {i === 0 &&
                     day !== 0 &&
-                    [...Array(day)].map((_, i) => {
+                    [...Array(day)].map((_) => {
                       return (
                         <>
                           <div className="border-[0.5px] border-[#DDDDDD] bg-[#F1F1F1]"></div>
@@ -118,13 +151,25 @@ export default function SemesterMonth({
                     className="flex flex-nowrap items-center overflow-hidden truncate border-[0.5px] border-[#DDDDDD] bg-[#ffffff] pl-5 text-xl text-neutral-600 focus:border-primary-600"
                     style={{ gridColumn: `span ${gridSpanValue}` }}
                     tabIndex={0}
-                    onClick={() => {
+                    onClick={(e: any) => {
                       const start = new Date(firstDaysOfWeeks[i]);
+                      // console.log("isDoubleClick", i, isDoubleClick.current);
+                      if (isDoubleClick === i) {
+                        setOpenWeekView(true);
+                        // calendarApi?.gotoDate(
+                        //   new Date(firstDaysOfWeeks[i]).getTime(),
+                        // );
+                      }
+
+                      setIsDoubleClick(i);
+                      setTimeout(() => {
+                        setIsDoubleClick(-1);
+                      }, 600);
+
                       const end =
                         i !== firstDaysOfWeeks.length - 1
                           ? new Date(firstDaysOfWeeks[i + 1])
                           : new Date(year, month, 0);
-                      // console.log("start end", start, end);
                       setSelectedDate({
                         start: start,
                         end: end,
@@ -132,6 +177,7 @@ export default function SemesterMonth({
                         endStr: format(end, "yyyy-MM-dd"),
                       });
                     }}
+                    id={`${i}`}
                   >
                     <span className="text-sm font-medium ">
                       {totalEvents} {gridSpanValue > 1 ? "Events" : "E..."}
@@ -165,6 +211,74 @@ export default function SemesterMonth({
           </>
         </div>
       </div>
+      <Dialog open={openWeekView} onOpenChange={setOpenWeekView}>
+        <DialogContent className="green-scrollbar h-[1000px] max-h-[85%] max-w-[85%] overflow-hidden overflow-y-scroll">
+          {/* <DialogHeader>
+            <DialogTitle className="">Edit profile</DialogTitle>
+          </DialogHeader> */}
+          <div>
+            <FullCalendar
+              ref={calRef}
+              plugins={allPlugins}
+              // datesSet={(info) => {
+              //   if (currentView === info.view.type) return;
+              //   setCurrentView(info.view.type);
+              // }}
+              // eventClick={(info) => {
+              //   const selectedEventObj = {
+              //     ...info?.event?._instance?.range,
+              //     ...info?.event?._def?.extendedProps,
+              //     title: info?.event?._def?.title,
+              //     color:
+              //       info?.event?._def?.ui?.backgroundColor ||
+              //       info?.event?._def?.ui?.borderColor,
+              //   };
+              //   const upcommingEventWidth =
+              //     // @ts-ignore
+              //     document.querySelector("#upcomming-events")?.offsetWidth;
+              //   setEventDetailWidth(upcommingEventWidth);
+              //   setSelectedEvent(selectedEventObj as eventType);
+              // }}
+              initialView={CalendarViews.timeGrid.week}
+              events={events as EventSourceInput}
+              // eventMouseEnter={handleMouseEnter}
+              // eventMouseLeave={handleMouseLeave}
+              // eventDidMount={handleEventDidMount}
+              headerToolbar={false}
+              selectable={true}
+              // select={handleSelect}
+              // viewDidMount={async (info: any) => {
+              //   await delay(200);
+              //   if (
+              //     calendarRef?.current?.getApi()?.view?.type !==
+              //     "dayGridMonth"
+              //   )
+              //     return;
+              //   const scrollerEl = info.el.querySelector(
+              //     ".fc-scroller-liquid-absolute",
+              //   );
+              //   if (!scrollerEl) return;
+              //   scrollerEl.style.overflow = "visible";
+              //   console.log("viewdidmount ------------------", scrollerEl);
+              // }}
+              // windowResize={async (arg) => {
+              //   await delay(200);
+              //   const scrollerEl = // @ts-ignore
+              //     calendarRef?.current?.elRef?.current.querySelector(
+              //       ".fc-scroller-liquid-absolute",
+              //     );
+              //   scrollerEl.style.overflow = "visible";
+              // }}
+              // unselect={handleUnselect}
+              displayEventTime={false}
+              // dayHeaderClassNames={"customStylesDayHeader"}
+              // dayCellClassNames={"customStylesDayCells"}
+              // eventMaxStack={2}
+              // dayMaxEvents={2}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
