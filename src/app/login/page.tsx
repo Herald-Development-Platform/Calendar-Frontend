@@ -8,15 +8,15 @@ import toast from "react-hot-toast";
 import * as CookieHooks from "@/hooks/CookieHooks";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
+import { FaEye } from "react-icons/fa6";
+import { LuEye, LuEyeOff } from "react-icons/lu";
 
 export default function Page() {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const queryClient = useQueryClient();
   const router = useRouter();
-  const {
-    register,
-    handleSubmit,
-  } = useForm<any>();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const { register, handleSubmit } = useForm<any>();
 
   const loginUser = (payload: any) => {
     fetch(`${baseUrl}/login`, {
@@ -100,18 +100,26 @@ export default function Page() {
                 alt="passwordLogo"
               />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 className="w-full bg-neutral-100 font-normal text-neutral-500 outline-none "
                 placeholder="Enter your password."
                 {...register("password", { required: "Password is required" })}
               />
+              <span
+                className="cursor-pointer"
+                onClick={() => {
+                  setShowPassword(!showPassword);
+                }}
+              >
+                {showPassword ? <LuEyeOff /> : <LuEye />}
+              </span>
             </div>
           </label>
-          <div className="relative  flex w-auto flex-row items-center gap-3 justify-end">
+          <div className="relative  flex w-auto flex-row items-center justify-end gap-3">
             <Link
               href={"/forgetPassword"}
-              className="label cursor-pointer text-sm decoration-from-font decoration-primary-500 underline underline-offset-3 text-primary-500"
+              className="underline-offset-3 label cursor-pointer text-sm text-primary-500 underline decoration-primary-500 decoration-from-font"
             >
               <span className="">Forget Password</span>
             </Link>
@@ -135,7 +143,10 @@ export default function Page() {
             </Link>
 
             <button
-              onClick={(e) => {e.preventDefault();router.push("/signup")}}
+              onClick={(e) => {
+                e.preventDefault();
+                router.push("/signup");
+              }}
               className="btn w-full rounded-[4px] bg-primary-50  text-sm  hover:bg-primary-100"
             >
               Register New Account

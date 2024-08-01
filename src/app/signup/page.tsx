@@ -9,6 +9,7 @@ import { ROLES } from "@/constants/role";
 import { DEPARTMENTS } from "@/constants/departments";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { LuEye, LuEyeOff } from "react-icons/lu";
 
 export default function Page() {
   const {
@@ -19,6 +20,7 @@ export default function Page() {
     getValues,
     handleSubmit,
   } = useForm<any>();
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -123,12 +125,20 @@ export default function Page() {
                 alt="passwordLogo"
               />
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 id="password"
                 className="w-full bg-neutral-100  font-normal text-neutral-500 outline-none "
                 placeholder="Enter your password."
                 {...register("password", { required: "Password is required" })}
               />
+              <span
+                className="cursor-pointer"
+                onClick={() => {
+                  setShowPassword(!showPassword);
+                }}
+              >
+                {showPassword ? <LuEyeOff /> : <LuEye />}
+              </span>
             </div>
           </label>
 
