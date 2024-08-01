@@ -109,7 +109,7 @@ export default function SummaryPage() {
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="flex flex-col gap-9 px-[70px] pl-9">
+      <div className="flex flex-col gap-9 px-[70px] pl-9 max-h-[100vh] overflow-y-scroll">
         <Toaster />
         <div className=" mt-[40px] flex flex-col gap-[18px]">
           <div className="flex flex-row justify-between">

@@ -208,7 +208,7 @@ export default function ImportExport() {
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="flex flex-col gap-9 px-[70px] pl-9">
+      <div className="flex flex-col gap-9 px-[70px] pl-9 max-h-[100vh] overflow-y-scroll">
         <Toaster />
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent>

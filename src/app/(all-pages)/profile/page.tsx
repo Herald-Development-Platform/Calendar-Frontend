@@ -121,7 +121,7 @@ export default function ManageDepartment() {
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="mb-32 ml-10 flex max-w-[40vw] flex-col gap-6 pb-3">
+      <div className="ml-10 flex flex-col gap-6 max-h-[100vh] h-[100vh] overflow-y-scroll">
         <Dialog
           open={updateProfileDialogOpen}
           onOpenChange={setUpdateProfileDialogOpen}

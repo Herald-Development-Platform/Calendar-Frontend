@@ -90,7 +90,7 @@ export default function LocationPage() {
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="ml-10 flex min-w-[470px] max-w-[40vw] flex-col gap-6">
+      <div className="ml-10 flex min-w-[470px] flex-col gap-6 max-h-[100vh] overflow-y-scroll">
         <div className="flex flex-row items-center justify-start gap-2">
           <span
             onClick={() => {
@@ -116,7 +116,7 @@ export default function LocationPage() {
               </button>
             )}
         </div>
-        <div className="flex w-full flex-col gap-5">
+        <div className="flex w-full flex-col gap-5 max-w-[40vw]">
           <div className="flex flex-col items-start justify-start gap-5">
             {locations?.data?.length === 0 ? (
               <div className="w-full text-center">No locations added.</div>

@@ -236,7 +236,7 @@ export default function Page() {
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="mt-[40px] flex flex-col gap-9 px-[70px] pl-3">
+      <div className="mt-[40px] flex flex-col gap-9 px-[70px] pl-3 max-h-[100vh] overflow-y-scroll">
         <Toaster />
 
         <Dialog

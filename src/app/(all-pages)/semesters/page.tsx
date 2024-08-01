@@ -82,7 +82,7 @@ export default function SemestersPage() {
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="ml-10 flex max-w-[40vw] flex-col gap-7 pb-3">
+      <div className="ml-10 flex flex-col gap-7 pb-3 max-h-[100vh] overflow-y-scroll">
         <Dialog open={semesterDialogOpen} onOpenChange={setSemesterDialogOpen}>
           <DialogContent>
             <form
@@ -234,7 +234,7 @@ export default function SemestersPage() {
             </form>
           </DialogContent>
         </Dialog>
-        <div className="flex flex-row items-center justify-start gap-2">
+        <div className="flex max-w-[40vw] flex-row items-center justify-start gap-2">
           <span
             onClick={() => {
               router.back();
