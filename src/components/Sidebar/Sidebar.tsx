@@ -55,20 +55,38 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   );
   useEffect(() => {
     if (semesters) {
+      let tempOngoing: Semester[] = [];
       let currnetDate = new Date();
-      setOngoingSemesters(
-        semesters?.data?.data?.filter((semester: any) => {
-          let startDate = new Date(semester.start);
-          let endDate = new Date(semester.end);
-          return startDate <= currnetDate && endDate >= currnetDate;
-        }),
-      );
-    }
-  }, [semesters]);
-  useEffect(() => {
-    if (ongoingSemesters) {
+      tempOngoing = semesters?.data?.data?.filter((semester: any) => {
+        let startDate = new Date(semester.start);
+        let endDate = new Date(semester.end);
+        return startDate <= currnetDate && endDate >= currnetDate;
+      });
+
+      let uniqueOngoings: Semester[] = [];
+      for (let i = 0; i < tempOngoing.length; i++) {
+        if (
+          uniqueOngoings.find(
+            (semester) => semester.semester == tempOngoing[i].semester,
+          )
+        ) {
+          uniqueOngoings = uniqueOngoings.map((semester) => {
+            if (semester.semester == tempOngoing[i].semester) {
+              return {
+                ...semester,
+                course: semester.course + ", " + tempOngoing[i].course,
+              };
+            } else {
+              return semester;
+            }
+          });
+        } else {
+          uniqueOngoings.push(tempOngoing[i]);
+        }
+      }
+      setOngoingSemesters(uniqueOngoings);
       let grouped: any = {};
-      ongoingSemesters.forEach((sem) => {
+      tempOngoing.forEach((sem) => {
         if (grouped[sem.course]) {
           grouped[sem.course].push(sem);
         } else {
@@ -77,13 +95,14 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       });
       setOngoingSemestersGrouped(grouped);
     }
-  }, [ongoingSemesters]);
+  }, [semesters]);
+
   const [semestersDialogOpen, setSemestersDialogOpen] = useState(false);
 
   return (
     <>
       <Dialog open={semestersDialogOpen} onOpenChange={setSemestersDialogOpen}>
-        <DialogContent className="flex h-fit w-full flex-col items-start justify-start gap-5">
+        <DialogContent className="flex h-fit w-full min-w-[45vw] flex-col items-start justify-start gap-5">
           <div className="flex w-full items-center justify-between">
             <span className="text-[19px] font-medium text-neutral-900">
               Ongoing Semesters
@@ -98,14 +117,20 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
             </span>
           </div>
           <div className="flex flex-row flex-wrap gap-5">
-            {Object.keys(ongoingSemestersGrouped).map((course, i:number) => (
-              <div key={i} className="flex w-[20vw] flex-col items-start justify-start gap-2.5">
+            {Object.keys(ongoingSemestersGrouped).map((course, i: number) => (
+              <div
+                key={i}
+                className="flex w-[20vw] flex-col items-start justify-start gap-2.5"
+              >
                 <span className="text-[13px] font-semibold text-neutral-600">
                   {course}
                 </span>
                 {ongoingSemestersGrouped[course].map(
                   (semester: any, i: number) => (
-                    <div key={i} className="flex items-center gap-3 px-2.5 py-1.5">
+                    <div
+                      key={i}
+                      className="flex items-center gap-3 px-2.5 py-1.5"
+                    >
                       <div
                         className="h-[30px] w-[30px] rounded-md "
                         style={{ backgroundColor: semester.color }}
