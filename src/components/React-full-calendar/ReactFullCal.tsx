@@ -340,8 +340,8 @@ export default function ReactFullCal({} // eventDetailWidth,
               }}
               initialView={`dayGridMonth`}
               events={events as EventSourceInput}
-              // eventMouseEnter={handleMouseEnter}
-              // eventMouseLeave={handleMouseLeave}
+              eventMouseEnter={handleMouseEnter}
+              eventMouseLeave={handleMouseLeave}
               eventDidMount={handleEventDidMount}
               headerToolbar={false}
               selectable={true}

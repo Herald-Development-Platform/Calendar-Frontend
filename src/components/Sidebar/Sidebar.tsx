@@ -2,12 +2,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IoIosSearch } from "react-icons/io";
+import { IoIosSearch, IoMdArrowDropdown } from "react-icons/io";
 import { AiOutlineHome } from "react-icons/ai";
 import { HiOutlineDocumentReport, HiOutlineUserGroup } from "react-icons/hi";
-import { MdImportExport } from "react-icons/md";
-import { IoLocationOutline } from "react-icons/io5";
-import { VscLocation } from "react-icons/vsc";
+import { useGetSemesters } from "@/services/api/semesters";
+import { useEffect, useState } from "react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+import "./SideBarCss.css";
+import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
+import { RxCross1 } from "react-icons/rx";
 
 export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   const currentRoute = usePathname();
@@ -39,8 +47,86 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       navigation: "/summary",
     },
   ];
+
+  const { data: semesters, isLoading: semestersLoading } = useGetSemesters();
+  const [ongoingSemesters, setOngoingSemesters] = useState<Semester[]>([]);
+  const [ongoingSemestersGrouped, setOngoingSemestersGrouped] = useState<any>(
+    {},
+  );
+  useEffect(() => {
+    if (semesters) {
+      let currnetDate = new Date();
+      setOngoingSemesters(
+        semesters?.data?.data?.filter((semester: any) => {
+          let startDate = new Date(semester.start);
+          let endDate = new Date(semester.end);
+          return startDate <= currnetDate && endDate >= currnetDate;
+        }),
+      );
+    }
+  }, [semesters]);
+  useEffect(() => {
+    if (ongoingSemesters) {
+      let grouped: any = {};
+      ongoingSemesters.forEach((sem) => {
+        if (grouped[sem.course]) {
+          grouped[sem.course].push(sem);
+        } else {
+          grouped[sem.course] = [sem];
+        }
+      });
+      setOngoingSemestersGrouped(grouped);
+    }
+  }, [ongoingSemesters]);
+  const [semestersDialogOpen, setSemestersDialogOpen] = useState(false);
+
   return (
     <>
+      <Dialog open={semestersDialogOpen} onOpenChange={setSemestersDialogOpen}>
+        <DialogContent className="flex h-fit w-full flex-col items-start justify-start gap-5">
+          <div className="flex w-full items-center justify-between">
+            <span className="text-[19px] font-medium text-neutral-900">
+              Ongoing Semesters
+            </span>
+            <span
+              className="cursor-pointer"
+              onClick={() => {
+                setSemestersDialogOpen(false);
+              }}
+            >
+              <RxCross1 />
+            </span>
+          </div>
+          <div className="flex flex-row flex-wrap gap-5">
+            {Object.keys(ongoingSemestersGrouped).map((course, i:number) => (
+              <div key={i} className="flex w-[20vw] flex-col items-start justify-start gap-2.5">
+                <span className="text-[13px] font-semibold text-neutral-600">
+                  {course}
+                </span>
+                {ongoingSemestersGrouped[course].map(
+                  (semester: any, i: number) => (
+                    <div key={i} className="flex items-center gap-3 px-2.5 py-1.5">
+                      <div
+                        className="h-[30px] w-[30px] rounded-md "
+                        style={{ backgroundColor: semester.color }}
+                      ></div>
+                      <div className="flex flex-col gap-0">
+                        <span className="text-[13px] font-semibold text-neutral-900">
+                          {semester.semester}
+                        </span>
+                        <span className="text-[11px] font-medium text-neutral-600">
+                          {new Date(semester.start).toLocaleDateString()} -{" "}
+                          {new Date(semester.end).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  ),
+                )}
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
       <div
         className={`${hasBreakpoint ? "relative hidden" : " block"}  
     h-screen w-60 bg-neutral-50 px-4 py-10 transition duration-1000 xl:block`}
@@ -82,6 +168,58 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                 <span>{item.name}</span>
               </Link>
             ))}
+          </div>
+
+          <div
+            onClick={() => {
+              setSemestersDialogOpen(true);
+            }}
+            className="mx-2 mt-auto flex w-full flex-row items-center justify-between rounded-[50px] border-[0.6px] border-[#D4D4D4] px-4 py-2.5 "
+          >
+            {semestersLoading ? (
+              <span className="text-sm text-neutral-300">Loading...</span>
+            ) : (
+              <>
+                <div className="flex flex-col gap-0">
+                  <span className="text-[15px] font-medium leading-none text-neutral-600">
+                    Ongoing Semesters
+                  </span>
+                  <div className="flex flex-row items-center gap-1.5 font-medium text-neutral-500">
+                    <span className="text-[12px]">
+                      {ongoingSemesters?.length} •
+                    </span>
+                    <div className="flex flex-row items-center gap-[1px]">
+                      {ongoingSemesters?.map((semester: any, i: number) => (
+                        <div
+                          key={i}
+                          className="fc-custom-semester-dot"
+                          style={{ backgroundColor: semester.color }}
+                          onClick={() => {}}
+                        >
+                          <div className="semester-tooltip-wrapper-center">
+                            <div className="semester-tooltip-data">
+                              <div
+                                className="semester-tooltip-dot"
+                                style={{ backgroundColor: semester.color }}
+                              ></div>
+                              <span className="semester-tooltip-semTitle">
+                                {semester.semester}
+                              </span>
+                            </div>
+                            <span className="semester-tooltip-course">
+                              {semester.course}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <span className="-rotate-90 text-neutral-500">
+                  <IoMdArrowDropdown />
+                </span>
+              </>
+            )}
           </div>
         </div>
 
