@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useId, useRef, useState } from "react";
 import "./styles.css";
 import { format, lastDayOfMonth } from "date-fns";
 import { BsDot } from "react-icons/bs";
@@ -14,7 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { allPlugins } from "@/constants/CalendarViews";
+import { allPlugins, CalendarViews } from "@/constants/CalendarViews";
 import FullCalendar from "@fullcalendar/react";
 import { EventSourceInput } from "@fullcalendar/core/index.js";
 // import { Input } from "@/components/ui/input";
@@ -30,7 +30,9 @@ export default function SemesterMonth({
   events: eventType[];
 }) {
   const gridRef = useRef<HTMLDivElement>(null);
-  const isDoubleClick = useRef<boolean>(false);
+  const [isDoubleClick, setIsDoubleClick] = useState<number>(-1);
+  const calRef = useRef<FullCalendar>(null);
+
   const [openWeekView, setOpenWeekView] = useState<boolean>(false);
 
   const firstDaysOfWeeks = getFirstDaysOfWeeks({ year: year, month: month });
@@ -41,6 +43,15 @@ export default function SemesterMonth({
     1;
 
   const { setSelectedDate } = useContext(Context);
+  useEffect(() => {
+    console.log("render", openWeekView);
+    if (!calRef.current) return;
+    // @ts-ignore
+    console.log("calRef", calRef.current.elRef.current.children[0]);
+    // @ts-ignore
+    const TableEl = calRef.current.elRef.current.children[0];
+    TableEl.style.height = `590px`;
+  }, [calRef, isDoubleClick, openWeekView]);
 
   return (
     <>
@@ -74,6 +85,7 @@ export default function SemesterMonth({
           </>
           <>
             {firstDaysOfWeeks.map((checkpointDays, i) => {
+              const id = window.crypto.randomUUID().split("-").join("");
               const date = new Date(checkpointDays);
               const day = date.getDay();
               const gridSpanValue =
@@ -124,7 +136,7 @@ export default function SemesterMonth({
                 <>
                   {i === 0 &&
                     day !== 0 &&
-                    [...Array(day)].map((_, i) => {
+                    [...Array(day)].map((_) => {
                       return (
                         <>
                           <div className="border-[0.5px] border-[#DDDDDD] bg-[#F1F1F1]"></div>
@@ -136,12 +148,14 @@ export default function SemesterMonth({
                     className="flex flex-nowrap items-center overflow-hidden truncate border-[0.5px] border-[#DDDDDD] bg-[#ffffff] pl-5 text-xl text-neutral-600 focus:border-primary-600"
                     style={{ gridColumn: `span ${gridSpanValue}` }}
                     tabIndex={0}
-                    onClick={() => {
-                      if (isDoubleClick.current) setOpenWeekView(true);
-                      isDoubleClick.current = true;
+                    onClick={(e: any) => {
+                      // console.log("isDoubleClick", i, isDoubleClick.current);
+                      if (isDoubleClick === i) setOpenWeekView(true);
+                      setIsDoubleClick(i);
                       setTimeout(() => {
-                        isDoubleClick.current = false;
+                        setIsDoubleClick(-1);
                       }, 600);
+
                       const start = new Date(firstDaysOfWeeks[i]);
                       const end =
                         i !== firstDaysOfWeeks.length - 1
@@ -154,6 +168,7 @@ export default function SemesterMonth({
                         endStr: format(end, "yyyy-MM-dd"),
                       });
                     }}
+                    id={`${i}`}
                   >
                     <span className="text-sm font-medium ">
                       {totalEvents} {gridSpanValue > 1 ? "Events" : "E..."}
@@ -188,82 +203,71 @@ export default function SemesterMonth({
         </div>
       </div>
       <Dialog open={openWeekView} onOpenChange={setOpenWeekView}>
-        {/* <DialogTrigger asChild>
-          <Button variant="outline">Edit Profile</Button>
-        </DialogTrigger> */}
-        <DialogContent className="max-h-[70%] max-w-[70%]">
-          <DialogHeader>
-            <DialogTitle>Edit profile</DialogTitle>
-            <DialogDescription>
-              Make changes to your profile here. Click save when yosure done.
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="green-scrollbar h-[1000px] max-h-[85%] max-w-[85%] overflow-hidden overflow-y-scroll">
+          {/* <DialogHeader>
+            <DialogTitle className="">Edit profile</DialogTitle>
+          </DialogHeader> */}
           <div>
-            <>
-              <FullCalendar
-                // ref={calendarRef}
-                plugins={allPlugins}
-                // datesSet={(info) => {
-                //   if (currentView === info.view.type) return;
-                //   setCurrentView(info.view.type);
-                // }}
-                // eventClick={(info) => {
-                //   const selectedEventObj = {
-                //     ...info?.event?._instance?.range,
-                //     ...info?.event?._def?.extendedProps,
-                //     title: info?.event?._def?.title,
-                //     color:
-                //       info?.event?._def?.ui?.backgroundColor ||
-                //       info?.event?._def?.ui?.borderColor,
-                //   };
-                //   const upcommingEventWidth =
-                //     // @ts-ignore
-                //     document.querySelector("#upcomming-events")?.offsetWidth;
-                //   setEventDetailWidth(upcommingEventWidth);
-                //   setSelectedEvent(selectedEventObj as eventType);
-                // }}
-                initialView={`dayGridWeek`}
-                events={events as EventSourceInput}
-                // eventMouseEnter={handleMouseEnter}
-                // eventMouseLeave={handleMouseLeave}
-                // eventDidMount={handleEventDidMount}
-                headerToolbar={false}
-                selectable={true}
-                // select={handleSelect}
-                // viewDidMount={async (info: any) => {
-                //   await delay(200);
-                //   if (
-                //     calendarRef?.current?.getApi()?.view?.type !==
-                //     "dayGridMonth"
-                //   )
-                //     return;
-                //   const scrollerEl = info.el.querySelector(
-                //     ".fc-scroller-liquid-absolute",
-                //   );
-                //   if (!scrollerEl) return;
-                //   scrollerEl.style.overflow = "visible";
-                //   console.log("viewdidmount ------------------", scrollerEl);
-                // }}
-                // windowResize={async (arg) => {
-                //   await delay(200);
-                //   const scrollerEl = // @ts-ignore
-                //     calendarRef?.current?.elRef?.current.querySelector(
-                //       ".fc-scroller-liquid-absolute",
-                //     );
-                //   scrollerEl.style.overflow = "visible";
-                // }}
-                // unselect={handleUnselect}
-                // displayEventTime={false}
-                // dayHeaderClassNames={"customStylesDayHeader"}
-                // dayCellClassNames={"customStylesDayCells"}
-                // eventMaxStack={2}
-                // dayMaxEvents={2}
-              />
-            </>
+            <FullCalendar
+              ref={calRef}
+              plugins={allPlugins}
+              // datesSet={(info) => {
+              //   if (currentView === info.view.type) return;
+              //   setCurrentView(info.view.type);
+              // }}
+              // eventClick={(info) => {
+              //   const selectedEventObj = {
+              //     ...info?.event?._instance?.range,
+              //     ...info?.event?._def?.extendedProps,
+              //     title: info?.event?._def?.title,
+              //     color:
+              //       info?.event?._def?.ui?.backgroundColor ||
+              //       info?.event?._def?.ui?.borderColor,
+              //   };
+              //   const upcommingEventWidth =
+              //     // @ts-ignore
+              //     document.querySelector("#upcomming-events")?.offsetWidth;
+              //   setEventDetailWidth(upcommingEventWidth);
+              //   setSelectedEvent(selectedEventObj as eventType);
+              // }}
+              initialView={CalendarViews.timeGrid.week}
+              events={events as EventSourceInput}
+              // eventMouseEnter={handleMouseEnter}
+              // eventMouseLeave={handleMouseLeave}
+              // eventDidMount={handleEventDidMount}
+              headerToolbar={false}
+              selectable={true}
+              // select={handleSelect}
+              // viewDidMount={async (info: any) => {
+              //   await delay(200);
+              //   if (
+              //     calendarRef?.current?.getApi()?.view?.type !==
+              //     "dayGridMonth"
+              //   )
+              //     return;
+              //   const scrollerEl = info.el.querySelector(
+              //     ".fc-scroller-liquid-absolute",
+              //   );
+              //   if (!scrollerEl) return;
+              //   scrollerEl.style.overflow = "visible";
+              //   console.log("viewdidmount ------------------", scrollerEl);
+              // }}
+              // windowResize={async (arg) => {
+              //   await delay(200);
+              //   const scrollerEl = // @ts-ignore
+              //     calendarRef?.current?.elRef?.current.querySelector(
+              //       ".fc-scroller-liquid-absolute",
+              //     );
+              //   scrollerEl.style.overflow = "visible";
+              // }}
+              // unselect={handleUnselect}
+              displayEventTime={false}
+              // dayHeaderClassNames={"customStylesDayHeader"}
+              // dayCellClassNames={"customStylesDayCells"}
+              // eventMaxStack={2}
+              // dayMaxEvents={2}
+            />
           </div>
-          <DialogFooter>
-            <Button type="submit">Save changes</Button>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
