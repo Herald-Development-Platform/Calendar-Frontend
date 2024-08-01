@@ -6,11 +6,7 @@ import React, {
   useState,
 } from "react";
 import FullCalendar from "@fullcalendar/react";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import listPlugin from "@fullcalendar/list";
-import multiMonthPlugin from "@fullcalendar/multimonth";
-import timeGridPlugin from "@fullcalendar/timegrid";
+
 import Calendar, {
   DateSelectArg,
   DateUnselectArg,
@@ -41,16 +37,9 @@ import {
   useApplySemesterDot,
   useApplySemesterDotYearly,
   useApplyYearlySemesterView,
+  useGetCalendarApi,
 } from "./utils";
-
-const allPlugins = [
-  dayGridPlugin,
-  multiMonthPlugin,
-  interactionPlugin,
-  timeGridPlugin,
-  listPlugin,
-  multiMonthPlugin,
-];
+import { allPlugins } from "@/constants/CalendarViews";
 
 export default function ReactFullCal({} // eventDetailWidth,
 : {
@@ -65,6 +54,8 @@ export default function ReactFullCal({} // eventDetailWidth,
     timeout,
     events,
   } = useContext(Context);
+
+  const { calendarApi } = useGetCalendarApi(calendarRef);
 
   const calWrapper = useRef<HTMLDivElement>(null);
   const dayFrameRefs = useRef<HTMLDivElement[]>([]);
@@ -314,8 +305,10 @@ export default function ReactFullCal({} // eventDetailWidth,
   });
 
   useEffect(() => {
-    if (!calendarRef?.current) return;
-    console.log("calendarRef.current?.getApi()", calendarRef.current?.getApi());
+    if (!calendarApi) return;
+    console.log("currview", currentView);
+    calendarApi.changeView(currentView);
+    // console.log("calendarRef.current?.getApi()", calendarRef.current?.getApi());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentView, calendarRef]);
 
