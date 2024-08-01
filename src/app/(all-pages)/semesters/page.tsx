@@ -116,6 +116,8 @@ export default function SemestersPage() {
                     <SelectContent className="text-neutral-900">
                       <SelectItem value="BIT">BIT</SelectItem>
                       <SelectItem value="BIBM">BIBM</SelectItem>
+                      <SelectItem value="IMBA">IMBA</SelectItem>
+                      <SelectItem value="Cyber Security">Cyber Security</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

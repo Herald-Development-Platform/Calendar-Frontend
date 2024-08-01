@@ -291,19 +291,19 @@ export default function ReactFullCal({} // eventDetailWidth,
     deleteEvent({ id: value });
   };
 
-  useApplySemesterDotYearly({
-    calendarRef,
-    semesterData,
-    monthValue,
-    currentView,
-  });
+  // useApplySemesterDotYearly({
+  //   calendarRef,
+  //   semesterData,
+  //   monthValue,
+  //   currentView,
+  // });
 
-  useApplySemesterDot({
-    calendarRef,
-    semesterData,
-    monthValue,
-    currentView,
-  });
+  // useApplySemesterDot({
+  //   calendarRef,
+  //   semesterData,
+  //   monthValue,
+  //   currentView,
+  // });
 
   useApplyYearlySemesterView({
     // @ts-ignore
