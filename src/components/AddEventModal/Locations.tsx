@@ -75,7 +75,12 @@ export default function Locations({
               filteredLocations?.map((location) => {
                 return (
                   <>
-                    <div className="group flex w-full flex-row items-center gap-2 rounded-[4px] px-3 py-1.5 hover:bg-neutral-100">
+                    <div
+                      onClick={() =>
+                        handleValueChange({ target: { name: "location", value: location?.name } })
+                      }
+                      className="group cursor-pointer flex w-full flex-row items-center gap-2 rounded-[4px] px-3 py-1.5 hover:bg-neutral-100"
+                    >
                       <span className="text-2xl text-neutral-600">
                         <GrLocationPin />
                       </span>
@@ -83,11 +88,6 @@ export default function Locations({
                         <span className="text-[16px] font-semibold text-neutral-700">
                           {location.name}
                         </span>
-                        {/* {location?.block && (
-                        <span className="text-[13px] font-normal text-neutral-400">
-                          {location.block}
-                        </span>
-                      )} */}
                         {location?.description && (
                           <span className="text-[13px] font-normal text-neutral-400">
                             {location.description}
@@ -96,9 +96,7 @@ export default function Locations({
                       </div>
                       <button
                         name="location"
-                        value={location?.name}
                         className="ml-auto hidden h-[26px] w-[26px] cursor-pointer items-center justify-center rounded-full bg-white group-hover:flex"
-                        onClick={handleValueChange}
                       >
                         <FaPlus></FaPlus>
                       </button>

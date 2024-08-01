@@ -385,7 +385,7 @@ export default function EditEventModal({
                         <DepartmentButton
                           key={department._id}
                           id={department._id}
-                          onClick={handleValueChange}
+                          onClick={()=>handleValueChange({target:{name:"department",value:department.code}})}
                           value={department.code}
                           selected={departmentExists}
                         />

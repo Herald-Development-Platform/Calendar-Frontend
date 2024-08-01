@@ -211,7 +211,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                   </span>
                   <div className="flex flex-row items-center gap-1.5 font-medium text-neutral-500">
                     <span className="text-[12px]">
-                      {ongoingSemesters?.length} •
+                      {Object.keys(ongoingSemestersGrouped).reduce((acc,val)=>acc+ongoingSemestersGrouped[val].length,0)} •
                     </span>
                     <div className="flex flex-row items-center gap-[1px]">
                       {ongoingSemesters?.map((semester: any, i: number) => (

@@ -248,7 +248,7 @@ export default function ReactFullCal({} // eventDetailWidth,
       departmentsWrapper.appendChild(departmentElement);
     });
 
-    // eventEl?.insertBefore(departmentsWrapper, titleElement);
+    eventEl?.insertBefore(departmentsWrapper, titleElement);
 
     return;
   };
