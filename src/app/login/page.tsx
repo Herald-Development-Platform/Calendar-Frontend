@@ -7,10 +7,11 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import * as CookieHooks from "@/hooks/CookieHooks";
 import Link from "next/link";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Page() {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
-
+  const queryClient = useQueryClient();
   const router = useRouter();
   const {
     register,
@@ -33,6 +34,7 @@ export default function Page() {
         }
         CookieHooks.setCookie("token", data.data, 1);
         toast.success(data.message || "Successfully registered user.");
+        queryClient.invalidateQueries();
         router.push("/");
       })
       .catch((err) => toast.error("Something went wrong"));
