@@ -88,7 +88,7 @@ export default function SemesterMonth({
           </>
           <>
             {firstDaysOfWeeks.map((checkpointDays, i) => {
-              const id = window.crypto.randomUUID().split("-").join("");
+              // const id = window.crypto.randomUUID().split("-").join("");
               const date = new Date(checkpointDays);
               const day = date.getDay();
               const gridSpanValue =
