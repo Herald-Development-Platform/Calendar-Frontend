@@ -16,6 +16,11 @@ import {
 import "./SideBarCss.css";
 import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
 import { RxCross1 } from "react-icons/rx";
+import {
+  TbLayoutSidebarLeftCollapse,
+  TbLayoutSidebarRightCollapse,
+} from "react-icons/tb";
+import { GoSidebarCollapse } from "react-icons/go";
 
 export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   const currentRoute = usePathname();
@@ -53,6 +58,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   const [ongoingSemestersGrouped, setOngoingSemestersGrouped] = useState<any>(
     {},
   );
+  const [open, setOpen] = useState(true);
   useEffect(() => {
     if (semesters) {
       let tempOngoing: Semester[] = [];
@@ -154,28 +160,39 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       </Dialog>
       <div
         className={`${hasBreakpoint ? "relative hidden" : " block"}  
-    h-screen w-60 bg-neutral-50 px-4 py-10 transition duration-1000 xl:block`}
+    h-screen ${open ? "w-[290px]" : "w-[80px]" } bg-neutral-50 px-4 py-10 transition-all duration-400 xl:block`}
       >
-        <div className="flex h-full w-[213px] flex-col items-center gap-16  font-medium">
-          <div className="flex gap-3 text-lg font-medium text-neutral-600 ">
+        <div className="flex h-full w-full flex-col items-center gap-16  font-medium">
+          <div
+            className={`flex ${open ? "flex-row" : "flex-col"} w-full items-center gap-3 text-lg font-medium text-neutral-600 `}
+          >
             <Image
               width={32}
               height={32}
               src={"/images/LoginPage/HeraldLogo.png"}
               alt="HeraldLogo"
+              className="mb-1"
             />
-            Events Calendar
+            {open && <span className="text-[16px] min-w-[130px] ">Events Calendar</span>}
+            <span
+              className={`${open ? "ml-auto rotate-180" : " absolute top-20"} cursor-pointer text-2xl text-neutral-500 font-thin`}
+              onClick={() => {
+                setOpen(!open);
+              }}
+            >
+              <GoSidebarCollapse />
+            </span>
           </div>
 
           <div className="flex w-full flex-col gap-3">
             {sidebarItems.map((item, i) => (
               <Link
-                onClick={() => console.log("clicked")}
                 href={item.navigation}
-                className={
-                  currentRoute == item.navigation
+                className={`
+                  ${currentRoute == item.navigation
                     ? highlightedStyles
-                    : nonHighlightedStyles
+                    : nonHighlightedStyles}
+                    `
                 }
                 // className="text-primary-700"
                 key={i}
@@ -189,8 +206,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                 >
                   {item.icon}
                 </span>
-
-                <span>{item.name}</span>
+                {open && <span>{item.name}</span>}
               </Link>
             ))}
           </div>
@@ -199,75 +215,62 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
             onClick={() => {
               setSemestersDialogOpen(true);
             }}
-            className="mx-2 mt-auto flex w-full flex-row items-center justify-between rounded-[50px] border-[0.6px] border-[#D4D4D4] px-4 py-2.5 "
+            className={`mx-2 mt-auto flex ${open ? "w-full" : "w-fit"} transition-all duration-400 flex-row items-center justify-between rounded-[50px] border-[0.6px] border-[#D4D4D4] px-4 py-2.5 `}
           >
             {semestersLoading ? (
               <span className="text-sm text-neutral-300">Loading...</span>
             ) : (
               <>
-                <div className="flex flex-col gap-0">
-                  <span className="text-[15px] font-medium leading-none text-neutral-600">
-                    Ongoing Semesters
-                  </span>
-                  <div className="flex flex-row items-center gap-1.5 font-medium text-neutral-500">
-                    <span className="text-[12px]">
-                      {Object.keys(ongoingSemestersGrouped).reduce((acc,val)=>acc+ongoingSemestersGrouped[val].length,0)} •
+                {open && (
+                  <div className="flex flex-col gap-0">
+                    <span className="text-[15px] font-medium leading-none text-neutral-600">
+                      Ongoing Semesters
                     </span>
-                    <div className="flex flex-row items-center gap-[1px]">
-                      {ongoingSemesters?.map((semester: any, i: number) => (
-                        <div
-                          key={i}
-                          className="fc-custom-semester-dot"
-                          style={{ backgroundColor: semester.color }}
-                          onClick={() => {}}
-                        >
-                          <div className="semester-tooltip-wrapper-center">
-                            <div className="semester-tooltip-data">
-                              <div
-                                className="semester-tooltip-dot"
-                                style={{ backgroundColor: semester.color }}
-                              ></div>
-                              <span className="semester-tooltip-semTitle">
-                                {semester.semester}
+                    <div className="flex flex-row items-center gap-1.5 font-medium text-neutral-500">
+                      <span className="text-[12px]">
+                        {Object.keys(ongoingSemestersGrouped).reduce(
+                          (acc, val) =>
+                            acc + ongoingSemestersGrouped[val].length,
+                          0,
+                        )}{" "}
+                        •
+                      </span>
+                      <div className="flex flex-row items-center gap-[1px]">
+                        {ongoingSemesters?.map((semester: any, i: number) => (
+                          <div
+                            key={i}
+                            className="fc-custom-semester-dot"
+                            style={{ backgroundColor: semester.color }}
+                            onClick={() => {}}
+                          >
+                            <div className="semester-tooltip-wrapper-center">
+                              <div className="semester-tooltip-data">
+                                <div
+                                  className="semester-tooltip-dot"
+                                  style={{ backgroundColor: semester.color }}
+                                ></div>
+                                <span className="semester-tooltip-semTitle">
+                                  {semester.semester}
+                                </span>
+                              </div>
+                              <span className="semester-tooltip-course">
+                                {semester.course}
                               </span>
                             </div>
-                            <span className="semester-tooltip-course">
-                              {semester.course}
-                            </span>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <span className="-rotate-90 text-neutral-500">
+                )}
+                <span className="-rotate-90 text-neutral-500 cursor-pointer">
                   <IoMdArrowDropdown />
                 </span>
               </>
             )}
           </div>
         </div>
-
-        {/* <button
-          onClick={() => console.log("clicked")}
-          className="absolute bottom-10 flex h-11 w-[213px] items-center gap-2 rounded px-3 text-neutral-500 focus:bg-primary-100"
-        >
-          <Image
-            width={"18"}
-            height={"18"}
-            className="h-[18px] w-[18px]"
-            src={"/images/Sidebar/HelpIcon.png"}
-            alt={"Help and Support"}
-          />
-          <span>Help and Support</span>
-        </button> */}
       </div>
-      {/* <span className="bg-yellow-500 text-4xl"> */}
-      {/* <CiLocationOn
-        style={{ color: "red" }}
-        className="text-4xl text-yellow-500"
-      /> */}
-      {/* </span> */}
     </>
   );
 }
