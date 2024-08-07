@@ -16,7 +16,12 @@ import {
 } from "@/components/ui/dialog";
 import { allPlugins, CalendarViews } from "@/constants/CalendarViews";
 import FullCalendar from "@fullcalendar/react";
-import { EventSourceInput } from "@fullcalendar/core/index.js";
+import {
+  CalendarApi,
+  DateInput,
+  EventMountArg,
+  EventSourceInput,
+} from "@fullcalendar/core/index.js";
 import { useGetCalendarApi } from "../utils";
 // import { Input } from "@/components/ui/input";
 // import { Label } from "@/components/ui/label";
@@ -36,7 +41,16 @@ export default function SemesterMonth({
   const gridRef = useRef<HTMLDivElement>(null);
   const calRef = useRef<FullCalendar>(null);
 
-  const { calendarApi } = useGetCalendarApi(calRef);
+  // const [calendarApi, setCalendarApi] = useState<CalendarApi>();
+  // useEffect(() => {
+  //   console.log("getApi", calRef.current?.getApi());
+  //   console.log("calREf", calRef.current);
+
+  //   setCalendarApi(calRef.current?.getApi());
+  //   console.log("calendarApi", calendarApi);
+  // }, [calRef]);
+
+  const { setSelectedDate, selectedDate } = useContext(Context);
 
   const firstDaysOfWeeks = getFirstDaysOfWeeks({ year: year, month: month });
   const lastMonthDate = getLastDayOfMonth({ year: year, month: month });
@@ -45,17 +59,71 @@ export default function SemesterMonth({
     new Date(firstDaysOfWeeks[firstDaysOfWeeks.length - 1]).getDate() +
     1;
 
-  const { setSelectedDate, selectedDate } = useContext(Context);
   useEffect(() => {
     console.log("render", openWeekView);
     if (!calRef.current) return;
     // @ts-ignore
-    console.log("calRef", calRef.current.elRef.current.children[0]);
+    // console.log("calRef", calRef.current.elRef.current.children[0]);
     // @ts-ignore
     const TableEl = calRef.current.elRef.current.children[0];
     TableEl.style.height = `590px`;
   }, [calRef, isDoubleClick, openWeekView]);
 
+  // console.log("toay", calRef);
+
+  const handleEventDidMount = async (info: EventMountArg) => {
+    const departments = info?.event?._def?.extendedProps?.departments;
+    const startTime = info.event._instance?.range?.start
+      ? format(info.event._instance?.range.start, "h:mm a")
+      : "00: 00 am";
+    const endTime = info.event._instance?.range?.end
+      ? format(info.event._instance?.range.end, "h:mm a")
+      : "00: 00 am";
+
+    console.log("info", info);
+    // if (currentView === "timeGridWeek" || currentView === "timeGridDay") {
+    console.log("Week event", info);
+
+    const timeEl = document.createElement("div");
+
+    timeEl.innerText = `${startTime} - ${endTime}`;
+    timeEl.style.color = "#737373";
+    timeEl.style.fontWeight = "400";
+
+    const mainFrameEl = info.el.querySelector(".fc-event-main-frame");
+    const departmentsWrapper = document.createElement("div");
+    departmentsWrapper.classList.add("department-wrapper");
+
+    departments?.map((department: any, i: number) => {
+      const departmentElement = document.createElement("div");
+      departmentElement.classList.add("department-item");
+      departmentElement.textContent = department?.code;
+      departmentElement.style.fontWeight = "400";
+
+      if (i === 0) {
+        departmentElement.style.backgroundColor = "#737373";
+        departmentElement.style.border = "0.4px solid #d4d4d4";
+      } else {
+        departmentElement.style.backgroundColor = "#F5F5F5";
+        departmentElement.style.color = "#737373";
+        departmentElement.style.border = "0.4px solid #d4d4d4";
+      }
+      departmentsWrapper.appendChild(departmentElement);
+    });
+
+    const titleContainer =
+      mainFrameEl && mainFrameEl.querySelector(".fc-event-title-container");
+    titleContainer &&
+      mainFrameEl?.insertBefore(departmentsWrapper, titleContainer);
+    mainFrameEl?.appendChild(timeEl);
+
+    const mainEventEl = info.el.querySelector(".fc-event-main") as HTMLElement;
+
+    info.el.style.borderLeft = `3px solid ${info.backgroundColor}`;
+    info.el.style.borderLeft = `3px solid ${info.backgroundColor}`;
+    info.el.style.borderLeft = `5px solid ${info.backgroundColor}`;
+    info.el.style.backgroundColor = `${info.backgroundColor}26`;
+  };
   return (
     <>
       <div className="flex flex-col items-center gap-[9px]">
@@ -88,7 +156,6 @@ export default function SemesterMonth({
           </>
           <>
             {firstDaysOfWeeks.map((checkpointDays, i) => {
-              // const id = window.crypto.randomUUID().split("-").join("");
               const date = new Date(checkpointDays);
               const day = date.getDay();
               const gridSpanValue =
@@ -128,8 +195,6 @@ export default function SemesterMonth({
                   eventStart > selectedStartTime && eventEnd < selectedEndTime;
                 inLastEdge =
                   eventStart < selectedEndTime && eventEnd >= selectedEndTime;
-                month === 7 &&
-                  console.log("events inside filter of july", selectedEndTime);
 
                 if (!inFirstEdge && !inBetween && !inLastEdge) return;
                 totalEvents++;
@@ -213,9 +278,9 @@ export default function SemesterMonth({
       </div>
       <Dialog open={openWeekView} onOpenChange={setOpenWeekView}>
         <DialogContent className="green-scrollbar h-[1000px] max-h-[85%] max-w-[85%] overflow-hidden overflow-y-scroll">
-          {/* <DialogHeader>
-            <DialogTitle className="">Edit profile</DialogTitle>
-          </DialogHeader> */}
+          <DialogHeader>
+            <DialogTitle className="">Weekly View</DialogTitle>
+          </DialogHeader>
           <div>
             <FullCalendar
               ref={calRef}
@@ -243,24 +308,25 @@ export default function SemesterMonth({
               events={events as EventSourceInput}
               // eventMouseEnter={handleMouseEnter}
               // eventMouseLeave={handleMouseLeave}
-              // eventDidMount={handleEventDidMount}
+              eventDidMount={handleEventDidMount}
               headerToolbar={false}
               selectable={true}
+              initialDate={selectedDate?.start}
               // select={handleSelect}
-              // viewDidMount={async (info: any) => {
-              //   await delay(200);
-              //   if (
-              //     calendarRef?.current?.getApi()?.view?.type !==
-              //     "dayGridMonth"
-              //   )
-              //     return;
-              //   const scrollerEl = info.el.querySelector(
-              //     ".fc-scroller-liquid-absolute",
-              //   );
-              //   if (!scrollerEl) return;
-              //   scrollerEl.style.overflow = "visible";
-              //   console.log("viewdidmount ------------------", scrollerEl);
-              // }}
+              viewDidMount={async (info: any) => {
+                console.log("viewdidmount", info);
+                // await delay(200);
+                // if (
+                //   calendarRef?.current?.getApi()?.view?.type !== "dayGridMonth"
+                // )
+                //   return;
+                // const scrollerEl = info.el.querySelector(
+                //   ".fc-scroller-liquid-absolute",
+                // );
+                // if (!scrollerEl) return;
+                // scrollerEl.style.overflow = "visible";
+                // console.log("viewdidmount ------------------", scrollerEl);
+              }}
               // windowResize={async (arg) => {
               //   await delay(200);
               //   const scrollerEl = // @ts-ignore
