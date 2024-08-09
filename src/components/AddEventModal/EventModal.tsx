@@ -38,6 +38,7 @@ import {
 import Endpoints from "@/services/API_ENDPOINTS";
 import Locations from "./Locations";
 import DatePicker from "./DatePicker";
+import './EventModal.css';
 
 interface PickedDateType {
   startDate: Date | undefined;
@@ -397,7 +398,7 @@ export default function EventModal({
                 <div key={"AddEventPriority"} className="flex gap-2">
                   {colors?.map((Color, i) => (
                     <label
-                      className={`btn checkbox btn-xs relative h-7 w-7 cursor-pointer rounded-none border-none`}
+                      className={`fc-custom-semester-dot-event btn checkbox btn-xs relative h-7 w-7 cursor-pointer rounded-none border-none`}
                       style={{ backgroundColor: Color.color }}
                       htmlFor={`ColorInput${i}`}
                       key={i}
@@ -423,6 +424,13 @@ export default function EventModal({
                         value={Color.color}
                         onChange={handleValueChange}
                       />
+                      <div className="semester-tooltip-wrapper-event">
+                        <div className="semester-tooltip-data" style={{
+                          color: Color.color,
+                        }}>
+                          {Color.priority}
+                        </div>
+                      </div>
                     </label>
                   ))}
                 </div>

@@ -52,6 +52,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import Image from "next/image";
+import { LuTrash2 } from "react-icons/lu";
 
 export default function Page() {
   const router = useRouter();
@@ -236,7 +238,7 @@ export default function Page() {
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="mt-[40px] flex flex-col gap-9 px-[70px] pl-3 max-h-[100vh] overflow-y-scroll">
+      <div className="mt-[40px] flex max-h-[100vh] flex-col gap-9 overflow-y-scroll px-[70px] pl-3">
         <Toaster />
 
         <Dialog
@@ -455,9 +457,10 @@ export default function Page() {
                                         }}
                                       >
                                         <span className=" text-primary-500">
-                                          {watchUserValues(
+                                          {watchUserValues("permissions") &&
+                                          watchUserValues(
                                             "permissions",
-                                          ) && watchUserValues("permissions")?.includes(permission) ? (
+                                          )?.includes(permission) ? (
                                             <MdCheckBox />
                                           ) : (
                                             <MdCheckBoxOutlineBlank />
@@ -557,10 +560,13 @@ export default function Page() {
         <div className=" flex flex-col gap-[27px]">
           <div className="flex flex-row justify-between">
             <h1 className=" text-[28px] font-[700] text-black">Team</h1>
-            <div className=" flex h-[32px] w-[306px] flex-row items-center justify-start gap-3 rounded-[4px] border bg-neutral-100 px-3 py-2">
-              <span className=" font-bold text-neutral-500">
-                <CiSearch />
-              </span>
+            <div className=" flex h-[32px] w-[280px] flex-row items-center justify-start gap-3 rounded-[4px] border bg-neutral-100 px-3 py-2">
+              <Image
+                src="/SearchOutline.svg"
+                alt="Search"
+                width={20}
+                height={20}
+              />
               <input
                 onChange={(e) => {
                   filterList(e.target.value);
@@ -703,7 +709,7 @@ export default function Page() {
                   )) && (
                   <span
                     onClick={() => router.push("/department")}
-                    className=" cursor-pointer text-[14px] font-semibold text-info-600 underline underline-offset-2"
+                    className=" cursor-pointer text-[14px] font-semibold text-[#1A5ECA]"
                   >
                     Manage Departments
                   </span>
@@ -728,8 +734,8 @@ export default function Page() {
                   <TableHead className=" w-[76px] text-neutral-600">
                     Role
                   </TableHead>
-                  <TableHead className="w-[76px] text-right text-neutral-600">
-                    Action
+                  <TableHead className="w-[76px] text-left text-neutral-600">
+                    Edit
                   </TableHead>
                 </TableRow>
               </TableHeader>
@@ -763,10 +769,10 @@ export default function Page() {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="font-600 w-10 text-neutral-500">
+                        <TableCell className="w-10 font-semibold text-[#737373] ">
                           {user?.department?.code}
                         </TableCell>
-                        <TableCell className="w-[76px] ">
+                        <TableCell>
                           {profile?.permissions.includes(
                             PERMISSIONS.UPDATE_USER,
                           ) && profile?._id !== user._id ? (
@@ -793,13 +799,13 @@ export default function Page() {
                                 setChangeRoleVerificationModalOpen(true);
                               }}
                             >
-                              <SelectTrigger>
+                              <SelectTrigger className="h-7 bg-[#F5F5F5] font-semibold text-[#404040]">
                                 <SelectValue placeholder="Select Role" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="STAFF">Officer</SelectItem>
+                                <SelectItem value="STAFF">Member</SelectItem>
                                 <SelectItem value="DEPARTMENT_ADMIN">
-                                  Head of Department
+                                  Dept. Admin
                                 </SelectItem>
                               </SelectContent>
                             </Select>
@@ -807,8 +813,8 @@ export default function Page() {
                             <div className=" flex flex-col items-start justify-center">
                               <p>
                                 {user?.role === ROLES.STAFF
-                                  ? "Officer"
-                                  : "Head of Department"}
+                                  ? "Member"
+                                  : "Dept. Admin"}
                               </p>
                             </div>
                           )}
@@ -845,9 +851,9 @@ export default function Page() {
                                     setUpdatingUserData(user);
                                     setDeleteUserDialogOpen(true);
                                   }}
-                                  className=" text-xl text-red-700"
+                                  className=" ml-auto text-xl text-[#FF746B]"
                                 >
-                                  <MdDelete />
+                                  <LuTrash2 />
                                 </button>
                               )}
                           </div>
