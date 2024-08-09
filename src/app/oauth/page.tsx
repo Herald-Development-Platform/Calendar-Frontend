@@ -2,6 +2,7 @@
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
 import Cookies from "js-cookie";
+import LoadingBar from "@/components/Loading";
 export default function Oauth() {
   const searchParams = useSearchParams();
   const token = searchParams.get("access_token");
@@ -14,5 +15,14 @@ export default function Oauth() {
       router.push("/");
     }
   }, []);
-  return <div>Google Page...</div>;
+  return (
+    <div className="flex h-[100vh] w-full items-center justify-center">
+      <div className="flex w-[50%] flex-col items-center justify-center gap-2">
+        <span className="text-2xl font-semibold text-neutral-700">
+          Logging In With Google
+        </span>
+        <LoadingBar className="h-2 w-[100%] bg-neutral-300" />
+      </div>
+    </div>
+  );
 }

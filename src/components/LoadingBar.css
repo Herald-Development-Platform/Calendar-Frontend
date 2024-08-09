@@ -1,0 +1,29 @@
+@keyframes loading {
+  0% {
+    left: -100%;
+  }
+
+  50% {
+    left: 100%;
+  }
+
+  100% {
+    left: -100%;
+  }
+}
+
+.loading-bar {
+  position: relative;
+  top: 0;
+  left: 0;
+  background-color: #f0f0f0;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.loading-bar > .bar {
+  position: absolute;
+  height: 100%;
+  width: 50%;
+  animation: loading 2s infinite ease-in-out;
+}

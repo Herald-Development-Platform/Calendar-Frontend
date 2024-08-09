@@ -312,6 +312,19 @@ export default function ReactFullCal({} // eventDetailWidth,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentView, calendarRef]);
 
+
+  useEffect(()=>{
+    if (events && selectedEvent) {
+      let newlyFetchedSelectedEvent = events.find(
+        (event: eventType) => event._id === selectedEvent._id,
+      );
+      if (newlyFetchedSelectedEvent) {
+        setSelectedEvent(newlyFetchedSelectedEvent);
+      }
+    }
+  }, [events]);
+
+
   return (
     <>
       <div ref={calWrapper} className="relative h-full w-auto">

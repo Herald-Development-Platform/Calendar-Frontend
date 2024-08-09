@@ -302,20 +302,23 @@ export default function EventDetails({
               setSelectedColor(value);
             }}
           >
-            <SelectTrigger className="h-7 w-14 border-none p-0 focus:ring-0">
-              <div
-                className="h-7 w-7"
-                style={{ backgroundColor: selectedColor }}
-              ></div>
+            <SelectTrigger style={{
+              backgroundColor: selectedEvent?.color,
+
+            }} className="h-fit gap-2 w-fit border-none p-0 px-4 py-1.5 text-sm leading-none text-white focus:ring-0">
+              {
+                colors.find((color) => color.color === selectedEvent?.color)
+                  ?.priority
+              }
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Colors</SelectLabel>
                 {colors.map((color: any, i) => (
                   <SelectItem value={color?.color} key={color?.color}>
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
                       <div
-                        className="h-7 w-7"
+                        className="h-7 w-7 rounded-md"
                         style={{ backgroundColor: color?.color }}
                       ></div>
                       <span>{color?.priority}</span>
@@ -445,6 +448,19 @@ export default function EventDetails({
             </div>
             <div className="flex w-5/12 items-center justify-between">
               <p>Priority</p>
+              {/* <span
+                className="ml-auto mr-1 text-sm"
+                style={{ color: selectedEvent?.color }}
+              >
+                {
+                  colors.find((color) => color.color === selectedEvent?.color)
+                    ?.priority
+                }
+              </span>
+              <div
+                className="h-7 w-7 rounded-md"
+                style={{ backgroundColor: selectedColor }}
+              ></div> */}
               <Select
                 defaultValue={selectedEvent?.color}
                 onValueChange={(value) => {
@@ -455,11 +471,17 @@ export default function EventDetails({
                   setSelectedColor(value);
                 }}
               >
-                <SelectTrigger className="h-7 w-14 border-none p-0 focus:ring-0">
-                  <div
-                    className="h-7 w-7"
-                    style={{ backgroundColor: selectedColor }}
-                  ></div>
+                <SelectTrigger className="h-7 border-none p-0 focus:ring-0">
+                  <span
+                    className="ml-auto mr-1 text-sm"
+                    style={{ color: selectedEvent?.color }}
+                  >
+                    {
+                      colors.find(
+                        (color) => color.color === selectedEvent?.color,
+                      )?.priority
+                    }
+                  </span>
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
@@ -468,7 +490,7 @@ export default function EventDetails({
                       <SelectItem value={color?.color} key={color?.color}>
                         <div className="flex items-center justify-between gap-2">
                           <div
-                            className="h-7 w-7"
+                            className="h-7 w-7 rounded-md"
                             style={{ backgroundColor: color?.color }}
                           ></div>
                           <span>{color?.priority}</span>

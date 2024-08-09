@@ -1,9 +1,9 @@
 const colors = [
-  { color: "#FC3434", priority: "Extremely Important" }, //must attend
-  { color: "#FF6D6D", priority: "High" },
-  { color: "#FFD760", priority: "Medium" },
-  { color: "#FFDD85", priority: "Low" }, //can be considered
-  { color: "#96FFA0", priority: "Very Low" },
-  { color: "#B8FFBF", priority: "Optional" }, //umimportant
+  { color: "#FC3434", priority: "Critical" }, //must attend
+  { color: "#F28531", priority: "High" },
+  { color: "#FBC833", priority: "Medium" },
+  { color: "#78C419", priority: "Low" }, //can be considered
+  { color: "#399AC0", priority: "Informational" }, //umimportant
+  { color: "#49449C", priority: "Google" }, //umimportant
 ];
 export default colors;

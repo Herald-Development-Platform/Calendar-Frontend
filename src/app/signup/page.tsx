@@ -10,6 +10,7 @@ import { DEPARTMENTS } from "@/constants/departments";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { LuEye, LuEyeOff } from "react-icons/lu";
+import { FaRegCircleUser } from "react-icons/fa6";
 
 export default function Page() {
   const {
@@ -49,17 +50,21 @@ export default function Page() {
     <>
       <div className="mx-auto my-[60px] flex w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 pb-10 font-medium">
         {/* Logo  */}
-        <div className="flex -translate-y-1/2 transform items-center justify-between gap-2 bg-[#FFFFFF]">
+        <div className="flex -translate-y-1/2 transform items-end justify-between gap-2 bg-[#FFFFFF]">
           <Image
             width="32"
             height="32"
-            src={"/images/LoginPage/HeraldLogo.png"}
+            src={"/images/heraldLogo.svg"}
             alt="HeraldLogo"
             className="h-auto w-auto"
           />
-          <div className="text-2xl ">
-            <span className="text-primary-600"> Herald </span>
-            <span className="text-neutral-600">Calendar</span>
+          <div className="text-2xl" style={{ lineHeight: 0 }}>
+            <span className="text-primary-600" style={{ lineHeight: 0.8 }}>
+              Herald{" "}
+            </span>
+            <span className="text-neutral-600" style={{ lineHeight: 0.8 }}>
+              Calendar
+            </span>
           </div>
         </div>
 
@@ -78,13 +83,9 @@ export default function Page() {
             Name
             <br />
             <div className="flex h-[52px] w-[430px] items-center gap-2 rounded-[4px] bg-neutral-100 px-4 ">
-              <Image
-                src={"/images/LoginPage/EmailLogo.png"}
-                width={"20"}
-                height={"20"}
-                alt="emailLogo"
-                className="h-[20px]"
-              />
+              <span className="text-md text-neutral-500">
+                <FaRegCircleUser />
+              </span>
               <input
                 type="username"
                 className="w-full bg-neutral-100  font-normal text-neutral-500 outline-none"
@@ -99,7 +100,7 @@ export default function Page() {
             <br />
             <div className="flex h-[52px] w-[430px] items-center gap-2 rounded-[4px] bg-neutral-100 px-4 ">
               <Image
-                src={"/images/LoginPage/EmailLogo.png"}
+                src={"/images/atsymbol.svg"}
                 width={"20"}
                 height={"20"}
                 alt="emailLogo"
@@ -119,10 +120,11 @@ export default function Page() {
             <br />
             <div className="flex h-[52px] w-[430px] items-center gap-2 rounded-[4px] bg-neutral-100 px-4">
               <Image
-                src={"/images/LoginPage/PasswordLogo.png"}
+                src={"/images/lockSymbol.svg"}
                 width={"20"}
                 height={"20"}
-                alt="passwordLogo"
+                alt="emailLogo"
+                className="h-[20px]"
               />
               <input
                 type={showPassword ? "text" : "password"}

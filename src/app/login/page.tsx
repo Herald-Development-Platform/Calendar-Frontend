@@ -43,17 +43,17 @@ export default function Page() {
     <>
       <div className="relative mx-auto my-[60px] flex h-auto w-[660px] flex-col items-center gap-8 border-[0.6px] border-neutral-300 pb-[84px] pt-12 font-medium">
         {/* Logo  */}
-        <div className="absolute top-0 flex -translate-y-1/2 transform items-center justify-between gap-2 bg-[#FFFFFF] px-3">
+        <div className="absolute top-0 flex -translate-y-1/2 transform items-end justify-between gap-2 bg-[#FFFFFF] px-3">
           <Image
             width="32"
             height="32"
-            src={"/images/LoginPage/HeraldLogo.png"}
+            src={"/images/heraldLogo.svg"}
             alt="HeraldLogo"
             className="h-auto w-auto"
           />
-          <div className="text-2xl ">
-            <span className="text-primary-600"> Herald </span>
-            <span className="text-neutral-600">Calendar</span>
+          <div className="text-2xl" style={{lineHeight:0}}>
+            <span className="text-primary-600" style={{lineHeight:0.8}}>Herald{" "}</span>
+            <span className="text-neutral-600" style={{lineHeight:0.8}}>Calendar</span>
           </div>
         </div>
 
@@ -73,7 +73,7 @@ export default function Page() {
             <br />
             <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4 ">
               <Image
-                src={"/images/LoginPage/EmailLogo.png"}
+                src={"/images/atsymbol.svg"}
                 width={"20"}
                 height={"20"}
                 alt="emailLogo"
@@ -94,7 +94,7 @@ export default function Page() {
             <br />
             <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4">
               <Image
-                src={"/images/LoginPage/PasswordLogo.png"}
+                src={"/images/lockSymbol.svg"}
                 width={"20"}
                 height={"20"}
                 alt="passwordLogo"
