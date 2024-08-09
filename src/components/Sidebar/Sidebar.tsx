@@ -21,6 +21,7 @@ import {
   TbLayoutSidebarRightCollapse,
 } from "react-icons/tb";
 import { GoSidebarCollapse } from "react-icons/go";
+import { BsLayoutSidebarReverse } from "react-icons/bs";
 
 export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   const currentRoute = usePathname();
@@ -160,9 +161,11 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       </Dialog>
       <div
         className={`${hasBreakpoint ? "relative hidden" : " block"}  
-    h-screen ${open ? "w-[290px]" : "w-[80px]" } bg-neutral-50 px-4 py-10 transition-all duration-400 xl:block`}
+    h-screen ${open ? "w-[290px]" : "w-[80px]"} duration-400 bg-neutral-50 px-4 py-10 transition-all xl:block`}
       >
-        <div className="flex h-full w-full flex-col items-center gap-16  font-medium">
+        <div
+          className={`flex h-full w-full flex-col items-center ${open ? "gap-14" : " gap-1.5"}  font-medium`}
+        >
           <div
             className={`flex ${open ? "flex-row" : "flex-col"} w-full items-center gap-3 text-lg font-medium text-neutral-600 `}
           >
@@ -173,27 +176,48 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
               alt="HeraldLogo"
               className="mb-1"
             />
-            {open && <span className="text-[16px] min-w-[130px] ">Events Calendar</span>}
-            <span
-              className={`${open ? "ml-auto rotate-180" : " absolute top-20"} cursor-pointer text-2xl text-neutral-500 font-thin`}
-              onClick={() => {
-                setOpen(!open);
-              }}
-            >
-              <GoSidebarCollapse />
-            </span>
+            {open && (
+              <>
+                <span className="min-w-[130px] text-[16px] ">
+                  Events Calendar
+                </span>
+                <span
+                  className={`${open ? "ml-auto rotate-180" : " absolute top-20"} cursor-pointer text-2xl font-thin text-neutral-500`}
+                  onClick={() => {
+                    setOpen(!open);
+                  }}
+                >
+                  <BsLayoutSidebarReverse />
+                </span>
+              </>
+            )}
           </div>
 
           <div className="flex w-full flex-col gap-3">
+            {!open && (
+              <div
+                onClick={() => {
+                  setOpen(!open);
+                }}
+                className={`${nonHighlightedStyles}`}
+              >
+                <span
+                  className={`cursor-pointer text-2xl font-thin text-neutral-500`}
+                >
+                  <BsLayoutSidebarReverse />
+                </span>
+              </div>
+            )}
             {sidebarItems.map((item, i) => (
               <Link
                 href={item.navigation}
                 className={`
-                  ${currentRoute == item.navigation
-                    ? highlightedStyles
-                    : nonHighlightedStyles}
-                    `
-                }
+                  ${
+                    currentRoute == item.navigation
+                      ? highlightedStyles
+                      : nonHighlightedStyles
+                  }
+                    `}
                 // className="text-primary-700"
                 key={i}
               >
@@ -215,7 +239,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
             onClick={() => {
               setSemestersDialogOpen(true);
             }}
-            className={`mx-2 mt-auto flex ${open ? "w-full" : "w-fit"} transition-all duration-400 flex-row items-center justify-between rounded-[50px] border-[0.6px] border-[#D4D4D4] px-4 py-2.5 `}
+            className={`mx-2 mt-auto flex ${open ? "w-full" : "w-fit"} duration-400 flex-row items-center justify-between rounded-[50px] border-[0.6px] border-[#D4D4D4] px-4 py-2.5 transition-all `}
           >
             {semestersLoading ? (
               <span className="text-sm text-neutral-300">Loading...</span>
@@ -263,7 +287,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                     </div>
                   </div>
                 )}
-                <span className="-rotate-90 text-neutral-500 cursor-pointer">
+                <span className="-rotate-90 cursor-pointer text-neutral-500">
                   <IoMdArrowDropdown />
                 </span>
               </>
