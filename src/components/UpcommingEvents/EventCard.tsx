@@ -32,23 +32,30 @@ export default function EventCard({
           handleCardClick && handleCardClick(event);
         }}
       >
-        <div className="flex w-full flex-wrap gap-1">
-          {event?.departments?.map((department: any, i: number) => {
-            return (
-              <div
-                key={i}
-                className={`${
-                  i === 0
-                    ? "bg-neutral-400 text-white"
-                    : "bg-white text-neutral-400"
-                } flex h-[15px] items-center justify-center rounded-[20px] border-[0.4px] border-neutral-400  px-[5px] text-[11px] `}
-              >
-                <span className="flex h-full items-center justify-center pt-[2px]">
-                  {department?.code}
-                </span>
-              </div>
-            );
-          })}
+        <div className="flex items-start justify-start">
+          <div className="flex w-[80%] flex-wrap gap-1">
+            {event?.departments?.map((department: any, i: number) => {
+              return (
+                <div
+                  key={i}
+                  className={`${
+                    i === 0
+                      ? "bg-neutral-400 text-white"
+                      : "bg-white text-neutral-400"
+                  } flex h-[15px] items-center justify-center rounded-[20px] border-[0.4px] border-neutral-400  px-[5px] text-[11px] `}
+                >
+                  <span className="flex h-full items-center justify-center pt-[2px]">
+                    {department?.code}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+          {event?.start &&
+            new Date(event.start).getDate() !==
+              new Date(event.end ?? "").getDate() && <span className="ml-auto text-[12px]" style={{
+                color: event.color,
+              }}>MD</span>}
         </div>
         <h1 className="font-medium">{event?.title}</h1>
         <div className="flex items-center text-neutral-600">
