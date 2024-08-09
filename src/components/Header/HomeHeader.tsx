@@ -73,8 +73,14 @@ export function HomeHeader() {
     );
   }
 
-  const { calendarRef, userData, selectedDate, setSelectedDate, timeout } =
-    useContext(Context);
+  const {
+    calendarRef,
+    currentView,
+    userData,
+    selectedDate,
+    setSelectedDate,
+    timeout,
+  } = useContext(Context);
 
   const token = useGetCookieByName("token");
 
@@ -91,34 +97,121 @@ export function HomeHeader() {
 
   const handleNext = () => {
     calendarApi?.next();
-    setSelectedDate((prev: any) => {
-      if (!prev?.start) return prev;
+    if (!selectedDate?.start || !selectedDate?.end) return;
+    let start = null;
+    let end = null;
+    let startStr = null;
+    let endStr = null;
 
-      const nextMonth = new Date(prev.start);
-      nextMonth.setMonth(nextMonth.getMonth() + 1);
-      return {
-        start: nextMonth,
-        end: new Date(nextMonth.getTime() + 1000 * 60 * 60 * 24 * 7),
-        endStr: "",
-        startStr: "",
-      };
+    switch (currentView) {
+      case "dayGridMonth":
+        start = new Date(selectedDate.start).setMonth(
+          selectedDate.start.getMonth() + 1,
+        );
+        end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
+        startStr = format(start, "yyyy-MM-dd");
+        endStr = format(end, "yyyy-MM-dd");
+        break;
+
+      case "timeGridWeek":
+        start = new Date(selectedDate.start).setDate(
+          selectedDate.start.getDate() + 7,
+        );
+        end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
+        startStr = format(start, "yyyy-MM-dd");
+        endStr = format(end, "yyyy-MM-dd");
+        break;
+
+      case "timeGridDay":
+        start = new Date(selectedDate.start).setDate(
+          selectedDate.start.getDate() + 1,
+        );
+        end = new Date(start).setDate(new Date(start).getDate() + 1);
+        startStr = format(start, "yyyy-MM-dd");
+        endStr = format(end, "yyyy-MM-dd");
+        break;
+
+      case "multiMonthYear":
+        start = new Date(selectedDate.start).setFullYear(
+          selectedDate.start.getFullYear() + 1,
+        );
+        end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
+        startStr = format(start, "yyyy-MM-dd");
+        endStr = format(end, "yyyy-MM-dd");
+        break;
+    }
+    setSelectedDate({
+      start: start ? new Date(start) : undefined,
+      end: end ? new Date(end) : undefined,
+      endStr: endStr === null ? undefined : endStr,
+      startStr: startStr === null ? undefined : startStr,
     });
     clearTimeout(timeout.current);
   };
 
+  // const handlePrevious = () => {
+  //   calendarApi?.prev();
+  //   setSelectedDate((prev: any) => {
+  //     if (!prev?.start) return prev;
+
+  //     const prevMonth = new Date(prev.start);
+  //     prevMonth.setMonth(prevMonth.getMonth() - 1);
+  //     return {
+  //       start: prevMonth,
+  //       end: new Date(prevMonth.getTime() + 1000 * 60 * 60 * 24 * 7),
+  //       endStr: "",
+  //       startStr: "",
+  //     };
+  //   });
+  //   clearTimeout(timeout.current);
+  // };
+
   const handlePrevious = () => {
     calendarApi?.prev();
-    setSelectedDate((prev: any) => {
-      if (!prev?.start) return prev;
-
-      const prevMonth = new Date(prev.start);
-      prevMonth.setMonth(prevMonth.getMonth() - 1);
-      return {
-        start: prevMonth,
-        end: new Date(prevMonth.getTime() + 1000 * 60 * 60 * 24 * 7),
-        endStr: "",
-        startStr: "",
-      };
+    if (!selectedDate?.start || !selectedDate?.end) return;
+    let start = null;
+    let end = null;
+    let startStr = null;
+    let endStr = null;
+    switch (currentView) {
+      case "dayGridMonth":
+        start = new Date(selectedDate.start).setMonth(
+          selectedDate.start.getMonth() - 1,
+        );
+        end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
+        startStr = format(start, "yyyy-MM-dd");
+        endStr = format(end, "yyyy-MM-dd");
+        break;
+      case "timeGridWeek":
+        start = new Date(selectedDate.start).setDate(
+          selectedDate.start.getDate() - 7,
+        );
+        end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
+        startStr = format(start, "yyyy-MM-dd");
+        endStr = format(end, "yyyy-MM-dd");
+        break;
+      case "timeGridDay":
+        start = new Date(selectedDate.start).setDate(
+          selectedDate.start.getDate() - 1,
+        );
+        end = new Date(start).setDate(new Date(start).getDate() + 1);
+        startStr = format(start, "yyyy-MM-dd");
+        endStr = format(end, "yyyy-MM-dd");
+        break;
+      case "multiMonthYear":
+        start = new Date(selectedDate.start).setFullYear(
+          selectedDate.start.getFullYear() - 1,
+        );
+        end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
+        startStr = format(start, "yyyy-MM-dd");
+        endStr = format(end, "yyyy-MM-dd");
+        break;
+    }
+    setSelectedDate({
+      start: start ? new Date(start) : undefined,
+      end: end ? new Date(end) : undefined,
+      endStr: endStr === null ? undefined : endStr,
+      startStr: startStr === null ? undefined : startStr,
     });
     clearTimeout(timeout.current);
   };

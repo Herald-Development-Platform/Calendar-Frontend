@@ -36,8 +36,6 @@ export function findNormalView(calView: string, calendarApi: CalendarApi) {
     case ListViews.listViewMonth:
       return calendarApi.changeView(CalendarViews.monthView);
     case ListViews.listViewWeek:
-      return calendarApi.changeView(CalendarViews.weekView);
-    case ListViews.listViewWeek:
       return calendarApi.changeView(CalendarViews.timeGrid.week);
     case ListViews.listViewDay:
       return calendarApi.changeView(CalendarViews.timeGrid.day);
