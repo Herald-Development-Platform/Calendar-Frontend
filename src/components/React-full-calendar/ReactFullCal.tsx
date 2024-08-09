@@ -276,6 +276,7 @@ export default function ReactFullCal({} // eventDetailWidth,
       info.el.style.borderLeft = `5px solid ${info.backgroundColor}`;
       info.el.style.backgroundColor = `${info.backgroundColor}26`;
     } else if (currentView === "dayGridMonth") {
+      console.log("info", info);
       const eventEl = info.el;
       // const departments = info?.event?._def?.extendedProps?.departments;
       const titleElement = eventEl?.querySelector(".fc-event-title");
@@ -283,7 +284,8 @@ export default function ReactFullCal({} // eventDetailWidth,
         "fc-daygrid-block-event",
       );
 
-      if (departments?.length === 0 || !titleElement || isBlockEvent) return;
+      // if (departments?.length === 0 || !titleElement || isBlockEvent) return;
+      if (departments?.length === 0 || !titleElement) return;
 
       const departmentsWrapper = document.createElement("div");
       departmentsWrapper.classList.add("department-wrapper");
@@ -404,7 +406,7 @@ export default function ReactFullCal({} // eventDetailWidth,
               setEventDetailWidth(upcommingEventWidth);
               setSelectedEvent(selectedEventObj as eventType);
             }}
-            initialView={`timeGridWeek`}
+            initialView={`dayGridMonth`}
             events={events as EventSourceInput}
             // eventMouseEnter={handleMouseEnter}
             // eventMouseLeave={handleMouseLeave}

@@ -41,6 +41,8 @@ export default function SemesterMonth({
   const gridRef = useRef<HTMLDivElement>(null);
   const calRef = useRef<FullCalendar>(null);
 
+  const monthIndex = (month - 1).toString();
+
   // const [calendarApi, setCalendarApi] = useState<CalendarApi>();
   // useEffect(() => {
   //   console.log("getApi", calRef.current?.getApi());
@@ -124,9 +126,13 @@ export default function SemesterMonth({
     info.el.style.borderLeft = `5px solid ${info.backgroundColor}`;
     info.el.style.backgroundColor = `${info.backgroundColor}26`;
   };
+
   return (
     <>
-      <div className="flex flex-col items-center gap-[9px]">
+      <div
+        id={`month-${monthIndex}`}
+        className="flex flex-col items-center gap-[9px]"
+      >
         <h3 className="text-[18px] font-bold leading-[20px]">
           {format(new Date(year, month - 1), "MMMM")}
         </h3>
