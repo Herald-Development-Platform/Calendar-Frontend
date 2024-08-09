@@ -40,6 +40,7 @@ import {
   useGetCalendarApi,
 } from "./utils";
 import { allPlugins } from "@/constants/CalendarViews";
+import { createEventInstance } from "@fullcalendar/core/internal";
 
 export default function ReactFullCal({} // eventDetailWidth,
 : {
@@ -59,6 +60,7 @@ export default function ReactFullCal({} // eventDetailWidth,
 
   const calWrapper = useRef<HTMLDivElement>(null);
   const dayFrameRefs = useRef<HTMLDivElement[]>([]);
+  const eventRefs = useRef<any[]>([]);
 
   const monthValue =
     selectedDate?.start && new Date(selectedDate?.start).getMonth();
@@ -135,8 +137,13 @@ export default function ReactFullCal({} // eventDetailWidth,
         new Date(isoDate).toISOString(),
       );
 
-      if (isHighLight) dayFrameEl.style.backgroundColor = "#fffdc3";
-      else dayFrameEl.style.backgroundColor = "#ffffff";
+      const today =
+        dayFrameEl?.parentElement?.classList.contains("fc-day-today");
+      if (isHighLight) dayFrameEl.style.backgroundColor = "#FFF735";
+      else if (today) {
+        dayFrameEl.style.backgroundColor = "#5D9936";
+        dayFrameEl.style.color = "#ffffff";
+      } else dayFrameEl.style.backgroundColor = "#ffffff";
 
       // setHeightOfDayFrame(dayFrameEl);
       const contextMenuListener = (e: any) => {
@@ -216,41 +223,94 @@ export default function ReactFullCal({} // eventDetailWidth,
   }, [userData?.importantDates, monthValue]);
 
   const handleEventDidMount = async (info: EventMountArg) => {
-    await delay(1000);
-    console.log("--- handleEventDidMount ", currentView);
-    if (currentView !== "dayGridMonth") return;
-
-    // console.log("handleEventDidMount -----");
-    const eventEl = info.el;
     const departments = info?.event?._def?.extendedProps?.departments;
-    const titleElement = eventEl?.querySelector(".fc-event-title");
-    const isBlockEvent = eventEl?.classList.contains("fc-daygrid-block-event");
+    const startTime = info.event._instance?.range?.start
+      ? format(info.event._instance?.range.start, "h:mm a")
+      : "00: 00 am";
+    const endTime = info.event._instance?.range?.end
+      ? format(info.event._instance?.range.end, "h:mm a")
+      : "00: 00 am";
 
-    if (departments?.length === 0 || !titleElement || isBlockEvent) return;
+    if (currentView === "timeGridWeek" || currentView === "timeGridDay") {
+      console.log("Week event", info);
 
-    const departmentsWrapper = document.createElement("div");
-    departmentsWrapper.classList.add("department-wrapper");
+      const timeEl = document.createElement("div");
 
-    departments?.map((department: any, i: number) => {
-      const departmentElement = document.createElement("div");
-      departmentElement.classList.add("department-item");
-      departmentElement.textContent = department?.code;
-      departmentElement.style.fontWeight = "400";
+      timeEl.innerText = `${startTime} - ${endTime}`;
+      timeEl.style.color = "#737373";
+      timeEl.style.fontWeight = "400";
 
-      if (i === 0) {
-        departmentElement.style.backgroundColor = "#737373";
-        departmentElement.style.border = "0.4px solid #d4d4d4";
-      } else {
-        departmentElement.style.backgroundColor = "#F5F5F5";
-        departmentElement.style.color = "#737373";
-        departmentElement.style.border = "0.4px solid #d4d4d4";
-      }
-      departmentsWrapper.appendChild(departmentElement);
-    });
+      const mainFrameEl = info.el.querySelector(".fc-event-main-frame");
+      const departmentsWrapper = document.createElement("div");
+      departmentsWrapper.classList.add("department-wrapper");
 
-    eventEl?.insertBefore(departmentsWrapper, titleElement);
+      departments?.map((department: any, i: number) => {
+        const departmentElement = document.createElement("div");
+        departmentElement.classList.add("department-item");
+        departmentElement.textContent = department?.code;
+        departmentElement.style.fontWeight = "400";
 
-    return;
+        if (i === 0) {
+          departmentElement.style.backgroundColor = "#737373";
+          departmentElement.style.border = "0.4px solid #d4d4d4";
+        } else {
+          departmentElement.style.backgroundColor = "#F5F5F5";
+          departmentElement.style.color = "#737373";
+          departmentElement.style.border = "0.4px solid #d4d4d4";
+        }
+        departmentsWrapper.appendChild(departmentElement);
+      });
+
+      const titleContainer =
+        mainFrameEl && mainFrameEl.querySelector(".fc-event-title-container");
+      titleContainer &&
+        mainFrameEl?.insertBefore(departmentsWrapper, titleContainer);
+      mainFrameEl?.appendChild(timeEl);
+
+      const mainEventEl = info.el.querySelector(
+        ".fc-event-main",
+      ) as HTMLElement;
+
+      info.el.style.borderLeft = `3px solid ${info.backgroundColor}`;
+      info.el.style.borderLeft = `3px solid ${info.backgroundColor}`;
+      info.el.style.borderLeft = `5px solid ${info.backgroundColor}`;
+      info.el.style.backgroundColor = `${info.backgroundColor}26`;
+    } else if (currentView === "dayGridMonth") {
+      console.log("info", info);
+      const eventEl = info.el;
+      // const departments = info?.event?._def?.extendedProps?.departments;
+      const titleElement = eventEl?.querySelector(".fc-event-title");
+      const isBlockEvent = eventEl?.classList.contains(
+        "fc-daygrid-block-event",
+      );
+
+      // if (departments?.length === 0 || !titleElement || isBlockEvent) return;
+      if (departments?.length === 0 || !titleElement) return;
+
+      const departmentsWrapper = document.createElement("div");
+      departmentsWrapper.classList.add("department-wrapper");
+
+      departments?.map((department: any, i: number) => {
+        const departmentElement = document.createElement("div");
+        departmentElement.classList.add("department-item");
+        departmentElement.textContent = department?.code;
+        departmentElement.style.fontWeight = "400";
+
+        if (i === 0) {
+          departmentElement.style.backgroundColor = "#737373";
+          departmentElement.style.border = "0.4px solid #d4d4d4";
+        } else {
+          departmentElement.style.backgroundColor = "#F5F5F5";
+          departmentElement.style.color = "#737373";
+          departmentElement.style.border = "0.4px solid #d4d4d4";
+        }
+        departmentsWrapper.appendChild(departmentElement);
+      });
+
+      eventEl?.insertBefore(departmentsWrapper, titleElement);
+
+      return;
+    }
   };
 
   const handleMouseLeave = (info: EventHoveringArg) => {
@@ -312,8 +372,7 @@ export default function ReactFullCal({} // eventDetailWidth,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentView, calendarRef]);
 
-
-  useEffect(()=>{
+  useEffect(() => {
     if (events && selectedEvent) {
       let newlyFetchedSelectedEvent = events.find(
         (event: eventType) => event._id === selectedEvent._id,
@@ -323,7 +382,6 @@ export default function ReactFullCal({} // eventDetailWidth,
       }
     }
   }, [events]);
-
 
   return (
     <>
