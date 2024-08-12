@@ -45,6 +45,10 @@ const config = {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
         },
+        tomato: {
+          "100": "#fc3434",
+          "200": "rgba(252, 52, 52, 0.08)",
+        },
         neutral: {
           "50": "#F4FAF0",
           "100": "#F5F5F5",

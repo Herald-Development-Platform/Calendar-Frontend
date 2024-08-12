@@ -311,6 +311,24 @@ padding-left: 5px;
     gap: 3px;
 }
 
+ .fc-h-event {
+    margin-left: 5px !important;
+    /* border-left: 4px;  */
+    padding-left: 4px;
+    padding-top: 2px;
+    border-top: 0px ;
+    border-right: 0px ;
+    border-bottom: 0px ;
+    min-height: 28px;
+    border-radius: 0px;
+
+}
+
+.fc-h-event .fc-event-main{
+    color: #525252;
+    font-size: 11px;
+    font-weight: 600;
+}
     /*
 .fc-timegrid-event-harness-inset > a::before {
   content: "Block Start";

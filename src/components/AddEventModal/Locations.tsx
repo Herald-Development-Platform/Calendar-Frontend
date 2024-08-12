@@ -72,14 +72,17 @@ export default function Locations({
               <div className="w-full text-center">No locations added.</div>
             ) : (
               Array.isArray(filteredLocations) &&
-              filteredLocations?.map((location) => {
+              filteredLocations?.map((locationn, i) => {
                 return (
                   <>
                     <div
+                      key={i}
                       onClick={() =>
-                        handleValueChange({ target: { name: "location", value: location?.name } })
+                        handleValueChange({
+                          target: { name: "location", value: location?.name },
+                        })
                       }
-                      className="group cursor-pointer flex w-full flex-row items-center gap-2 rounded-[4px] px-3 py-1.5 hover:bg-neutral-100"
+                      className="group flex w-full cursor-pointer flex-row items-center gap-2 rounded-[4px] px-3 py-1.5 hover:bg-neutral-100"
                     >
                       <span className="text-2xl text-neutral-600">
                         <GrLocationPin />

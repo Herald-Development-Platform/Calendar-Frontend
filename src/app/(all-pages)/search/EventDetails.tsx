@@ -282,7 +282,7 @@ export default function EventDetails({
               {selectedEvent?.start &&
                 (new Date(selectedEvent.start).getDate() !==
                 new Date(selectedEvent.end ?? "").getDate()
-                  ? `${format(new Date(selectedEvent?.start), "MMMM d")} - ${format(new Date(selectedEvent?.end ?? ""), "MMMM d")}`
+                  ? `${format(new Date(selectedEvent?.start), "MMM d")} - ${format(new Date(selectedEvent?.end ?? ""), "MMM d")}`
                   : format(new Date(selectedEvent?.start), "MMMM d"))}
             </h1>
           </div>

@@ -34,6 +34,7 @@ import { useGetSemester } from "@/services/api/semester";
 import EventDetails from "@/app/(all-pages)/search/EventDetails";
 import SemesterView from "./SemesterMonthComponents/SemesterView";
 import {
+  isMultiDay,
   useApplySemesterDot,
   useApplySemesterDotYearly,
   useApplyYearlySemesterView,
@@ -224,12 +225,12 @@ export default function ReactFullCal({} // eventDetailWidth,
 
   const handleEventDidMount = async (info: EventMountArg) => {
     const departments = info?.event?._def?.extendedProps?.departments;
-    const startTime = info.event._instance?.range?.start
-      ? format(info.event._instance?.range.start, "h:mm a")
-      : "00: 00 am";
-    const endTime = info.event._instance?.range?.end
-      ? format(info.event._instance?.range.end, "h:mm a")
-      : "00: 00 am";
+    const start = info.event._instance?.range?.start;
+    const end = info.event._instance?.range?.end;
+
+    const startTime = start ? format(start, "h:mm a") : "00: 00 am";
+    const endTime = end ? format(end, "h:mm a") : "00: 00 am";
+    const eventEl = info.el;
 
     if (currentView === "timeGridWeek" || currentView === "timeGridDay") {
       console.log("Week event", info);
@@ -276,20 +277,17 @@ export default function ReactFullCal({} // eventDetailWidth,
       info.el.style.borderLeft = `5px solid ${info.backgroundColor}`;
       info.el.style.backgroundColor = `${info.backgroundColor}26`;
     } else if (currentView === "dayGridMonth") {
-      console.log("info", info);
-      const eventEl = info.el;
-      // const departments = info?.event?._def?.extendedProps?.departments;
       const titleElement = eventEl?.querySelector(".fc-event-title");
-      const isBlockEvent = eventEl?.classList.contains(
-        "fc-daygrid-block-event",
-      );
+
+      // const isBlockEvent = eventEl?.classList.contains(
+      //   "fc-daygrid-block-event",
+      // );
 
       // if (departments?.length === 0 || !titleElement || isBlockEvent) return;
       if (departments?.length === 0 || !titleElement) return;
 
       const departmentsWrapper = document.createElement("div");
       departmentsWrapper.classList.add("department-wrapper");
-
       departments?.map((department: any, i: number) => {
         const departmentElement = document.createElement("div");
         departmentElement.classList.add("department-item");
@@ -304,10 +302,35 @@ export default function ReactFullCal({} // eventDetailWidth,
           departmentElement.style.color = "#737373";
           departmentElement.style.border = "0.4px solid #d4d4d4";
         }
+
         departmentsWrapper.appendChild(departmentElement);
       });
 
-      eventEl?.insertBefore(departmentsWrapper, titleElement);
+      //for multidate
+      if (start && end && isMultiDay(start.getTime(), end.getTime())) {
+        const isFirstBlock = eventEl.classList.contains("fc-event-start");
+        eventEl.style.backgroundColor = `${info.backgroundColor}32`;
+        eventEl.style.color = "black";
+        if (isFirstBlock) {
+          eventEl.style.borderLeft = ` 4px solid ${info.borderColor}`;
+          // @ts-ignore
+          eventEl.parentElement.style.paddingLeft = "8px";
+          eventEl?.insertBefore(departmentsWrapper, eventEl.firstChild);
+        }else{
+          // @ts-ignore
+          // eventEl.parentElement.style.paddingLeft = "8px";
+          eventEl?.insertBefore(departmentsWrapper, eventEl.firstChild);
+          
+        }
+        return;
+      }
+
+      eventEl?.insertBefore(departmentsWrapper, eventEl.firstChild);
+
+      // console.log("firstChild");
+
+      // 1 - fc-event fc-event-start fc-event-future fc-daygrid-event fc-daygrid-block-event fc-h-event
+      //2 - fc-event fc-event-end fc-event-future fc-daygrid-event fc-daygrid-block-event fc-h-event
 
       return;
     }
@@ -471,13 +494,6 @@ export default function ReactFullCal({} // eventDetailWidth,
       ></EventDetails>
     </>
   );
-}
-
-function applySemesterBox({ trEl }: { trEl: HTMLTableRowElement }) {
-  // remove borders in table cell
-  // add another layer above cells
-  //make new calendar comopnent
-  // /\/\/\ remove existing cells and replace it with a new div.
 }
 
 // eventDragStart={(e) => {
