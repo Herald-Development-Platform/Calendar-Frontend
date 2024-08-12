@@ -310,12 +310,17 @@ export default function ReactFullCal({} // eventDetailWidth,
       if (start && end && isMultiDay(start.getTime(), end.getTime())) {
         const isFirstBlock = eventEl.classList.contains("fc-event-start");
         eventEl.style.backgroundColor = `${info.backgroundColor}32`;
-        eventEl.style.borderLeft = ` 4px solid ${info.borderColor}`;
         eventEl.style.color = "black";
         if (isFirstBlock) {
+          eventEl.style.borderLeft = ` 4px solid ${info.borderColor}`;
           // @ts-ignore
           eventEl.parentElement.style.paddingLeft = "8px";
           eventEl?.insertBefore(departmentsWrapper, eventEl.firstChild);
+        }else{
+          // @ts-ignore
+          // eventEl.parentElement.style.paddingLeft = "8px";
+          eventEl?.insertBefore(departmentsWrapper, eventEl.firstChild);
+          
         }
         return;
       }

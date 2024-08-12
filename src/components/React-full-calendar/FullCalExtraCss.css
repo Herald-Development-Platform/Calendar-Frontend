@@ -311,7 +311,7 @@ padding-left: 5px;
     gap: 3px;
 }
 
-.fc-event-start, .fc-h-event {
+ .fc-h-event {
     margin-left: 5px !important;
     /* border-left: 4px;  */
     padding-left: 4px;
@@ -319,6 +319,7 @@ padding-left: 5px;
     border-top: 0px ;
     border-right: 0px ;
     border-bottom: 0px ;
+    min-height: 28px;
     border-radius: 0px;
 
 }
