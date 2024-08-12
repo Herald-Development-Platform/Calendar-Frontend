@@ -306,9 +306,10 @@ export default function ReactFullCal({} // eventDetailWidth,
         departmentsWrapper.appendChild(departmentElement);
       });
 
+      //for multidate
       if (start && end && isMultiDay(start.getTime(), end.getTime())) {
         const isFirstBlock = eventEl.classList.contains("fc-event-start");
-        eventEl.style.backgroundColor = `${info.backgroundColor}7f`;
+        eventEl.style.backgroundColor = `${info.backgroundColor}32`;
         eventEl.style.borderLeft = ` 4px solid ${info.borderColor}`;
         eventEl.style.color = "black";
         if (isFirstBlock) {

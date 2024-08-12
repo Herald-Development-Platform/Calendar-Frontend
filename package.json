@@ -43,7 +43,7 @@
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.381.0",
     "moment": "^2.29.4",
-    "next": "13.5.5",
+    "next": "14.2.5",
     "react": "^18.2.0",
     "react-big-calendar": "^1.8.4",
     "react-chartjs-2": "^5.2.0",
