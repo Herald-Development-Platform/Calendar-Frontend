@@ -122,6 +122,7 @@ export default function EventDetails({
                     },
                   });
                   setRecurringDialogOpen(false);
+                  setExpandDetails(false);
                   setSelectedEvent(null);
                   queryClient.invalidateQueries({
                     queryKey: ["Events"],
@@ -175,6 +176,7 @@ export default function EventDetails({
                 updateEventDetail(newEvent, {
                   onSuccess: () => {
                     setRecurringDialogOpen(false);
+                    setExpandDetails(false);
                     setSelectedEvent(null);
                     queryClient.invalidateQueries({
                       queryKey: ["Events"],
@@ -302,10 +304,12 @@ export default function EventDetails({
               setSelectedColor(value);
             }}
           >
-            <SelectTrigger style={{
-              backgroundColor: selectedEvent?.color,
-
-            }} className="h-fit gap-2 w-fit border-none p-0 px-4 py-1.5 text-sm leading-none text-white focus:ring-0">
+            <SelectTrigger
+              style={{
+                backgroundColor: selectedEvent?.color,
+              }}
+              className="h-fit w-fit gap-2 border-none p-0 px-4 py-1.5 text-sm leading-none text-white focus:ring-0"
+            >
               {
                 colors.find((color) => color.color === selectedEvent?.color)
                   ?.priority
@@ -411,10 +415,19 @@ export default function EventDetails({
                   <button
                     onClick={(e: any) => {
                       setDropDown(false);
-                      setTimeout(() => {
-                        setSelectedEvent(null);
-                        handleDelete(e);
-                      }, 200);
+
+                      if (
+                        selectedEvent?.recurringType ===
+                        RecurringEventTypes.ONCE
+                      ) {
+                        setTimeout(() => {
+                          handleDelete(e);
+                          setSelectedEvent(null);
+                          setExpandDetails(false);
+                        }, 200);
+                      } else {
+                        setRecurringDialogOpen(true);
+                      }
                     }}
                     className="flex w-full items-center justify-start gap-2 px-2 py-1 text-danger-400 transition-colors duration-150 hover:bg-neutral-100  hover:text-danger-500"
                     value={selectedEvent?._id}
@@ -448,47 +461,36 @@ export default function EventDetails({
             </div>
             <div className="flex w-5/12 items-center justify-between">
               <p>Priority</p>
-              {/* <span
-                className="ml-auto mr-1 text-sm"
-                style={{ color: selectedEvent?.color }}
-              >
-                {
-                  colors.find((color) => color.color === selectedEvent?.color)
-                    ?.priority
-                }
-              </span>
-              <div
-                className="h-7 w-7 rounded-md"
-                style={{ backgroundColor: selectedColor }}
-              ></div> */}
               <Select
                 defaultValue={selectedEvent?.color}
                 onValueChange={(value) => {
-                  updateEvent({
-                    id: selectedEvent?._id,
-                    newEvent: { ...selectedEvent, color: value },
-                  });
+                  updateEvent(
+                    {
+                      id: selectedEvent?._id,
+                      newEvent: { ...selectedEvent, color: value },
+                    },
+                    { onSuccess: () => {} },
+                  );
                   setSelectedColor(value);
                 }}
               >
-                <SelectTrigger className="h-7 border-none p-0 focus:ring-0">
-                  <span
-                    className="ml-auto mr-1 text-sm"
-                    style={{ color: selectedEvent?.color }}
-                  >
-                    {
-                      colors.find(
-                        (color) => color.color === selectedEvent?.color,
-                      )?.priority
-                    }
-                  </span>
+                <SelectTrigger
+                  style={{
+                    backgroundColor: selectedEvent?.color,
+                  }}
+                  className="h-fit w-fit gap-2 border-none p-0 px-4 py-1.5 text-sm leading-none text-white focus:ring-0"
+                >
+                  {
+                    colors.find((color) => color.color === selectedEvent?.color)
+                      ?.priority
+                  }
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
                     <SelectLabel>Colors</SelectLabel>
                     {colors.map((color: any, i) => (
                       <SelectItem value={color?.color} key={color?.color}>
-                        <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2">
                           <div
                             className="h-7 w-7 rounded-md"
                             style={{ backgroundColor: color?.color }}
