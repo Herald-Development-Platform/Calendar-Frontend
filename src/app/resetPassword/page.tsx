@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { baseUrl } from "@/services/baseUrl";
@@ -7,6 +7,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 
 export default function Page() {
+  return (
+    <Suspense>
+      <ResetPassword />
+    </Suspense>
+  );
+}
+
+function ResetPassword() {
   const router = useRouter();
 
   const {
@@ -19,7 +27,8 @@ export default function Page() {
   const email = searchParams.get("email");
   const OTP = searchParams.get("OTP");
   if (!email || !OTP) {
-    return router.back();
+    router.back();
+    return <></>;
   }
 
   const resetPassword = (payload: any) => {
@@ -92,7 +101,9 @@ export default function Page() {
                 id="password"
                 className="w-full bg-neutral-100 font-normal text-neutral-500 outline-none "
                 placeholder="Enter your password."
-                {...changePasswordRegister("newPassword", { required: "New Password is required" })}
+                {...changePasswordRegister("newPassword", {
+                  required: "New Password is required",
+                })}
               />
             </div>
           </label>
@@ -111,7 +122,9 @@ export default function Page() {
                 id="password"
                 className="w-full bg-neutral-100 font-normal text-neutral-500 outline-none "
                 placeholder="Confirm password."
-                {...changePasswordRegister("confirmPassword", { required: "Confirm Password is required" })}
+                {...changePasswordRegister("confirmPassword", {
+                  required: "Confirm Password is required",
+                })}
               />
             </div>
           </label>

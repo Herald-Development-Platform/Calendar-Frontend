@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { Axios, baseUrl } from "@/services/baseUrl";
@@ -10,6 +10,10 @@ import axios from "axios";
 import Link from "next/link";
 
 export default function Page() {
+  return <Suspense fallback={<OTP />}></Suspense>;
+}
+
+function OTP() {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
 
   const router = useRouter();
@@ -83,13 +87,15 @@ export default function Page() {
     }
   };
 
-  const handleOtpPaste = (e:any) => {
-    if (e) {e.preventDefault();}
+  const handleOtpPaste = (e: any) => {
+    if (e) {
+      e.preventDefault();
+    }
     if (!navigator.clipboard) {
       return toast.error("Cannot access clipboard");
     }
     navigator.clipboard.readText().then((text) => {
-      text = text.trim()
+      text = text.trim();
       if (text.length > 6) {
         for (let i = 1; i <= 6; i++) {
           setValue(`otp${i}`, "");
