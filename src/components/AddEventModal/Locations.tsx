@@ -72,7 +72,7 @@ export default function Locations({
               <div className="w-full text-center">No locations added.</div>
             ) : (
               Array.isArray(filteredLocations) &&
-              filteredLocations?.map((locationn, i) => {
+              filteredLocations?.map((location: any, i) => {
                 return (
                   <>
                     <div
