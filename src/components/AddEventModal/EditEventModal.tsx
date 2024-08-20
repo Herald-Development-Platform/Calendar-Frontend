@@ -72,6 +72,15 @@ export default function EditEventModal({
       start: defaultData.start ? new Date(defaultData.start) : new Date(),
       end: defaultData.end ? new Date(defaultData.end) : new Date(),
     };
+
+    setDateType(
+      defaultData?.start &&
+        new Date(defaultData.start).getDate() !==
+          new Date(defaultData.end ?? "").getDate()
+        ? "multi"
+        : "single",
+    );
+
     setNewEvent(modifiedData);
     console.log("modifiedData", modifiedData);
   }, [defaultData]);
@@ -263,8 +272,61 @@ export default function EditEventModal({
                   <DatePicker
                     value={newEvent.start}
                     handleValueChange={({ target: { name, value } }) => {
-                      handleValueChange({ target: { name: "start", value } });
-                      handleValueChange({ target: { name: "end", value } });
+                      // handleValueChange({ target: { name: "start", value } });
+                      // handleValueChange({ target: { name: "end", value } });
+                      let newStart;
+                      let newEnd;
+
+                      if (newEvent.start) {
+                        let oldHours = new Date(newEvent.start).getHours();
+                        let oldMinutes = new Date(newEvent.start).getMinutes();
+                        newStart = new Date(
+                          new Date(value).setHours(oldHours, oldMinutes),
+                        );
+
+                        console.log(
+                          "START::::::::::::::::::Old Hours:",
+                          oldHours,
+                        );
+                        console.log(
+                          "START::::::::::::::::::Old Minutes:",
+                          oldMinutes,
+                        );
+                        console.log(
+                          "START::::::::::::::::::newStart:",
+                          newStart,
+                        );
+                      } else {
+                        newStart = new Date(value);
+                      }
+
+                      if (newEvent.end) {
+                        let oldHours = new Date(newEvent.end).getHours();
+                        let oldMinutes = new Date(newEvent.end).getMinutes();
+                        newEnd = new Date(
+                          new Date(value).setHours(oldHours, oldMinutes),
+                        );
+
+                        console.log("END:::::::::::::::::Old Hours:", oldHours);
+                        console.log(
+                          "END:::::::::::::::::Old Minutes:",
+                          oldMinutes,
+                        );
+                        console.log("END:::::::::::::::::newEnd:", newEnd);
+                      } else {
+                        newEnd = new Date(
+                          new Date(value).setHours(
+                            new Date(value).getHours() + 1,
+                          ),
+                        );
+                      }
+
+                      handleValueChange({
+                        target: { name: "start", value: newStart },
+                      });
+                      handleValueChange({
+                        target: { name: "end", value: newEnd },
+                      });
                     }}
                     name={"start"}
                   />
@@ -385,7 +447,14 @@ export default function EditEventModal({
                         <DepartmentButton
                           key={department._id}
                           id={department._id}
-                          onClick={()=>handleValueChange({target:{name:"department",value:department.code}})}
+                          onClick={() =>
+                            handleValueChange({
+                              target: {
+                                name: "department",
+                                value: department.code,
+                              },
+                            })
+                          }
                           value={department.code}
                           selected={departmentExists}
                         />

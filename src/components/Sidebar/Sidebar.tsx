@@ -108,60 +108,8 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
 
   return (
     <>
-      <Dialog open={semestersDialogOpen} onOpenChange={setSemestersDialogOpen}>
-        <DialogContent className="flex h-fit w-full min-w-[45vw] flex-col items-start justify-start gap-5">
-          <div className="flex w-full items-center justify-between">
-            <span className="text-[19px] font-medium text-neutral-900">
-              Ongoing Semesters
-            </span>
-            <span
-              className="cursor-pointer"
-              onClick={() => {
-                setSemestersDialogOpen(false);
-              }}
-            >
-              <RxCross1 />
-            </span>
-          </div>
-          <div className="flex flex-row flex-wrap gap-5">
-            {Object.keys(ongoingSemestersGrouped).map((course, i: number) => (
-              <div
-                key={i}
-                className="flex w-[20vw] flex-col items-start justify-start gap-2.5"
-              >
-                <span className="text-[13px] font-semibold text-neutral-600">
-                  {course}
-                </span>
-                {ongoingSemestersGrouped[course].map(
-                  (semester: any, i: number) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-3 px-2.5 py-1.5"
-                    >
-                      <div
-                        className="h-[30px] w-[30px] rounded-md "
-                        style={{ backgroundColor: semester.color }}
-                      ></div>
-                      <div className="flex flex-col gap-0">
-                        <span className="text-[13px] font-semibold text-neutral-900">
-                          {semester.semester}
-                        </span>
-                        <span className="text-[11px] font-medium text-neutral-600">
-                          {new Date(semester.start).toLocaleDateString()} -{" "}
-                          {new Date(semester.end).toLocaleDateString()}
-                        </span>
-                      </div>
-                    </div>
-                  ),
-                )}
-              </div>
-            ))}
-          </div>
-        </DialogContent>
-      </Dialog>
       <div
-        className={`${hasBreakpoint ? "relative hidden" : " block"}  
-    h-screen ${open ? "w-[290px]" : "w-[80px]"} duration-400 bg-neutral-50 px-4 py-10 transition-all xl:block`}
+        className={`${hasBreakpoint ? "relative hidden" : " block"} h-screen ${open ? "w-[290px]" : "w-[80px]"} duration-400 bg-neutral-50 px-4 py-10 transition-all xl:block`}
       >
         <div
           className={`flex h-full w-full flex-col items-center ${open ? "gap-14" : " gap-1.5"}  font-medium`}
@@ -254,64 +202,123 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
               </Link>
             ))}
           </div>
-
-          <div
-            onClick={() => {
-              setSemestersDialogOpen(true);
-            }}
-            className={`mx-2 mt-auto flex ${open ? "w-full" : "w-fit"} duration-400 flex-row items-center justify-between rounded-[50px] border-[0.6px] border-[#D4D4D4] px-4 py-2.5 transition-all `}
-          >
-            {semestersLoading ? (
-              <span className="text-sm text-neutral-300">Loading...</span>
-            ) : (
-              <>
-                {open && (
-                  <div className="flex flex-col gap-0">
-                    <span className="text-[15px] font-medium leading-none text-neutral-600">
-                      Ongoing Semesters
-                    </span>
-                    <div className="flex flex-row items-center gap-1.5 font-medium text-neutral-500">
-                      <span className="text-[12px]">
-                        {Object.keys(ongoingSemestersGrouped).reduce(
-                          (acc, val) =>
-                            acc + ongoingSemestersGrouped[val].length,
-                          0,
-                        )}{" "}
-                        •
-                      </span>
-                      <div className="flex flex-row items-center gap-[1px]">
-                        {ongoingSemesters?.map((semester: any, i: number) => (
-                          <div
-                            key={i}
-                            className="fc-custom-semester-dot"
-                            style={{ backgroundColor: semester.color }}
-                            onClick={() => {}}
-                          >
-                            <div className="semester-tooltip-wrapper-center">
-                              <div className="semester-tooltip-data">
-                                <div
-                                  className="semester-tooltip-dot"
-                                  style={{ backgroundColor: semester.color }}
-                                ></div>
-                                <span className="semester-tooltip-semTitle">
-                                  {semester.semester}
-                                </span>
-                              </div>
-                              <span className="semester-tooltip-course">
-                                {semester.course}
-                              </span>
+          <div className="mt-auto">
+            <Popover>
+              <PopoverTrigger>
+                <div
+                  // onClick={() => {
+                  //   setSemestersDialogOpen(true);
+                  // }}
+                  className={`mx-2 mt-auto flex ${open ? "w-full" : "w-fit"} duration-400 flex-row items-center justify-between rounded-[50px] border-[0.6px] border-[#D4D4D4] px-4 py-2.5 transition-all `}
+                >
+                  {semestersLoading ? (
+                    <span className="text-sm text-neutral-300">Loading...</span>
+                  ) : (
+                    <>
+                      {open && (
+                        <div className="flex flex-col gap-0">
+                          <span className="text-[15px] font-medium leading-none text-neutral-600">
+                            Ongoing Semesters
+                          </span>
+                          <div className="flex flex-row items-center gap-1.5 font-medium text-neutral-500">
+                            <span className="text-[12px]">
+                              {Object.keys(ongoingSemestersGrouped).reduce(
+                                (acc, val) =>
+                                  acc + ongoingSemestersGrouped[val].length,
+                                0,
+                              )}{" "}
+                              •
+                            </span>
+                            <div className="flex flex-row items-center gap-[1px]">
+                              {ongoingSemesters?.map(
+                                (semester: any, i: number) => (
+                                  <div
+                                    key={i}
+                                    className="fc-custom-semester-dot"
+                                    style={{ backgroundColor: semester.color }}
+                                    onClick={() => {}}
+                                  >
+                                    <div className="semester-tooltip-wrapper-center">
+                                      <div className="semester-tooltip-data">
+                                        <div
+                                          className="semester-tooltip-dot"
+                                          style={{
+                                            backgroundColor: semester.color,
+                                          }}
+                                        ></div>
+                                        <span className="semester-tooltip-semTitle">
+                                          {semester.semester}
+                                        </span>
+                                      </div>
+                                      <span className="semester-tooltip-course">
+                                        {semester.course}
+                                      </span>
+                                    </div>
+                                  </div>
+                                ),
+                              )}
                             </div>
                           </div>
-                        ))}
+                        </div>
+                      )}
+                      <span className="-rotate-90 cursor-pointer text-neutral-500">
+                        <IoMdArrowDropdown />
+                      </span>
+                    </>
+                  )}
+                </div>
+              </PopoverTrigger>
+              <PopoverContent
+                align="start"
+                
+                className="flex h-fit min-w-[45vw] translate-x-[230px] translate-y-7 flex-col items-start justify-start gap-5"
+              >
+                <div className="flex w-full items-center justify-between">
+                  <span className="text-[19px] font-medium text-neutral-900">
+                    Ongoing Semesters
+                  </span>
+                </div>
+                <div className="flex flex-row flex-wrap gap-5">
+                  {Object.keys(ongoingSemestersGrouped).map(
+                    (course, i: number) => (
+                      <div
+                        key={i}
+                        className="flex w-[20vw] flex-col items-start justify-start gap-2.5"
+                      >
+                        <span className="text-[13px] font-semibold text-neutral-600">
+                          {course}
+                        </span>
+                        {ongoingSemestersGrouped[course].map(
+                          (semester: any, i: number) => (
+                            <div
+                              key={i}
+                              className="flex items-center gap-3 px-2.5 py-1.5"
+                            >
+                              <div
+                                className="h-[30px] w-[30px] rounded-md "
+                                style={{ backgroundColor: semester.color }}
+                              ></div>
+                              <div className="flex flex-col gap-0">
+                                <span className="text-[13px] font-semibold text-neutral-900">
+                                  {semester.semester}
+                                </span>
+                                <span className="text-[11px] font-medium text-neutral-600">
+                                  {new Date(
+                                    semester.start,
+                                  ).toLocaleDateString()}{" "}
+                                  -{" "}
+                                  {new Date(semester.end).toLocaleDateString()}
+                                </span>
+                              </div>
+                            </div>
+                          ),
+                        )}
                       </div>
-                    </div>
-                  </div>
-                )}
-                <span className="-rotate-90 cursor-pointer text-neutral-500">
-                  <IoMdArrowDropdown />
-                </span>
-              </>
-            )}
+                    ),
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
       </div>

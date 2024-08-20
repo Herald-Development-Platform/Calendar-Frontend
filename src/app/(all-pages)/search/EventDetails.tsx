@@ -51,7 +51,7 @@ import { RecurringEventTypes } from "@/constants/RecurringEvents";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import toast from "react-hot-toast";
 import { useEditEventMutation } from "@/services/api/eventsApi";
-
+import { convertToLink } from "@/lib/utils";
 export default function EventDetails({
   selectedEvent,
   setSelectedEvent,
@@ -340,7 +340,7 @@ export default function EventDetails({
             dangerouslySetInnerHTML={{
               __html: selectedEvent?.description
                 ? new DOMParser().parseFromString(
-                    selectedEvent?.description.replaceAll(
+                    convertToLink(selectedEvent?.description ?? "").replaceAll(
                       /<\s*script\s*>/gi,
                       "<p>",
                     ),
@@ -369,7 +369,7 @@ export default function EventDetails({
       <div
         className={`${
           selectedEvent ? "block" : "hidden"
-        } fixed left-0 top-0 z-10 h-full w-full opacity-0 bg-neutral-900`}
+        } fixed left-0 top-0 z-10 h-full w-full bg-neutral-900 opacity-0`}
         onClick={() => setSelectedEvent(null)}
       ></div>
 
