@@ -70,13 +70,24 @@ export default function Page() {
   console.log("User data from members page", profile);
 
   const queryClient = useQueryClient();
-  const {
-    data: departmentRequests, isLoading: departmentRequestsLoading,
-  } =
-      useQuery({
-        queryKey: ["UnapprovedUsers"],
-        queryFn: async () => profile && profile.permissions.includes(PERMISSIONS.MANAGE_DEPARTMENT_REQUEST) && await Axios.get("/department/request?status=PENDING"),
-      });
+  const { data: departmentRequests, isLoading: departmentRequestsLoading } =
+    useQuery({
+      queryKey: ["UnapprovedUsers"],
+      queryFn: async () => {
+        if (
+          profile &&
+          profile.permissions.includes(PERMISSIONS.MANAGE_DEPARTMENT_REQUEST)
+        ) {
+          return {
+            data: {
+              data: [],
+            },
+          };
+          }
+
+        return await Axios.get("/department/request?status=PENDING");
+      },
+    });
 
   const { data: allUsers, isLoading: allUsersLoading } = useQuery({
     queryKey: ["AllUsers"],
