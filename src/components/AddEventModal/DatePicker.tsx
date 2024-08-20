@@ -54,6 +54,7 @@ export default function DatePicker({
           mode="single"
           selected={value || new Date()}
           onSelect={(val) => {
+            console.log("val;lllllllllllllllllllllllllllll:::", val);
             handleValueChange({ target: { name, value: val } });
           }}
         />

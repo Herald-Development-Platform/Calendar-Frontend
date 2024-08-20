@@ -105,7 +105,7 @@ export default function DepartmentDetails({
 
   return (
     <section
-      className={` absolute right-0 top-[15%] flex h-auto max-h-[80vh] w-80 flex-col  gap-6 overflow-y-scroll p-6 font-medium text-neutral-600 transition-all duration-150`}
+      className={`hide-scrollbar absolute right-0 top-[15%] flex h-auto max-h-[80vh] w-[360px] flex-col  gap-6 overflow-y-scroll p-6 font-medium text-neutral-600 transition-all duration-150`}
     >
       {/* Update department dialog */}
       <Dialog

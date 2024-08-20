@@ -17,6 +17,7 @@ import {
   useEffect,
   RefObject,
 } from "react";
+import toast from "react-hot-toast";
 
 interface SelectedDateType {
   start: Date | undefined;
@@ -121,6 +122,8 @@ export default function ContextProvider({
       console.log("SYNC response : ", response);
       if (response.data.success) {
         return response.data.data;
+      } else {
+        toast.error
       }
     } catch (error) {
       console.error("Error syncing with google:", error);

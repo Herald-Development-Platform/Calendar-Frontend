@@ -288,7 +288,7 @@ export default function ManageDepartment() {
             onClick={() => {
               router.back();
             }}
-            className="cursor-pointer text-4xl font-bold text-neutral-600"
+            className="cursor-pointer text-3xl font-bold text-neutral-600"
           >
             <IoMdArrowBack />
           </span>
@@ -323,16 +323,16 @@ export default function ManageDepartment() {
               <p className="text-[16px] font-semibold text-neutral-600">
                 {profileData?.username}
               </p>
-              <p className=" pl-[1px] text-[12px] font-normal text-neutral-600">
+              <p className=" pl-[1px] text-[13px] font-normal text-neutral-600">
                 {profileData?.email}
               </p>
               <div
-                className={`flex h-[12px] items-center justify-center rounded-[20px] border-[0.5px] border-[#D4D4D4] bg-neutral-100 px-4  py-3 text-[14px] text-neutral-500 `}
+                className={`flex h-fit items-center justify-center rounded-[20px] border-[0.5px] border-[#D4D4D4] bg-neutral-100 px-3 py-1 text-[14px] text-neutral-500 `}
               >
-                <span className="flex h-full items-center justify-center">
+                <span className="flex font-semibold h-full items-center justify-center text-[10px]">
                   {profileData?.role === ROLES.SUPER_ADMIN
                     ? "Super Admin"
-                    : profileData?.department?.code}
+                    : profileData?.department?.name}
                 </span>
               </div>
             </div>

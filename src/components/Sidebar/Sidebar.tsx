@@ -172,7 +172,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
             <Image
               width={32}
               height={32}
-              src={"/images/LoginPage/HeraldLogo.png"}
+              src={"/images/heraldLogo.svg"}
               alt="HeraldLogo"
               className="mb-1"
             />
@@ -181,14 +181,24 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                 <span className="min-w-[130px] text-[16px] ">
                   Events Calendar
                 </span>
-                <span
+                {/* <span
                   className={`${open ? "ml-auto rotate-180" : " absolute top-20"} cursor-pointer text-2xl font-thin text-neutral-500`}
                   onClick={() => {
                     setOpen(!open);
                   }}
                 >
                   <BsLayoutSidebarReverse />
-                </span>
+                </span> */}
+                <Image
+                  onClick={() => {
+                    setOpen(!open);
+                  }}
+                  width={20}
+                  height={17}
+                  src={"/sidebarButton.svg"}
+                  alt="Sidebar"
+                  className=" ml-auto rotate-180 cursor-pointer"
+                />
               </>
             )}
           </div>
@@ -201,11 +211,21 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                 }}
                 className={`${nonHighlightedStyles}`}
               >
-                <span
+                {/* <span
                   className={`cursor-pointer text-2xl font-thin text-neutral-500`}
                 >
                   <BsLayoutSidebarReverse />
-                </span>
+                </span> */}
+                <Image
+                  width={20}
+                  height={17}
+                  src={"/sidebarButton.svg"}
+                  alt="Sidebar"
+                  onClick={() => {
+                    setOpen(!open);
+                  }}
+                  className="mb-1 cursor-pointer"
+                />
               </div>
             )}
             {sidebarItems.map((item, i) => (

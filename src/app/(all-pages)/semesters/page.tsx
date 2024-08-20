@@ -268,13 +268,13 @@ export default function SemestersPage() {
               {semesters?.data?.data.map((semester: Semester) => (
                 <div
                   key={semester._id}
-                  className="flex w-full flex-row items-center justify-start gap-4"
+                  className="flex w-full flex-row items-center justify-start gap-4 bg-neutral-100 px-4 py-2 rounded-md"
                 >
                   <div
                     style={{
                       backgroundColor: semester.color,
                     }}
-                    className="h-[45px] w-[45px] rounded-md"
+                    className="h-[40px] w-[40px] rounded-md"
                   />
                   <div className="flex flex-col items-start justify-center gap-0.5">
                     <span className="text-[16px] font-semibold text-neutral-900">

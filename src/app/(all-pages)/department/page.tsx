@@ -128,7 +128,7 @@ export default function ManageDepartment() {
           </button>
         )}
       </div>
-      <div className="flex w-full flex-col gap-5">
+      <div className="flex w-full flex-col gap-5 transition-all duration-100">
         {departments &&
           departments.length > 0 &&
           departments.map((department: Department) => {
@@ -170,24 +170,22 @@ export default function ManageDepartment() {
               </>
             );
           })}
-        <div>
-          {sideBarDepartment && sideBarOpen && eventsData && (
-            <DepartmentDetails
-              department={sideBarDepartment}
-              events={eventsData}
-              closeDetail={() => {
-                setSideBarOpen(false);
-                setSideBarDepartment(undefined);
-              }}
-              invalidationFunction={() => {
-                console.log("Invalidating");
-                setSideBarOpen(false);
-                setSideBarDepartment(undefined);
-                queryClient.invalidateQueries({ queryKey: ["Departments"] });
-              }}
-            ></DepartmentDetails>
-          )}
-        </div>
+        {sideBarDepartment && sideBarOpen && eventsData && (
+          <DepartmentDetails
+            department={sideBarDepartment}
+            events={eventsData}
+            closeDetail={() => {
+              setSideBarOpen(false);
+              setSideBarDepartment(undefined);
+            }}
+            invalidationFunction={() => {
+              console.log("Invalidating");
+              setSideBarOpen(false);
+              setSideBarDepartment(undefined);
+              queryClient.invalidateQueries({ queryKey: ["Departments"] });
+            }}
+          ></DepartmentDetails>
+        )}
       </div>
       <Dialog
         open={departmentDialogOpen}

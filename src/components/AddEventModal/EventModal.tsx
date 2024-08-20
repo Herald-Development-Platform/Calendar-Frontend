@@ -38,7 +38,7 @@ import {
 import Endpoints from "@/services/API_ENDPOINTS";
 import Locations from "./Locations";
 import DatePicker from "./DatePicker";
-import './EventModal.css';
+import "./EventModal.css";
 
 interface PickedDateType {
   startDate: Date | undefined;
@@ -55,7 +55,7 @@ export default function EventModal({
   const [dateType, setDateType] = useState<"single" | "multi">("single");
   const [newEvent, setNewEvent] = useState<eventType>({
     title: "",
-    start: null,
+    start: new Date(),
     end: null,
     color: undefined,
     duration: 0,
@@ -313,9 +313,36 @@ export default function EventModal({
                 {dateType === "single" ? (
                   <DatePicker
                     value={newEvent.start}
-                    handleValueChange={({ target: { name, value } }) => {
-                      handleValueChange({ target: { name: "start", value } });
-                      handleValueChange({ target: { name: "end", value } });
+                    handleValueChange={ ({ target: { name, value } }) => {
+                      let newStart;
+                      let newEnd;
+                      console.log("value", value);
+                      console.log("newEvent.start::::", newEvent.start);
+                      console.log("newEvent.end::::", newEvent.end);
+                      if (newEvent.start) {
+                        newStart = new Date(
+                          new Date(value).toISOString().split("T")[0] +
+                            newEvent?.start.toISOString().split("T")[1],
+                        );
+                      } else {
+                        newStart = new Date(value);
+                      }
+                      if (newEvent.end) {
+                        newEnd = new Date(
+                          new Date(value).toISOString().split("T")[0] +
+                            newEvent?.end.toISOString().split("T")[1],
+                        );
+                      } else {
+                        newEnd = new Date(newStart);
+                        newEnd = new Date(
+                          newEnd.setHours(newEnd.getHours() + 1),
+                        );
+                      }
+
+                      handleValueChange({
+                        target: { name: "start", newStart },
+                      });
+                      handleValueChange({ target: { name: "end", newEnd } });
                     }}
                     name={"start"}
                   />
@@ -425,9 +452,12 @@ export default function EventModal({
                         onChange={handleValueChange}
                       />
                       <div className="semester-tooltip-wrapper-event">
-                        <div className="semester-tooltip-data" style={{
-                          color: Color.color,
-                        }}>
+                        <div
+                          className="semester-tooltip-data"
+                          style={{
+                            color: Color.color,
+                          }}
+                        >
                           {Color.priority}
                         </div>
                       </div>
@@ -470,11 +500,11 @@ export default function EventModal({
               ></InviteMembers>
 
               {/* Notes section  */}
-              <div className="">
+              <div className="text-sm">
                 <span>Notes</span> <br />
                 <input
                   type="text"
-                  className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
+                  className=" h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-sm text-neutral-900 focus:border-primary-600"
                   name="notes"
                   value={newEvent.notes}
                   onChange={handleValueChange}

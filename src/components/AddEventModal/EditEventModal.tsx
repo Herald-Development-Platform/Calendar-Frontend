@@ -109,7 +109,7 @@ export default function EditEventModal({
       },
       onError: (err: any) => {
         console.log("error", err);
-        toast.error(err?.data?.message || "something went wrong");
+        toast.error(err?.response?.data?.message || "something went wrong");
       },
     });
   }

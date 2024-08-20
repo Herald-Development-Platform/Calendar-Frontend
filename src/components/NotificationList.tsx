@@ -228,7 +228,7 @@ export const NotificationList = (props: any) => {
             }}
             value={profile?.donotDisturbState ?? DONOT_DISTURB_STATE.DEFAULT}
           >
-            <SelectTrigger className="gap-5 ring-0 outline-none border-none">
+            <SelectTrigger className="gap-2 ring-0 outline-none border-none h-7 bg-neutral-200 font-semibold text-black">
               <SelectValue placeholder="" />
             </SelectTrigger>
             <SelectContent className="h-fit py-0 pr-2  ring-0 outline-none border-none ">
@@ -251,7 +251,7 @@ export const NotificationList = (props: any) => {
                 24 hrs
               </SelectItem>
               <SelectItem value={DONOT_DISTURB_STATE.UNTIL}>
-                Until turned on
+                Until reset
               </SelectItem>
             </SelectContent>
           </Select>
