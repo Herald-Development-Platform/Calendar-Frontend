@@ -10,7 +10,6 @@ import FullCalendar from "@fullcalendar/react";
 import Calendar, {
   DateSelectArg,
   DateUnselectArg,
-  DayCellMountArg,
   EventHoveringArg,
   EventMountArg,
   EventSourceInput,
@@ -19,8 +18,7 @@ import { Context, ContextType } from "@/app/clientWrappers/ContextProvider";
 import "./FullCalExtraCss.css";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Axios, baseUrl } from "@/services/baseUrl";
-import { getCookie, setCookie } from "@/hooks/CookieHooks";
-import Endpoints from "@/services/API_ENDPOINTS";
+import { setCookie } from "@/hooks/CookieHooks";
 import {
   useDeleteEvent,
   useGetEvents,
@@ -34,6 +32,9 @@ import { useGetSemester } from "@/services/api/semester";
 import EventDetails from "@/app/(all-pages)/search/EventDetails";
 import SemesterView from "./SemesterMonthComponents/SemesterView";
 import {
+  isMultiDay,
+  isMultiDay,
+  isMultiDay,
   isMultiDay,
   useApplySemesterDot,
   useApplySemesterDotYearly,
@@ -94,12 +95,152 @@ export default function ReactFullCal({} // eventDetailWidth,
   const { mutate: updateEvent } = useUpdateEvents();
   const { mutate: deleteEvent } = useDeleteEvent({});
 
-  const handleSelect = ({ start, end, startStr, endStr }: DateSelectArg) => {
+  const handleSelect = async ({
+    start,
+    end,
+    startStr,
+    endStr,
+  }: DateSelectArg) => {
     setSelectedDate({ start, end, startStr, endStr });
     clearTimeout(timeout.current);
-  };
+    console.log(startStr, "endStr", endStr);
 
+    const endDecrement = new Date(end).setDate(new Date(end).getDate() - 1);
+    const endStrDecrement = format(endDecrement, "yyyy-MM-dd");
+    console.log("calendarRef", calendarRef?.current);
+
+    // @ts-ignore
+    if (!calendarRef?.current?.elRef?.current) return;
+
+    // @ts-ignore
+    const endStrEl = calendarRef.current.elRef.current.querySelector(
+      "td[data-date='" + endStrDecrement + "']",
+    );
+    const isoDate = new Date(endStrEl.getAttribute("data-date"));
+    const isHighLighted = userData?.importantDates.includes(
+      new Date(isoDate).toISOString(),
+    );
+    // console.log("endStrEl", endStrEl);
+    const selectContextEl = document.createElement("div");
+    selectContextEl.classList.add("fc-custom-select-context-wrapper");
+    const highlightBtnEl = document.createElement("button");
+    highlightBtnEl.classList.add("fc-select-item", "fc-select-highlight");
+    highlightBtnEl.textContent = isHighLighted
+      ? "Unhighlight Date"
+      : "Highlight Date";
+    const addEventBtnEl = document.createElement("button");
+    addEventBtnEl.classList.add("fc-select-item", "fc-select-add-event");
+    addEventBtnEl.innerHTML = `<span class="fc-select-plus">+</span> Add Event`;
+    selectContextEl.appendChild(highlightBtnEl);
+    selectContextEl.appendChild(addEventBtnEl);
+
+    const _isMultiDay = isMultiDay(start.getTime(), end.getTime());
+    highlightBtnEl.addEventListener("click", (e) => {
+      // const isoDate = new Date(endStrEl.getAttribute("data-date"));
+      // const isHighLighted = userData?.importantDates.includes(
+      //   new Date(isoDate).toISOString(),
+      // );
+      // const toHighlightEls = _isMultiDay ? [...] : [dayFrameEl];
+      let toHighlightEls: any[] = [];
+      if (_isMultiDay) {
+        // @ts-ignore
+        if (!calendarRef?.current?.elRef?.current) return;
+
+        const tdElements = Array.from(
+          // @ts-ignore
+          calendarRef.current.elRef.current.querySelectorAll("td"),
+        );
+        console.log("tdElements", tdElements);
+
+        toHighlightEls = Array.from(
+          calendarRef.current.elRef.current.querySelectorAll(
+            ".fc-daygrid-day-frame",
+          ),
+        );
+      } else {
+        toHighlightEls = [dayFrameEl];
+      }
+      if (isHighLighted) {
+        updateHighLightedEvents(
+          {
+            importantDates: [
+              ...userData.importantDates.filter(
+                (impDate: string) =>
+                  impDate !== new Date(isoDate).toISOString(),
+              ),
+            ],
+          },
+          {
+            onSuccess: () => {
+              queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
+            },
+          },
+        );
+
+        if (_isMultiDay) {
+          // @ts-ignore
+          if (!calendarRef?.current?.elRef?.current) return;
+
+          const tdElements = Array.from(
+            // @ts-ignore
+            calendarRef.current.elRef.current.querySelectorAll("td"),
+          );
+          tdElements.forEach((tdEl: any) => {
+            const cellDate = new Date(tdEl.getAttribute("data-date")).getTime();
+            if (cellDate >= start.getTime() && cellDate <= end.getTime()) {
+              tdEl.firstChild.style.backgroundColor = "#FFFDC3";
+            }
+          });
+          console.log("tdElements", tdElements);
+        } else {
+          toHighlightEls = [dayFrameEl];
+        }
+
+        // endStrEl.firstChild.style.backgroundColor = "#ffffff";
+      } else {
+        updateHighLightedEvents(
+          {
+            importantDates: [...userData?.importantDates, isoDate],
+          },
+          {
+            onSuccess: () => {
+              queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
+            },
+          },
+        );
+        endStrEl.firstChild.style.backgroundColor = "#FFFDC3";
+      }
+    });
+
+    addEventBtnEl.addEventListener("click", (e) => {
+      console.log("clicked add event");
+    });
+
+    endStrEl?.firstChild?.appendChild(selectContextEl);
+
+    selectContextEl.style.opacity = "0"; // Set initial opacity to 0
+    selectContextEl.style.transition = "opacity 0.2s"; // Set transition property
+
+    // Use setTimeout to delay the opacity change, allowing the transition to take effect
+    setTimeout(() => {
+      selectContextEl.style.opacity = "1";
+    }, 10);
+  };
   const handleUnselect = (arg: DateUnselectArg) => {
+    // @ts-ignore
+    if (calendarRef?.current?.elRef?.current) {
+      const selectContextEl = document.querySelector(
+        ".fc-custom-select-context-wrapper",
+      );
+      if (!selectContextEl) return;
+      // @ts-ignore
+      selectContextEl.style.opacity = "0";
+      setTimeout(() => {
+        // @ts-ignore
+        selectContextEl?.remove();
+      }, 100);
+    }
+
     timeout.current = setTimeout(function () {
       setSelectedDate({
         start: new Date(),
@@ -128,7 +269,6 @@ export default function ReactFullCal({} // eventDetailWidth,
       const dayGridNumber = dayFrameEl.querySelector(".fc-daygrid-day-number");
       const ariaLabelValue = dayGridNumber?.getAttribute("aria-label");
 
-      // addSemesterView(dayFrameEl, semesterData);
       if (!ariaLabelValue) return;
 
       const parsedDate = parse(ariaLabelValue, "MMMM d, yyyy", new Date());
@@ -140,86 +280,12 @@ export default function ReactFullCal({} // eventDetailWidth,
 
       const today =
         dayFrameEl?.parentElement?.classList.contains("fc-day-today");
-      if (isHighLight) dayFrameEl.style.backgroundColor = "#FFF735";
+      if (isHighLight) dayFrameEl.style.backgroundColor = "#FFFDC3";
       else if (today) {
         dayFrameEl.style.backgroundColor = "#5D9936";
         dayFrameEl.style.color = "#ffffff";
       } else dayFrameEl.style.backgroundColor = "#ffffff";
-
-      // setHeightOfDayFrame(dayFrameEl);
-      const contextMenuListener = (e: any) => {
-        e.preventDefault();
-
-        const contextWrapper = document.createElement("div");
-        contextWrapper.classList.add("day-frame-context-wrapper");
-
-        const contextEl = document.createElement("button");
-        contextEl.classList.add("day-frame-context-el");
-
-        const isHighLighted = userData?.importantDates.includes(
-          new Date(isoDate).toISOString(),
-        );
-
-        contextEl.textContent = isHighLighted
-          ? "Remove Highlight"
-          : "Highlight";
-
-        contextEl.addEventListener("click", (e) => {
-          if (isHighLighted) {
-            updateHighLightedEvents(
-              {
-                importantDates: [
-                  ...userData.importantDates.filter(
-                    (impDate: string) =>
-                      impDate !== new Date(isoDate).toISOString(),
-                  ),
-                ],
-              },
-              {
-                onSuccess: () => {
-                  queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
-                },
-              },
-            );
-          } else {
-            updateHighLightedEvents(
-              {
-                importantDates: [...userData?.importantDates, isoDate],
-              },
-              {
-                onSuccess: () => {
-                  queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
-                },
-              },
-            );
-          }
-        });
-
-        const background = document.createElement("div");
-        background.classList.add("day-frame-context-bg");
-        background.addEventListener("click", (e) => {
-          dayFrameEl.querySelector(".day-frame-context-bg")?.remove();
-          dayFrameEl.querySelector(".day-frame-context-wrapper")?.remove();
-        });
-        contextWrapper.appendChild(contextEl);
-
-        dayFrameEl.appendChild(contextWrapper);
-        dayFrameEl.appendChild(background);
-      };
-
-      dayFrameEl.addEventListener("contextmenu", contextMenuListener);
-      listenerRefs.push({
-        element: dayFrameEl,
-        type: "contextmenu",
-        listener: contextMenuListener,
-      });
     });
-
-    return () => {
-      listenerRefs.forEach(({ element, type, listener }) => {
-        element.removeEventListener(type, listener);
-      });
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData?.importantDates, monthValue]);
 
@@ -233,7 +299,7 @@ export default function ReactFullCal({} // eventDetailWidth,
     const eventEl = info.el;
 
     if (currentView === "timeGridWeek" || currentView === "timeGridDay") {
-      console.log("Week event", info);
+      // console.log("Week event", info);
 
       const timeEl = document.createElement("div");
 
@@ -316,11 +382,10 @@ export default function ReactFullCal({} // eventDetailWidth,
           // @ts-ignore
           eventEl.parentElement.style.paddingLeft = "8px";
           eventEl?.insertBefore(departmentsWrapper, eventEl.firstChild);
-        }else{
+        } else {
           // @ts-ignore
           // eventEl.parentElement.style.paddingLeft = "8px";
           eventEl?.insertBefore(departmentsWrapper, eventEl.firstChild);
-          
         }
         return;
       }
@@ -336,21 +401,6 @@ export default function ReactFullCal({} // eventDetailWidth,
     }
   };
 
-  const handleMouseLeave = (info: EventHoveringArg) => {
-    const tooltipEl = info?.el?.querySelector(".event-tooltip");
-
-    if (!tooltipEl) return;
-    tooltipEl.remove();
-  };
-
-  const handleMouseEnter = (info: EventHoveringArg) => {
-    const tooltipWrapper = document.createElement("div");
-    tooltipWrapper.innerText = info.event._def.title;
-    tooltipWrapper.classList.add("event-tooltip");
-    info.el.appendChild(tooltipWrapper);
-    tooltipWrapper.classList.add("event-tooltip-transition");
-  };
-
   const setHeightOfDayFrame = (node: HTMLDivElement) => {
     const dateNumberHeight = // @ts-ignore
       node.querySelector(".fc-daygrid-day-top")?.offsetHeight;
@@ -364,20 +414,6 @@ export default function ReactFullCal({} // eventDetailWidth,
     const { value } = e.target;
     deleteEvent({ id: value });
   };
-
-  // useApplySemesterDotYearly({
-  //   calendarRef,
-  //   semesterData,
-  //   monthValue,
-  //   currentView,
-  // });
-
-  // useApplySemesterDot({
-  //   calendarRef,
-  //   semesterData,
-  //   monthValue,
-  //   currentView,
-  // });
 
   useApplyYearlySemesterView({
     // @ts-ignore
@@ -404,10 +440,15 @@ export default function ReactFullCal({} // eventDetailWidth,
         setSelectedEvent(newlyFetchedSelectedEvent);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [events]);
 
   return (
     <>
+      {/* <div className="fc-custom-select-context-wrapper">
+        <div className="fc-select-highlight">Highlight Date</div>
+        <div className="fc-select-add">+ Add Event</div>
+      </div> */}
       <div ref={calWrapper} className="relative h-full w-auto">
         <>
           <FullCalendar
@@ -544,3 +585,18 @@ export default function ReactFullCal({} // eventDetailWidth,
 // dateClick={(info) => {
 //   console.log("info", info);
 // }}
+
+// const handleMouseLeave = (info: EventHoveringArg) => {
+//   const tooltipEl = info?.el?.querySelector(".event-tooltip");
+
+//   if (!tooltipEl) return;
+//   tooltipEl.remove();
+// };
+
+// const handleMouseEnter = (info: EventHoveringArg) => {
+//   const tooltipWrapper = document.createElement("div");
+//   tooltipWrapper.innerText = info.event._def.title;
+//   tooltipWrapper.classList.add("event-tooltip");
+//   info.el.appendChild(tooltipWrapper);
+//   tooltipWrapper.classList.add("event-tooltip-transition");
+// };
