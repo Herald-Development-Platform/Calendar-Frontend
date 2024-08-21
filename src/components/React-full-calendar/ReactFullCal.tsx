@@ -25,16 +25,12 @@ import {
   useUpdateEvents,
 } from "@/services/api/eventsApi";
 import { CalendarApi } from "@fullcalendar/core/index.js";
-
 import { parse, format } from "date-fns";
 import { delay, generateNewToken } from "@/lib/utils";
 import { useGetSemester } from "@/services/api/semester";
 import EventDetails from "@/app/(all-pages)/search/EventDetails";
 import SemesterView from "./SemesterMonthComponents/SemesterView";
 import {
-  isMultiDay,
-  isMultiDay,
-  isMultiDay,
   isMultiDay,
   useApplySemesterDot,
   useApplySemesterDotYearly,
@@ -113,19 +109,25 @@ export default function ReactFullCal({} // eventDetailWidth,
     if (!calendarRef?.current?.elRef?.current) return;
 
     // @ts-ignore
-    const endStrEl = calendarRef.current.elRef.current.querySelector(
-      "td[data-date='" + endStrDecrement + "']",
+    const allCells = calendarRef.current.elRef.current.querySelectorAll("td");
+    const allCellsList = Array.from(allCells);
+    const selectedCells: any[] = allCellsList?.filter((cell: any) => {
+      const cellDate = new Date(cell.getAttribute("data-date")).getTime();
+      return cellDate >= start.getTime() && cellDate < end.getTime();
+    });
+    console.log("selectedCells", selectedCells);
+    const isElsHighlight = selectedCells.every(
+      (cell: any) =>
+        userData?.importantDates.includes(
+          new Date(cell.getAttribute("data-date")).toISOString(),
+        ),
     );
-    const isoDate = new Date(endStrEl.getAttribute("data-date"));
-    const isHighLighted = userData?.importantDates.includes(
-      new Date(isoDate).toISOString(),
-    );
-    // console.log("endStrEl", endStrEl);
+
     const selectContextEl = document.createElement("div");
     selectContextEl.classList.add("fc-custom-select-context-wrapper");
     const highlightBtnEl = document.createElement("button");
     highlightBtnEl.classList.add("fc-select-item", "fc-select-highlight");
-    highlightBtnEl.textContent = isHighLighted
+    highlightBtnEl.textContent = isElsHighlight
       ? "Unhighlight Date"
       : "Highlight Date";
     const addEventBtnEl = document.createElement("button");
@@ -134,97 +136,51 @@ export default function ReactFullCal({} // eventDetailWidth,
     selectContextEl.appendChild(highlightBtnEl);
     selectContextEl.appendChild(addEventBtnEl);
 
-    const _isMultiDay = isMultiDay(start.getTime(), end.getTime());
-    highlightBtnEl.addEventListener("click", (e) => {
-      // const isoDate = new Date(endStrEl.getAttribute("data-date"));
-      // const isHighLighted = userData?.importantDates.includes(
-      //   new Date(isoDate).toISOString(),
-      // );
-      // const toHighlightEls = _isMultiDay ? [...] : [dayFrameEl];
-      let toHighlightEls: any[] = [];
-      if (_isMultiDay) {
-        // @ts-ignore
-        if (!calendarRef?.current?.elRef?.current) return;
+    selectedCells[selectedCells.length - 1]?.firstChild?.appendChild(
+      selectContextEl,
+    );
 
-        const tdElements = Array.from(
-          // @ts-ignore
-          calendarRef.current.elRef.current.querySelectorAll("td"),
-        );
-        console.log("tdElements", tdElements);
-
-        toHighlightEls = Array.from(
-          calendarRef.current.elRef.current.querySelectorAll(
-            ".fc-daygrid-day-frame",
-          ),
-        );
-      } else {
-        toHighlightEls = [dayFrameEl];
-      }
-      if (isHighLighted) {
-        updateHighLightedEvents(
-          {
-            importantDates: [
-              ...userData.importantDates.filter(
-                (impDate: string) =>
-                  impDate !== new Date(isoDate).toISOString(),
-              ),
-            ],
+    if (isElsHighlight) {
+      const selectedDates: string[] = []; //string of dates
+      selectedCells.forEach((cell: any) => {
+        cell.firstChild.style.backgroundColor = "#FFFFFF";
+        const cellDate = new Date(cell.getAttribute("data-date")).toISOString();
+        selectedDates.push(cellDate);
+      });
+      updateHighLightedEvents(
+        {
+          importantDates: [
+            ...userData.importantDates.filter(
+              (impDate: string) => !selectedDates.includes(impDate),
+            ),
+          ],
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
           },
-          {
-            onSuccess: () => {
-              queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
-            },
+        },
+      );
+    } else {
+      const selectedDates: string[] = []; //string of dates
+      selectedCells.forEach((cell: any) => {
+        cell.firstChild.style.backgroundColor = "#FFFDC3";
+        const cellDate = new Date(cell.getAttribute("data-date")).toISOString();
+        selectedDates.push(cellDate);
+      });
+      updateHighLightedEvents(
+        {
+          importantDates: [...userData?.importantDates, ...selectedDates],
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
           },
-        );
+        },
+      );
+    }
 
-        if (_isMultiDay) {
-          // @ts-ignore
-          if (!calendarRef?.current?.elRef?.current) return;
-
-          const tdElements = Array.from(
-            // @ts-ignore
-            calendarRef.current.elRef.current.querySelectorAll("td"),
-          );
-          tdElements.forEach((tdEl: any) => {
-            const cellDate = new Date(tdEl.getAttribute("data-date")).getTime();
-            if (cellDate >= start.getTime() && cellDate <= end.getTime()) {
-              tdEl.firstChild.style.backgroundColor = "#FFFDC3";
-            }
-          });
-          console.log("tdElements", tdElements);
-        } else {
-          toHighlightEls = [dayFrameEl];
-        }
-
-        // endStrEl.firstChild.style.backgroundColor = "#ffffff";
-      } else {
-        updateHighLightedEvents(
-          {
-            importantDates: [...userData?.importantDates, isoDate],
-          },
-          {
-            onSuccess: () => {
-              queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
-            },
-          },
-        );
-        endStrEl.firstChild.style.backgroundColor = "#FFFDC3";
-      }
-    });
-
-    addEventBtnEl.addEventListener("click", (e) => {
-      console.log("clicked add event");
-    });
-
-    endStrEl?.firstChild?.appendChild(selectContextEl);
-
-    selectContextEl.style.opacity = "0"; // Set initial opacity to 0
-    selectContextEl.style.transition = "opacity 0.2s"; // Set transition property
-
-    // Use setTimeout to delay the opacity change, allowing the transition to take effect
-    setTimeout(() => {
-      selectContextEl.style.opacity = "1";
-    }, 10);
+    return;
   };
   const handleUnselect = (arg: DateUnselectArg) => {
     // @ts-ignore
