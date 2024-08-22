@@ -25,7 +25,7 @@ import {
   useUpdateEvents,
 } from "@/services/api/eventsApi";
 import { CalendarApi } from "@fullcalendar/core/index.js";
-import { parse, format } from "date-fns";
+import { parse, format, add } from "date-fns";
 import { delay, generateNewToken } from "@/lib/utils";
 import { useGetSemester } from "@/services/api/semester";
 import EventDetails from "@/app/(all-pages)/search/EventDetails";
@@ -39,6 +39,11 @@ import {
 } from "./utils";
 import { allPlugins } from "@/constants/CalendarViews";
 import { createEventInstance } from "@fullcalendar/core/internal";
+import AddEventModal from "../AddEventModal";
+import EventModal from "../AddEventModal/EventModal";
+import { RecurringEventTypes } from "@/constants/RecurringEvents";
+import EditEventModal from "../AddEventModal/EditEventModal";
+import EditEventModal1 from "../AddEventModal/EditEventModal1";
 
 export default function ReactFullCal({} // eventDetailWidth,
 : {
@@ -59,11 +64,13 @@ export default function ReactFullCal({} // eventDetailWidth,
   const calWrapper = useRef<HTMLDivElement>(null);
   const dayFrameRefs = useRef<HTMLDivElement[]>([]);
   const eventRefs = useRef<any[]>([]);
+  const addEventModalRef = useRef<HTMLDivElement>(null);
 
   const monthValue =
     selectedDate?.start && new Date(selectedDate?.start).getMonth();
   const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
   const [eventDetailWidth, setEventDetailWidth] = useState<number | null>(null);
+  const [selectable, setSelectable] = useState<boolean>(true);
 
   const queryClient = useQueryClient();
   const { mutate: updateHighLightedEvents } = useMutation({
@@ -101,13 +108,13 @@ export default function ReactFullCal({} // eventDetailWidth,
     clearTimeout(timeout.current);
     console.log(startStr, "endStr", endStr);
 
-    const endDecrement = new Date(end).setDate(new Date(end).getDate() - 1);
-    const endStrDecrement = format(endDecrement, "yyyy-MM-dd");
-    console.log("calendarRef", calendarRef?.current);
+    // const endDecrement = new Date(end).setDate(new Date(end).getDate() - 1);
 
     // @ts-ignore
-    if (!calendarRef?.current?.elRef?.current) return;
+    if (!calendarRef?.current?.elRef?.current || currentView !== "dayGridMonth")
+      return;
 
+    setSelectable(false);
     // @ts-ignore
     const allCells = calendarRef.current.elRef.current.querySelectorAll("td");
     const allCellsList = Array.from(allCells);
@@ -125,77 +132,87 @@ export default function ReactFullCal({} // eventDetailWidth,
 
     const selectContextEl = document.createElement("div");
     selectContextEl.classList.add("fc-custom-select-context-wrapper");
-    const highlightBtnEl = document.createElement("button");
+    const highlightBtnEl = document.createElement("div");
     highlightBtnEl.classList.add("fc-select-item", "fc-select-highlight");
     highlightBtnEl.textContent = isElsHighlight
-      ? "Unhighlight Date"
-      : "Highlight Date";
-    const addEventBtnEl = document.createElement("button");
+      ? "Remove Highlight"
+      : "Highlight";
+    const addEventBtnEl = document.createElement("div");
     addEventBtnEl.classList.add("fc-select-item", "fc-select-add-event");
     addEventBtnEl.innerHTML = `<span class="fc-select-plus">+</span> Add Event`;
     selectContextEl.appendChild(highlightBtnEl);
     selectContextEl.appendChild(addEventBtnEl);
+    highlightBtnEl.addEventListener("click", (e) => {
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      if (isElsHighlight) {
+        const selectedDates: string[] = []; //string of dates
+        selectedCells.forEach((cell: any) => {
+          cell.firstChild.style.backgroundColor = "#FFFFFF";
+          const cellDate = new Date(
+            cell.getAttribute("data-date"),
+          ).toISOString();
+          selectedDates.push(cellDate);
+        });
+        updateHighLightedEvents(
+          {
+            importantDates: [
+              ...userData.importantDates.filter(
+                (impDate: string) => !selectedDates.includes(impDate),
+              ),
+            ],
+          },
+          {
+            onSuccess: () => {
+              queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
+            },
+          },
+        );
+      } else {
+        const selectedDates: string[] = []; //string of dates
+        selectedCells.forEach((cell: any) => {
+          cell.firstChild.style.backgroundColor = "#FFFDC3";
+          const cellDate = new Date(
+            cell.getAttribute("data-date"),
+          ).toISOString();
+          selectedDates.push(cellDate);
+        });
+        updateHighLightedEvents(
+          {
+            importantDates: [...userData?.importantDates, ...selectedDates],
+          },
+          {
+            onSuccess: () => {
+              queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
+            },
+          },
+        );
+      }
+    });
+    addEventBtnEl.addEventListener("click", (e) => {
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      e.preventDefault();
 
+      // if (!addEventModalRef.current) return;
+      // @ts-ignore
+      // ?.firstChild?.click(),
+      const modal_4 = document.getElementById(
+        "my_modal_5",
+      ) as HTMLDialogElement;
+      console.log("modal elemenet", modal_4);
+      modal_4.showModal();
+      console.log("addEventBtnEl");
+    });
     selectedCells[selectedCells.length - 1]?.firstChild?.appendChild(
       selectContextEl,
     );
-
-    if (isElsHighlight) {
-      const selectedDates: string[] = []; //string of dates
-      selectedCells.forEach((cell: any) => {
-        cell.firstChild.style.backgroundColor = "#FFFFFF";
-        const cellDate = new Date(cell.getAttribute("data-date")).toISOString();
-        selectedDates.push(cellDate);
-      });
-      updateHighLightedEvents(
-        {
-          importantDates: [
-            ...userData.importantDates.filter(
-              (impDate: string) => !selectedDates.includes(impDate),
-            ),
-          ],
-        },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
-          },
-        },
-      );
-    } else {
-      const selectedDates: string[] = []; //string of dates
-      selectedCells.forEach((cell: any) => {
-        cell.firstChild.style.backgroundColor = "#FFFDC3";
-        const cellDate = new Date(cell.getAttribute("data-date")).toISOString();
-        selectedDates.push(cellDate);
-      });
-      updateHighLightedEvents(
-        {
-          importantDates: [...userData?.importantDates, ...selectedDates],
-        },
-        {
-          onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
-          },
-        },
-      );
-    }
 
     return;
   };
   const handleUnselect = (arg: DateUnselectArg) => {
     // @ts-ignore
-    if (calendarRef?.current?.elRef?.current) {
-      const selectContextEl = document.querySelector(
-        ".fc-custom-select-context-wrapper",
-      );
-      if (!selectContextEl) return;
-      // @ts-ignore
-      selectContextEl.style.opacity = "0";
-      setTimeout(() => {
-        // @ts-ignore
-        selectContextEl?.remove();
-      }, 100);
-    }
 
     timeout.current = setTimeout(function () {
       setSelectedDate({
@@ -205,6 +222,22 @@ export default function ReactFullCal({} // eventDetailWidth,
         endStr: undefined,
       });
     }, 250);
+
+    // @ts-ignore
+    if (!calendarRef?.current?.elRef?.current || currentView !== "dayGridMonth")
+      return;
+
+    const selectContextEl = document.querySelector(
+      ".fc-custom-select-context-wrapper",
+    );
+    if (!selectContextEl) return;
+    // @ts-ignore
+    selectContextEl.style.opacity = "0";
+    setTimeout(() => {
+      // @ts-ignore
+      selectContextEl?.remove();
+      setSelectable(true);
+    }, 100);
   };
 
   useEffect(() => {
@@ -301,11 +334,6 @@ export default function ReactFullCal({} // eventDetailWidth,
     } else if (currentView === "dayGridMonth") {
       const titleElement = eventEl?.querySelector(".fc-event-title");
 
-      // const isBlockEvent = eventEl?.classList.contains(
-      //   "fc-daygrid-block-event",
-      // );
-
-      // if (departments?.length === 0 || !titleElement || isBlockEvent) return;
       if (departments?.length === 0 || !titleElement) return;
 
       const departmentsWrapper = document.createElement("div");
@@ -345,26 +373,20 @@ export default function ReactFullCal({} // eventDetailWidth,
         }
         return;
       }
-
       eventEl?.insertBefore(departmentsWrapper, eventEl.firstChild);
-
-      // console.log("firstChild");
-
-      // 1 - fc-event fc-event-start fc-event-future fc-daygrid-event fc-daygrid-block-event fc-h-event
-      //2 - fc-event fc-event-end fc-event-future fc-daygrid-event fc-daygrid-block-event fc-h-event
 
       return;
     }
   };
 
-  const setHeightOfDayFrame = (node: HTMLDivElement) => {
-    const dateNumberHeight = // @ts-ignore
-      node.querySelector(".fc-daygrid-day-top")?.offsetHeight;
-    const eventsTotalHeight = // @ts-ignore
-      node.querySelector(".fc-daygrid-day-events")?.offsetHeight;
+  // const setHeightOfDayFrame = (node: HTMLDivElement) => {
+  //   const dateNumberHeight = // @ts-ignore
+  //     node.querySelector(".fc-daygrid-day-top")?.offsetHeight;
+  //   const eventsTotalHeight = // @ts-ignore
+  //     node.querySelector(".fc-daygrid-day-events")?.offsetHeight;
 
-    node.style.minHeight = `${dateNumberHeight + eventsTotalHeight}px`;
-  };
+  //   node.style.minHeight = `${dateNumberHeight + eventsTotalHeight}px`;
+  // };
 
   const handleDelete = (e: any) => {
     const { value } = e.target;
@@ -383,7 +405,6 @@ export default function ReactFullCal({} // eventDetailWidth,
     if (!calendarApi) return;
     console.log("currview", currentView);
     calendarApi.changeView(currentView);
-    // console.log("calendarRef.current?.getApi()", calendarRef.current?.getApi());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentView, calendarRef]);
 
@@ -399,12 +420,13 @@ export default function ReactFullCal({} // eventDetailWidth,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [events]);
 
+  console.log(
+    "selectedEvent",
+    selectedDate?.start?.toISOString(),
+    selectedDate?.end?.toISOString(),
+  );
   return (
     <>
-      {/* <div className="fc-custom-select-context-wrapper">
-        <div className="fc-select-highlight">Highlight Date</div>
-        <div className="fc-select-add">+ Add Event</div>
-      </div> */}
       <div ref={calWrapper} className="relative h-full w-auto">
         <>
           <FullCalendar
@@ -435,7 +457,7 @@ export default function ReactFullCal({} // eventDetailWidth,
             // eventMouseLeave={handleMouseLeave}
             eventDidMount={handleEventDidMount}
             headerToolbar={false}
-            selectable={true}
+            selectable={selectable}
             select={handleSelect}
             viewDidMount={async (info: any) => {
               await delay(200);
@@ -489,6 +511,22 @@ export default function ReactFullCal({} // eventDetailWidth,
         handleDelete={handleDelete}
         width={eventDetailWidth || null}
       ></EventDetails>
+      <EditEventModal1
+        // type="Add"
+        defaultData={{
+          start: selectedDate?.start
+            ? new Date(selectedDate?.start)
+            : new Date(),
+          end: selectedDate?.end
+            ? new Date(selectedDate?.end.getTime() - 1000 * 60 * 60 * 24)
+            : new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
+          departments: [],
+          title: "",
+          recurringType: RecurringEventTypes.ONCE,
+          involvedUsers: [],
+          recurrenceEnd: null,
+        }}
+      ></EditEventModal1>
     </>
   );
 }
