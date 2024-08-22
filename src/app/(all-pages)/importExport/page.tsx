@@ -10,7 +10,7 @@ import { useContext, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { TbCloudUpload, TbCloudDownload } from "react-icons/tb";
 import { FaRegFile } from "react-icons/fa6";
-import { Axios } from "@/services/baseUrl";
+import { Axios, baseUrl } from "@/services/baseUrl";
 import DepartmentButton from "@/components/DepartmentButton";
 import { BiPencil } from "react-icons/bi";
 import ContextProvider, { Context } from "@/app/clientWrappers/ContextProvider";
@@ -19,12 +19,22 @@ import Image from "next/image";
 import * as Headers from "@/components/Header";
 import { IoMdArrowBack } from "react-icons/io";
 import { useRouter } from "next/navigation";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { RxCross2 } from "react-icons/rx";
 
 export default function ImportExport() {
   const [currentTab, setCurrentTab] = useState("import");
   const [importFileData, setImportFileData] = useState<any>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [memberDialog, setMemberDialog] = useState(false);
+  const [uploadErrorDialogOpen, setUploadErrorDialogOpen] = useState(false);
+  const [uploadErrors, setUploadErrors] = useState<any>([]);
 
   const [departments, setDepartments] = useState<Department[]>([]);
   const [selectedDepartments, setSelectedDepartments] = useState<string[]>([]);
@@ -152,9 +162,24 @@ export default function ImportExport() {
     onSuccess: (data) => {
       console.log("data", data);
       toast.success(data?.message || "Success");
+      if (data.data.uploadReportFilename) {
+        // download the file data, set it to form and download
+        Axios.get(`${baseUrl}/userUploadReport/${data.data.uploadReportFilename}`, {
+          responseType: "blob",
+        }).then((response) => {
+          const url = window.URL.createObjectURL(new Blob([response.data]));
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", "upload_report.xlsx");
+          document.body.appendChild(link);
+          link.click();
+        });
+      }
     },
     onError: (err: any) => {
       console.log("err", err);
+      setUploadErrors(err?.response?.data?.data || []);
+      setUploadErrorDialogOpen(true);
       toast.error(err?.response?.data?.message || "Something went wrong.");
     },
   });
@@ -179,37 +204,78 @@ export default function ImportExport() {
     return `${size.toFixed(1)} ${units[unitIndex]}`;
   };
 
-  const { data: googleLocations, isLoading: googleLocationsLoading } = useQuery(
-    {
-      queryKey: ["googlelocations"],
-      queryFn: async () => {
-        const response = await Axios.get(`/google/events`);
-        const events = response.data.data;
-        let uniqueEvents: any[] = [];
-        // each event has "recurringEventId" field which is same for all recurring events
-        // so we will filter out the unique events
-
-        events.forEach((event: any) => {
-          if (
-            !uniqueEvents.find(
-              (uniqueEvent) =>
-                uniqueEvent.recurringEventId === event.recurringEventId,
-            )
-          ) {
-            uniqueEvents.push(event);
-          }
-        });
-        return uniqueEvents;
-      },
-    },
-  );
   const router = useRouter();
 
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="flex flex-col gap-9 px-[70px] pl-9 max-h-[100vh] overflow-y-scroll">
+      <div className="flex max-h-[100vh] flex-col gap-9 overflow-y-scroll px-[70px] pl-9">
         <Toaster />
+
+        <Dialog
+          open={uploadErrorDialogOpen}
+          onOpenChange={(open) => {
+            if (!open) setUploadErrors([]);
+            setUploadErrorDialogOpen(open);
+          }}
+        >
+          <DialogContent
+            onPointerDownOutside={(e) => {
+              e.preventDefault();
+            }}
+            className=" max-h-[80vh] min-w-[80vw] overflow-y-scroll"
+          >
+            <DialogHeader>
+              <DialogTitle className=" text-[19px] font-semibold flex items-center justify-between ">
+                User Upload Errors
+              <button onClick={()=>{
+                setUploadErrors([]);
+                setUploadErrorDialogOpen(false);
+              }}><RxCross2 /></button>
+              </DialogTitle>
+            </DialogHeader>
+            <div className=" flex flex-col justify-start gap-7">
+              {uploadErrors &&
+                uploadErrors.length &&
+                uploadErrors.map((errObject: any, i: number) => (
+                  <div key={i} className="bg-red-200 p-3">
+                    <div className="flex flex-col items-start justify-start">
+                      <p className="font-500 text-[16px] text-neutral-800">
+                        Error #{i + 1}: {errObject.reason}
+                      </p>
+                      <span className="font-400 text-[13px] text-neutral-600">
+                        Sheet: {errObject.sheetName}
+                      </span>
+                      <span className="font-400 text-[13px] text-neutral-600">
+                        Row Index: {errObject.rowIndex}
+                      </span>
+                    </div>
+                    <Table className="bg-neutral-50">
+                      <TableHeader>
+                        <TableRow>
+                          {Object.keys(errObject.originalRow).map((key) => (
+                            <TableCell className="font-600" key={key}>
+                              {key}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        <TableRow>
+                          {Object.keys(errObject.originalRow).map((key) => (
+                            <TableCell key={key}>
+                              {errObject.originalRow[key]}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+                ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent>
             <DialogHeader>
@@ -366,7 +432,7 @@ export default function ImportExport() {
         </Dialog>
 
         <div className=" mt-[20px] flex flex-col gap-[37px]">
-          <div className="flex flex-row justify-start gap-3 items-center">
+          <div className="flex flex-row items-center justify-start gap-3">
             <span
               onClick={() => {
                 router.back();

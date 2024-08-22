@@ -5,13 +5,13 @@ import toast from "react-hot-toast";
 
 export const baseUrl =
   process.env.NODE_ENV === "development"
-    ? "http://10.99.0.35:10000/api"
+    ? "http://localhost:10000/api"
     : "http://10.99.0.35:10000/api"
 
 
 export const webSocketUrl =
   process.env.NODE_ENV === "development"
-    ? "http://10.99.0.35:10000"
+    ? "http://localhost:10000"
     : "http://10.99.0.35:10000"
 
 export const Axios = axios.create({
@@ -29,7 +29,7 @@ Axios.interceptors.response.use(
     //   window.location.href = "/login";
     // }
 
-    if (error.response.status >= 400 && error.response.status < 500) {
+    if (error.response.status === 400) {
       console.log("error-----------", error.response.data.message);
       toast.error(error.response.data.message);
     }
