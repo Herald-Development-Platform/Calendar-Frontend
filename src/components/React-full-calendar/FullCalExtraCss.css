@@ -343,7 +343,7 @@ cursor: pointer;
     position:absolute;
     top: 80%;
     left: 100%;
-    z-index: 10;
+    z-index: 9999;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -367,6 +367,7 @@ cursor: pointer;
     line-height: 20px;
     height: 31px;
     width: 124px;
+    cursor: pointer;
 }
 
 .fc-custom-select-context-wrapper > .fc-select-highlight{
@@ -385,6 +386,9 @@ cursor: pointer;
     font-size: 20px;
      margin-right: 5px;
 }
+/* .fc-scrollgrid-sync-table{
+    pointer-events: none;
+} */
     /*
 .fc-timegrid-event-harness-inset > a::before {
   content: "Block Start";

@@ -70,6 +70,7 @@ export default function EventModal({
   const eventFormRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    console.log("defaultData in useEffect", defaultData);
     if (!defaultData) return;
     const modifiedData = {
       ...defaultData,
@@ -313,7 +314,7 @@ export default function EventModal({
                 {dateType === "single" ? (
                   <DatePicker
                     value={newEvent.start}
-                    handleValueChange={ ({ target: { name, value } }) => {
+                    handleValueChange={({ target: { name, value } }) => {
                       let newStart;
                       let newEnd;
                       console.log("value", value);
