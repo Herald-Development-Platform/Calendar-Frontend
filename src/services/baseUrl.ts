@@ -5,14 +5,13 @@ import toast from "react-hot-toast";
 
 export const baseUrl =
   process.env.NODE_ENV === "development"
-    ? "http://localhost:10000/api"
-    : "http://10.99.0.35:10000/api"
-
+    ? process.env.NEXT_PUBLIC_API_URI
+    : process.env.NEXT_PUBLIC_API_URI;
 
 export const webSocketUrl =
   process.env.NODE_ENV === "development"
-    ? "http://localhost:10000"
-    : "http://10.99.0.35:10000"
+    ? process.env.NEXT_PUBLIC_WEBSOCKET_URI
+    : process.env.NEXT_PUBLIC_WEBSOCKET_URI;
 
 export const Axios = axios.create({
   baseURL: baseUrl,

@@ -53,9 +53,16 @@ export default function EventCard({
           </div>
           {event?.start &&
             new Date(event.start).getDate() !==
-              new Date(event.end ?? "").getDate() && <span className="ml-auto text-[12px]" style={{
-                color: event.color,
-              }}>MD</span>}
+              new Date(event.end || "").getDate() && (
+              <span
+                className="ml-auto text-[12px]"
+                style={{
+                  color: event.color,
+                }}
+              >
+                MD
+              </span>
+            )}
         </div>
         <h1 className="font-medium">{event?.title}</h1>
         <div className="flex items-center text-neutral-600">

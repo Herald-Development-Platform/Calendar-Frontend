@@ -438,13 +438,20 @@ export default function ReactFullCal({} // eventDetailWidth,
             }}
             eventClick={(info) => {
               const selectedEventObj = {
-                ...info?.event?._instance?.range,
                 ...info?.event?._def?.extendedProps,
+                start: info?.event?.start,
+                end: info?.event?.end,
                 title: info?.event?._def?.title,
                 color:
                   info?.event?._def?.ui?.backgroundColor ||
                   info?.event?._def?.ui?.borderColor,
               };
+              // console.log("selectedEventObj", info.event.start, info.event.end);
+              console.log(
+                "selectedEventObj",
+                selectedEventObj.start,
+                selectedEventObj.end,
+              );
               const upcommingEventWidth =
                 // @ts-ignore
                 document.querySelector("#upcomming-events")?.offsetWidth;
