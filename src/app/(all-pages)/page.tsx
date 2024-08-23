@@ -52,7 +52,9 @@ export default function page() {
       >
         <div ref={calContainerRef} className="flex h-fit w-full flex-col">
           <DepartmentFilter ref={depFilterRef} />
-          <ReactFullCalendar />
+          <div className="w-full overflow-x-scroll">
+            <ReactFullCalendar />
+          </div>
         </div>
         <UpcommingEvents
           elHeight={calendarHeight + DepFilHeight + DepFilMarginY}
