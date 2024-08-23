@@ -272,8 +272,6 @@ export default function EditEventModal({
                   <DatePicker
                     value={newEvent.start}
                     handleValueChange={({ target: { name, value } }) => {
-                      // handleValueChange({ target: { name: "start", value } });
-                      // handleValueChange({ target: { name: "end", value } });
                       let newStart;
                       let newEnd;
 
@@ -282,19 +280,6 @@ export default function EditEventModal({
                         let oldMinutes = new Date(newEvent.start).getMinutes();
                         newStart = new Date(
                           new Date(value).setHours(oldHours, oldMinutes),
-                        );
-
-                        console.log(
-                          "START::::::::::::::::::Old Hours:",
-                          oldHours,
-                        );
-                        console.log(
-                          "START::::::::::::::::::Old Minutes:",
-                          oldMinutes,
-                        );
-                        console.log(
-                          "START::::::::::::::::::newStart:",
-                          newStart,
                         );
                       } else {
                         newStart = new Date(value);
@@ -306,13 +291,6 @@ export default function EditEventModal({
                         newEnd = new Date(
                           new Date(value).setHours(oldHours, oldMinutes),
                         );
-
-                        console.log("END:::::::::::::::::Old Hours:", oldHours);
-                        console.log(
-                          "END:::::::::::::::::Old Minutes:",
-                          oldMinutes,
-                        );
-                        console.log("END:::::::::::::::::newEnd:", newEnd);
                       } else {
                         newEnd = new Date(
                           new Date(value).setHours(
@@ -334,14 +312,52 @@ export default function EditEventModal({
                   <div className="flex w-full flex-row items-center gap-2 ">
                     <DatePicker
                       value={newEvent.start}
-                      handleValueChange={handleValueChange}
+                      handleValueChange={({ target: { name, value } }) => {
+                        let newStart;
+
+                        if (newEvent.start) {
+                          let oldHours = new Date(newEvent.start).getHours();
+                          let oldMinutes = new Date(newEvent.start).getMinutes();
+                          newStart = new Date(
+                            new Date(value).setHours(oldHours, oldMinutes),
+                          );
+                        } else {
+                          newStart = new Date(
+                            new Date(value).setHours(
+                              new Date(value).getHours() + 1,
+                            ),
+                          );
+                        }
+
+                        handleValueChange({
+                          target: { name: "start", value: newStart },
+                        });
+                      }}
                       name={"start"}
                     />
                     <span className="text-neutral-600">-</span>
                     <DatePicker
                       value={newEvent.end}
-                      handleValueChange={handleValueChange}
                       name={"end"}
+                      handleValueChange={({ target: { name, value } }) => {
+                        let newEnd;
+
+                        if (newEvent.end) {
+                          let oldHours = new Date(newEvent.end).getHours();
+                          let oldMinutes = new Date(
+                            newEvent.end,
+                          ).getMinutes();
+                          newEnd = new Date(
+                            new Date(value).setHours(oldHours, oldMinutes),
+                          );
+                        } else {
+                          newEnd = new Date(value);
+                        }
+
+                        handleValueChange({
+                          target: { name: "end", value: newEnd },
+                        });
+                      }}
                     />
                   </div>
                 )}

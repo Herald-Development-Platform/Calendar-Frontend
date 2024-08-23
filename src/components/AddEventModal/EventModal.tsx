@@ -317,33 +317,37 @@ export default function EventModal({
                     handleValueChange={({ target: { name, value } }) => {
                       let newStart;
                       let newEnd;
-                      console.log("value", value);
-                      console.log("newEvent.start::::", newEvent.start);
-                      console.log("newEvent.end::::", newEvent.end);
+
                       if (newEvent.start) {
+                        let oldHours = new Date(newEvent.start).getHours();
+                        let oldMinutes = new Date(newEvent.start).getMinutes();
                         newStart = new Date(
-                          new Date(value).toISOString().split("T")[0] +
-                            newEvent?.start.toISOString().split("T")[1],
+                          new Date(value).setHours(oldHours, oldMinutes),
                         );
                       } else {
                         newStart = new Date(value);
                       }
+
                       if (newEvent.end) {
+                        let oldHours = new Date(newEvent.end).getHours();
+                        let oldMinutes = new Date(newEvent.end).getMinutes();
                         newEnd = new Date(
-                          new Date(value).toISOString().split("T")[0] +
-                            newEvent?.end.toISOString().split("T")[1],
+                          new Date(value).setHours(oldHours, oldMinutes),
                         );
                       } else {
-                        newEnd = new Date(newStart);
                         newEnd = new Date(
-                          newEnd.setHours(newEnd.getHours() + 1),
+                          new Date(value).setHours(
+                            new Date(value).getHours() + 1,
+                          ),
                         );
                       }
 
                       handleValueChange({
-                        target: { name: "start", newStart },
+                        target: { name: "start", value: newStart },
                       });
-                      handleValueChange({ target: { name: "end", newEnd } });
+                      handleValueChange({
+                        target: { name: "end", value: newEnd },
+                      });
                     }}
                     name={"start"}
                   />
@@ -351,14 +355,52 @@ export default function EventModal({
                   <div className="flex w-full flex-row items-center gap-2 ">
                     <DatePicker
                       value={newEvent.start}
-                      handleValueChange={handleValueChange}
+                      handleValueChange={({ target: { name, value } }) => {
+                        let newStart;
+
+                        if (newEvent.start) {
+                          let oldHours = new Date(newEvent.start).getHours();
+                          let oldMinutes = new Date(newEvent.start).getMinutes();
+                          newStart = new Date(
+                            new Date(value).setHours(oldHours, oldMinutes),
+                          );
+                        } else {
+                          newStart = new Date(
+                            new Date(value).setHours(
+                              new Date(value).getHours() + 1,
+                            ),
+                          );
+                        }
+
+                        handleValueChange({
+                          target: { name: "start", value: newStart },
+                        });
+                      }}
                       name={"start"}
                     />
                     <span className="text-neutral-600">-</span>
                     <DatePicker
                       value={newEvent.end}
-                      handleValueChange={handleValueChange}
                       name={"end"}
+                      handleValueChange={({ target: { name, value } }) => {
+                        let newEnd;
+
+                        if (newEvent.end) {
+                          let oldHours = new Date(newEvent.end).getHours();
+                          let oldMinutes = new Date(
+                            newEvent.end,
+                          ).getMinutes();
+                          newEnd = new Date(
+                            new Date(value).setHours(oldHours, oldMinutes),
+                          );
+                        } else {
+                          newEnd = new Date(value);
+                        }
+
+                        handleValueChange({
+                          target: { name: "end", value: newEnd },
+                        });
+                      }}
                     />
                   </div>
                 )}
