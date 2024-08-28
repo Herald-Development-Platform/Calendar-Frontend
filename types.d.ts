@@ -64,6 +64,7 @@ interface User {
   syncWithGoogle: boolean;
   donotDisturbState?: string;
   notificationExpiry?: Date;
+  activeSemester?: string[];
 }
 
 interface Location {
