@@ -93,8 +93,8 @@ export default function ReactFullCal({} // eventDetailWidth,
       }
     },
   });
-
   const { data: semesterData } = useGetSemester();
+  console.log("userData", userData);
   const { mutate: updateEvent } = useUpdateEvents();
   const { mutate: deleteEvent } = useDeleteEvent({});
 
@@ -106,7 +106,6 @@ export default function ReactFullCal({} // eventDetailWidth,
   }: DateSelectArg) => {
     setSelectedDate({ start, end, startStr, endStr });
     clearTimeout(timeout.current);
-    console.log(startStr, "endStr", endStr);
 
     // const endDecrement = new Date(end).setDate(new Date(end).getDate() - 1);
 
@@ -241,6 +240,23 @@ export default function ReactFullCal({} // eventDetailWidth,
   };
 
   useEffect(() => {
+    let startDate = new Date(8640000000000000);
+    let endDate = new Date(-8640000000000000);
+
+    userData?.activeSemester?.forEach((semesterId: string) => {
+      const semester = semesterData?.find((sem: any) => sem.id == semesterId);
+      if (!semester) return;
+      new Date(semester.start).getTime() < startDate.getTime() &&
+        (startDate = new Date(semester.start));
+      new Date(semester.end).getTime() > endDate.getTime() &&
+        (endDate = new Date(semester.end));
+    });
+    console.log(
+      "startDate",
+      startDate.toISOString(),
+      "endDate",
+      endDate.toISOString(),
+    );
     if (typeof calendarRef === "string") return;
     if (!calendarRef?.current) return;
 
@@ -249,10 +265,7 @@ export default function ReactFullCal({} // eventDetailWidth,
       ".fc-daygrid-day-frame",
     );
     const dayFrameEls = Array.from(dayFrameRefs.current);
-
-    const listenerRefs: any[] = [];
-
-    if (!Array.isArray(dayFrameEls)) return;
+    // if (!Array.isArray(dayFrameEls)) return;
 
     dayFrameEls.forEach((dayFrameEl: HTMLDivElement) => {
       const dayGridNumber = dayFrameEl.querySelector(".fc-daygrid-day-number");
@@ -266,15 +279,21 @@ export default function ReactFullCal({} // eventDetailWidth,
       const isHighLight = userData?.importantDates.includes(
         new Date(isoDate).toISOString(),
       );
-
       const today =
         dayFrameEl?.parentElement?.classList.contains("fc-day-today");
+      const isOngoing =
+        parsedDate.getTime() > startDate.getTime() &&
+        parsedDate.getTime() < endDate.getTime();
+
+      if (isOngoing) dayFrameEl.style.backgroundColor = "#E3F2DA";
+
       if (isHighLight) dayFrameEl.style.backgroundColor = "#FFFDC3";
       else if (today) {
         dayFrameEl.style.backgroundColor = "#5D9936";
         dayFrameEl.style.color = "#ffffff";
       } else dayFrameEl.style.backgroundColor = "#ffffff";
     });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userData?.importantDates, monthValue]);
 
@@ -393,20 +412,20 @@ export default function ReactFullCal({} // eventDetailWidth,
     deleteEvent({ id: value });
   };
 
-  useApplyYearlySemesterView({
-    // @ts-ignore
-    multiMonthEls: calendarRef?.current?.elRef?.current?.querySelectorAll(
-      ".fc-multimonth-month",
-    ),
-    currentView: currentView,
-  });
+  // useApplyYearlySemesterView({
+  //   // @ts-ignore
+  //   multiMonthEls: calendarRef?.current?.elRef?.current?.querySelectorAll(
+  //     ".fc-multimonth-month",
+  //   ),
+  //   currentView: currentView,
+  // });
 
-  useEffect(() => {
-    if (!calendarApi) return;
-    console.log("currview", currentView);
-    calendarApi.changeView(currentView);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentView, calendarRef]);
+  // useEffect(() => {
+  //   if (!calendarApi) return;
+  //   console.log("currview", currentView);
+  //   calendarApi.changeView(currentView);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [currentView, calendarRef]);
 
   useEffect(() => {
     if (events && selectedEvent) {
@@ -420,11 +439,6 @@ export default function ReactFullCal({} // eventDetailWidth,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [events]);
 
-  console.log(
-    "selectedEvent",
-    selectedDate?.start?.toISOString(),
-    selectedDate?.end?.toISOString(),
-  );
   return (
     <>
       <div ref={calWrapper} className="relative h-full w-auto">
@@ -447,11 +461,7 @@ export default function ReactFullCal({} // eventDetailWidth,
                   info?.event?._def?.ui?.borderColor,
               };
               // console.log("selectedEventObj", info.event.start, info.event.end);
-              console.log(
-                "selectedEventObj",
-                selectedEventObj.start,
-                selectedEventObj.end,
-              );
+
               const upcommingEventWidth =
                 // @ts-ignore
                 document.querySelector("#upcomming-events")?.offsetWidth;
@@ -475,7 +485,6 @@ export default function ReactFullCal({} // eventDetailWidth,
               );
               if (!scrollerEl) return;
               scrollerEl.style.overflow = "visible";
-              console.log("viewdidmount ------------------", scrollerEl);
             }}
             windowResize={async (arg) => {
               await delay(200);
@@ -539,11 +548,9 @@ export default function ReactFullCal({} // eventDetailWidth,
 }
 
 // eventDragStart={(e) => {
-//   console.log("eventDragStart", e);
 // }}
 
 // dateClick={(dateClickInfo) => {
-//   console.log("dateclickinfo", dateClickInfo);
 //   setSelectedDate(dateClickInfo?.date);
 // }}
 

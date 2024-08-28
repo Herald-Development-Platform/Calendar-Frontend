@@ -12,6 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { FaCheck } from "react-icons/fa";
 
 import "./SideBarCss.css";
 import { Dialog, DialogContent, DialogHeader } from "../ui/dialog";
@@ -109,13 +110,19 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   return (
     <>
       <div
-        className={`${hasBreakpoint ? "relative hidden" : " block"} h-screen ${open ? "w-[290px]" : "w-[80px]"} duration-400 bg-neutral-50 px-4 py-10 transition-all xl:block`}
+        className={`${hasBreakpoint ? "relative hidden" : " block"} h-screen ${
+          open ? "w-[290px]" : "w-[80px]"
+        } duration-400 bg-neutral-50 px-4 py-10 transition-all xl:block`}
       >
         <div
-          className={`flex h-full w-full flex-col items-center ${open ? "gap-14" : " gap-1.5"}  font-medium`}
+          className={`flex h-full w-full flex-col items-center ${
+            open ? "gap-14" : " gap-1.5"
+          }  font-medium`}
         >
           <div
-            className={`flex ${open ? "flex-row" : "flex-col"} w-full items-center gap-3 text-lg font-medium text-neutral-600 `}
+            className={`flex ${
+              open ? "flex-row" : "flex-col"
+            } w-full items-center gap-3 text-lg font-medium text-neutral-600 `}
           >
             <Image
               width={32}
@@ -206,10 +213,9 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
             <Popover>
               <PopoverTrigger>
                 <div
-                  // onClick={() => {
-                  //   setSemestersDialogOpen(true);
-                  // }}
-                  className={`mx-2 mt-auto flex ${open ? "w-full" : "w-fit"} duration-400 flex-row items-center justify-between rounded-[50px] border-[0.6px] border-[#D4D4D4] px-4 py-2.5 transition-all `}
+                  className={`mx-2 mt-auto flex ${
+                    open ? "w-full" : "w-fit"
+                  } duration-400 flex-row items-center justify-between rounded-[50px] border-[0.6px] border-[#D4D4D4] px-4 py-2.5 transition-all `}
                 >
                   {semestersLoading ? (
                     <span className="text-sm text-neutral-300">Loading...</span>
@@ -270,7 +276,6 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
               </PopoverTrigger>
               <PopoverContent
                 align="start"
-                
                 className="flex h-fit min-w-[45vw] translate-x-[230px] translate-y-7 flex-col items-start justify-start gap-5"
               >
                 <div className="flex w-full items-center justify-between">
@@ -295,7 +300,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                               className="flex items-center gap-3 px-2.5 py-1.5"
                             >
                               <div
-                                className="h-[30px] w-[30px] rounded-md "
+                                className="flex h-[30px] w-[30px] items-center justify-center rounded-md text-white"
                                 style={{ backgroundColor: semester.color }}
                               ></div>
                               <div className="flex flex-col gap-0">
