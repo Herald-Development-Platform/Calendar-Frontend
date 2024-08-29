@@ -88,6 +88,7 @@
      cursor: pointer;
     flex-direction: column; 
     justify-content: space-between;
+    gap: 3px;
     align-items: flex-start;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -106,6 +107,8 @@
     overflow: hidden;
     width: 100%;
     text-overflow: ellipsis;
+    color: #525252 !important;
+    
 }
 
 .department-wrapper{
@@ -314,7 +317,7 @@ cursor: pointer;
 }
 
  .fc-h-event {
-    margin-left: 5px !important;
+    margin-left: 2px !important;
     /* border-left: 4px;  */
     padding-left: 4px;
     padding-top: 2px;
@@ -324,13 +327,17 @@ cursor: pointer;
     min-height: 28px;
     border-radius: 0px;
     cursor: pointer;
+    display: flex;
+    flex-direction: column; 
+    gap: 3px;
 
 
 }
 
 .fc-h-event .fc-event-main{
     color: #525252;
-    font-size: 11px;
+    /* font-size: 11px; */
+
     font-weight: 600;
 }
 

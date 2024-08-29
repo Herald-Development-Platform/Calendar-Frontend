@@ -12,6 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { FaCheck } from "react-icons/fa";
 
 import "./SideBarCss.css";
 
@@ -141,13 +142,19 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   return (
     <>
       <div
-        className={`${hasBreakpoint ? "relative hidden" : " block"} h-screen ${open ? "w-[290px]" : "w-[80px]"} duration-400 bg-neutral-50 px-4 py-10 transition-all xl:block`}
+        className={`${hasBreakpoint ? "relative hidden" : " block"} h-screen ${
+          open ? "w-[290px]" : "w-[80px]"
+        } duration-400 bg-neutral-50 px-4 py-10 transition-all xl:block`}
       >
         <div
-          className={`flex h-full w-full flex-col items-center ${open ? "gap-14" : " gap-1.5"}  font-medium`}
+          className={`flex h-full w-full flex-col items-center ${
+            open ? "gap-14" : " gap-1.5"
+          }  font-medium`}
         >
           <div
-            className={`flex ${open ? "flex-row" : "flex-col"} w-full items-center gap-3 text-lg font-medium text-neutral-600 `}
+            className={`flex ${
+              open ? "flex-row" : "flex-col"
+            } w-full items-center gap-3 text-lg font-medium text-neutral-600 `}
           >
             <Image
               width={32}
@@ -238,7 +245,9 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
             <Popover>
               <PopoverTrigger>
                 <div
-                  className={`mx-2 mt-auto flex ${open ? "w-full" : "w-fit"} duration-400 flex-row items-center justify-between rounded-[50px] border-[0.6px] border-[#D4D4D4] px-4 py-2.5 transition-all `}
+                  className={`mx-2 mt-auto flex ${
+                    open ? "w-full" : "w-fit"
+                  } duration-400 flex-row items-center justify-between rounded-[50px] border-[0.6px] border-[#D4D4D4] px-4 py-2.5 transition-all `}
                 >
                   {semestersLoading ? (
                     <span className="text-sm text-neutral-300">Loading...</span>
@@ -323,7 +332,11 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                         console.log("ONGOING::::", ongoingSemestersIds);
                       }
                     }}
-                    className={`flex cursor-pointer items-center justify-start gap-3 ${selectedActiveSemesters.length === tempOngoing.length ? "text-primary-500" : "text-[#636366]"}`}
+                    className={`flex cursor-pointer items-center justify-start gap-3 ${
+                      selectedActiveSemesters.length === tempOngoing.length
+                        ? "text-primary-500"
+                        : "text-[#636366]"
+                    }`}
                   >
                     {selectedActiveSemesters.length === tempOngoing.length ? (
                       <MdCheckBox />
@@ -347,7 +360,12 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                           (semester: any, i: number) => (
                             <div
                               key={i}
-                              className={` ${ selectedActiveSemesters?.includes(semester._id) ? "bg-primary-100" : "transparent" } rounded-md w-full flex cursor-pointer items-center gap-3 px-2.5 py-1.5`}                              onClick={() => {
+                              className={` ${
+                                selectedActiveSemesters?.includes(semester._id)
+                                  ? "bg-primary-100"
+                                  : "transparent"
+                              } flex w-full cursor-pointer items-center gap-3 rounded-md px-2.5 py-1.5`}
+                              onClick={() => {
                                 setSelectedActiveSemesters((prev) => {
                                   if (prev.includes(semester._id)) {
                                     return prev.filter(
@@ -360,7 +378,11 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                               }}
                             >
                               <span
-                                className={`cursor-pointer ${selectedActiveSemesters.includes(semester._id) ? "text-primary-500" : "text-[#636366]"}`}
+                                className={`cursor-pointer ${
+                                  selectedActiveSemesters.includes(semester._id)
+                                    ? "text-primary-500"
+                                    : "text-[#636366]"
+                                }`}
                               >
                                 {selectedActiveSemesters.includes(
                                   semester._id,
@@ -379,17 +401,21 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                                   {semester.semester}
                                 </span>
                                 <span className="text-[11px] font-medium text-neutral-600">
-                                  {new Date(
-                                    semester.start,
-                                  ).toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                  })}{" "}
+                                  {new Date(semester.start).toLocaleDateString(
+                                    "en-US",
+                                    {
+                                      month: "short",
+                                      day: "numeric",
+                                    },
+                                  )}{" "}
                                   -{" "}
-                                  {new Date(semester.end).toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                  })}
+                                  {new Date(semester.end).toLocaleDateString(
+                                    "en-US",
+                                    {
+                                      month: "short",
+                                      day: "numeric",
+                                    },
+                                  )}
                                 </span>
                               </div>
                             </div>
@@ -402,12 +428,15 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                     profile?.activeSemester ?? [],
                     selectedActiveSemesters,
                   ) && (
-                    <div className="flex w-full flex-row items-center justify-end px-8 py-4 gap-2.5">
-                      <button onClick={()=>{
-                        updateProfileMutation.mutate({
-                          activeSemester: selectedActiveSemesters,
-                        })
-                      }} className="rounded-[4px] bg-primary-600 px-4 py-2.5 text-[13px] text-neutral-50 transition-all duration-200 hover:bg-primary-700">
+                    <div className="flex w-full flex-row items-center justify-end gap-2.5 px-8 py-4">
+                      <button
+                        onClick={() => {
+                          updateProfileMutation.mutate({
+                            activeSemester: selectedActiveSemesters,
+                          });
+                        }}
+                        className="rounded-[4px] bg-primary-600 px-4 py-2.5 text-[13px] text-neutral-50 transition-all duration-200 hover:bg-primary-700"
+                      >
                         Save Changes
                       </button>
                       <button className="rounded-[4px] bg-danger-500 px-4 py-2.5 text-[13px] text-neutral-50 transition-all duration-200 hover:bg-danger-600">
