@@ -44,6 +44,7 @@ import EventModal from "../AddEventModal/EventModal";
 import { RecurringEventTypes } from "@/constants/RecurringEvents";
 import EditEventModal from "../AddEventModal/EditEventModal";
 import EditEventModal1 from "../AddEventModal/EditEventModal1";
+import { start } from "repl";
 
 export default function ReactFullCal({} // eventDetailWidth,
 : {
@@ -240,23 +241,16 @@ export default function ReactFullCal({} // eventDetailWidth,
   };
 
   useEffect(() => {
-    let startDate = new Date(8640000000000000);
-    let endDate = new Date(-8640000000000000);
-
-    userData?.activeSemester?.forEach((semesterId: string) => {
+    const semTimeFrame = userData?.activeSemester?.map((semesterId: string) => {
       const semester = semesterData?.find((sem: any) => sem.id == semesterId);
       if (!semester) return;
-      new Date(semester.start).getTime() < startDate.getTime() &&
-        (startDate = new Date(semester.start));
-      new Date(semester.end).getTime() > endDate.getTime() &&
-        (endDate = new Date(semester.end));
+      return {
+        start: new Date(semester.start),
+        end: new Date(semester.end),
+        color: semester.color,
+      };
     });
-    console.log(
-      "startDate",
-      startDate.toISOString(),
-      "endDate",
-      endDate.toISOString(),
-    );
+
     if (typeof calendarRef === "string") return;
     if (!calendarRef?.current) return;
 
@@ -265,7 +259,6 @@ export default function ReactFullCal({} // eventDetailWidth,
       ".fc-daygrid-day-frame",
     );
     const dayFrameEls = Array.from(dayFrameRefs.current);
-    // if (!Array.isArray(dayFrameEls)) return;
 
     dayFrameEls.forEach((dayFrameEl: HTMLDivElement) => {
       const dayGridNumber = dayFrameEl.querySelector(".fc-daygrid-day-number");
@@ -279,23 +272,44 @@ export default function ReactFullCal({} // eventDetailWidth,
       const isHighLight = userData?.importantDates.includes(
         new Date(isoDate).toISOString(),
       );
+      console.log("semTimeFrame", semTimeFrame);
+
+      const isOngoing: boolean = semTimeFrame?.some((sem: any) => {
+        if (!sem) return undefined;
+        return (
+          parsedDate.getTime() >= sem.start.getTime() &&
+          parsedDate.getTime() < sem.end.getTime()
+        );
+      });
+      console.log("isOngoing", isOngoing);
+
       const today =
         dayFrameEl?.parentElement?.classList.contains("fc-day-today");
-      const isOngoing =
-        parsedDate.getTime() > startDate.getTime() &&
-        parsedDate.getTime() < endDate.getTime();
 
-      if (isOngoing) dayFrameEl.style.backgroundColor = "#E3F2DA";
-
+      //if parsedDate is  within any of the semesters its ongoing
+      // userData?.activeSemester?.forEach((semesterId: string) => {
+      //   const semester = semesterData?.find((sem: any) => sem.id == semesterId);
+      //   if (!semester) return;
+      //   new Date(semester.start).getTime() < startDate.getTime() &&
+      //     (startDate = new Date(semester.start));
+      //   new Date(semester.end).getTime() > endDate.getTime() &&
+      //     (endDate = new Date(semester.end));
+      // });
+      if (isOngoing) {
+        // semTimeFrame.length === 1
+        //   ? (dayFrameEl.style.backgroundColor = semTimeFrame[0].color + "19")
+        dayFrameEl.style.backgroundColor = "rgba(227, 242, 218, 0.4)";
+      }
       if (isHighLight) dayFrameEl.style.backgroundColor = "#FFFDC3";
       else if (today) {
         dayFrameEl.style.backgroundColor = "#5D9936";
         dayFrameEl.style.color = "#ffffff";
-      } else dayFrameEl.style.backgroundColor = "#ffffff";
+      }
+      // else dayFrameEl.style.backgroundColor = "#ffffff";
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userData?.importantDates, monthValue]);
+  }, [userData?.importantDates, monthValue, userData?.activeSemester]);
 
   const handleEventDidMount = async (info: EventMountArg) => {
     const departments = info?.event?._def?.extendedProps?.departments;
@@ -499,7 +513,7 @@ export default function ReactFullCal({} // eventDetailWidth,
             dayHeaderClassNames={"customStylesDayHeader"}
             dayCellClassNames={"customStylesDayCells"}
             eventMaxStack={3}
-            dayMaxEvents={3}
+            dayMaxEvents={2}
           />
         </>
 
