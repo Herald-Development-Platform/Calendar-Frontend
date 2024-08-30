@@ -22,6 +22,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Axios } from "@/services/baseUrl";
 import Endpoints from "@/services/API_ENDPOINTS";
 import toast from "react-hot-toast";
+import { PopoverClose } from "@radix-ui/react-popover";
 
 export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   const currentRoute = usePathname();
@@ -439,9 +440,24 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                       >
                         Save Changes
                       </button>
-                      <button className="rounded-[4px] bg-danger-500 px-4 py-2.5 text-[13px] text-neutral-50 transition-all duration-200 hover:bg-danger-600">
-                        Discard
-                      </button>
+                      <PopoverClose
+                        onClick={() => {
+                          setSelectedActiveSemesters([
+                            ...(profile?.activeSemester ?? []),
+                          ]);
+                        }}
+                      >
+                        <button
+                          onClick={() => {
+                            setSelectedActiveSemesters([
+                              ...(profile?.activeSemester ?? []),
+                            ]);
+                          }}
+                          className="rounded-[4px] bg-danger-500 px-4 py-2.5 text-[13px] text-neutral-50 transition-all duration-200 hover:bg-danger-600"
+                        >
+                          Discard
+                        </button>
+                      </PopoverClose>
                     </div>
                   )}
                 </div>
