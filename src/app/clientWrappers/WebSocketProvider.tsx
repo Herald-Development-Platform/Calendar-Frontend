@@ -42,6 +42,7 @@ export default function WebSocketProvider({
   const { userData } = useContext(Context);
   const queryClient = useQueryClient();
   useEffect(() => {
+    console.log("WEBSOCKET URL:::::", webSocketUrl);
     const connection = io(webSocketUrl??"");
     connection.on("connect", () => {
       connection.emit("authenticate", getCookie("token"));
