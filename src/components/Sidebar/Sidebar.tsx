@@ -50,7 +50,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
     },
     {
       name: "Summary",
-      icon: <HiOutlineDocumentReport />,
+      icon: <Image src={"/SummaryIcon.svg"} width={20} height={20} alt={""} className="ml-0.5" />,
       navigation: "/summary",
     },
   ];
