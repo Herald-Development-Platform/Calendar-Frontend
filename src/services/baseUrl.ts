@@ -2,10 +2,10 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import toast from "react-hot-toast";
 // "https://calendar-backend-txel.onrender.com/api";
-// const WEBSOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URI
+const WEBSOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URI
 
 export const baseUrl = "/api";
-export const webSocketUrl = "";
+export const webSocketUrl = WEBSOCKET_URL;
 
 export const Axios = axios.create({
   baseURL: baseUrl,

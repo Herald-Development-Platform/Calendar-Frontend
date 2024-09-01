@@ -45,6 +45,9 @@ interface PickedDateType {
   endDate: Date | undefined;
 }
 
+// NEW ADD EVENT MODAL FINAL ------------------------------
+
+
 export default function EventModal({
   defaultData,
   type,

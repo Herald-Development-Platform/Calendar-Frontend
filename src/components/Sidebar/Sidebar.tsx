@@ -23,6 +23,7 @@ import { Axios } from "@/services/baseUrl";
 import Endpoints from "@/services/API_ENDPOINTS";
 import toast from "react-hot-toast";
 import { PopoverClose } from "@radix-ui/react-popover";
+import { RxCross2 } from "react-icons/rx";
 
 export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   const currentRoute = usePathname();
@@ -50,7 +51,15 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
     },
     {
       name: "Summary",
-      icon: <Image src={"/SummaryIcon.svg"} width={20} height={20} alt={""} className="ml-0.5" />,
+      icon: (
+        <Image
+          src={"/SummaryIcon.svg"}
+          width={20}
+          height={20}
+          alt={""}
+          className="ml-0.5"
+        />
+      ),
       navigation: "/summary",
     },
   ];
@@ -315,38 +324,13 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                   <span className="text-[19px] font-medium text-neutral-900">
                     Ongoing Semesters
                   </span>
+                  <PopoverClose className="cursor-pointer">
+                    <span>
+                      <RxCross2 />
+                    </span>
+                  </PopoverClose>
                 </div>
-                <div className="w-full border-b-[2px] border-neutral-100 pb-2.5">
-                  <span
-                    onClick={() => {
-                      if (
-                        selectedActiveSemesters.length === tempOngoing.length
-                      ) {
-                        setSelectedActiveSemesters([
-                          ...(profile?.activeSemester ?? []),
-                        ]);
-                      } else {
-                        let ongoingSemestersIds = tempOngoing.map(
-                          (semester) => semester?._id ?? "",
-                        );
-                        setSelectedActiveSemesters(ongoingSemestersIds);
-                        console.log("ONGOING::::", ongoingSemestersIds);
-                      }
-                    }}
-                    className={`flex cursor-pointer items-center justify-start gap-3 ${
-                      selectedActiveSemesters.length === tempOngoing.length
-                        ? "text-primary-500"
-                        : "text-[#636366]"
-                    }`}
-                  >
-                    {selectedActiveSemesters.length === tempOngoing.length ? (
-                      <MdCheckBox />
-                    ) : (
-                      <MdCheckBoxOutlineBlank />
-                    )}
-                    <span className="text-[13px]">All</span>
-                  </span>
-                </div>
+
                 <div className="flex flex-row flex-wrap gap-5">
                   {Object.keys(ongoingSemestersGrouped).map(
                     (course, i: number) => (
@@ -425,41 +409,81 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                       </div>
                     ),
                   )}
-                  {!matchTwoStringArray(
-                    profile?.activeSemester ?? [],
-                    selectedActiveSemesters,
-                  ) && (
-                    <div className="flex w-full flex-row items-center justify-end gap-2.5 px-8 py-4">
-                      <button
-                        onClick={() => {
-                          updateProfileMutation.mutate({
-                            activeSemester: selectedActiveSemesters,
-                          });
-                        }}
-                        className="rounded-[4px] bg-primary-600 px-4 py-2.5 text-[13px] text-neutral-50 transition-all duration-200 hover:bg-primary-700"
-                      >
-                        Save Changes
-                      </button>
-                      <PopoverClose
-                        onClick={() => {
-                          setSelectedActiveSemesters([
-                            ...(profile?.activeSemester ?? []),
-                          ]);
-                        }}
-                      >
-                        <button
-                          onClick={() => {
+                  <div className="flex w-full items-center justify-between">
+                    <span
+                      onClick={() => {
+                        if (
+                          selectedActiveSemesters.length === tempOngoing.length
+                        ) {
+                          if (
+                            profile?.activeSemester?.length ===
+                            tempOngoing.length
+                          ) {
+                            setSelectedActiveSemesters([]);
+                          } else {
                             setSelectedActiveSemesters([
                               ...(profile?.activeSemester ?? []),
                             ]);
-                          }}
-                          className="rounded-[4px] bg-danger-500 px-4 py-2.5 text-[13px] text-neutral-50 transition-all duration-200 hover:bg-danger-600"
-                        >
-                          Discard
-                        </button>
-                      </PopoverClose>
+                          }
+                        } else {
+                          let ongoingSemestersIds = tempOngoing.map(
+                            (semester) => semester?._id ?? "",
+                          );
+                          setSelectedActiveSemesters(ongoingSemestersIds);
+                          console.log("ONGOING::::", ongoingSemestersIds);
+                        }
+                      }}
+                      className={`flex cursor-pointer items-center justify-start gap-3 pl-2.5 ${
+                        selectedActiveSemesters.length === tempOngoing.length
+                          ? "text-primary-500"
+                          : "text-[#636366]"
+                      }`}
+                    >
+                      {selectedActiveSemesters.length === tempOngoing.length ? (
+                        <MdCheckBox />
+                      ) : (
+                        <MdCheckBoxOutlineBlank />
+                      )}
+                      <span className="text-[13px]">All</span>
+                    </span>
+                    <div className="flex flex-row items-center justify-end gap-2.5 px-8 py-4">
+                      {!matchTwoStringArray(
+                        profile?.activeSemester ?? [],
+                        selectedActiveSemesters,
+                      ) && (
+                        <>
+                          <button
+                            onClick={() => {
+                              updateProfileMutation.mutate({
+                                activeSemester: selectedActiveSemesters,
+                              });
+                            }}
+                            className="rounded-[4px] bg-primary-600 px-4 py-2.5 text-[13px] text-neutral-50 transition-all duration-200 hover:bg-primary-700"
+                          >
+                            Save Changes
+                          </button>
+                          <PopoverClose
+                            onClick={() => {
+                              setSelectedActiveSemesters([
+                                ...(profile?.activeSemester ?? []),
+                              ]);
+                            }}
+                          >
+                            <button
+                              onClick={() => {
+                                setSelectedActiveSemesters([
+                                  ...(profile?.activeSemester ?? []),
+                                ]);
+                              }}
+                              className="rounded-[4px] bg-danger-500 px-4 py-2.5 text-[13px] text-neutral-50 transition-all duration-200 hover:bg-danger-600"
+                            >
+                              Discard
+                            </button>
+                          </PopoverClose>
+                        </>
+                      )}
                     </div>
-                  )}
+                  </div>
                 </div>
               </PopoverContent>
             </Popover>

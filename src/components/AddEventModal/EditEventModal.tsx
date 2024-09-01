@@ -38,10 +38,14 @@ import DatePicker from "./DatePicker";
 //   endDate: Date | undefined;
 // }
 
+// NEW EDIT EVENT MODAL FINAL ------------------------------
+
 export default function EditEventModal({
   defaultData,
+  onEdit,
 }: {
   defaultData: eventType | null;
+  onEdit?: () => void;
 }) {
   // const [pickedDate, setPickedDate] = useState<any>();
   const [dateType, setDateType] = useState<"single" | "multi">("single");
@@ -115,6 +119,7 @@ export default function EditEventModal({
             recurrenceEnd: null,
             notifyUpdate: false,
           });
+        onEdit && onEdit();
       },
       onError: (err: any) => {
         console.log("error", err);
@@ -317,7 +322,9 @@ export default function EditEventModal({
 
                         if (newEvent.start) {
                           let oldHours = new Date(newEvent.start).getHours();
-                          let oldMinutes = new Date(newEvent.start).getMinutes();
+                          let oldMinutes = new Date(
+                            newEvent.start,
+                          ).getMinutes();
                           newStart = new Date(
                             new Date(value).setHours(oldHours, oldMinutes),
                           );
@@ -344,9 +351,7 @@ export default function EditEventModal({
 
                         if (newEvent.end) {
                           let oldHours = new Date(newEvent.end).getHours();
-                          let oldMinutes = new Date(
-                            newEvent.end,
-                          ).getMinutes();
+                          let oldMinutes = new Date(newEvent.end).getMinutes();
                           newEnd = new Date(
                             new Date(value).setHours(oldHours, oldMinutes),
                           );
@@ -413,7 +418,12 @@ export default function EditEventModal({
                 <div key={"AddEventPriority"} className="flex gap-2">
                   {colors?.map((Color, i) => (
                     <label
-                      className={`btn checkbox btn-xs relative h-7 w-7 cursor-pointer rounded-none border-none`}
+                      onClick={() => {
+                        handleValueChange({
+                          target: { name: "color", value: Color.color },
+                        });
+                      }}
+                      className={`fc-custom-semester-dot-event btn checkbox btn-xs relative h-7 w-7 cursor-pointer rounded-none border-none`}
                       style={{ backgroundColor: Color.color }}
                       htmlFor={`ColorInput${i}`}
                       key={i}
@@ -429,6 +439,7 @@ export default function EditEventModal({
                           accentColor: Color.color,
                         }}
                         checked={Color.color == newEvent.color}
+                        name="color"
                         readOnly
                       />
                       <input
@@ -437,8 +448,21 @@ export default function EditEventModal({
                         type="radio"
                         className="absolute hidden"
                         value={Color.color}
-                        onChange={handleValueChange}
+                        onChange={(e) => {
+                          console.log("COLOR:))))))))):::::::", e);
+                          handleValueChange(e);
+                        }}
                       />
+                      <div className="semester-tooltip-wrapper-event">
+                        <div
+                          className="semester-tooltip-data"
+                          style={{
+                            color: Color.color,
+                          }}
+                        >
+                          {Color.priority}
+                        </div>
+                      </div>
                     </label>
                   ))}
                 </div>

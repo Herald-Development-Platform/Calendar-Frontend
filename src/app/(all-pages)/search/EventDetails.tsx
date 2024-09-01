@@ -410,6 +410,9 @@ export default function EventDetails({
                       {selectedEvent && (
                         <EditEventModal
                           defaultData={selectedEvent}
+                          onEdit={()=>{
+                            setSelectedEvent(null);
+                          }}
                         ></EditEventModal>
                       )}
                     </span>

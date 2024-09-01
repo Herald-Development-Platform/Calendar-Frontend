@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as Headers from "@/components/Header";
 import {
   useDeleteEvent,
@@ -189,6 +189,17 @@ export default function Page() {
     debounceFn: () => handleFilterEvent(),
     time: 150,
   });
+
+  useEffect(()=>{
+    if (selectedEvent && eventsData?.length && eventsData?.length > 0) {
+      let newlyFetchedSelectedEvent = eventsData.find(
+        (event: eventType) => event._id === selectedEvent._id,
+      );
+      if (newlyFetchedSelectedEvent) {
+        setSelectedEvent(newlyFetchedSelectedEvent);
+      }
+    }
+  }, [eventsData]);
 
   return (
     <div className="flex h-full flex-col gap-9 overflow-hidden pl-8 pt-10 ">
