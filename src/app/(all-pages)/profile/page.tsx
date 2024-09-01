@@ -149,7 +149,7 @@ export default function ManageDepartment() {
                 />
               ) : (
                 <span className=" flex h-[84px] w-[84px] items-center justify-center rounded-full bg-neutral-300 text-3xl font-semibold text-neutral-50">
-                  {profileData?.username.charAt(0).toUpperCase()}
+                  {profileData?.username && profileData?.username.charAt(0).toUpperCase()}
                 </span>
               )}
               <div className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50 ">
@@ -315,7 +315,7 @@ export default function ManageDepartment() {
                 />
               ) : (
                 <span className=" flex h-[84px] w-[84px] items-center justify-center rounded-full bg-neutral-300 text-3xl font-semibold text-neutral-50">
-                  {profileData?.username.charAt(0).toUpperCase()}
+                  {profileData?.username && profileData?.username.charAt(0).toUpperCase()}
                 </span>
               )}
             </div>
@@ -487,7 +487,7 @@ export default function ManageDepartment() {
                   onClick={() => {
                     updateProfileMutation.mutate({ syncWithGoogle: true });
                   }}
-                  className="flex w-full cursor-pointer flex-row items-center justify-start gap-4 rounded-md bg-neutral-100 px-3 py-1.5"
+                  className="flex w-full cursor-pointer flex-row items-center justify-start gap-4 rounded-md bg-neutral-100 px-3 py-1.5 mb-5"
                 >
                   <div className=" flex h-11 w-11 items-center justify-center rounded-md bg-neutral-200 text-[20px] text-neutral-400">
                     <Image

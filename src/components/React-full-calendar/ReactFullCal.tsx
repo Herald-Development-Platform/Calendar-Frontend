@@ -225,7 +225,8 @@ export default function ReactFullCal({} // eventDetailWidth,
 
   useEffect(() => {
     console.log("PROFILE ACTIVE SEMESTER::::", userData?.activeSemester);
-    const semTimeFrame = userData?.activeSemester?.map((semesterId: string) => {
+    let currnetDate = new Date();
+    let semTimeFrame = userData?.activeSemester?.map((semesterId: string) => {
       const semester = semesterData?.find((sem: any) => sem.id == semesterId);
       if (!semester) return;
       return {
@@ -233,6 +234,12 @@ export default function ReactFullCal({} // eventDetailWidth,
         end: new Date(semester.end),
         color: semester.color,
       };
+    });
+
+    semTimeFrame = semTimeFrame?.filter((sem: any) => {
+      let startDate = new Date(sem.start);
+      let endDate = new Date(sem.end);
+      return startDate <= currnetDate && endDate >= currnetDate;
     });
 
     if (typeof calendarRef === "string") return;
