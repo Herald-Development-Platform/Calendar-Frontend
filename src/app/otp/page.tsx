@@ -1,14 +1,10 @@
 "use client";
-import React, { Suspense, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { baseUrl } from "@/services/baseUrl";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
-
-// export default function Page() {
-//   return <Suspense fallback={<OTP />}><OTP/></Suspense>;
-// }
 
 export default function OTP() {
 
