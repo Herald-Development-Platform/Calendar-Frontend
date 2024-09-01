@@ -2,27 +2,20 @@
 import React, { Suspense, useState } from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
-import { Axios, baseUrl } from "@/services/baseUrl";
+import { baseUrl } from "@/services/baseUrl";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
-import * as CookieHooks from "@/hooks/CookieHooks";
-import axios from "axios";
-import Link from "next/link";
 
-export default function Page() {
-  return <Suspense fallback={<OTP />}></Suspense>;
-}
+// export default function Page() {
+//   return <Suspense fallback={<OTP />}><OTP/></Suspense>;
+// }
 
-function OTP() {
-  const [rememberMe, setRememberMe] = useState<boolean>(false);
+export default function OTP() {
 
   const router = useRouter();
   const {
     register,
     setValue,
-    reset,
-    // formState: { error },
-    getValues,
     handleSubmit,
   } = useForm<any>();
 
@@ -32,9 +25,7 @@ function OTP() {
   const forgetPassword = searchParams.get("forgetPassword");
 
   console.log(email);
-  // if (!email) {
-  //   router.push("/login");
-  // }
+
   const verifyOtp = (payload: any) => {
     const otp = `${payload.otp1}${payload.otp2}${payload.otp3}${payload.otp4}${payload.otp5}${payload.otp6}`;
     if (!email || !otp) {
