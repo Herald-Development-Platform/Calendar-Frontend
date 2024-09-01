@@ -143,8 +143,9 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       return Axios.patch(Endpoints.updateProfile, data);
     },
     mutationKey: ["updateProfile"],
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
       toast.success("Semesters Preferences Saved Successfully");
     },
   });

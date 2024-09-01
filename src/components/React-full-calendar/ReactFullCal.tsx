@@ -1,5 +1,4 @@
 import React, {
-  RefObject,
   useContext,
   useEffect,
   useRef,
@@ -7,44 +6,32 @@ import React, {
 } from "react";
 import FullCalendar from "@fullcalendar/react";
 
-import Calendar, {
+import {
   DateSelectArg,
   DateUnselectArg,
-  EventHoveringArg,
   EventMountArg,
   EventSourceInput,
 } from "@fullcalendar/core";
-import { Context, ContextType } from "@/app/clientWrappers/ContextProvider";
+import { Context } from "@/app/clientWrappers/ContextProvider";
 import "./FullCalExtraCss.css";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Axios, baseUrl } from "@/services/baseUrl";
+import { Axios } from "@/services/baseUrl";
 import { setCookie } from "@/hooks/CookieHooks";
 import {
   useDeleteEvent,
-  useGetEvents,
   useUpdateEvents,
 } from "@/services/api/eventsApi";
-import { CalendarApi } from "@fullcalendar/core/index.js";
-import { parse, format, add } from "date-fns";
+import { parse, format } from "date-fns";
 import { delay, generateNewToken } from "@/lib/utils";
 import { useGetSemester } from "@/services/api/semester";
 import EventDetails from "@/app/(all-pages)/search/EventDetails";
 import SemesterView from "./SemesterMonthComponents/SemesterView";
 import {
   isMultiDay,
-  useApplySemesterDot,
-  useApplySemesterDotYearly,
-  useApplyYearlySemesterView,
-  useGetCalendarApi,
 } from "./utils";
 import { allPlugins } from "@/constants/CalendarViews";
-import { createEventInstance } from "@fullcalendar/core/internal";
-import AddEventModal from "../AddEventModal";
-import EventModal from "../AddEventModal/EventModal";
 import { RecurringEventTypes } from "@/constants/RecurringEvents";
-import EditEventModal from "../AddEventModal/EditEventModal";
 import EditEventModal1 from "../AddEventModal/EditEventModal1";
-import { start } from "repl";
 
 export default function ReactFullCal({} // eventDetailWidth,
 : {
@@ -60,12 +47,8 @@ export default function ReactFullCal({} // eventDetailWidth,
     events,
   } = useContext(Context);
 
-  const { calendarApi } = useGetCalendarApi(calendarRef);
-
   const calWrapper = useRef<HTMLDivElement>(null);
   const dayFrameRefs = useRef<HTMLDivElement[]>([]);
-  const eventRefs = useRef<any[]>([]);
-  const addEventModalRef = useRef<HTMLDivElement>(null);
 
   const monthValue =
     selectedDate?.start && new Date(selectedDate?.start).getMonth();
@@ -241,6 +224,7 @@ export default function ReactFullCal({} // eventDetailWidth,
   };
 
   useEffect(() => {
+    console.log("PROFILE ACTIVE SEMESTER::::", userData?.activeSemester);
     const semTimeFrame = userData?.activeSemester?.map((semesterId: string) => {
       const semester = semesterData?.find((sem: any) => sem.id == semesterId);
       if (!semester) return;
@@ -278,7 +262,7 @@ export default function ReactFullCal({} // eventDetailWidth,
         if (!sem) return undefined;
         return (
           parsedDate.getTime() >= sem.start.getTime() &&
-          parsedDate.getTime() < sem.end.getTime()
+          parsedDate.getTime() <= sem.end.getTime()
         );
       });
       console.log("isOngoing", isOngoing);
@@ -286,7 +270,7 @@ export default function ReactFullCal({} // eventDetailWidth,
       const today =
         dayFrameEl?.parentElement?.classList.contains("fc-day-today");
 
-      //if parsedDate is  within any of the semesters its ongoing
+      // if parsedDate is  within any of the semesters its ongoing
       // userData?.activeSemester?.forEach((semesterId: string) => {
       //   const semester = semesterData?.find((sem: any) => sem.id == semesterId);
       //   if (!semester) return;
@@ -299,6 +283,8 @@ export default function ReactFullCal({} // eventDetailWidth,
         // semTimeFrame.length === 1
         //   ? (dayFrameEl.style.backgroundColor = semTimeFrame[0].color + "19")
         dayFrameEl.style.backgroundColor = "rgba(227, 242, 218, 0.4)";
+      } else {
+        dayFrameEl.style.backgroundColor = "#ffffff";
       }
       if (isHighLight) dayFrameEl.style.backgroundColor = "#FFFDC3";
       else if (today) {
@@ -309,7 +295,7 @@ export default function ReactFullCal({} // eventDetailWidth,
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userData?.importantDates, monthValue, userData?.activeSemester]);
+  }, [monthValue, userData]);
 
   const handleEventDidMount = async (info: EventMountArg) => {
     const departments = info?.event?._def?.extendedProps?.departments;
