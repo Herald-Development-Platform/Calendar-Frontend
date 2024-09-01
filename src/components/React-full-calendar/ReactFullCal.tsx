@@ -1,12 +1,8 @@
-import React, {
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 
 import {
+  CalendarApi,
   DateSelectArg,
   DateUnselectArg,
   EventMountArg,
@@ -17,18 +13,13 @@ import "./FullCalExtraCss.css";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Axios } from "@/services/baseUrl";
 import { setCookie } from "@/hooks/CookieHooks";
-import {
-  useDeleteEvent,
-  useUpdateEvents,
-} from "@/services/api/eventsApi";
+import { useDeleteEvent, useUpdateEvents } from "@/services/api/eventsApi";
 import { parse, format } from "date-fns";
 import { delay, generateNewToken } from "@/lib/utils";
 import { useGetSemester } from "@/services/api/semester";
 import EventDetails from "@/app/(all-pages)/search/EventDetails";
 import SemesterView from "./SemesterMonthComponents/SemesterView";
-import {
-  isMultiDay,
-} from "./utils";
+import { isMultiDay } from "./utils";
 import { allPlugins } from "@/constants/CalendarViews";
 import { RecurringEventTypes } from "@/constants/RecurringEvents";
 import EditEventModal1 from "../AddEventModal/EditEventModal1";
@@ -55,6 +46,7 @@ export default function ReactFullCal({} // eventDetailWidth,
   const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
   const [eventDetailWidth, setEventDetailWidth] = useState<number | null>(null);
   const [selectable, setSelectable] = useState<boolean>(true);
+  const [calendarApi, setCalendarApi] = useState<CalendarApi>();
 
   const queryClient = useQueryClient();
   const { mutate: updateHighLightedEvents } = useMutation({
@@ -105,7 +97,7 @@ export default function ReactFullCal({} // eventDetailWidth,
       const cellDate = new Date(cell.getAttribute("data-date")).getTime();
       return cellDate >= start.getTime() && cellDate < end.getTime();
     });
-    console.log("selectedCells", selectedCells);
+    const lastSelCell = selectedCells[selectedCells.length - 1];
     const isElsHighlight = selectedCells.every(
       (cell: any) =>
         userData?.importantDates.includes(
@@ -115,6 +107,26 @@ export default function ReactFullCal({} // eventDetailWidth,
 
     const selectContextEl = document.createElement("div");
     selectContextEl.classList.add("fc-custom-select-context-wrapper");
+    if (
+      lastSelCell.parentElement.lastChild === lastSelCell &&
+      lastSelCell.parentElement.parentElement.lastChild ===
+        lastSelCell.parentElement
+    ) {
+      selectContextEl.style.bottom = "80%";
+      selectContextEl.style.right = "100%";
+    } else if (lastSelCell.parentElement.lastChild === lastSelCell) {
+      selectContextEl.style.top = "80%";
+      selectContextEl.style.right = "100%";
+    } else if (
+      lastSelCell.parentElement.parentElement.lastChild ===
+      lastSelCell.parentElement
+    ) {
+      selectContextEl.style.bottom = "80%";
+      selectContextEl.style.left = "100%";
+    } else {
+      selectContextEl.style.top = "80%";
+      selectContextEl.style.left = "100%";
+    }
     const highlightBtnEl = document.createElement("div");
     highlightBtnEl.classList.add("fc-select-item", "fc-select-highlight");
     highlightBtnEl.textContent = isElsHighlight
@@ -188,9 +200,7 @@ export default function ReactFullCal({} // eventDetailWidth,
       modal_4.showModal();
       console.log("addEventBtnEl");
     });
-    selectedCells[selectedCells.length - 1]?.firstChild?.appendChild(
-      selectContextEl,
-    );
+    lastSelCell?.firstChild?.appendChild(selectContextEl);
 
     return;
   };
@@ -427,12 +437,19 @@ export default function ReactFullCal({} // eventDetailWidth,
   //   currentView: currentView,
   // });
 
-  // useEffect(() => {
-  //   if (!calendarApi) return;
-  //   console.log("currview", currentView);
-  //   calendarApi.changeView(currentView);
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [currentView, calendarRef]);
+  useEffect(() => {
+    // @ts-ignore
+    const calApi = calendarRef?.current?.getApi();
+    setCalendarApi(calApi);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [calendarRef]);
+
+  useEffect(() => {
+    if (!calendarApi?.changeView) return;
+    console.log("currview", currentView);
+    calendarApi.changeView(currentView);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentView, calendarRef]);
 
   useEffect(() => {
     if (events && selectedEvent) {

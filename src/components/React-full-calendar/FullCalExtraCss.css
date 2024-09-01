@@ -348,16 +348,14 @@ cursor: pointer;
 
 .fc-custom-select-context-wrapper{
     position:absolute;
-    top: 80%;
-    left: 100%;
+    /* top: 80%;
+    left: 100%; */
     z-index: 9999;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
     border: 0.6px solid #d4d4d4;
-    /* width: 165px; */
-    /* height:105px; */
     background-color: white;
     border-radius: 8px;
     padding: 10px 10px;
