@@ -234,17 +234,20 @@ export default function ReactFullCal({} // eventDetailWidth,
   };
 
   useEffect(() => {
-    console.log("PROFILE ACTIVE SEMESTER::::", userData?.activeSemester);
+    console.log("----------------PROFILE ACTIVE SEMESTER", userData?.activeSemester);
     let currnetDate = new Date();
     let semTimeFrame = userData?.activeSemester?.map((semesterId: string) => {
       const semester = semesterData?.find((sem: any) => sem.id == semesterId);
       if (!semester) return;
+      console.log("SEMESTER:::", semester);
       return {
-        start: new Date(semester?.start && ""),
-        end: new Date(semester?.end && ""),
+        start: new Date(semester?.start ?? ""),
+        end: new Date(semester?.end ?? ""),
         color: semester.color,
       };
     });
+
+    console.log("----------------semTimeFrame", semTimeFrame);
 
     semTimeFrame = semTimeFrame?.filter((sem: any) => {
       let startDate = new Date(sem?.start ?? "");
