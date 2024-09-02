@@ -313,6 +313,8 @@ export function HomeHeader() {
                 if (listView && calendarApi)
                   return findListView(calView, calendarApi);
                 setCurrentView(calView);
+                console.log("calView", calView);
+
                 // calendarApi?.changeView(calView);
               }}
               defaultValue={CalendarViews.monthView}
