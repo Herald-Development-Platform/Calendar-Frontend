@@ -21,7 +21,7 @@ import DepartmentButton from "@/components/DepartmentButton";
 import * as Headers from "@/components/Header";
 
 export default function SummaryPage() {
-  const [filter, setFilter] = useState("30");
+  const [filter, setFilter] = useState("7");
   const [pieChartData, setPieChartData] = useState<{
     labels: any[];
     datasets: any[];
