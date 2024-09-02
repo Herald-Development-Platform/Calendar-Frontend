@@ -1,23 +1,20 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { Axios, baseUrl } from "@/services/baseUrl";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import * as CookieHooks from "@/hooks/CookieHooks";
-import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
 
 export default function Page() {
-  const [rememberMe, setRememberMe] = useState<boolean>(false);
 
   const router = useRouter();
   const { register, handleSubmit } = useForm<any>();
 
   const { mutate: forgetPasswordMutation } = useMutation({
     mutationFn: async (payload: any) => {
-      return Axios.post(`${baseUrl}/forgetPassword`, payload);
+      return Axios.post(`/forgetPassword`, payload);
     },
     mutationKey: ["forgetPassword"],
     onSuccess: (response) => {
