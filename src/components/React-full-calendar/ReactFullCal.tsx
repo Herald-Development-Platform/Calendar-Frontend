@@ -268,8 +268,8 @@ export default function ReactFullCal({} // eventDetailWidth,
       const isOngoing: boolean = semTimeFrame?.some((sem: any) => {
         if (!sem) return undefined;
         return (
-          parsedDate.getTime() >= sem.start.getTime() &&
-          parsedDate.getTime() <= sem.end.getTime()
+          parsedDate.getTime() >= sem?.start?.getTime() &&
+          parsedDate.getTime() <= sem?.end?.getTime()
         );
       });
       console.log("isOngoing", isOngoing);
