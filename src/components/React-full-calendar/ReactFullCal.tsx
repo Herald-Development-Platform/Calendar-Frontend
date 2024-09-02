@@ -230,15 +230,15 @@ export default function ReactFullCal({} // eventDetailWidth,
       const semester = semesterData?.find((sem: any) => sem.id == semesterId);
       if (!semester) return;
       return {
-        start: new Date(semester.start),
-        end: new Date(semester.end),
+        start: new Date(semester?.start && ""),
+        end: new Date(semester?.end && ""),
         color: semester.color,
       };
     });
 
     semTimeFrame = semTimeFrame?.filter((sem: any) => {
-      let startDate = new Date(sem.start);
-      let endDate = new Date(sem.end);
+      let startDate = new Date(sem?.start ?? "");
+      let endDate = new Date(sem?.end ?? "");
       return startDate <= currnetDate && endDate >= currnetDate;
     });
 
