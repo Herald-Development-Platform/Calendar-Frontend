@@ -121,7 +121,7 @@ export default function Page() {
               href={"/forgetPassword"}
               className="underline-offset-3 label cursor-pointer text-sm text-primary-500 underline decoration-primary-500 decoration-from-font"
             >
-              <span className="">Forget Password</span>
+              <span className="">Forgot Password ?</span>
             </Link>
           </div>
           <div className="space-y-4">
