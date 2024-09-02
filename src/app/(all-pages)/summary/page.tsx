@@ -146,7 +146,7 @@ export default function SummaryPage() {
                   <SelectItem
                     value="90"
                     className={`${
-                      filter.toLowerCase() === "30" && "text-primary-600"
+                      filter.toLowerCase() === "90" && "text-primary-600"
                     }`}
                   >
                     3 months
@@ -154,7 +154,7 @@ export default function SummaryPage() {
                   <SelectItem
                     value="180"
                     className={`${
-                      filter.toLowerCase() === "30" && "text-primary-600"
+                      filter.toLowerCase() === "180" && "text-primary-600"
                     }`}
                   >
                     6 months
@@ -162,7 +162,7 @@ export default function SummaryPage() {
                   <SelectItem
                     value="365"
                     className={`${
-                      filter.toLowerCase() === "30" && "text-primary-600"
+                      filter.toLowerCase() === "365" && "text-primary-600"
                     }`}
                   >
                     1 year
@@ -170,7 +170,7 @@ export default function SummaryPage() {
                   <SelectItem
                     value="15000000"
                     className={`${
-                      filter.toLowerCase() === "30" && "text-primary-600"
+                      filter.toLowerCase() === "15000000" && "text-primary-600"
                     }`}
                   >
                     All time
