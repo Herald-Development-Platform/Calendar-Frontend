@@ -322,8 +322,16 @@ export default function ReactFullCal({} // eventDetailWidth,
     const start = info.event._instance?.range?.start;
     const end = info.event._instance?.range?.end;
 
-    const startTime = start ? format(start, "h:mm a") : "00: 00 am";
-    const endTime = end ? format(end, "h:mm a") : "00: 00 am";
+    const displayStart = start?.toISOString() ?? new Date().toISOString();
+    const displayEnd = end?.toISOString() ?? new Date().toISOString();
+
+
+    // const startTime = displayStart ? format(displayStart, "h:mm a") : "00: 00 am";
+    // const endTime = displayEnd ? format(displayEnd, "h:mm a") : "00: 00 am";
+
+    const startTime = displayStart.split("T")[1].split(":").slice(0, 2).join(":");
+    const endTime = displayEnd.split("T")[1].split(":").slice(0, 2).join(":");
+
     const eventEl = info.el;
 
     if (currentView === "timeGridWeek" || currentView === "timeGridDay") {
@@ -342,6 +350,7 @@ export default function ReactFullCal({} // eventDetailWidth,
       departments?.map((department: any, i: number) => {
         const departmentElement = document.createElement("div");
         departmentElement.classList.add("department-item");
+        departmentElement.classList.add("truncate");
         departmentElement.textContent = department?.code;
         departmentElement.style.fontWeight = "400";
 

@@ -23,6 +23,7 @@ import {
   EventSourceInput,
 } from "@fullcalendar/core/index.js";
 import { useGetCalendarApi } from "../utils";
+import { useGetSemester } from "@/services/api/semester";
 // import { Input } from "@/components/ui/input";
 // import { Label } from "@/components/ui/label";
 
@@ -37,6 +38,10 @@ export default function SemesterMonth({
 }) {
   const [isDoubleClick, setIsDoubleClick] = useState<number>(-1);
   const [openWeekView, setOpenWeekView] = useState<boolean>(false);
+
+  const { data: semesterData } = useGetSemester();
+  const { userData: profile } = useContext(Context);
+
 
   const gridRef = useRef<HTMLDivElement>(null);
   const calRef = useRef<FullCalendar>(null);
@@ -127,6 +132,36 @@ export default function SemesterMonth({
     info.el.style.backgroundColor = `${info.backgroundColor}26`;
   };
 
+  const [semTimeFrame, setSemTimeFrame] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!semesterData || !profile) return;
+    console.log("semesterData", semesterData);
+    console.log("profile", profile);
+    let timFrame = profile?.activeSemester?.map((semesterId: string) => {
+      const semester = semesterData?.find((sem: any) => sem.id == semesterId);
+      if (!semester) return;
+      console.log("SEMESTER:::", semester);
+      return {
+        start: new Date(semester?.start ?? ""),
+        end: new Date(semester?.end ?? ""),
+        color: semester.color,
+      };
+    });
+
+    const currnetDate = new Date();
+    
+    timFrame = timFrame?.filter((sem: any) => {
+      if (!sem) return false;
+      let startDate = new Date(sem?.start ?? "");
+      let endDate = new Date(sem?.end ?? "");
+      return startDate <= currnetDate && endDate >= currnetDate;
+    });
+
+    setSemTimeFrame(timFrame ?? []);
+
+  }, [semesterData, profile]);
+
   return (
     <>
       <div
@@ -206,6 +241,18 @@ export default function SemesterMonth({
                 totalEvents++;
               });
 
+              let weekActive = false;
+              for (let i = 0; i < semTimeFrame.length; i++) {
+                const sem = semTimeFrame[i];
+                if (
+                  sem.start.getTime() <= date.getTime() &&
+                  sem.end.getTime() >= date.getTime()
+                ) {
+                  weekActive = true;
+                  break;
+                }
+              }
+
               return (
                 <>
                   {i === 0 &&
@@ -220,7 +267,7 @@ export default function SemesterMonth({
 
                   <div
                     className="flex flex-nowrap items-center overflow-hidden truncate border-[0.5px] border-[#DDDDDD] bg-[#ffffff] pl-5 text-xl text-neutral-600 focus:border-primary-600"
-                    style={{ gridColumn: `span ${gridSpanValue}` }}
+                    style={{ gridColumn: `span ${gridSpanValue}`, backgroundColor: weekActive ? "rgba(227, 242, 218, 0.4)" : "#ffffff" }}
                     tabIndex={0}
                     onClick={(e: any) => {
                       const start = new Date(firstDaysOfWeeks[i]);
