@@ -21,7 +21,7 @@ import DepartmentButton from "@/components/DepartmentButton";
 import * as Headers from "@/components/Header";
 
 export default function SummaryPage() {
-  const [filter, setFilter] = useState("7");
+  const [filter, setFilter] = useState("30");
   const [pieChartData, setPieChartData] = useState<{
     labels: any[];
     datasets: any[];
@@ -142,6 +142,38 @@ export default function SummaryPage() {
                     }`}
                   >
                     30 Days
+                  </SelectItem>
+                  <SelectItem
+                    value="90"
+                    className={`${
+                      filter.toLowerCase() === "30" && "text-primary-600"
+                    }`}
+                  >
+                    3 months
+                  </SelectItem>
+                  <SelectItem
+                    value="180"
+                    className={`${
+                      filter.toLowerCase() === "30" && "text-primary-600"
+                    }`}
+                  >
+                    6 months
+                  </SelectItem>
+                  <SelectItem
+                    value="365"
+                    className={`${
+                      filter.toLowerCase() === "30" && "text-primary-600"
+                    }`}
+                  >
+                    1 year
+                  </SelectItem>
+                  <SelectItem
+                    value="15000000"
+                    className={`${
+                      filter.toLowerCase() === "30" && "text-primary-600"
+                    }`}
+                  >
+                    All time
                   </SelectItem>
                 </SelectContent>
               </Select>
