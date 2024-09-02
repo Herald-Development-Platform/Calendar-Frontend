@@ -80,12 +80,22 @@ export default function SemesterMonth({
 
   const handleEventDidMount = async (info: EventMountArg) => {
     const departments = info?.event?._def?.extendedProps?.departments;
-    const startTime = info.event._instance?.range?.start
-      ? format(info.event._instance?.range.start, "h:mm a")
-      : "00: 00 am";
-    const endTime = info.event._instance?.range?.end
-      ? format(info.event._instance?.range.end, "h:mm a")
-      : "00: 00 am";
+
+    const displayStart = info.event._instance?.range?.start?.toISOString() ?? new Date().toISOString();
+    const displayEnd = info.event._instance?.range?.end?.toISOString() ?? new Date().toISOString();
+
+
+    // const startTime = displayStart ? format(displayStart, "h:mm a") : "00: 00 am";
+    // const endTime = displayEnd ? format(displayEnd, "h:mm a") : "00: 00 am";
+
+    const startTime = displayStart.split("T")[1].split(":").slice(0, 2).join(":");
+    const endTime = displayEnd.split("T")[1].split(":").slice(0, 2).join(":");
+    // const startTime = info.event._instance?.range?.start
+    //   ? format(info.event._instance?.range.start, "h:mm a")
+    //   : "00: 00 am";
+    // const endTime = info.event._instance?.range?.end
+    //   ? format(info.event._instance?.range.end, "h:mm a")
+    //   : "00: 00 am";
 
     console.log("info", info);
     // if (currentView === "timeGridWeek" || currentView === "timeGridDay") {
