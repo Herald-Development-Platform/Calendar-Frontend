@@ -7,7 +7,7 @@ interface eventType {
   location?: string;
   description?: string;
   // departments: string[] | { code: string }[];
-  createdBy: User;
+  createdBy?: User;
   departments: string[];
   notes?: string;
   _id?: string;
