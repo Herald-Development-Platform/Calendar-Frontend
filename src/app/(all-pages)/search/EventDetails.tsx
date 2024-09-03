@@ -52,6 +52,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import toast from "react-hot-toast";
 import { useEditEventMutation } from "@/services/api/eventsApi";
 import { convertToLink } from "@/lib/utils";
+import { FaCircleUser } from "react-icons/fa6";
 export default function EventDetails({
   selectedEvent,
   setSelectedEvent,
@@ -368,6 +369,27 @@ export default function EventDetails({
             {selectedEvent?.location}
           </p>
         </div>
+        {selectedEvent?.createdBy && (
+          <div className="flex flex-col gap-2">
+            <h3>Author</h3>
+            <div className="flex w-full items-center justify-start gap-2">
+              {selectedEvent?.createdBy?.photo ? (
+                <img
+                  src={selectedEvent?.createdBy.photo}
+                  alt={`Photo of ${selectedEvent?.createdBy?.username}`}
+                  className=" w-6 rounded-full"
+                />
+              ) : (
+                <span className="text-2xl text-neutral-500">
+                  <FaCircleUser />
+                </span>
+              )}
+              <span className="text-base font-normal text-neutral-500 ">
+                {selectedEvent?.createdBy?.username}
+              </span>
+            </div>
+          </div>
+        )}
       </section>
       <div
         className={`${
@@ -410,7 +432,7 @@ export default function EventDetails({
                       {selectedEvent && (
                         <EditEventModal
                           defaultData={selectedEvent}
-                          onEdit={()=>{
+                          onEdit={() => {
                             setSelectedEvent(null);
                           }}
                         ></EditEventModal>
