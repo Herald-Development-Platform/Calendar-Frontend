@@ -109,7 +109,7 @@ export function SearchHeader({
                 </h3>
                 <div className="flex w-full flex-col text-sm text-neutral-600">
                   <span>Department</span>
-                  <div className="flex gap-1">
+                  <div className="flex gap-1 overflow-x-scroll hide-scrollbar">
                     {departments?.data?.data?.map((department: Department) => {
                       const departmentExists =
                         queryParams?.departments?.includes(department?._id);

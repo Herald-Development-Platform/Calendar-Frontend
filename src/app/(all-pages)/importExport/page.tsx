@@ -31,8 +31,9 @@ import { RxCross2 } from "react-icons/rx";
 export default function ImportExport() {
   const [currentTab, setCurrentTab] = useState("import");
   const [importFileData, setImportFileData] = useState<any>(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [memberDialog, setMemberDialog] = useState(false);
+  const [eventsDialogOpen, setEventDialogOpen] = useState(false);
+  const [memberDialogOpen, setMemberDialogOpen] = useState(false);
+  const [locationDialogOpen, setLocationDialogOpen] = useState(false);
   const [uploadErrorDialogOpen, setUploadErrorDialogOpen] = useState(false);
   const [uploadErrors, setUploadErrors] = useState<any>([]);
 
@@ -72,7 +73,7 @@ export default function ImportExport() {
     reader.onload = (e) => {
       const data = e.target?.result;
       setImportFileData(data);
-      setDialogOpen(true);
+      setEventDialogOpen(true);
     };
     reader.readAsText(file);
   };
@@ -86,7 +87,7 @@ export default function ImportExport() {
     reader.onload = (e) => {
       const data = e.target?.result;
       setImportFileData(data);
-      setDialogOpen(true);
+      setEventDialogOpen(true);
     };
     reader.readAsText(file);
   };
@@ -94,7 +95,7 @@ export default function ImportExport() {
   const handleImport = async () => {
     if (!importFileData) {
       toast.error("Please select a file to import");
-      setDialogOpen(false);
+      setEventDialogOpen(false);
       return;
     }
     if (selectedDepartments.length === 0) {
@@ -111,7 +112,7 @@ export default function ImportExport() {
     } catch (error) {
       console.log("Error importing file:", error);
     }
-    setDialogOpen(false);
+    setEventDialogOpen(false);
   };
 
   const handleExport = async () => {
@@ -144,7 +145,7 @@ export default function ImportExport() {
         );
       }
     }
-    setDialogOpen(false);
+    setEventDialogOpen(false);
   };
 
   const { mutate: postMemberFiles } = useMutation({
@@ -162,11 +163,15 @@ export default function ImportExport() {
     onSuccess: (data) => {
       console.log("data", data);
       toast.success(data?.message || "Success");
+      setLocationDialogOpen(false);
       if (data.data.uploadReportFilename) {
         // download the file data, set it to form and download
-        Axios.get(`${baseUrl}/userUploadReport/${data.data.uploadReportFilename}`, {
-          responseType: "blob",
-        }).then((response) => {
+        Axios.get(
+          `${baseUrl}/userUploadReport/${data.data.uploadReportFilename}`,
+          {
+            responseType: "blob",
+          },
+        ).then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
           link.href = url;
@@ -179,6 +184,33 @@ export default function ImportExport() {
     onError: (err: any) => {
       console.log("err", err);
       setUploadErrors(err?.response?.data?.data || []);
+      setLocationDialogOpen(false);
+      setUploadErrorDialogOpen(true);
+      toast.error(err?.response?.data?.message || "Something went wrong.");
+    },
+  });
+
+  const locationUploadMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await Axios.post("/location/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      console.log("onSucess -> data:", data);
+      toast.success(data?.message || "Success");
+      setLocationDialogOpen(false);
+    },
+    onError: (err: any) => {
+      console.log("err", err);
+      setUploadErrors(err?.response?.data?.data || []);
+      setLocationDialogOpen(false);
       setUploadErrorDialogOpen(true);
       toast.error(err?.response?.data?.message || "Something went wrong.");
     },
@@ -209,13 +241,14 @@ export default function ImportExport() {
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="flex max-h-[100vh] flex-col gap-9 overflow-y-scroll px-[70px] pl-9">
+      <div className="mb-10 flex max-h-[100vh] flex-col gap-9 overflow-y-scroll px-[70px] pl-9">
         <Toaster />
-
         <Dialog
           open={uploadErrorDialogOpen}
           onOpenChange={(open) => {
-            if (!open) setUploadErrors([]);
+            if (!open) {
+              setUploadErrors([]);
+            }
             setUploadErrorDialogOpen(open);
           }}
         >
@@ -226,12 +259,16 @@ export default function ImportExport() {
             className=" max-h-[80vh] min-w-[80vw] overflow-y-scroll"
           >
             <DialogHeader>
-              <DialogTitle className=" text-[19px] font-semibold flex items-center justify-between ">
-                User Upload Errors
-              <button onClick={()=>{
-                setUploadErrors([]);
-                setUploadErrorDialogOpen(false);
-              }}><RxCross2 /></button>
+              <DialogTitle className=" flex items-center justify-between text-[19px] font-semibold ">
+                Upload Errors
+                <button
+                  onClick={() => {
+                    setUploadErrors([]);
+                    setUploadErrorDialogOpen(false);
+                  }}
+                >
+                  <RxCross2 />
+                </button>
               </DialogTitle>
             </DialogHeader>
             <div className=" flex flex-col justify-start gap-7">
@@ -275,9 +312,20 @@ export default function ImportExport() {
             </div>
           </DialogContent>
         </Dialog>
-
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent>
+        <Dialog
+          open={eventsDialogOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedFile(undefined);
+            }
+            setEventDialogOpen(open);
+          }}
+        >
+          <DialogContent
+            onPointerDownOutside={(e) => {
+              e.preventDefault();
+            }}
+          >
             <DialogHeader>
               <DialogTitle className=" text-[19px] font-semibold ">
                 {currentTab === "import" ? "Import" : "Export"} Calendar
@@ -366,7 +414,7 @@ export default function ImportExport() {
             <DialogFooter className=" flex flex-row items-center justify-end py-4">
               <button
                 onClick={() => {
-                  setDialogOpen(false);
+                  setEventDialogOpen(false);
                   setImportFileData(null);
                 }}
                 className="btn btn-md h-5 border-none bg-red-400 text-[13px] font-medium text-primary-50 hover:bg-red-500"
@@ -388,8 +436,20 @@ export default function ImportExport() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        <Dialog open={memberDialog} onOpenChange={setMemberDialog}>
-          <DialogContent>
+        <Dialog
+          open={memberDialogOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedFile(undefined);
+            }
+            setMemberDialogOpen(open);
+          }}
+        >
+          <DialogContent
+            onPointerDownOutside={(e) => {
+              e.preventDefault();
+            }}
+          >
             <DialogHeader>
               <DialogTitle className=" text-[19px] font-semibold ">
                 Import Member
@@ -411,7 +471,7 @@ export default function ImportExport() {
             <DialogFooter className=" flex flex-row items-center justify-end py-4">
               <button
                 onClick={() => {
-                  setMemberDialog(false);
+                  setMemberDialogOpen(false);
                 }}
                 className="btn btn-md h-5 border-none bg-red-400 text-[13px] font-medium text-primary-50 hover:bg-red-500"
               >
@@ -426,6 +486,60 @@ export default function ImportExport() {
                 className="btn btn-md h-5 border-none bg-primary-600 text-[13px] font-medium text-primary-50 hover:bg-primary-700"
               >
                 {currentTab === "import" ? "Import" : "Export"}
+              </button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        <Dialog
+          open={locationDialogOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedFile(undefined);
+            }
+            setLocationDialogOpen(open);
+          }}
+        >
+          <DialogContent
+            onPointerDownOutside={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <DialogHeader>
+              <DialogTitle className=" text-[19px] font-semibold ">
+                Import Location
+              </DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-8">
+              <div className=" flex w-full flex-row items-center justify-center gap-2.5 rounded-md bg-neutral-100 px-3 py-4 text-neutral-500">
+                <span className="flex items-center justify-center text-3xl">
+                  <FaRegFile />
+                </span>
+                <div className="flex flex-col items-start justify-center gap-[3px]">
+                  <span className="text-[13px]">{selectedFile?.name}</span>
+                  <span className="text-[9px]">
+                    {formatFileSize(selectedFile?.size || 0)}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <DialogFooter className=" flex flex-row items-center justify-end py-4">
+              <button
+                onClick={() => {
+                  setLocationDialogOpen(false);
+                }}
+                className="btn btn-md h-5 border-none bg-red-400 text-[13px] font-medium text-primary-50 hover:bg-red-500"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  selectedFile
+                    ? locationUploadMutation.mutate(selectedFile)
+                    : toast.error("File is not selected.");
+                }}
+                className="btn btn-md h-5 border-none bg-primary-600 text-[13px] font-medium text-primary-50 hover:bg-primary-700"
+              >
+                Import
               </button>
             </DialogFooter>
           </DialogContent>
@@ -485,6 +599,13 @@ export default function ImportExport() {
                   }}
                 >
                   <input
+                    onClick={(e) => {
+                      alert("lskdjfklj");
+                      //@ts-ignore
+                      e.target.file = [];
+                      //@ts-ignore
+                      e.target.value = "";
+                    }}
                     onChange={handleFileInput}
                     className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
                     type="file"
@@ -507,16 +628,23 @@ export default function ImportExport() {
                 <h1>Import Members</h1>
                 <div
                   className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50"
-                  onClick={() => {
-                    console.log("asdlf");
-                  }}
+                  // onClick={() => {
+                  //   console.log("asdlf");
+                  // }}
                 >
                   <input
+                    onClick={(e) => {
+                      alert("lskdjfklj");
+                      //@ts-ignore
+                      e.target.file = [];
+                      //@ts-ignore
+                      e.target.value = "";
+                    }}
                     onChange={(e: any) => {
                       if (e.target.files.length === 0) return;
                       const file = e.target.files[0];
                       setSelectedFile(file);
-                      setMemberDialog(true);
+                      setMemberDialogOpen(true);
                     }}
                     className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
                     type="file"
@@ -535,6 +663,39 @@ export default function ImportExport() {
                   </div>
                 </div>
               </div>
+              <div className="space-y-2">
+                <h1>Import Locations</h1>
+                <div className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50">
+                  <input
+                    onClick={(e) => {
+                      //@ts-ignore
+                      e.target.file = [];
+                      //@ts-ignore
+                      e.target.value = "";
+                    }}
+                    onChange={(e: any) => {
+                      if (e.target.files.length === 0) return;
+                      const file = e.target.files[0];
+                      setSelectedFile(file);
+                      setLocationDialogOpen(true);
+                    }}
+                    className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
+                    type="file"
+                    multiple={false}
+                  />
+                  <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
+                    <span
+                      className={`h-[24px] w-[24px] text-xl text-primary-600`}
+                    >
+                      <TbCloudDownload />
+                    </span>
+                    <p className="text-center text-[13px] font-normal text-neutral-500">
+                      Browse and choose the file you want to import from your
+                      device
+                    </p>
+                  </div>
+                </div>
+              </div>
             </>
           ) : (
             <>
@@ -544,7 +705,7 @@ export default function ImportExport() {
                   if (currentTab === "import") {
                     return;
                   }
-                  setDialogOpen(true);
+                  setEventDialogOpen(true);
                 }}
               >
                 <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">

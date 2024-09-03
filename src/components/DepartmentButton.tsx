@@ -16,7 +16,7 @@ export default function DepartmentButton({
   return (
     <>
       <button
-        className={`focus: group flex h-fit w-fit cursor-pointer items-center gap-2 rounded-full border border-neutral-300 px-4 py-2 text-xs leading-4 transition-colors  duration-300 ease-out  hover:bg-neutral-200 ${
+        className={`text-nowrap group flex h-fit w-fit cursor-pointer items-center gap-2 rounded-full border border-neutral-300 px-4 py-2 text-xs leading-4 transition-colors  duration-300 ease-out  hover:bg-neutral-200 ${
           selected
             ? "bg-primary-500 text-white hover:bg-primary-600"
             : "text-black"
@@ -28,7 +28,7 @@ export default function DepartmentButton({
       >
         {selectedCross && selected && (
           <span
-            className={`${
+            className={` ${
               selected ? "flex text-lg  text-white" : "hidden"
             }  font-extrabold`}
           >
