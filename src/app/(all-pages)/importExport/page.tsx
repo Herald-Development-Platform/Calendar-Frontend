@@ -35,6 +35,7 @@ export default function ImportExport() {
   const [memberDialogOpen, setMemberDialogOpen] = useState(false);
   const [locationDialogOpen, setLocationDialogOpen] = useState(false);
   const [departmentDialogOpen, setDepartmentDialogOpen] = useState(false);
+  const [semesterDialogOpen, setSemesterDialogOpen] = useState(false);
   const [uploadErrorDialogOpen, setUploadErrorDialogOpen] = useState(false);
   const [uploadErrors, setUploadErrors] = useState<any>([]);
 
@@ -238,6 +239,32 @@ export default function ImportExport() {
       console.log("err", err);
       setUploadErrors(err?.response?.data?.data || []);
       setDepartmentDialogOpen(false);
+      setUploadErrorDialogOpen(true);
+      toast.error(err?.response?.data?.message || "Something went wrong.");
+    },
+  });
+ 
+  const semesterUploadMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await Axios.post("/semester/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      console.log("onSucess -> data:", data);
+      toast.success(data?.message || "Success");
+      setSemesterDialogOpen(false);
+    },
+    onError: (err: any) => {
+      console.log("err", err);
+      setUploadErrors(err?.response?.data?.data || []);
+      setSemesterDialogOpen(false);
       setUploadErrorDialogOpen(true);
       toast.error(err?.response?.data?.message || "Something went wrong.");
     },
@@ -625,6 +652,60 @@ export default function ImportExport() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        <Dialog
+          open={semesterDialogOpen}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedFile(undefined);
+            }
+            setDepartmentDialogOpen(open);
+          }}
+        >
+          <DialogContent
+            onPointerDownOutside={(e) => {
+              e.preventDefault();
+            }}
+          >
+            <DialogHeader>
+              <DialogTitle className=" text-[19px] font-semibold ">
+                Import Semesters
+              </DialogTitle>
+            </DialogHeader>
+            <div className="flex flex-col gap-8">
+              <div className=" flex w-full flex-row items-center justify-center gap-2.5 rounded-md bg-neutral-100 px-3 py-4 text-neutral-500">
+                <span className="flex items-center justify-center text-3xl">
+                  <FaRegFile />
+                </span>
+                <div className="flex flex-col items-start justify-center gap-[3px]">
+                  <span className="text-[13px]">{selectedFile?.name}</span>
+                  <span className="text-[9px]">
+                    {formatFileSize(selectedFile?.size || 0)}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <DialogFooter className=" flex flex-row items-center justify-end py-4">
+              <button
+                onClick={() => {
+                  setSemesterDialogOpen(false);
+                }}
+                className="btn btn-md h-5 border-none bg-red-400 text-[13px] font-medium text-primary-50 hover:bg-red-500"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  selectedFile
+                    ? semesterUploadMutation.mutate(selectedFile)
+                    : toast.error("File is not selected.");
+                }}
+                className="btn btn-md h-5 border-none bg-primary-600 text-[13px] font-medium text-primary-50 hover:bg-primary-700"
+              >
+                Import
+              </button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         <div className=" mt-[20px] flex flex-col gap-[37px]">
           <div className="flex flex-row items-center justify-start gap-3">
@@ -681,7 +762,6 @@ export default function ImportExport() {
                 >
                   <input
                     onClick={(e) => {
-                      alert("lskdjfklj");
                       //@ts-ignore
                       e.target.file = [];
                       //@ts-ignore
@@ -715,7 +795,6 @@ export default function ImportExport() {
                 >
                   <input
                     onClick={(e) => {
-                      alert("lskdjfklj");
                       //@ts-ignore
                       e.target.file = [];
                       //@ts-ignore
@@ -792,6 +871,39 @@ export default function ImportExport() {
                       const file = e.target.files[0];
                       setSelectedFile(file);
                       setDepartmentDialogOpen(true);
+                    }}
+                    className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
+                    type="file"
+                    multiple={false}
+                  />
+                  <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
+                    <span
+                      className={`h-[24px] w-[24px] text-xl text-primary-600`}
+                    >
+                      <TbCloudDownload />
+                    </span>
+                    <p className="text-center text-[13px] font-normal text-neutral-500">
+                      Browse and choose the file you want to import from your
+                      device
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <h1>Import Semesters</h1>
+                <div className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50">
+                  <input
+                    onClick={(e) => {
+                      //@ts-ignore
+                      e.target.file = [];
+                      //@ts-ignore
+                      e.target.value = "";
+                    }}
+                    onChange={(e: any) => {
+                      if (e.target.files.length === 0) return;
+                      const file = e.target.files[0];
+                      setSelectedFile(file);
+                      setSemesterDialogOpen(true);
                     }}
                     className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
                     type="file"
