@@ -44,6 +44,7 @@ function OTP() {
         .then((data) => {
           if (!data.success) {
             toast.error(data.message || "Something went wrong");
+            return;
           }
           toast.success(data.message || "OTP verified successfully");
           setTimeout(() => {
@@ -57,6 +58,7 @@ function OTP() {
       .then((data) => {
         if (!data.success) {
           toast.error(data.message || "Something went wrong");
+          return;
         }
         toast.success(data.message || "OTP verified successfully");
         setTimeout(() => {
