@@ -27,6 +27,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RxCross2 } from "react-icons/rx";
+import { PERMISSIONS } from "@/constants/permissions";
 
 export default function ImportExport() {
   const [currentTab, setCurrentTab] = useState("import");
@@ -165,7 +166,7 @@ export default function ImportExport() {
     onSuccess: (data) => {
       console.log("data", data);
       toast.success(data?.message || "Success");
-      setLocationDialogOpen(false);
+      setMemberDialogOpen(false);
       if (data.data.uploadReportFilename) {
         // download the file data, set it to form and download
         Axios.get(
@@ -186,7 +187,7 @@ export default function ImportExport() {
     onError: (err: any) => {
       console.log("err", err);
       setUploadErrors(err?.response?.data?.data || []);
-      setLocationDialogOpen(false);
+      setMemberDialogOpen(false);
       setUploadErrorDialogOpen(true);
       toast.error(err?.response?.data?.message || "Something went wrong.");
     },
@@ -217,7 +218,7 @@ export default function ImportExport() {
       toast.error(err?.response?.data?.message || "Something went wrong.");
     },
   });
-  
+
   const departmentUploadMutation = useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
@@ -243,7 +244,7 @@ export default function ImportExport() {
       toast.error(err?.response?.data?.message || "Something went wrong.");
     },
   });
- 
+
   const semesterUploadMutation = useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
@@ -785,143 +786,153 @@ export default function ImportExport() {
                   </div>
                 </div>
               </div>
-              <div className="space-y-2">
-                <h1>Import Members</h1>
-                <div
-                  className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50"
-                  // onClick={() => {
-                  //   console.log("asdlf");
-                  // }}
-                >
-                  <input
-                    onClick={(e) => {
-                      //@ts-ignore
-                      e.target.file = [];
-                      //@ts-ignore
-                      e.target.value = "";
-                    }}
-                    onChange={(e: any) => {
-                      if (e.target.files.length === 0) return;
-                      const file = e.target.files[0];
-                      setSelectedFile(file);
-                      setMemberDialogOpen(true);
-                    }}
-                    className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
-                    type="file"
-                    multiple={false}
-                  />
-                  <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
-                    <span
-                      className={`h-[24px] w-[24px] text-xl text-primary-600`}
-                    >
-                      <TbCloudDownload></TbCloudDownload>
-                    </span>
-                    <p className="text-center text-[13px] font-normal text-neutral-500">
-                      Browse and choose the file you want to import from your
-                      device
-                    </p>
+              {userData?.permissions?.includes(PERMISSIONS.CREATE_USER) && (
+                <div className="space-y-2">
+                  <h1>Import Members</h1>
+                  <div
+                    className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50"
+                    // onClick={() => {
+                    //   console.log("asdlf");
+                    // }}
+                  >
+                    <input
+                      onClick={(e) => {
+                        //@ts-ignore
+                        e.target.file = [];
+                        //@ts-ignore
+                        e.target.value = "";
+                      }}
+                      onChange={(e: any) => {
+                        if (e.target.files.length === 0) return;
+                        const file = e.target.files[0];
+                        setSelectedFile(file);
+                        setMemberDialogOpen(true);
+                      }}
+                      className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
+                      type="file"
+                      multiple={false}
+                    />
+                    <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
+                      <span
+                        className={`h-[24px] w-[24px] text-xl text-primary-600`}
+                      >
+                        <TbCloudDownload></TbCloudDownload>
+                      </span>
+                      <p className="text-center text-[13px] font-normal text-neutral-500">
+                        Browse and choose the file you want to import from your
+                        device
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <h1>Import Locations</h1>
-                <div className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50">
-                  <input
-                    onClick={(e) => {
-                      //@ts-ignore
-                      e.target.file = [];
-                      //@ts-ignore
-                      e.target.value = "";
-                    }}
-                    onChange={(e: any) => {
-                      if (e.target.files.length === 0) return;
-                      const file = e.target.files[0];
-                      setSelectedFile(file);
-                      setLocationDialogOpen(true);
-                    }}
-                    className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
-                    type="file"
-                    multiple={false}
-                  />
-                  <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
-                    <span
-                      className={`h-[24px] w-[24px] text-xl text-primary-600`}
-                    >
-                      <TbCloudDownload />
-                    </span>
-                    <p className="text-center text-[13px] font-normal text-neutral-500">
-                      Browse and choose the file you want to import from your
-                      device
-                    </p>
+              )}
+              {userData?.permissions?.includes(PERMISSIONS.CREATE_LOCATION) && (
+                <div className="space-y-2">
+                  <h1>Import Locations</h1>
+                  <div className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50">
+                    <input
+                      onClick={(e) => {
+                        //@ts-ignore
+                        e.target.file = [];
+                        //@ts-ignore
+                        e.target.value = "";
+                      }}
+                      onChange={(e: any) => {
+                        if (e.target.files.length === 0) return;
+                        const file = e.target.files[0];
+                        setSelectedFile(file);
+                        setLocationDialogOpen(true);
+                      }}
+                      className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
+                      type="file"
+                      multiple={false}
+                    />
+                    <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
+                      <span
+                        className={`h-[24px] w-[24px] text-xl text-primary-600`}
+                      >
+                        <TbCloudDownload />
+                      </span>
+                      <p className="text-center text-[13px] font-normal text-neutral-500">
+                        Browse and choose the file you want to import from your
+                        device
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <h1>Import Departments</h1>
-                <div className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50">
-                  <input
-                    onClick={(e) => {
-                      //@ts-ignore
-                      e.target.file = [];
-                      //@ts-ignore
-                      e.target.value = "";
-                    }}
-                    onChange={(e: any) => {
-                      if (e.target.files.length === 0) return;
-                      const file = e.target.files[0];
-                      setSelectedFile(file);
-                      setDepartmentDialogOpen(true);
-                    }}
-                    className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
-                    type="file"
-                    multiple={false}
-                  />
-                  <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
-                    <span
-                      className={`h-[24px] w-[24px] text-xl text-primary-600`}
-                    >
-                      <TbCloudDownload />
-                    </span>
-                    <p className="text-center text-[13px] font-normal text-neutral-500">
-                      Browse and choose the file you want to import from your
-                      device
-                    </p>
+              )}
+              {userData?.permissions?.includes(
+                PERMISSIONS.CREATE_DEPARTMENT,
+              ) && (
+                <div className="space-y-2">
+                  <h1>Import Departments</h1>
+                  <div className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50">
+                    <input
+                      onClick={(e) => {
+                        //@ts-ignore
+                        e.target.file = [];
+                        //@ts-ignore
+                        e.target.value = "";
+                      }}
+                      onChange={(e: any) => {
+                        if (e.target.files.length === 0) return;
+                        const file = e.target.files[0];
+                        setSelectedFile(file);
+                        setDepartmentDialogOpen(true);
+                      }}
+                      className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
+                      type="file"
+                      multiple={false}
+                    />
+                    <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
+                      <span
+                        className={`h-[24px] w-[24px] text-xl text-primary-600`}
+                      >
+                        <TbCloudDownload />
+                      </span>
+                      <p className="text-center text-[13px] font-normal text-neutral-500">
+                        Browse and choose the file you want to import from your
+                        device
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <h1>Import Semesters</h1>
-                <div className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50">
-                  <input
-                    onClick={(e) => {
-                      //@ts-ignore
-                      e.target.file = [];
-                      //@ts-ignore
-                      e.target.value = "";
-                    }}
-                    onChange={(e: any) => {
-                      if (e.target.files.length === 0) return;
-                      const file = e.target.files[0];
-                      setSelectedFile(file);
-                      setSemesterDialogOpen(true);
-                    }}
-                    className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
-                    type="file"
-                    multiple={false}
-                  />
-                  <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
-                    <span
-                      className={`h-[24px] w-[24px] text-xl text-primary-600`}
-                    >
-                      <TbCloudDownload />
-                    </span>
-                    <p className="text-center text-[13px] font-normal text-neutral-500">
-                      Browse and choose the file you want to import from your
-                      device
-                    </p>
+              )}
+              {userData?.permissions?.includes(PERMISSIONS.CREATE_SEMESTER) && (
+                <div className="space-y-2">
+                  <h1>Import Semesters</h1>
+                  <div className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50">
+                    <input
+                      onClick={(e) => {
+                        //@ts-ignore
+                        e.target.file = [];
+                        //@ts-ignore
+                        e.target.value = "";
+                      }}
+                      onChange={(e: any) => {
+                        if (e.target.files.length === 0) return;
+                        const file = e.target.files[0];
+                        setSelectedFile(file);
+                        setSemesterDialogOpen(true);
+                      }}
+                      className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
+                      type="file"
+                      multiple={false}
+                    />
+                    <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
+                      <span
+                        className={`h-[24px] w-[24px] text-xl text-primary-600`}
+                      >
+                        <TbCloudDownload />
+                      </span>
+                      <p className="text-center text-[13px] font-normal text-neutral-500">
+                        Browse and choose the file you want to import from your
+                        device
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </>
           ) : (
             <>
