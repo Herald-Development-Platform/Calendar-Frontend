@@ -54,6 +54,7 @@ import {
 } from "@/components/ui/popover";
 import Image from "next/image";
 import { LuTrash2 } from "react-icons/lu";
+import { set } from "date-fns";
 
 export default function Page() {
   const router = useRouter();
@@ -83,7 +84,7 @@ export default function Page() {
               data: [],
             },
           };
-          }
+        }
 
         return await Axios.get("/department/request?status=PENDING");
       },
@@ -138,6 +139,7 @@ export default function Page() {
     handleSubmit: handleUserSubmit,
     formState: { errors: userFormError },
     reset: resetUserForm,
+    setValue: setUserValue,
   } = useForm<{
     email: string;
     username: string;
@@ -295,14 +297,14 @@ export default function Page() {
         </Dialog>
 
         <Dialog open={editUserDialogOpen} onOpenChange={setEditUserDialogOpen}>
-          <DialogContent>
+          <DialogContent className="pr-1 pb-1.5">
             <DialogHeader>
               <DialogTitle className=" text-[19px] font-semibold ">
                 Edit User
               </DialogTitle>
             </DialogHeader>
             <form
-              className="flex max-h-[60vh] flex-col gap-8 overflow-y-scroll py-2 pr-2"
+              className="flex max-h-[60vh] flex-col gap-8 overflow-y-scroll py-2 px-1"
               onSubmit={handleUserSubmit(onUserEditSubmit)}
             >
               <label htmlFor="add-title">
@@ -351,13 +353,16 @@ export default function Page() {
                         if (profile?.role !== ROLES.SUPER_ADMIN) {
                           return;
                         }
-                        resetUserForm({
-                          ...getUserValues(),
-                          department: department._id,
-                        });
+                        // resetUserForm({
+                        //   ...getUserValues(),
+                        //   department: department._id,
+                        // });
+                        setUserValue("department", department._id);
                       }}
                       value={department.code}
-                      selected={getUserValues("department") === department._id}
+                      selected={
+                        watchUserValues("department") === department._id
+                      }
                     />
                   ))}
                 </div>
@@ -402,7 +407,8 @@ export default function Page() {
                           selected={true}
                           id={permission}
                           key={permission}
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.preventDefault();
                             resetUserForm({
                               ...getUserValues(),
                               permissions: watchUserValues(
@@ -504,23 +510,23 @@ export default function Page() {
                 </span>
                 <button
                   onClick={() => {}}
-                  className="text-normal btn btn-md h-5 rounded-md border-none bg-red-400 font-medium text-primary-50 hover:bg-red-500"
+                  className="text-normal py-3 rounded-md border-none bg-red-400 font-medium text-primary-50 hover:bg-red-500"
                 >
                   Remove
                 </button>
               </div>
             </form>
-            <DialogFooter className=" flex flex-row items-center justify-end py-4">
-              <button
-                onClick={() => {
-                  handleUserSubmit(onUserEditSubmit)();
-                  setEditUserDialogOpen(false);
-                }}
-                className="text-normal btn btn-md h-5 border-none bg-primary-600 font-medium text-primary-50 hover:bg-primary-700"
-              >
-                Save
-              </button>
-            </DialogFooter>
+              <div className="flex items-center justify-end mr-4 mb-1">
+                <button
+                  onClick={() => {
+                    handleUserSubmit(onUserEditSubmit)();
+                    setEditUserDialogOpen(false);
+                  }}
+                  className=" w-fit text-normal px-4 py-3 flex items-center justify-center rounded-md border-none bg-primary-600 font-medium text-primary-50 hover:bg-primary-700"
+                >
+                  Save
+                </button>
+              </div>
           </DialogContent>
         </Dialog>
 
