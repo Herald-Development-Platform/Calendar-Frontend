@@ -786,6 +786,41 @@ export default function ImportExport() {
                   </div>
                 </div>
               </div>
+              {userData?.permissions?.includes(PERMISSIONS.CREATE_DEPARTMENT) && (
+                <div className="space-y-2">
+                  <h1>Import Departments</h1>
+                  <div className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50">
+                    <input
+                      onClick={(e) => {
+                        //@ts-ignore
+                        e.target.file = [];
+                        //@ts-ignore
+                        e.target.value = "";
+                      }}
+                      onChange={(e: any) => {
+                        if (e.target.files.length === 0) return;
+                        const file = e.target.files[0];
+                        setSelectedFile(file);
+                        setDepartmentDialogOpen(true);
+                      }}
+                      className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
+                      type="file"
+                      multiple={false}
+                    />
+                    <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
+                      <span
+                        className={`h-[24px] w-[24px] text-xl text-primary-600`}
+                      >
+                        <TbCloudDownload />
+                      </span>
+                      <p className="text-center text-[13px] font-normal text-neutral-500">
+                        Browse and choose the file you want to import from your
+                        device
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
               {userData?.permissions?.includes(PERMISSIONS.CREATE_USER) && (
                 <div className="space-y-2">
                   <h1>Import Members</h1>
@@ -842,43 +877,6 @@ export default function ImportExport() {
                         const file = e.target.files[0];
                         setSelectedFile(file);
                         setLocationDialogOpen(true);
-                      }}
-                      className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
-                      type="file"
-                      multiple={false}
-                    />
-                    <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
-                      <span
-                        className={`h-[24px] w-[24px] text-xl text-primary-600`}
-                      >
-                        <TbCloudDownload />
-                      </span>
-                      <p className="text-center text-[13px] font-normal text-neutral-500">
-                        Browse and choose the file you want to import from your
-                        device
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {userData?.permissions?.includes(
-                PERMISSIONS.CREATE_DEPARTMENT,
-              ) && (
-                <div className="space-y-2">
-                  <h1>Import Departments</h1>
-                  <div className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50">
-                    <input
-                      onClick={(e) => {
-                        //@ts-ignore
-                        e.target.file = [];
-                        //@ts-ignore
-                        e.target.value = "";
-                      }}
-                      onChange={(e: any) => {
-                        if (e.target.files.length === 0) return;
-                        const file = e.target.files[0];
-                        setSelectedFile(file);
-                        setDepartmentDialogOpen(true);
                       }}
                       className="absolute left-0 top-0 h-full w-full cursor-pointer bg-red-300 opacity-0"
                       type="file"
