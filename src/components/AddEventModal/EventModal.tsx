@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 
 import { BiPencil } from "react-icons/bi";
 import "react-datepicker/dist/react-datepicker.css";
@@ -47,7 +47,6 @@ interface PickedDateType {
 
 // NEW ADD EVENT MODAL FINAL ------------------------------
 
-
 export default function EventModal({
   defaultData,
   type,
@@ -56,11 +55,14 @@ export default function EventModal({
   type: "Edit" | "Add";
 }) {
   const [dateType, setDateType] = useState<"single" | "multi">("single");
+
+  const [formErrors, setFormErrors] = useState<any>({});
+
   const [newEvent, setNewEvent] = useState<eventType>({
     title: "",
     start: new Date(),
     end: null,
-    color: undefined,
+    color: colors.find((color) => color?.priority === "Informational")?.color,
     duration: 0,
     location: "",
     description: undefined,
@@ -160,63 +162,55 @@ export default function EventModal({
     }
   };
 
+  useEffect(() => {
+    // @ts-ignore
+    eventFormRef.current.querySelector(".form-validation-msg")?.previousSibling?.scrollIntoView();
+  }, [formErrors?.name]);
+
+  useEffect(()=>{
+    if (userData?.department) {
+      let currentDepartments = [userData?.department?._id].concat((newEvent?.departments ?? []));
+      currentDepartments = Array.from(new Set(currentDepartments));
+      setNewEvent((prev) => ({ ...prev, departments: currentDepartments }));
+    }
+  }, [userData]);
+
   const validateAndFocus = () => {
-    console.log("validateAndFocus", eventFormRef.current);
     if (!eventFormRef.current) return;
 
     if (!newEvent?.title) {
-      // @ts-ignore
-      eventFormRef.current.querySelector("[name='title']")?.focus();
-
-      // @ts-ignore
-      eventFormRef.current.querySelector("#form-validation-msg").textContent =
-        "Title is a required field.";
+      setFormErrors({ name: "title", message: "Title is a required field." });
       return false;
     }
     if (!newEvent?.description) {
-      // @ts-ignore
-      eventFormRef.current.querySelector("[name='description']")?.focus();
-
-      // @ts-ignore
-      eventFormRef.current.querySelector("#form-validation-msg").textContent =
-        "Description is requried for an event.";
+      setFormErrors({
+        name: "description",
+        message: "Description is a required field.",
+      });
       return false;
     }
     if (!newEvent?.start) {
-      // @ts-ignore
-      eventFormRef.current.querySelector("[name='start']")?.focus();
-
-      // @ts-ignore
-      eventFormRef.current.querySelector("#form-validation-msg").textContent =
-        "Select a start date.";
+      setFormErrors({ name: "start", message: "Select a start date." });
       return false;
     }
     if (!newEvent?.end) {
-      // @ts-ignore
-      eventFormRef.current.querySelector("[name='end']")?.focus();
-
-      // @ts-ignore
-      eventFormRef.current.querySelector("#form-validation-msg").textContent =
-        "Select a end date.";
+      setFormErrors({ name: "end", message: "Select a end date." });
       return false;
     }
+
+    if (newEvent?.start > newEvent?.end) {
+      setFormErrors({
+        name: "end",
+        message: "End date should be after start date.",
+      });
+      return false;
+    }
+
     if (!newEvent?.departments || newEvent?.departments?.length === 0) {
-      // @ts-ignore
-      eventFormRef.current.querySelector("[name='departments']")?.focus();
-
-      // @ts-ignore
-      eventFormRef.current.querySelector("#form-validation-msg").textContent =
-        "Select a department.";
+      setFormErrors({ name: "departments", message: "Select a department." });
       return false;
     }
-    // if (!newEvent.involvedUsers || newEvent?.involvedUsers?.length === 0) {
-    //   // @ts-ignore
-    //   eventFormRef.current.querySelector("[name='involvedUsers']")?.focus();
-    //   // @ts-ignore
-    //   eventFormRef.current.querySelector("#form-validation-msg").textContent =
-    //     "Select at least one involved Users.";
-    //   return false;
-    // }
+    setFormErrors({});
     return true;
   };
   return (
@@ -270,6 +264,13 @@ export default function EventModal({
                     onChange={handleValueChange}
                   />
                 </div>
+                {formErrors?.name === "title" && (
+                  <span
+                    className="text-sm text-danger-700 form-validation-msg"
+                  >
+                    {formErrors?.message}
+                  </span>
+                )}
               </label>
 
               {/* Description section  */}
@@ -283,6 +284,13 @@ export default function EventModal({
                   onChange={handleValueChange}
                   value={newEvent?.description ? newEvent.description : ""}
                 />
+                {formErrors?.name === "description" && (
+                  <span
+                    className="text-sm text-danger-700 form-validation-msg"
+                  >
+                    {formErrors?.message}
+                  </span>
+                )}
               </div>
 
               {/* Date Input section */}
@@ -363,7 +371,9 @@ export default function EventModal({
 
                         if (newEvent.start) {
                           let oldHours = new Date(newEvent.start).getHours();
-                          let oldMinutes = new Date(newEvent.start).getMinutes();
+                          let oldMinutes = new Date(
+                            newEvent.start,
+                          ).getMinutes();
                           newStart = new Date(
                             new Date(value).setHours(oldHours, oldMinutes),
                           );
@@ -390,9 +400,7 @@ export default function EventModal({
 
                         if (newEvent.end) {
                           let oldHours = new Date(newEvent.end).getHours();
-                          let oldMinutes = new Date(
-                            newEvent.end,
-                          ).getMinutes();
+                          let oldMinutes = new Date(newEvent.end).getMinutes();
                           newEnd = new Date(
                             new Date(value).setHours(oldHours, oldMinutes),
                           );
@@ -453,6 +461,14 @@ export default function EventModal({
                 />
               </div>
 
+              {(formErrors?.name === "start" || formErrors?.name === "end") && (
+                <span
+                  className="text-sm text-danger-700 form-validation-msg"
+                >
+                  {formErrors?.message}
+                </span>
+              )}
+
               {/* Recurrence End */}
               {newEvent.recurringType !== "NONE" && (
                 <div className="w-full text-sm">
@@ -510,6 +526,13 @@ export default function EventModal({
                     </label>
                   ))}
                 </div>
+                {formErrors?.name === "color" && (
+                  <span
+                    className="text-sm text-danger-700 form-validation-msg"
+                  >
+                    {formErrors?.message}
+                  </span>
+                )}
               </div>
 
               {/* Location section  */}
@@ -517,6 +540,13 @@ export default function EventModal({
                 value={newEvent?.location ? newEvent.location : ""}
                 handleValueChange={handleValueChange}
               ></Locations>
+              {formErrors?.name === "location" && (
+                  <span
+                    className="text-sm text-danger-700 form-validation-msg"
+                  >
+                    {formErrors?.message}
+                  </span>
+                )}
 
               {/* Departments section  */}
               <div className="text-sm">
@@ -524,9 +554,7 @@ export default function EventModal({
                 <div className="my-2 flex flex-wrap items-center gap-1">
                   {Array.isArray(departmentsRes) &&
                     departmentsRes?.map((department: Department) => {
-                      const departmentExists =
-                        newEvent.departments.includes(department._id) ||
-                        department._id === userData?.department?._id;
+                      const departmentExists = newEvent.departments.includes(department._id);
                       return (
                         <DepartmentButton
                           key={department._id}
@@ -559,10 +587,9 @@ export default function EventModal({
             </div>
 
             {/* create btn  */}
-            <div className="flex h-16 w-full items-center justify-end gap-5 text-danger-700 ">
-              <p id="form-validation-msg" className=""></p>
+            <div className="flex w-full items-center justify-end gap-5">
               <button
-                className="btn btn-md  h-5 border-none bg-primary-600 text-base font-medium text-primary-50"
+                className="px-4 rounded-md hover:bg-primary-700 py-2 border-none bg-primary-600 text-base font-medium text-primary-50"
                 onClick={handleAddEvent}
               >
                 {type === "Add" ? "Create" : "Edit"}

@@ -49,6 +49,7 @@ export default function EditEventModal({
 }) {
   // const [pickedDate, setPickedDate] = useState<any>();
   const [dateType, setDateType] = useState<"single" | "multi">("single");
+  const [formErrors, setFormErrors] = useState<any>({});
   const [newEvent, setNewEvent] = useState<eventType>({
     title: "",
     start: null,
@@ -98,9 +99,7 @@ export default function EditEventModal({
   function handleUpdateEvent() {
     updateEvent(newEvent, {
       onSuccess: (res) => {
-        console.log("Onsuccess", res);
         queryClient.invalidateQueries({ queryKey: ["Events"] });
-
         toast.success(`${res?.data?.message}`);
 
         setNewEvent &&
