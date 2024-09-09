@@ -46,7 +46,7 @@ import {
   READABLE_PERMISSIONS,
 } from "@/constants/permissions";
 import DepartmentButton from "@/components/DepartmentButton";
-import { IoIosSearch } from "react-icons/io";
+import { IoIosAdd, IoIosSearch } from "react-icons/io";
 import {
   Popover,
   PopoverContent,
@@ -61,6 +61,7 @@ export default function Page() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [selDepartments, setSelDepartments] = useState<string[]>(["All"]);
   const [editUserDialogOpen, setEditUserDialogOpen] = useState<boolean>(false);
+  const [addUserDialogOpen, setAddUserDialogOpen] = useState<boolean>(false);
   const [deleteUserDialogOpen, setDeleteUserDialogOpen] =
     useState<boolean>(false);
   const [changeRoleVerificationModalOpen, setChangeRoleVerificationModalOpen] =
@@ -102,8 +103,6 @@ export default function Page() {
       filterList("");
     }
   }, [allUsers]);
-
-  useEffect(() => {}, [searchedUsers]);
 
   const { mutate: approveUser } = useMutation({
     mutationFn: (payload: any) =>
@@ -156,6 +155,30 @@ export default function Page() {
     },
   });
 
+  const {
+    register: registerAddUser,
+    getValues: getAddUserValues,
+    watch: watchAddUserValues,
+    handleSubmit: handleAddUserSubmit,
+    formState: { errors: addUserFormError },
+    reset: resetAddUserForm,
+    setValue: setAddUserValue,
+  } = useForm<{
+    email: string;
+    username: string;
+    role: string;
+    department: string;
+    permissions: string[];
+  }>({
+    defaultValues: {
+      email: "",
+      username: "",
+      role: "STAFF",
+      department: "",
+      permissions: [],
+    },
+  });
+
   const onUserEditSubmit = async (data: any) => {
     const previousData = allUsers?.data?.data?.find(
       (user: any) => user.email === data.email,
@@ -188,8 +211,6 @@ export default function Page() {
     queryClient.invalidateQueries({ queryKey: ["AllUsers"] });
     queryClient.invalidateQueries({ queryKey: ["UnapprovedUsers"] });
   };
-
-  useEffect(() => {}, [departmentRequests]);
 
   useEffect(() => {
     fetchDepartments();
@@ -247,7 +268,43 @@ export default function Page() {
       });
   };
 
-  const showPopover = true;
+  const addUserMutation = useMutation({
+    mutationFn: (payload: any) => Axios.post("/user", payload),
+    mutationKey: ["AddUser"],
+    onSuccess: async (response: any) => {
+      toast.success(response?.data?.message || "User added successfully");
+      setAddUserDialogOpen(false);
+      resetAddUserFormDefault();
+      queryClient.invalidateQueries({ queryKey: ["AllUsers"] });
+    },
+    onError: (err) => {
+      console.log("Error adding user", err);
+    },
+  });
+
+  const resetAddUserFormDefault = () => {
+    let department = "";
+    if (profile && profile?.department) {
+      department = profile?.department?._id;
+    }
+    resetAddUserForm({
+      email: "",
+      username: "",
+      role: "STAFF",
+      permissions: [],
+      department,
+    });
+  }
+
+  useEffect(() => {
+    if (profile && profile?.department) {
+      resetAddUserFormDefault();
+    }
+  }, [profile]);
+
+  const onAddUserSubmit = async (data: any) => {
+    addUserMutation.mutate(data);
+  };
 
   return (
     <>
@@ -297,15 +354,15 @@ export default function Page() {
         </Dialog>
 
         <Dialog open={editUserDialogOpen} onOpenChange={setEditUserDialogOpen}>
-          <DialogContent className="pr-1 pb-1.5">
+          <DialogContent className="pb-1.5 pr-1">
             <DialogHeader>
               <DialogTitle className=" text-[19px] font-semibold ">
                 Edit User
               </DialogTitle>
             </DialogHeader>
             <form
-              className="flex max-h-[60vh] flex-col gap-8 overflow-y-scroll py-2 px-1"
-              onSubmit={handleUserSubmit(onUserEditSubmit)}
+              className="flex max-h-[60vh] flex-col gap-8 overflow-y-scroll px-1 py-2"
+              onSubmit={(e)=>e.preventDefault()}
             >
               <label htmlFor="add-title">
                 <div className="group flex h-11 w-full items-center gap-2 border-b-[1px] border-neutral-300 px-4 focus-within:border-primary-600">
@@ -510,23 +567,131 @@ export default function Page() {
                 </span>
                 <button
                   onClick={() => {}}
-                  className="text-normal py-3 rounded-md border-none bg-red-400 font-medium text-primary-50 hover:bg-red-500"
+                  className="text-normal rounded-md border-none bg-red-400 py-3 font-medium text-primary-50 hover:bg-red-500"
                 >
                   Remove
                 </button>
               </div>
             </form>
-              <div className="flex items-center justify-end mr-4 mb-1">
-                <button
-                  onClick={() => {
-                    handleUserSubmit(onUserEditSubmit)();
-                    setEditUserDialogOpen(false);
-                  }}
-                  className=" w-fit text-normal px-4 py-3 flex items-center justify-center rounded-md border-none bg-primary-600 font-medium text-primary-50 hover:bg-primary-700"
-                >
-                  Save
-                </button>
+            <div className="mb-1 mr-4 flex items-center justify-end">
+              <button
+                onClick={() => {
+                  handleUserSubmit(onUserEditSubmit)();
+                  setEditUserDialogOpen(false);
+                }}
+                className=" text-normal flex w-fit items-center justify-center rounded-md border-none bg-primary-600 px-4 py-3 font-medium text-primary-50 hover:bg-primary-700"
+              >
+                Save
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/** Add User Dialog Box */}
+        <Dialog open={addUserDialogOpen} onOpenChange={setAddUserDialogOpen}>
+          <DialogContent className="pb-1.5 pr-1">
+            <DialogHeader>
+              <DialogTitle className=" text-[19px] font-semibold ">
+                Add User
+              </DialogTitle>
+            </DialogHeader>
+            <form
+            onSubmit={(e)=>e.preventDefault()}
+              className="flex max-h-[60vh] flex-col gap-8 overflow-y-scroll px-1 py-2"
+            >
+              <label htmlFor="add-title">
+                <div className="group flex h-11 w-full items-center gap-2 border-b-[1px] border-neutral-300 px-4 focus-within:border-primary-600">
+                  <input
+                    type="text"
+                    placeholder="Username"
+                    value={watchAddUserValues("username")}
+                    className="w-full text-lg font-normal text-neutral-900 outline-none"
+                    {...registerAddUser("username", {
+                      required: "Username is required",
+                    })}
+                  />
+                </div>
+              </label>
+
+              <div className=" flex flex-col gap-2 ">
+                <span className="font-500 text-[14px]">
+                  Email <br />
+                </span>
+                <input
+                  type="email"
+                  value={watchAddUserValues("email")}
+                  className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
+                  {...registerAddUser("email", {
+                    required: "Email is required",
+                  })}
+                />
               </div>
+              <div className="flex flex-col gap-2 ">
+                <span className="font-500 text-[14px]">
+                  Department <br />
+                </span>
+                <div className=" flex flex-row flex-wrap items-center justify-start gap-2">
+                  {departments.map((department: Department) => (
+                    <DepartmentBtn
+                      id={department._id}
+                      key={department._id}
+                      selectedCross={false}
+                      onClick={() => {
+                        if (!profile) {
+                          return;
+                        }
+                        if (profile?.role !== ROLES.SUPER_ADMIN) {
+                          return;
+                        }
+                        setAddUserValue("department", department._id);
+                      }}
+                      value={department.code}
+                      selected={
+                        watchAddUserValues("department") === department._id
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2 ">
+                <span className="font-500 text-[14px]">
+                  Role <br />
+                </span>
+                <Select
+                  onValueChange={(e) => {
+                    resetAddUserForm({
+                      ...getAddUserValues(),
+                      role: e,
+                    });
+                  }}
+                  value={watchAddUserValues("role")}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="STAFF">Member</SelectItem>
+                    {profile?.role === ROLES.SUPER_ADMIN && (
+                      <SelectItem value="DEPARTMENT_ADMIN">
+                        Dept. Admin
+                      </SelectItem>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+            </form>
+            <div className="mb-1 mr-4 flex items-center justify-end">
+              <button
+                onClick={() => {
+                  handleAddUserSubmit(onAddUserSubmit)();
+                  setAddUserDialogOpen(false);
+                }}
+                className=" text-normal flex w-fit items-center justify-center rounded-md border-none bg-primary-600 px-4 py-3 font-medium text-primary-50 hover:bg-primary-700"
+              >
+                Add
+              </button>
+            </div>
           </DialogContent>
         </Dialog>
 
@@ -576,8 +741,21 @@ export default function Page() {
         </Dialog>
 
         <div className=" flex flex-col gap-[27px]">
-          <div className="flex flex-row justify-between">
-            <h1 className=" text-[28px] font-[700] text-black">Team</h1>
+          <div className="flex flex-row justify-start gap-3">
+            <h1 className=" mr-auto text-[28px] font-[700] text-black">Team</h1>
+            {profile?.permissions.includes(PERMISSIONS.CREATE_USER) && (
+              <button
+                onClick={() => {
+                  setAddUserDialogOpen(true);
+                }}
+                className="flex items-center justify-center gap-1 rounded-md bg-primary-600 px-3 py-2 text-[13px] text-neutral-50 hover:bg-primary-700"
+              >
+                <span className="text-[18px]">
+                  <IoIosAdd />
+                </span>
+                <span>Add Members</span>
+              </button>
+            )}
             <div className=" flex h-[32px] w-[280px] flex-row items-center justify-start gap-3 rounded-[4px] border bg-neutral-100 px-3 py-2">
               <Image
                 src="/SearchOutline.svg"
