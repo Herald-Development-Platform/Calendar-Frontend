@@ -1,5 +1,11 @@
 import { CiLogout } from "react-icons/ci";
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { TbCalendarEvent } from "react-icons/tb";
 import format from "date-fns/format";
@@ -58,6 +64,7 @@ import { Menu, SquareMenu } from "lucide-react";
 import Link from "next/link";
 
 import ToggleSidebar from "../Sidebar/ToggleSidebar";
+import { set } from "date-fns";
 
 export function HomeHeader() {
   // const [redner, setredner] = useState<number>(1);
@@ -227,7 +234,7 @@ export function HomeHeader() {
     });
   };
 
-  useHandleListViewToggle(listView, calendarApi);
+  useHandleListViewToggle(listView, calendarApi, setCurrentView);
 
   return (
     <>
@@ -312,7 +319,7 @@ export function HomeHeader() {
             <Select
               onValueChange={(calView) => {
                 if (listView && calendarApi)
-                  return findListView(calView, calendarApi);
+                  return findListView(calView, calendarApi, setCurrentView);
                 setCurrentView(calView);
                 console.log("calView", calView);
 
@@ -384,13 +391,14 @@ export function HomeHeader() {
 const useHandleListViewToggle = (
   listView: boolean,
   calendarApi: CalendarApi | undefined,
+  setCurrentView: Dispatch<SetStateAction<string>>,
 ) => {
   useEffect(() => {
     if (!calendarApi) return;
     if (listView) {
-      findListView(calendarApi.view.type, calendarApi);
+      findListView(calendarApi.view.type, calendarApi, setCurrentView);
     } else {
-      findNormalView(calendarApi.view.type, calendarApi);
+      findNormalView(calendarApi.view.type, calendarApi, setCurrentView);
     }
   }, [listView]);
 };
