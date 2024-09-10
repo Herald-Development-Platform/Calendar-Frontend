@@ -64,15 +64,7 @@ export function HomeHeader() {
   const [calendarApi, setCalendarApi] = useState<CalendarApi>();
   const [listView, setListView] = useState<boolean>(false);
   const [toggleSidebar, setToggleSidebar] = useState<boolean>(false);
-  const { notifications, setCurrentView } = useContext(Context);
-
-  let newNotifications = false;
-  if (notifications) {
-    newNotifications = notifications.some(
-      (notification: any) => !notification.isRead,
-    );
-  }
-
+  // const {} = useContext(Context);
   const {
     calendarRef,
     currentView,
@@ -80,7 +72,16 @@ export function HomeHeader() {
     selectedDate,
     setSelectedDate,
     timeout,
+    notifications,
+    setCurrentView,
   } = useContext(Context);
+
+  let newNotifications = false;
+  if (notifications) {
+    newNotifications = notifications.some(
+      (notification: any) => !notification.isRead,
+    );
+  }
 
   const token = useGetCookieByName("token");
 

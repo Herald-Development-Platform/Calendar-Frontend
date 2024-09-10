@@ -90,10 +90,11 @@ export default function EditEventModal1({
 
   const { data: departmentsRes } = useGetDepartments();
 
-  const { mutate: updateEvent } = useEditEventMutation();
+  // const { mutate: updateEvent } = useEditEventMutation();
+  const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
 
-  function handleUpdateEvent() {
-    updateEvent(newEvent, {
+  function handleCreateEvent() {
+    postNewEvent(newEvent, {
       onSuccess: (res) => {
         console.log("Onsuccess", res);
         queryClient.invalidateQueries({ queryKey: ["Events"] });
@@ -205,7 +206,7 @@ export default function EditEventModal1({
                   ✕
                 </button>
               </form>
-              <h3 className="text-lg font-bold">Edit Event</h3>
+              <h3 className="text-lg font-bold">Add Event</h3>
             </div>
 
             {/* input section  */}
@@ -509,9 +510,9 @@ export default function EditEventModal1({
             >
               <button
                 className="btn btn-md  h-5 border-none bg-primary-600 text-base font-medium text-primary-50"
-                onClick={handleUpdateEvent}
+                onClick={handleCreateEvent}
               >
-                Edit
+                Create
               </button>
             </form>
           </div>
