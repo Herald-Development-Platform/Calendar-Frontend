@@ -234,7 +234,10 @@ export default function ReactFullCal({} // eventDetailWidth,
   };
 
   useEffect(() => {
-    console.log("----------------PROFILE ACTIVE SEMESTER", userData?.activeSemester);
+    console.log(
+      "----------------PROFILE ACTIVE SEMESTER",
+      userData?.activeSemester,
+    );
     let currnetDate = new Date();
     let semTimeFrame = userData?.activeSemester?.map((semesterId: string) => {
       const semester = semesterData?.find((sem: any) => sem.id == semesterId);
@@ -325,17 +328,25 @@ export default function ReactFullCal({} // eventDetailWidth,
     const displayStart = start?.toISOString() ?? new Date().toISOString();
     const displayEnd = end?.toISOString() ?? new Date().toISOString();
 
-
     // const startTime = displayStart ? format(displayStart, "h:mm a") : "00: 00 am";
     // const endTime = displayEnd ? format(displayEnd, "h:mm a") : "00: 00 am";
 
-    const startTime = displayStart.split("T")[1].split(":").slice(0, 2).join(":");
+    const startTime = displayStart
+      .split("T")[1]
+      .split(":")
+      .slice(0, 2)
+      .join(":");
     const endTime = displayEnd.split("T")[1].split(":").slice(0, 2).join(":");
 
     const eventEl = info.el;
 
     if (currentView === "timeGridWeek" || currentView === "timeGridDay") {
-      // console.log("Week event", info);
+      console.log("eventEl", eventEl);
+      const duration = start && end ? end?.getTime() - start?.getTime() : 0;
+      const twoHours = 1000 * 60 * 60 * 2;
+      const hours = Math.floor(duration / (1000 * 60 * 60));
+
+      // console.log("info", info);
 
       const timeEl = document.createElement("div");
 
@@ -369,7 +380,14 @@ export default function ReactFullCal({} // eventDetailWidth,
         mainFrameEl && mainFrameEl.querySelector(".fc-event-title-container");
       titleContainer &&
         mainFrameEl?.insertBefore(departmentsWrapper, titleContainer);
-      mainFrameEl?.appendChild(timeEl);
+      console.log(
+        "event duration is less than 1 hour",
+        eventEl.querySelector(".fc-event-main-frame"),
+        duration > twoHours,
+      );
+      if (duration > twoHours) {
+        mainFrameEl?.appendChild(timeEl);
+      }
 
       const mainEventEl = info.el.querySelector(
         ".fc-event-main",
