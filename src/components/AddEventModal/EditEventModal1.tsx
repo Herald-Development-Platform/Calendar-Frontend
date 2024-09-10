@@ -2,10 +2,11 @@
 import Datepicker from "react-datepicker";
 import Image from "next/image";
 import React, { useContext, useEffect, useState } from "react";
+import { FaCheck } from "react-icons/fa";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { format } from "date-fns";
+import { format, set } from "date-fns";
 
 import { BiPencil } from "react-icons/bi";
 import "react-datepicker/dist/react-datepicker.css";
@@ -133,20 +134,21 @@ export default function EditEventModal1({
     }
 
     // console.log("name value", name, value);
+    console.log("default", name, value);
 
     switch (name) {
       case "department":
-        if (newEvent?.departments.includes(value)) {
+        if (newEvent.departments.includes(value)) {
           setNewEvent((prev) => ({
             ...prev,
             departments: [
-              ...newEvent?.departments.filter((item) => item !== value),
+              ...newEvent.departments.filter((item) => item !== value),
             ],
           }));
         } else {
           setNewEvent((prev) => ({
             ...prev,
-            departments: [...newEvent?.departments, value],
+            departments: [...newEvent.departments, value],
           }));
         }
         break;
@@ -178,6 +180,7 @@ export default function EditEventModal1({
         setNewEvent((prev) => ({ ...prev, [name]: value }));
     }
   };
+
   console.log("neweent", newEvent);
   return (
     <>
@@ -394,40 +397,68 @@ export default function EditEventModal1({
               </div>
 
               {/* Color input section  */}
-              <div className=" flex flex-col items-start">
+              <div className="flex flex-col items-start">
                 <span className="text-sm">Priority</span>
                 <div key={"AddEventPriority"} className="flex gap-2">
                   {colors?.map((Color, i) => (
-                    <label
-                      className={`btn checkbox btn-xs relative h-7 w-7 cursor-pointer rounded-none border-none`}
-                      style={{ backgroundColor: Color.color }}
-                      htmlFor={`ColorInput${i}`}
-                      key={i}
-                    >
-                      <input
-                        type="checkbox"
-                        className={
-                          Color.color == newEvent?.color
-                            ? "absolute h-full w-full border-none text-white"
-                            : "absolute hidden h-full w-full border-none text-white"
-                        }
-                        style={{
-                          accentColor: Color.color,
-                        }}
-                        checked={Color.color == newEvent?.color}
-                        readOnly
-                      />
-                      <input
+                    // <label
+                    //   className={`fc-custom-semester-dot-event btn checkbox btn-xs relative h-7 w-7 cursor-pointer rounded-none border-none`}
+                    //   style={{ backgroundColor: Color.color }}
+                    //   htmlFor={`ColorInput${i}`}
+                    //   key={i}
+                    // >
+                    //   <input
+                    //     type="checkbox"
+                    //     className={
+                    //       Color.color == newEvent?.color
+                    //         ? "absolute h-full w-full border-none text-white"
+                    //         : "absolute hidden h-full w-full border-none text-white"
+                    //     }
+                    //     style={{
+                    //       accentColor: Color.color,
+                    //     }}
+                    //     checked={Color.color == newEvent?.color}
+                    //     readOnly
+                    //   />
+                    //   <input
+                    //     name="color"
+                    //     id={`ColorInput${i}`}
+                    //     type="radio"
+                    //     className="absolute hidden"
+                    //     value={Color.color}
+                    //     onChange={handleValueChange}
+                    //   />
+                    //   <div className="semester-tooltip-wrapper-event">
+                    //     <div
+                    //       className="semester-tooltip-data"
+                    //       style={{
+                    //         color: Color.color,
+                    //       }}
+                    //     >
+                    //       {Color.priority}
+                    //     </div>
+                    //   </div>
+                    // </label>
+                    <>
+                      <button
+                        className="flex h-7 w-7 items-center justify-center text-xl text-white"
+                        style={{ backgroundColor: Color.color }}
                         name="color"
-                        id={`ColorInput${i}`}
-                        type="radio"
-                        className="absolute hidden"
+                        onClick={handleValueChange}
                         value={Color.color}
-                        onChange={handleValueChange}
-                      />
-                    </label>
+                      >
+                        {Color.color === newEvent?.color && (
+                          <FaCheck className="text-white" />
+                        )}
+                      </button>
+                    </>
                   ))}
                 </div>
+                {/* {formErrors?.name === "color" && (
+                  <span className="form-validation-msg text-sm text-danger-700">
+                    {formErrors?.message}
+                  </span>
+                )} */}
               </div>
 
               {/* Location section  */}

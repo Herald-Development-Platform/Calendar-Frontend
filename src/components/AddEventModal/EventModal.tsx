@@ -115,7 +115,7 @@ export default function EventModal({
       value = e.currentTarget.value;
     }
 
-    console.log("name value", name, value);
+    // console.log("name value", name, value);
 
     switch (name) {
       case "department":
@@ -164,12 +164,17 @@ export default function EventModal({
 
   useEffect(() => {
     // @ts-ignore
-    eventFormRef.current.querySelector(".form-validation-msg")?.previousSibling?.scrollIntoView();
+    eventFormRef.current
+      .querySelector(".form-validation-msg")
+      // @ts-ignore
+      ?.previousSibling?.scrollIntoView();
   }, [formErrors?.name]);
 
-  useEffect(()=>{
+  useEffect(() => {
     if (userData?.department) {
-      let currentDepartments = [userData?.department?._id].concat((newEvent?.departments ?? []));
+      let currentDepartments = [userData?.department?._id].concat(
+        newEvent?.departments ?? [],
+      );
       currentDepartments = Array.from(new Set(currentDepartments));
       setNewEvent((prev) => ({ ...prev, departments: currentDepartments }));
     }
@@ -265,9 +270,7 @@ export default function EventModal({
                   />
                 </div>
                 {formErrors?.name === "title" && (
-                  <span
-                    className="text-sm text-danger-700 form-validation-msg"
-                  >
+                  <span className="form-validation-msg text-sm text-danger-700">
                     {formErrors?.message}
                   </span>
                 )}
@@ -285,9 +288,7 @@ export default function EventModal({
                   value={newEvent?.description ? newEvent.description : ""}
                 />
                 {formErrors?.name === "description" && (
-                  <span
-                    className="text-sm text-danger-700 form-validation-msg"
-                  >
+                  <span className="form-validation-msg text-sm text-danger-700">
                     {formErrors?.message}
                   </span>
                 )}
@@ -462,9 +463,7 @@ export default function EventModal({
               </div>
 
               {(formErrors?.name === "start" || formErrors?.name === "end") && (
-                <span
-                  className="text-sm text-danger-700 form-validation-msg"
-                >
+                <span className="form-validation-msg text-sm text-danger-700">
                   {formErrors?.message}
                 </span>
               )}
@@ -527,9 +526,7 @@ export default function EventModal({
                   ))}
                 </div>
                 {formErrors?.name === "color" && (
-                  <span
-                    className="text-sm text-danger-700 form-validation-msg"
-                  >
+                  <span className="form-validation-msg text-sm text-danger-700">
                     {formErrors?.message}
                   </span>
                 )}
@@ -541,12 +538,10 @@ export default function EventModal({
                 handleValueChange={handleValueChange}
               ></Locations>
               {formErrors?.name === "location" && (
-                  <span
-                    className="text-sm text-danger-700 form-validation-msg"
-                  >
-                    {formErrors?.message}
-                  </span>
-                )}
+                <span className="form-validation-msg text-sm text-danger-700">
+                  {formErrors?.message}
+                </span>
+              )}
 
               {/* Departments section  */}
               <div className="text-sm">
@@ -554,7 +549,9 @@ export default function EventModal({
                 <div className="my-2 flex flex-wrap items-center gap-1">
                   {Array.isArray(departmentsRes) &&
                     departmentsRes?.map((department: Department) => {
-                      const departmentExists = newEvent.departments.includes(department._id);
+                      const departmentExists = newEvent.departments.includes(
+                        department._id,
+                      );
                       return (
                         <DepartmentButton
                           key={department._id}
@@ -589,7 +586,7 @@ export default function EventModal({
             {/* create btn  */}
             <div className="flex w-full items-center justify-end gap-5">
               <button
-                className="px-4 rounded-md hover:bg-primary-700 py-2 border-none bg-primary-600 text-base font-medium text-primary-50"
+                className="rounded-md border-none bg-primary-600 px-4 py-2 text-base font-medium text-primary-50 hover:bg-primary-700"
                 onClick={handleAddEvent}
               >
                 {type === "Add" ? "Create" : "Edit"}
