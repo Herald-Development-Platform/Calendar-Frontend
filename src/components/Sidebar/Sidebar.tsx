@@ -153,13 +153,15 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   return (
     <>
       <div
-        className={`${hasBreakpoint ? "relative hidden" : " block"} h-screen ${
+        className={`${
+          hasBreakpoint ? "custom-hidden relative xl:block " : "block"
+        } h-screen ${
           open ? "w-[290px]" : "w-[80px]"
-        } duration-400 bg-neutral-50 px-4 py-10 transition-all xl:block`}
+        } duration-400 bg-neutral-50 px-4 py-10 transition-all `}
       >
         <div
           className={`flex h-full w-full flex-col items-center ${
-            open ? "gap-14" : " gap-1.5"
+            open ? "gap-14" : "gap-1.5"
           }  font-medium`}
         >
           <div

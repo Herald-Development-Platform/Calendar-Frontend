@@ -112,3 +112,7 @@
   *{
     scroll-behavior: smooth;
   }
+
+  .custom-hidden{
+    display: none;
+  }

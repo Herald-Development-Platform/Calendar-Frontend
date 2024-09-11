@@ -8,6 +8,7 @@ export default function RootLayout({
   return (
     <div className="flex">
       <Sidebar hasBreakpoint={true}></Sidebar>
+      {/* <div>aslkdjf</div> */}
       <div className="flex h-screen w-full flex-col">{children}</div>
     </div>
   );
