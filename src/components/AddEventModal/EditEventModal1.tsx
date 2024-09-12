@@ -34,17 +34,11 @@ import DepartmentButton from "../DepartmentButton";
 import Locations from "./Locations";
 import DatePicker from "./DatePicker";
 
-// interface PickedDateType {
-//   startDate: Date | undefined;
-//   endDate: Date | undefined;
-// }
-
 export default function EditEventModal1({
   defaultData,
 }: {
   defaultData: eventType | null;
 }) {
-  // const [pickedDate, setPickedDate] = useState<any>();
   const [dateType, setDateType] = useState<"single" | "multi">("single");
   const [defaultValuesArr, setDefaultValuesArr] = useState<any[]>([]);
   const [newEvent, setNewEvent] = useState<eventType>({
@@ -62,7 +56,9 @@ export default function EditEventModal1({
     recurrenceEnd: null,
     notifyUpdate: false,
   });
+
   const queryClient = useQueryClient();
+
   useEffect(() => {
     if (!defaultData) return;
     const modifiedData = {
@@ -88,10 +84,7 @@ export default function EditEventModal1({
   }, [defaultData]);
 
   const { userData } = useContext(Context);
-
   const { data: departmentsRes } = useGetDepartments();
-
-  // const { mutate: updateEvent } = useEditEventMutation();
   const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
 
   function handleCreateEvent() {

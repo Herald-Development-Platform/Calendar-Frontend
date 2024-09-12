@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Calendar } from "../ui/calendar";
 import { format } from "date-fns";
+import { CiCalendar } from "react-icons/ci";
 
 export default function DatePicker({
   value,
@@ -40,13 +41,15 @@ export default function DatePicker({
       <div className="relative w-full ">
         <input
           type="text"
-          className="mb-2 h-10 w-full rounded border-[1px] border-neutral-300 px-4 text-base text-neutral-900 focus:border-primary-600"
+          className="mb-2 h-10 w-full rounded border-[1px] border-neutral-300 pl-12 pr-4 text-base text-neutral-900 focus:border-primary-600"
           name={name || ""}
           value={value ? format(value, "EEEE, dd MMMM") : ""}
           onClick={() => setDisplayCal(true)}
           readOnly
-        />
-
+        ></input>
+        <span className="absolute left-3 top-0 flex h-10 items-center justify-center text-3xl">
+          <CiCalendar />
+        </span>
         <Calendar
           className={`${
             displayCal ? "block" : "hidden"

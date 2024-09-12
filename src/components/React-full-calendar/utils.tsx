@@ -1,6 +1,7 @@
 import { CalendarApi } from "@fullcalendar/core/index.js";
 import { RefObject } from "@fullcalendar/core/preact.js";
 import FullCalendar from "@fullcalendar/react";
+import { format, parse } from "date-fns";
 import { useEffect, useState } from "react";
 
 const useApplySemesterDot = ({
@@ -190,6 +191,96 @@ const useApplyYearlySemesterView = ({
     // });
   }, [currentView]);
 };
+
+const useApplyHighlightOrOngoing = ({
+  monthValue,
+  userData,
+  semesterData,
+  calendarRef,
+  dayFrameRefs,
+}: {
+  monthValue: number | undefined;
+  userData: User | undefined;
+  semesterData: SemesterType[] | undefined;
+  calendarRef: RefObject<FullCalendar> | undefined;
+  dayFrameRefs: RefObject<HTMLDivElement[]>;
+}) => {
+  return useEffect(() => {
+    let currnetDate = new Date();
+    let semTimeFrame = userData?.activeSemester?.map((semesterId: string) => {
+      const semester = semesterData?.find((sem: any) => sem.id == semesterId);
+      if (!semester) return;
+      return {
+        start: new Date(semester?.start ?? ""),
+        end: new Date(semester?.end ?? ""),
+        color: semester.color,
+      };
+    });
+
+    semTimeFrame = semTimeFrame?.filter((sem: any) => {
+      let startDate = new Date(sem?.start ?? "");
+      let endDate = new Date(sem?.end ?? "");
+      return startDate <= currnetDate && endDate >= currnetDate;
+    });
+
+    if (typeof calendarRef === "string") return;
+    if (!calendarRef?.current) return;
+
+    // @ts-ignore
+    dayFrameRefs.current = calendarRef.current.elRef.current.querySelectorAll(
+      ".fc-daygrid-day-frame",
+    );
+    const dayFrameEls = Array.from(
+      dayFrameRefs.current as ArrayLike<HTMLDivElement>,
+    );
+
+    dayFrameEls.forEach((dayFrameEl: HTMLDivElement) => {
+      const dayGridNumber = dayFrameEl.querySelector(".fc-daygrid-day-number");
+      const ariaLabelValue = dayGridNumber?.getAttribute("aria-label");
+
+      if (!ariaLabelValue) return;
+
+      const parsedDate: Date = parse(
+        ariaLabelValue,
+        "MMMM d, yyyy",
+        new Date(),
+      );
+      const isoDate = format(parsedDate, "yyyy-MM-dd");
+
+      // const isHighLight = userData?.importantDates?.includes(
+
+      //   new Date(isoDate)?.toISOString(),
+      // );
+      const isHighLight = userData?.importantDates?.includes(
+        // @ts-ignore
+        parsedDate.toISOString(),
+      );
+
+      const isOngoing = semTimeFrame?.some((sem: any) => {
+        return (
+          parsedDate.getTime() >= sem?.start?.getTime() &&
+          parsedDate.getTime() <= sem?.end?.getTime()
+        );
+      });
+
+      const today =
+        dayFrameEl?.parentElement?.classList.contains("fc-day-today");
+
+      if (isOngoing) {
+        dayFrameEl.style.backgroundColor = "rgba(227, 242, 218, 0.4)";
+      } else {
+        dayFrameEl.style.backgroundColor = "#ffffff";
+      }
+      if (isHighLight) dayFrameEl.style.backgroundColor = "#FFFDC3";
+      else if (today) {
+        dayFrameEl.style.backgroundColor = "#5D9936";
+        dayFrameEl.style.color = "#ffffff";
+      }
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [monthValue, userData]);
+};
 const useGetCalendarApi = (calendarRef: RefObject<FullCalendar>) => {
   const [calendarApi, setCalendarApi] = useState<CalendarApi>();
   useEffect(() => {
@@ -210,4 +301,5 @@ export {
   useApplyYearlySemesterView,
   useGetCalendarApi,
   isMultiDay,
+  useApplyHighlightOrOngoing,
 };

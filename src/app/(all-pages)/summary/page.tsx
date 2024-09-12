@@ -19,6 +19,15 @@ import BarChart from "@/components/Chartjs/BarChart";
 import { useGetDepartments } from "@/services/api/departments";
 import DepartmentButton from "@/components/DepartmentButton";
 import * as Headers from "@/components/Header";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import DatePicker from "@/components/AddEventModal/DatePicker";
 
 export default function SummaryPage() {
   const [filter, setFilter] = useState("7");
@@ -37,6 +46,7 @@ export default function SummaryPage() {
     useGetDepartments();
   const [filteredEvents, setFilteredEvents] = useState<any[]>([]);
   const [selDepartments, setSelDepartments] = useState<string[]>(["All"]);
+  const [customDateOpen, setCustomDateOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (!Array.isArray(events)) return;
@@ -109,7 +119,7 @@ export default function SummaryPage() {
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="flex flex-col gap-9 px-[70px] pl-9 max-h-[100vh] overflow-y-scroll">
+      <div className="flex max-h-[100vh] flex-col gap-9 overflow-y-scroll px-[70px] pl-9">
         <Toaster />
         <div className=" mt-[40px] flex flex-col gap-[18px]">
           <div className="flex flex-row justify-between">
@@ -120,6 +130,10 @@ export default function SummaryPage() {
               <Select
                 value={filter}
                 onValueChange={(value) => {
+                  if (value === "custom-date") {
+                    setCustomDateOpen(true);
+                    return;
+                  }
                   setFilter(value);
                 }}
               >
@@ -166,6 +180,14 @@ export default function SummaryPage() {
                     }`}
                   >
                     1 year
+                  </SelectItem>
+                  <SelectItem
+                    value="custom-date"
+                    className={`${
+                      filter.toLowerCase() === "15000000" && "text-primary-600"
+                    }`}
+                  >
+                    Custom Date
                   </SelectItem>
                   <SelectItem
                     value="15000000"
@@ -305,6 +327,29 @@ export default function SummaryPage() {
           </div>
         </div>
       </div>
+      <Dialog open={customDateOpen} onOpenChange={setCustomDateOpen}>
+        <DialogContent className="min-w-[652px]">
+          <DialogHeader>
+            <DialogTitle className="mb-10">Custom Date</DialogTitle>
+            <DialogDescription>
+              <span className="text-neutral-600">Date</span>
+              <div className="mt-2 flex w-full flex-row items-center gap-2">
+                <DatePicker
+                  value={new Date()}
+                  handleValueChange={() => {}}
+                  name={"start"}
+                />
+                <span className="text-neutral-600">To</span>
+                <DatePicker
+                  value={new Date()}
+                  name={"end"}
+                  handleValueChange={() => {}}
+                />
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

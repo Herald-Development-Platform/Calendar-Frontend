@@ -1,6 +1,4 @@
 //tsoding daily
-import { Axios } from "@/services/baseUrl";
-import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { parseISO, format } from "date-fns";
 import {
@@ -27,7 +25,7 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
 
   const { data: eventsData, isLoading: eventsLoading } = useGetEvents();
 
-  useEffect(()=>{
+  useEffect(() => {
     if (selectedEvent && eventsData?.length && eventsData?.length > 0) {
       let newlyFetchedSelectedEvent = eventsData.find(
         (event: eventType) => event._id === selectedEvent._id,
@@ -36,7 +34,7 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
         setSelectedEvent(newlyFetchedSelectedEvent);
       }
     }
-  }, [eventsData])
+  }, [eventsData]);
 
   const { mutate: deleteEvent } = useDeleteEvent({});
   const { mutate: updateEvent } = useUpdateEvents();

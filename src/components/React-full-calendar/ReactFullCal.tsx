@@ -19,15 +19,12 @@ import { delay, generateNewToken } from "@/lib/utils";
 import { useGetSemester } from "@/services/api/semester";
 import EventDetails from "@/app/(all-pages)/search/EventDetails";
 import SemesterView from "./SemesterMonthComponents/SemesterView";
-import { isMultiDay } from "./utils";
+import { isMultiDay, useApplyHighlightOrOngoing } from "./utils";
 import { allPlugins } from "@/constants/CalendarViews";
 import { RecurringEventTypes } from "@/constants/RecurringEvents";
 import EditEventModal1 from "../AddEventModal/EditEventModal1";
 
-export default function ReactFullCal({} // eventDetailWidth,
-: {
-  // eventDetailWidth: number | null;
-}) {
+export default function ReactFullCal() {
   const {
     calendarRef,
     currentView,
@@ -70,7 +67,6 @@ export default function ReactFullCal({} // eventDetailWidth,
     },
   });
   const { data: semesterData } = useGetSemester();
-  console.log("userData", userData);
   const { mutate: updateEvent } = useUpdateEvents();
   const { mutate: deleteEvent } = useDeleteEvent({});
 
@@ -196,9 +192,7 @@ export default function ReactFullCal({} // eventDetailWidth,
       const modal_4 = document.getElementById(
         "my_modal_5",
       ) as HTMLDialogElement;
-      console.log("modal elemenet", modal_4);
       modal_4.showModal();
-      console.log("addEventBtnEl");
     });
     lastSelCell?.firstChild?.appendChild(selectContextEl);
 
@@ -233,93 +227,79 @@ export default function ReactFullCal({} // eventDetailWidth,
     }, 100);
   };
 
-  useEffect(() => {
-    console.log(
-      "----------------PROFILE ACTIVE SEMESTER",
-      userData?.activeSemester,
-    );
-    let currnetDate = new Date();
-    let semTimeFrame = userData?.activeSemester?.map((semesterId: string) => {
-      const semester = semesterData?.find((sem: any) => sem.id == semesterId);
-      if (!semester) return;
-      console.log("SEMESTER:::", semester);
-      return {
-        start: new Date(semester?.start ?? ""),
-        end: new Date(semester?.end ?? ""),
-        color: semester.color,
-      };
-    });
+  // useEffect(() => {
+  //   let currnetDate = new Date();
+  //   let semTimeFrame = userData?.activeSemester?.map((semesterId: string) => {
+  //     const semester = semesterData?.find((sem: any) => sem.id == semesterId);
+  //     if (!semester) return;
+  //     return {
+  //       start: new Date(semester?.start ?? ""),
+  //       end: new Date(semester?.end ?? ""),
+  //       color: semester.color,
+  //     };
+  //   });
 
-    console.log("----------------semTimeFrame", semTimeFrame);
+  //   semTimeFrame = semTimeFrame?.filter((sem: any) => {
+  //     let startDate = new Date(sem?.start ?? "");
+  //     let endDate = new Date(sem?.end ?? "");
+  //     return startDate <= currnetDate && endDate >= currnetDate;
+  //   });
 
-    semTimeFrame = semTimeFrame?.filter((sem: any) => {
-      let startDate = new Date(sem?.start ?? "");
-      let endDate = new Date(sem?.end ?? "");
-      return startDate <= currnetDate && endDate >= currnetDate;
-    });
+  //   if (typeof calendarRef === "string") return;
+  //   if (!calendarRef?.current) return;
 
-    if (typeof calendarRef === "string") return;
-    if (!calendarRef?.current) return;
+  //   // @ts-ignore
+  //   dayFrameRefs.current = calendarRef.current.elRef.current.querySelectorAll(
+  //     ".fc-daygrid-day-frame",
+  //   );
+  //   const dayFrameEls = Array.from(dayFrameRefs.current);
 
-    // @ts-ignore
-    dayFrameRefs.current = calendarRef.current.elRef.current.querySelectorAll(
-      ".fc-daygrid-day-frame",
-    );
-    const dayFrameEls = Array.from(dayFrameRefs.current);
+  //   dayFrameEls.forEach((dayFrameEl: HTMLDivElement) => {
+  //     const dayGridNumber = dayFrameEl.querySelector(".fc-daygrid-day-number");
+  //     const ariaLabelValue = dayGridNumber?.getAttribute("aria-label");
 
-    dayFrameEls.forEach((dayFrameEl: HTMLDivElement) => {
-      const dayGridNumber = dayFrameEl.querySelector(".fc-daygrid-day-number");
-      const ariaLabelValue = dayGridNumber?.getAttribute("aria-label");
+  //     if (!ariaLabelValue) return;
 
-      if (!ariaLabelValue) return;
+  //     const parsedDate = parse(ariaLabelValue, "MMMM d, yyyy", new Date());
+  //     const isoDate = format(parsedDate, "yyyy-MM-dd");
 
-      const parsedDate = parse(ariaLabelValue, "MMMM d, yyyy", new Date());
-      const isoDate = format(parsedDate, "yyyy-MM-dd");
+  //     const isHighLight = userData?.importantDates.includes(
+  //       new Date(isoDate).toISOString(),
+  //     );
 
-      const isHighLight = userData?.importantDates.includes(
-        new Date(isoDate).toISOString(),
-      );
-      console.log("semTimeFrame", semTimeFrame);
+  //     const isOngoing: boolean = semTimeFrame?.some((sem: any) => {
+  //       if (!sem) return undefined;
+  //       return (
+  //         parsedDate.getTime() >= sem?.start?.getTime() &&
+  //         parsedDate.getTime() <= sem?.end?.getTime()
+  //       );
+  //     });
 
-      const isOngoing: boolean = semTimeFrame?.some((sem: any) => {
-        if (!sem) return undefined;
-        return (
-          parsedDate.getTime() >= sem?.start?.getTime() &&
-          parsedDate.getTime() <= sem?.end?.getTime()
-        );
-      });
-      console.log("isOngoing", isOngoing);
+  //     const today =
+  //       dayFrameEl?.parentElement?.classList.contains("fc-day-today");
 
-      const today =
-        dayFrameEl?.parentElement?.classList.contains("fc-day-today");
+  //     if (isOngoing) {
+  //       dayFrameEl.style.backgroundColor = "rgba(227, 242, 218, 0.4)";
+  //     } else {
+  //       dayFrameEl.style.backgroundColor = "#ffffff";
+  //     }
+  //     if (isHighLight) dayFrameEl.style.backgroundColor = "#FFFDC3";
+  //     else if (today) {
+  //       dayFrameEl.style.backgroundColor = "#5D9936";
+  //       dayFrameEl.style.color = "#ffffff";
+  //     }
+  //   });
 
-      // if parsedDate is  within any of the semesters its ongoing
-      // userData?.activeSemester?.forEach((semesterId: string) => {
-      //   const semester = semesterData?.find((sem: any) => sem.id == semesterId);
-      //   if (!semester) return;
-      //   new Date(semester.start).getTime() < startDate.getTime() &&
-      //     (startDate = new Date(semester.start));
-      //   new Date(semester.end).getTime() > endDate.getTime() &&
-      //     (endDate = new Date(semester.end));
-      // });
-      if (isOngoing) {
-        // semTimeFrame.length === 1
-        //   ? (dayFrameEl.style.backgroundColor = semTimeFrame[0].color + "19")
-        dayFrameEl.style.backgroundColor = "rgba(227, 242, 218, 0.4)";
-      } else {
-        dayFrameEl.style.backgroundColor = "#ffffff";
-      }
-      if (isHighLight) dayFrameEl.style.backgroundColor = "#FFFDC3";
-      else if (today) {
-        dayFrameEl.style.backgroundColor = "#5D9936";
-        dayFrameEl.style.color = "#ffffff";
-      }
-      // else dayFrameEl.style.backgroundColor = "#ffffff";
-    });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [monthValue, userData]);
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [monthValue, userData]);
-
+  useApplyHighlightOrOngoing({
+    monthValue,
+    userData,
+    semesterData,
+    calendarRef,
+    dayFrameRefs,
+  });
   const handleEventDidMount = async (info: EventMountArg) => {
     const departments = info?.event?._def?.extendedProps?.departments;
     const start = info.event._instance?.range?.start;
@@ -327,9 +307,6 @@ export default function ReactFullCal({} // eventDetailWidth,
 
     const displayStart = start?.toISOString() ?? new Date().toISOString();
     const displayEnd = end?.toISOString() ?? new Date().toISOString();
-
-    // const startTime = displayStart ? format(displayStart, "h:mm a") : "00: 00 am";
-    // const endTime = displayEnd ? format(displayEnd, "h:mm a") : "00: 00 am";
 
     const startTime = displayStart
       .split("T")[1]
@@ -341,12 +318,9 @@ export default function ReactFullCal({} // eventDetailWidth,
     const eventEl = info.el;
 
     if (currentView === "timeGridWeek" || currentView === "timeGridDay") {
-      console.log("eventEl", eventEl);
       const duration = start && end ? end?.getTime() - start?.getTime() : 0;
       const twoHours = 1000 * 60 * 60 * 2;
       const hours = Math.floor(duration / (1000 * 60 * 60));
-
-      // console.log("info", info);
 
       const timeEl = document.createElement("div");
 
@@ -380,11 +354,7 @@ export default function ReactFullCal({} // eventDetailWidth,
         mainFrameEl && mainFrameEl.querySelector(".fc-event-title-container");
       titleContainer &&
         mainFrameEl?.insertBefore(departmentsWrapper, titleContainer);
-      console.log(
-        "event duration is less than 1 hour",
-        eventEl.querySelector(".fc-event-main-frame"),
-        duration > twoHours,
-      );
+
       if (duration > twoHours) {
         mainFrameEl?.appendChild(timeEl);
       }
@@ -476,7 +446,6 @@ export default function ReactFullCal({} // eventDetailWidth,
 
   useEffect(() => {
     if (!calendarApi?.changeView) return;
-    console.log("currview", currentView);
     calendarApi.changeView(currentView);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentView, calendarRef]);
@@ -514,7 +483,6 @@ export default function ReactFullCal({} // eventDetailWidth,
                   info?.event?._def?.ui?.backgroundColor ||
                   info?.event?._def?.ui?.borderColor,
               };
-              // console.log("selectedEventObj", info.event.start, info.event.end);
 
               const upcommingEventWidth =
                 // @ts-ignore

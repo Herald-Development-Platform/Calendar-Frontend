@@ -181,14 +181,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                 <span className="min-w-[130px] text-[16px] ">
                   Events Calendar
                 </span>
-                {/* <span
-                  className={`${open ? "ml-auto rotate-180" : " absolute top-20"} cursor-pointer text-2xl font-thin text-neutral-500`}
-                  onClick={() => {
-                    setOpen(!open);
-                  }}
-                >
-                  <BsLayoutSidebarReverse />
-                </span> */}
+
                 <Image
                   onClick={() => {
                     setOpen(!open);
@@ -211,11 +204,6 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                 }}
                 className={`${nonHighlightedStyles}`}
               >
-                {/* <span
-                  className={`cursor-pointer text-2xl font-thin text-neutral-500`}
-                >
-                  <BsLayoutSidebarReverse />
-                </span> */}
                 <Image
                   width={20}
                   height={17}
@@ -238,7 +226,6 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                       : nonHighlightedStyles
                   }
                     `}
-                // className="text-primary-700"
                 key={i}
               >
                 <span
