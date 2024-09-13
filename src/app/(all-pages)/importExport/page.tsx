@@ -150,7 +150,7 @@ export default function ImportExport() {
     setEventDialogOpen(false);
   };
 
-  const { mutate: postMemberFiles } = useMutation({
+  const { mutate: postMemberFiles, isPending: membersUploading} = useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
@@ -538,6 +538,7 @@ export default function ImportExport() {
                     : toast.error("File is not selected.");
                 }}
                 className="btn btn-md h-5 border-none bg-primary-600 text-[13px] font-medium text-primary-50 hover:bg-primary-700"
+                disabled={membersUploading}
               >
                 {currentTab === "import" ? "Import" : "Export"}
               </button>
@@ -591,6 +592,7 @@ export default function ImportExport() {
                     ? locationUploadMutation.mutate(selectedFile)
                     : toast.error("File is not selected.");
                 }}
+                disabled={locationUploadMutation.isPending}
                 className="btn btn-md h-5 border-none bg-primary-600 text-[13px] font-medium text-primary-50 hover:bg-primary-700"
               >
                 Import
@@ -645,6 +647,7 @@ export default function ImportExport() {
                     ? departmentUploadMutation.mutate(selectedFile)
                     : toast.error("File is not selected.");
                 }}
+                disabled={departmentUploadMutation.isPending}
                 className="btn btn-md h-5 border-none bg-primary-600 text-[13px] font-medium text-primary-50 hover:bg-primary-700"
               >
                 Import
@@ -699,6 +702,7 @@ export default function ImportExport() {
                     ? semesterUploadMutation.mutate(selectedFile)
                     : toast.error("File is not selected.");
                 }}
+                disabled={semesterUploadMutation.isPending}
                 className="btn btn-md h-5 border-none bg-primary-600 text-[13px] font-medium text-primary-50 hover:bg-primary-700"
               >
                 Import
