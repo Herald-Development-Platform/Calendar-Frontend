@@ -28,6 +28,7 @@ export default function Page() {
     })
       .then((res) => res.json())
       .then((data) => {
+        toast.remove();
         if (!data.success) {
           toast.error(data.message || "Something went wrong.");
           return;
@@ -37,7 +38,10 @@ export default function Page() {
         queryClient.invalidateQueries();
         router.push("/");
       })
-      .catch((err) => toast.error("Something went wrong"));
+      .catch((err) => {
+        toast.remove();
+        toast.error("Something went wrong");
+      });
   };
   return (
     <>
@@ -51,9 +55,13 @@ export default function Page() {
             alt="HeraldLogo"
             className="h-auto w-auto"
           />
-          <div className="text-2xl" style={{lineHeight:0}}>
-            <span className="text-primary-600" style={{lineHeight:0.8}}>Herald{" "}</span>
-            <span className="text-neutral-600" style={{lineHeight:0.8}}>Calendar</span>
+          <div className="text-2xl" style={{ lineHeight: 0 }}>
+            <span className="text-primary-600" style={{ lineHeight: 0.8 }}>
+              Herald{" "}
+            </span>
+            <span className="text-neutral-600" style={{ lineHeight: 0.8 }}>
+              Calendar
+            </span>
           </div>
         </div>
 

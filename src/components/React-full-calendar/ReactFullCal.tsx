@@ -227,72 +227,6 @@ export default function ReactFullCal() {
     }, 100);
   };
 
-  // useEffect(() => {
-  //   let currnetDate = new Date();
-  //   let semTimeFrame = userData?.activeSemester?.map((semesterId: string) => {
-  //     const semester = semesterData?.find((sem: any) => sem.id == semesterId);
-  //     if (!semester) return;
-  //     return {
-  //       start: new Date(semester?.start ?? ""),
-  //       end: new Date(semester?.end ?? ""),
-  //       color: semester.color,
-  //     };
-  //   });
-
-  //   semTimeFrame = semTimeFrame?.filter((sem: any) => {
-  //     let startDate = new Date(sem?.start ?? "");
-  //     let endDate = new Date(sem?.end ?? "");
-  //     return startDate <= currnetDate && endDate >= currnetDate;
-  //   });
-
-  //   if (typeof calendarRef === "string") return;
-  //   if (!calendarRef?.current) return;
-
-  //   // @ts-ignore
-  //   dayFrameRefs.current = calendarRef.current.elRef.current.querySelectorAll(
-  //     ".fc-daygrid-day-frame",
-  //   );
-  //   const dayFrameEls = Array.from(dayFrameRefs.current);
-
-  //   dayFrameEls.forEach((dayFrameEl: HTMLDivElement) => {
-  //     const dayGridNumber = dayFrameEl.querySelector(".fc-daygrid-day-number");
-  //     const ariaLabelValue = dayGridNumber?.getAttribute("aria-label");
-
-  //     if (!ariaLabelValue) return;
-
-  //     const parsedDate = parse(ariaLabelValue, "MMMM d, yyyy", new Date());
-  //     const isoDate = format(parsedDate, "yyyy-MM-dd");
-
-  //     const isHighLight = userData?.importantDates.includes(
-  //       new Date(isoDate).toISOString(),
-  //     );
-
-  //     const isOngoing: boolean = semTimeFrame?.some((sem: any) => {
-  //       if (!sem) return undefined;
-  //       return (
-  //         parsedDate.getTime() >= sem?.start?.getTime() &&
-  //         parsedDate.getTime() <= sem?.end?.getTime()
-  //       );
-  //     });
-
-  //     const today =
-  //       dayFrameEl?.parentElement?.classList.contains("fc-day-today");
-
-  //     if (isOngoing) {
-  //       dayFrameEl.style.backgroundColor = "rgba(227, 242, 218, 0.4)";
-  //     } else {
-  //       dayFrameEl.style.backgroundColor = "#ffffff";
-  //     }
-  //     if (isHighLight) dayFrameEl.style.backgroundColor = "#FFFDC3";
-  //     else if (today) {
-  //       dayFrameEl.style.backgroundColor = "#5D9936";
-  //       dayFrameEl.style.color = "#ffffff";
-  //     }
-  //   });
-
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [monthValue, userData]);
-
   useApplyHighlightOrOngoing({
     monthValue,
     userData,
@@ -492,8 +426,6 @@ export default function ReactFullCal() {
             }}
             initialView={`dayGridMonth`}
             events={events as EventSourceInput}
-            // eventMouseEnter={handleMouseEnter}
-            // eventMouseLeave={handleMouseLeave}
             eventDidMount={handleEventDidMount}
             headerToolbar={false}
             selectable={selectable}
@@ -630,3 +562,5 @@ export default function ReactFullCal() {
 //   info.el.appendChild(tooltipWrapper);
 //   tooltipWrapper.classList.add("event-tooltip-transition");
 // };
+// eventMouseEnter={handleMouseEnter}
+// eventMouseLeave={handleMouseLeave}

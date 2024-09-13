@@ -6,13 +6,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { Toaster } from "react-hot-toast";
 import SummaryCard from "./SummaryCard";
 import { useGetEvents } from "@/services/api/eventsApi";
-import { RiArrowDropDownLine } from "react-icons/ri";
-import { Chart } from "chart.js/auto";
 import PieChart from "@/components/Chartjs/PieChart";
 import colors from "@/constants/Colors";
 import BarChart from "@/components/Chartjs/BarChart";

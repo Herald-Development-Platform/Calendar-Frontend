@@ -1,7 +1,7 @@
 "use client";
 import Datepicker from "react-datepicker";
 import Image from "next/image";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { FaCheck } from "react-icons/fa";
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -56,36 +56,22 @@ export default function EditEventModal1({
     recurrenceEnd: null,
     notifyUpdate: false,
   });
+  const [formErrors, setFormErrors] = useState<any>({});
+  const eventFormRef = useRef<HTMLDivElement>(null);
 
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    if (!defaultData) return;
-    const modifiedData = {
-      ...defaultData,
-      departments: defaultData.departments.map(
-        //@ts-ignore
-        (department) => department?.code,
-      ),
-      start: defaultData.start ? new Date(defaultData.start) : new Date(),
-      end: defaultData.end ? new Date(defaultData.end) : new Date(),
-    };
-    setDefaultValuesArr((defaultValues) => [...defaultValues, modifiedData]);
-
-    setDateType(
-      defaultData?.start &&
-        new Date(defaultData.start).getDate() !==
-          new Date(defaultData.end ?? "").getDate()
-        ? "multi"
-        : "single",
-    );
-    setNewEvent(defaultValuesArr[defaultValuesArr.length - 2]);
-    // console.log("modifiedData", modifiedData);
-  }, [defaultData]);
 
   const { userData } = useContext(Context);
   const { data: departmentsRes } = useGetDepartments();
   const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
+
+  useEffect(() => {
+    if (!eventFormRef.current) return;
+    eventFormRef.current
+      .querySelector(".form-validation-msg")
+      // @ts-ignore
+      ?.previousSibling?.scrollIntoView();
+  }, [formErrors?.name]);
 
   function handleCreateEvent() {
     postNewEvent(newEvent, {
@@ -175,6 +161,44 @@ export default function EditEventModal1({
   };
 
   console.log("neweent", newEvent);
+  const validateAndFocus = () => {
+    if (!eventFormRef.current) return;
+
+    if (!newEvent?.title) {
+      setFormErrors({ name: "title", message: "Title is a required field." });
+      return false;
+    }
+    if (!newEvent?.description) {
+      setFormErrors({
+        name: "description",
+        message: "Description is a required field.",
+      });
+      return false;
+    }
+    if (!newEvent?.start) {
+      setFormErrors({ name: "start", message: "Select a start date." });
+      return false;
+    }
+    if (!newEvent?.end) {
+      setFormErrors({ name: "end", message: "Select a end date." });
+      return false;
+    }
+
+    if (newEvent?.start > newEvent?.end) {
+      setFormErrors({
+        name: "end",
+        message: "End date should be after start date.",
+      });
+      return false;
+    }
+
+    if (!newEvent?.departments || newEvent?.departments?.length === 0) {
+      setFormErrors({ name: "departments", message: "Select a department." });
+      return false;
+    }
+    setFormErrors({});
+    return true;
+  };
   return (
     <>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -193,7 +217,10 @@ export default function EditEventModal1({
           Add Event
         </button>
         <dialog id="my_modal_5" className="modal z-[1111]">
-          <div className="min-w-xl modal-box relative flex max-w-2xl flex-col gap-10 overflow-y-auto p-8 text-lg text-neutral-600">
+          <div
+            ref={eventFormRef}
+            className="min-w-xl modal-box relative flex max-w-2xl flex-col gap-10 overflow-y-auto p-8 text-lg text-neutral-600"
+          >
             {/* Heading  */}
             <div className="m-auto">
               <form method="dialog">
@@ -223,6 +250,11 @@ export default function EditEventModal1({
                     onChange={handleValueChange}
                   />
                 </div>
+                {formErrors?.name === "title" && (
+                  <span className="form-validation-msg text-sm text-danger-700">
+                    {formErrors?.message}
+                  </span>
+                )}
               </label>
               {/* Description section  */}
               <div className="flex w-full flex-col items-start text-sm">
@@ -235,6 +267,11 @@ export default function EditEventModal1({
                   onChange={handleValueChange}
                   value={newEvent?.description ? newEvent?.description : ""}
                 />
+                {formErrors?.name === "description" && (
+                  <span className="form-validation-msg text-sm text-danger-700">
+                    {formErrors?.message}
+                  </span>
+                )}
               </div>
 
               {/* Date Input section */}
@@ -388,6 +425,11 @@ export default function EditEventModal1({
                   handleTimeChange={handleValueChange}
                 />
               </div>
+              {(formErrors?.name === "start" || formErrors?.name === "end") && (
+                <span className="form-validation-msg text-sm text-danger-700">
+                  {formErrors?.message}
+                </span>
+              )}
 
               {/* Color input section  */}
               <div className="flex flex-col items-start">
