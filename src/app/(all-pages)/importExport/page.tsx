@@ -10,12 +10,11 @@ import { useContext, useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { TbCloudUpload, TbCloudDownload } from "react-icons/tb";
 import { FaRegFile } from "react-icons/fa6";
-import { Axios, baseUrl } from "@/services/baseUrl";
+import { Axios } from "@/services/baseUrl";
 import DepartmentButton from "@/components/DepartmentButton";
 import { BiPencil } from "react-icons/bi";
-import ContextProvider, { Context } from "@/app/clientWrappers/ContextProvider";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import Image from "next/image";
+import { Context } from "@/app/clientWrappers/ContextProvider";
+import { useMutation } from "@tanstack/react-query";
 import * as Headers from "@/components/Header";
 import { IoMdArrowBack } from "react-icons/io";
 import { useRouter } from "next/navigation";
@@ -170,7 +169,7 @@ export default function ImportExport() {
       if (data.data.uploadReportFilename) {
         // download the file data, set it to form and download
         Axios.get(
-          `${baseUrl}/userUploadReport/${data.data.uploadReportFilename}`,
+          `/userUploadReport/${data.data.uploadReportFilename}`,
           {
             responseType: "blob",
           },
