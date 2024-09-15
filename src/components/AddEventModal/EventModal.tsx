@@ -203,7 +203,7 @@ export default function EventModal({
       return false;
     }
 
-    if (newEvent?.start > newEvent?.end) {
+    if (newEvent?.start >= newEvent?.end) {
       setFormErrors({
         name: "end",
         message: "End date should be after start date.",
