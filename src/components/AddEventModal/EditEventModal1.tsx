@@ -33,6 +33,7 @@ import { makePascalCase } from "@/lib/utils";
 import DepartmentButton from "../DepartmentButton";
 import Locations from "./Locations";
 import DatePicker from "./DatePicker";
+import { ROLES } from "@/constants/role";
 
 export default function EditEventModal1({
   defaultData,
@@ -43,6 +44,31 @@ export default function EditEventModal1({
   const [dateType, setDateType] = useState<"single" | "multi">("single");
   const [defaultValuesArr, setDefaultValuesArr] = useState<any[]>([]);
   const { userData } = useContext(Context);
+  // const { data: userData } = useQuery({
+  //   queryKey: ["profile"],
+  //   queryFn: async () => {
+  //     try {
+  //       const response = await Axios.get(`/profile`);
+  //       const user = response.data.data;
+  //       if (user) {
+  //         if (
+  //           user.syncWithGoogle &&
+  //           (user.role === ROLES.SUPER_ADMIN || user.department)
+  //         ) {
+  //           syncWithGoogle();
+  //         }
+  //         const token = await generateNewToken();
+  //         if (token) {
+  //           setCookie("token", token, 5);
+  //         }
+  //       }
+  //       return user;
+  //     } catch (error) {
+  //       console.error("Error fetching user data:", error);
+  //       return {};
+  //     }
+  //   },
+  // });
 
   const [newEvent, setNewEvent] = useState<eventType>({
     title: "",
@@ -52,7 +78,7 @@ export default function EditEventModal1({
     duration: 0,
     location: "",
     description: undefined,
-    departments: [userData?.department?.code || ""],
+    departments: [],
     notes: "",
     recurringType: RecurringEventTypes.ONCE,
     involvedUsers: [],
@@ -60,7 +86,7 @@ export default function EditEventModal1({
     notifyUpdate: false,
   });
 
-  console.log("newEvent:::::::::", newEvent);
+  // console.log("userData:::::::::", userData);
 
   const [formErrors, setFormErrors] = useState<any>({});
   const eventFormRef = useRef<HTMLDivElement>(null);
@@ -70,9 +96,9 @@ export default function EditEventModal1({
   const { data: departmentsRes } = useGetDepartments();
   const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
 
-  useEffect(() => {
-    setDefaultValuesArr((prev) => [...prev, defaultData]);
-  }, [defaultData]);
+  // useEffect(() => {
+  //   setDefaultValuesArr((prev) => [...prev, defaultData]);
+  // }, [defaultData]);
   // useEffect(() => {
   //   setNewEvent(defaultValuesArr[defaultValuesArr.length - 1]);
   // }, [defaultValuesArr]);
@@ -86,8 +112,17 @@ export default function EditEventModal1({
 
   useEffect(() => {
     if (!defaultData) return;
+    let currentDepartments: string[] = [];
+    if (userData?.department) {
+      currentDepartments = [userData?.department?.code].concat(
+        newEvent?.departments ?? [],
+      );
+      currentDepartments = Array.from(new Set(currentDepartments));
+      // setNewEvent((prev) => ({ ...prev, departments: currentDepartments }));
+    }
     const modifiedData = {
       ...defaultData,
+      departments: currentDepartments,
       start: defaultData.start ? new Date(defaultData.start) : new Date(),
       end: defaultData.end ? new Date(defaultData.end) : new Date(),
     };
@@ -202,7 +237,6 @@ export default function EditEventModal1({
     }
   };
 
-  console.log("neweent", newEvent);
   const validateAndFocus = () => {
     console.log("departments", newEvent?.departments);
     if (!eventFormRef.current) return;
@@ -243,15 +277,9 @@ export default function EditEventModal1({
     return true;
   };
 
-  useEffect(() => {
-    if (userData?.department) {
-      let currentDepartments = [userData?.department?.code].concat(
-        newEvent?.departments ?? [],
-      );
-      currentDepartments = Array.from(new Set(currentDepartments));
-      setNewEvent((prev) => ({ ...prev, departments: currentDepartments }));
-    }
-  }, [userData]);
+  useEffect(() => {}, [userData, defaultValuesArr]);
+
+  console.log("newEvent", newEvent);
 
   return (
     <>
@@ -283,6 +311,7 @@ export default function EditEventModal1({
                   ✕
                 </button>
               </form>
+
               <h3 className="text-lg font-bold">Add Event</h3>
             </div>
 
@@ -371,19 +400,6 @@ export default function EditEventModal1({
                         newStart = new Date(
                           new Date(value).setHours(oldHours, oldMinutes),
                         );
-
-                        console.log(
-                          "START::::::::::::::::::Old Hours:",
-                          oldHours,
-                        );
-                        console.log(
-                          "START::::::::::::::::::Old Minutes:",
-                          oldMinutes,
-                        );
-                        console.log(
-                          "START::::::::::::::::::newStart:",
-                          newStart,
-                        );
                       } else {
                         newStart = new Date(value);
                       }
@@ -394,13 +410,6 @@ export default function EditEventModal1({
                         newEnd = new Date(
                           new Date(value).setHours(oldHours, oldMinutes),
                         );
-
-                        console.log("END:::::::::::::::::Old Hours:", oldHours);
-                        console.log(
-                          "END:::::::::::::::::Old Minutes:",
-                          oldMinutes,
-                        );
-                        console.log("END:::::::::::::::::newEnd:", newEnd);
                       } else {
                         newEnd = new Date(
                           new Date(value).setHours(
