@@ -39,6 +39,7 @@ export default function EditEventModal1({
 }: {
   defaultData: eventType | null;
 }) {
+  console.log("defaultData", defaultData);
   const [dateType, setDateType] = useState<"single" | "multi">("single");
   const [defaultValuesArr, setDefaultValuesArr] = useState<any[]>([]);
   const [newEvent, setNewEvent] = useState<eventType>({
@@ -66,18 +67,53 @@ export default function EditEventModal1({
   const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
 
   useEffect(() => {
-    if (!eventFormRef.current) return;
-    eventFormRef.current
-      .querySelector(".form-validation-msg")
-      // @ts-ignore
-      ?.previousSibling?.scrollIntoView();
-  }, [formErrors?.name]);
+    setDefaultValuesArr((prev) => [...prev, defaultData]);
+  }, [defaultData]);
+  // useEffect(() => {
+  //   setNewEvent(defaultValuesArr[defaultValuesArr.length - 1]);
+  // }, [defaultValuesArr]);
+  // useEffect(() => {
+  //   if (!eventFormRef.current) return;
+  //   eventFormRef.current
+  //     .querySelector(".form-validation-msg")
+  //     // @ts-ignore
+  //     ?.previousSibling?.scrollIntoView();
+  // }, [formErrors?.name]);
+
+  useEffect(() => {
+    if (!defaultData) return;
+    const modifiedData = {
+      ...defaultData,
+      start: defaultData.start ? new Date(defaultData.start) : new Date(),
+      end: defaultData.end ? new Date(defaultData.end) : new Date(),
+    };
+
+    setDefaultValuesArr((defaultValues) => [...defaultValues, modifiedData]);
+
+    const correctDefault = defaultValuesArr[defaultValuesArr.length - 2];
+
+    setDateType(
+      correctDefault?.start &&
+        new Date(correctDefault.start).getDate() !==
+          new Date(correctDefault.end ?? "").getDate()
+        ? "multi"
+        : "single",
+    );
+
+    setNewEvent(correctDefault);
+    // console.log("modifiedData", modifiedData);
+  }, [defaultData]);
 
   function handleCreateEvent() {
     if (!validateAndFocus()) return;
 
     postNewEvent(newEvent, {
       onSuccess: (res) => {
+        const modal_3 = document.getElementById(
+          "my_modal_3",
+        ) as HTMLDialogElement;
+        modal_3.close();
+
         console.log("Onsuccess", res);
         queryClient.invalidateQueries({ queryKey: ["Events"] });
 
@@ -202,6 +238,7 @@ export default function EditEventModal1({
     setFormErrors({});
     return true;
   };
+
   return (
     <>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -554,23 +591,6 @@ export default function EditEventModal1({
                 />
               </div>
               {/* <div className="flex items-center gap-2"> */}
-              <label
-                className="flex cursor-pointer items-center gap-1 text-sm font-medium text-neutral-500"
-                htmlFor={"notify"}
-              >
-                <input
-                  checked={newEvent?.notifyUpdate || false}
-                  id={"notify"}
-                  type="checkbox"
-                  name={"notifyUpdate"}
-                  onChange={(e) =>
-                    handleValueChange({
-                      target: { name: e.target.name, value: e.target.checked },
-                    })
-                  }
-                />
-                Notify
-              </label>
               {/* </div> */}
             </div>
 
