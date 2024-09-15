@@ -129,7 +129,7 @@ export default function Locations({
       <div
         className={`${
           showPopup ? "block" : "hidden"
-        } absolute left-0 top-0 z-10 h-[400%] w-full bg-black opacity-0`}
+        } absolute left-0 top-0 z-10 h-full w-full bg-black opacity-5`}
         onClick={() => setShowPopup(false)}
       ></div>
     </>
