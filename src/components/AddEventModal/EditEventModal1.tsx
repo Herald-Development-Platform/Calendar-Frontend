@@ -42,6 +42,8 @@ export default function EditEventModal1({
   console.log("defaultData", defaultData);
   const [dateType, setDateType] = useState<"single" | "multi">("single");
   const [defaultValuesArr, setDefaultValuesArr] = useState<any[]>([]);
+  const { userData } = useContext(Context);
+
   const [newEvent, setNewEvent] = useState<eventType>({
     title: "",
     start: null,
@@ -50,19 +52,21 @@ export default function EditEventModal1({
     duration: 0,
     location: "",
     description: undefined,
-    departments: [],
+    departments: [userData?.department?.code || ""],
     notes: "",
     recurringType: RecurringEventTypes.ONCE,
     involvedUsers: [],
     recurrenceEnd: null,
     notifyUpdate: false,
   });
+
+  console.log("newEvent:::::::::", newEvent);
+
   const [formErrors, setFormErrors] = useState<any>({});
   const eventFormRef = useRef<HTMLDivElement>(null);
 
   const queryClient = useQueryClient();
 
-  const { userData } = useContext(Context);
   const { data: departmentsRes } = useGetDepartments();
   const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
 
@@ -238,6 +242,16 @@ export default function EditEventModal1({
     setFormErrors({});
     return true;
   };
+
+  useEffect(() => {
+    if (userData?.department) {
+      let currentDepartments = [userData?.department?.code].concat(
+        newEvent?.departments ?? [],
+      );
+      currentDepartments = Array.from(new Set(currentDepartments));
+      setNewEvent((prev) => ({ ...prev, departments: currentDepartments }));
+    }
+  }, [userData]);
 
   return (
     <>
@@ -548,9 +562,9 @@ export default function EditEventModal1({
                 <div className="my-2 flex flex-wrap items-center gap-1">
                   {Array.isArray(departmentsRes) &&
                     departmentsRes?.map((department: Department) => {
-                      const departmentExists =
-                        newEvent?.departments.includes(department.code) ||
-                        department.code === userData?.department?.code;
+                      const departmentExists = newEvent?.departments.includes(
+                        department.code,
+                      );
                       return (
                         <DepartmentButton
                           key={department._id}

@@ -27,7 +27,6 @@ import { MdOutlineModeEditOutline } from "react-icons/md";
 import colors from "@/constants/Colors";
 import {
   Dispatch,
-  RefObject,
   SetStateAction,
   useEffect,
   useState,
@@ -38,18 +37,12 @@ import { format, set } from "date-fns";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
-import AddEventModal from "@/components/AddEventModal";
-import EventModal from "@/components/AddEventModal/EventModal";
-import RecurrenceType from "@/components/AddEventModal/RecurrenceType";
 import { RecurringEventTypes } from "@/constants/RecurringEvents";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import toast from "react-hot-toast";
 import { useEditEventMutation } from "@/services/api/eventsApi";
 import { convertToLink } from "@/lib/utils";
 import { FaCircleUser } from "react-icons/fa6";
