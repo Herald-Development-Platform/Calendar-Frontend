@@ -74,6 +74,8 @@ export default function EditEventModal1({
   }, [formErrors?.name]);
 
   function handleCreateEvent() {
+    if (!validateAndFocus()) return;
+
     postNewEvent(newEvent, {
       onSuccess: (res) => {
         console.log("Onsuccess", res);
@@ -162,6 +164,7 @@ export default function EditEventModal1({
 
   console.log("neweent", newEvent);
   const validateAndFocus = () => {
+    console.log("departments", newEvent?.departments);
     if (!eventFormRef.current) return;
 
     if (!newEvent?.title) {
@@ -193,7 +196,7 @@ export default function EditEventModal1({
     }
 
     if (!newEvent?.departments || newEvent?.departments?.length === 0) {
-      setFormErrors({ name: "departments", message: "Select a department." });
+      setFormErrors({ name: "department", message: "Select a department." });
       return false;
     }
     setFormErrors({});
@@ -273,7 +276,6 @@ export default function EditEventModal1({
                   </span>
                 )}
               </div>
-
               {/* Date Input section */}
               <label htmlFor="date" className="flex flex-col gap-2 text-sm ">
                 <div className="flex gap-3">
@@ -380,7 +382,12 @@ export default function EditEventModal1({
                     />
                   </div>
                 )}
-
+                {(formErrors?.name === "start" ||
+                  formErrors?.name === "end") && (
+                  <span className="form-validation-msg text-sm text-danger-700">
+                    {formErrors?.message}
+                  </span>
+                )}
                 {/* Recurrence  */}
                 <div className="flex gap-[14px]">
                   {(
@@ -411,7 +418,6 @@ export default function EditEventModal1({
                   })}
                 </div>
               </label>
-
               {/* Time Picker  */}
               <div className="flex w-full gap-4">
                 <CustomTimePicker
@@ -425,12 +431,6 @@ export default function EditEventModal1({
                   handleTimeChange={handleValueChange}
                 />
               </div>
-              {(formErrors?.name === "start" || formErrors?.name === "end") && (
-                <span className="form-validation-msg text-sm text-danger-700">
-                  {formErrors?.message}
-                </span>
-              )}
-
               {/* Color input section  */}
               <div className="flex flex-col items-start">
                 <span className="text-sm">Priority</span>
@@ -495,13 +495,16 @@ export default function EditEventModal1({
                   </span>
                 )} */}
               </div>
-
               {/* Location section  */}
               <Locations
                 value={newEvent?.location ?? ""}
                 handleValueChange={handleValueChange}
-              />
-
+              />{" "}
+              {formErrors?.name === "location" && (
+                <span className="form-validation-msg text-sm text-danger-700">
+                  {formErrors?.message}
+                </span>
+              )}
               {/* Departments section  */}
               <div className="flex flex-col items-start text-sm">
                 <span>Departments:</span>
@@ -529,13 +532,16 @@ export default function EditEventModal1({
                       );
                     })}
                 </div>
+                {formErrors?.name === "department" && (
+                  <span className="form-validation-msg text-sm text-danger-700">
+                    {formErrors?.message}
+                  </span>
+                )}
               </div>
-
               <InviteMembers
                 memberIds={newEvent?.involvedUsers}
                 handleInviteMembers={handleValueChange}
               ></InviteMembers>
-
               {/* Notes section  */}
               <div className=" flex flex-col items-start text-sm">
                 <span className="">Notes</span>
@@ -547,7 +553,6 @@ export default function EditEventModal1({
                   onChange={handleValueChange}
                 />
               </div>
-
               {/* <div className="flex items-center gap-2"> */}
               <label
                 className="flex cursor-pointer items-center gap-1 text-sm font-medium text-neutral-500"
@@ -570,8 +575,8 @@ export default function EditEventModal1({
             </div>
 
             {/* create btn  */}
-            <form
-              method="dialog"
+            <div
+              // method="dialog"
               className=" flex h-16 w-full items-center justify-end "
             >
               <button
@@ -580,7 +585,7 @@ export default function EditEventModal1({
               >
                 Create
               </button>
-            </form>
+            </div>
           </div>
           <form method="dialog" className="modal-backdrop">
             <button>close</button>

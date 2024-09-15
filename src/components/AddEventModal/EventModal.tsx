@@ -212,7 +212,7 @@ export default function EventModal({
     }
 
     if (!newEvent?.departments || newEvent?.departments?.length === 0) {
-      setFormErrors({ name: "departments", message: "Select a department." });
+      setFormErrors({ name: "department", message: "Select a department." });
       return false;
     }
     setFormErrors({});
@@ -563,6 +563,11 @@ export default function EventModal({
                       );
                     })}
                 </div>
+                {formErrors?.name === "department" && (
+                  <span className="form-validation-msg text-sm text-danger-700">
+                    {formErrors?.message}
+                  </span>
+                )}
               </div>
 
               <InviteMembers
