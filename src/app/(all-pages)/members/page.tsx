@@ -837,7 +837,7 @@ export default function Page() {
               })}
           </>
           <div className="flex flex-row justify-between">
-            <div className="flex max-w-[80vw] flex-row items-center justify-start gap-1.5">
+            <div className="flex max-w-[60vw] overflow-x-scroll hide-scrollbar flex-row items-center justify-start gap-1.5">
               {profile && profile.role === ROLES.SUPER_ADMIN && (
                 <DepartmentBtn
                   selectedCross={false}
