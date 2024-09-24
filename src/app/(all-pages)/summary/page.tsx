@@ -198,7 +198,7 @@ export default function SummaryPage() {
               </Select>
             </span>
           </div>
-          <div className=" flex gap-2 ">
+          <div className=" flex gap-2 overflow-x-scroll max-w-[80vw] hide-scrollbar ">
             <DepartmentButton
               selectedCross={false}
               value={"All"}
