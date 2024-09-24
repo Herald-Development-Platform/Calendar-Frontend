@@ -148,11 +148,6 @@ export default function EditEventModal1({
 
     postNewEvent(newEvent, {
       onSuccess: (res) => {
-        const modal_3 = document.getElementById(
-          "my_modal_3",
-        ) as HTMLDialogElement;
-        modal_3.close();
-
         console.log("Onsuccess", res);
         queryClient.invalidateQueries({ queryKey: ["Events"] });
 
@@ -174,6 +169,10 @@ export default function EditEventModal1({
             recurrenceEnd: null,
             notifyUpdate: false,
           });
+        const modal_5 = document.getElementById(
+          "my_modal_5",
+        ) as HTMLDialogElement;
+        modal_5.close();
       },
       onError: (err: any) => {
         console.log("error", err);
@@ -261,7 +260,7 @@ export default function EditEventModal1({
       return false;
     }
 
-    if (newEvent?.start > newEvent?.end) {
+    if (newEvent?.start >= newEvent?.end) {
       setFormErrors({
         name: "end",
         message: "End date should be after start date.",
@@ -288,10 +287,10 @@ export default function EditEventModal1({
           className="scale btn btn-sm
            relative  hidden h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
           onClick={() => {
-            const modal_4 = document.getElementById(
+            const modal_5 = document.getElementById(
               "my_modal_5",
             ) as HTMLDialogElement;
-            modal_4.showModal();
+            modal_5.showModal();
           }}
           key={"my_modal_5"}
         >
