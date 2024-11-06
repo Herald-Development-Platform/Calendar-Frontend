@@ -164,6 +164,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
             open ? "gap-14" : "gap-1.5"
           }  font-medium`}
         >
+          <span className="bg-red-500 text-lg px-6 pb-0 py-3 text-white absolute -top-2.5 left-[-28px] -rotate-[40deg]">Beta</span>
           <div
             className={`flex ${
               open ? "flex-row" : "flex-col"

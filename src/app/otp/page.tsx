@@ -129,7 +129,7 @@ function OTP() {
         >
           <h1 className="text-2xl font-bold">OTP Verification</h1>
           <h4 className=" text-neutral-500">
-            We’ve sent a 4 digit OTP in your gmail
+            We&apos;ve sent a 6 digit OTP in your gmail
           </h4>
         </div>
 

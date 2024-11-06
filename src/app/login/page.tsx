@@ -16,7 +16,7 @@ export default function Page() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const { register, handleSubmit } = useForm<any>();
+  const { register, handleSubmit, formState:{errors} } = useForm<any>();
 
   const loginUser = (payload: any) => {
     fetch(`${baseUrl}/login`, {
@@ -30,6 +30,7 @@ export default function Page() {
       .then((data) => {
         toast.remove();
         if (!data.success) {
+          console.log(data);
           toast.error(data.message || "Something went wrong.");
           return;
         }
@@ -40,7 +41,7 @@ export default function Page() {
       })
       .catch((err) => {
         toast.remove();
-        toast.error("Something went wrong");
+        toast.error(err.message || "Something went wrong");
       });
   };
   return (
@@ -90,11 +91,12 @@ export default function Page() {
               <input
                 type="email"
                 className="w-full bg-neutral-100  font-normal text-neutral-500 outline-none"
-                placeholder="Enter your college id."
+                placeholder="Enter your college email"
                 id="email"
                 {...register("email", { required: "Email is required" })}
               />
             </div>
+            {errors.email && (<p className="text-sm text-red-500">{errors.email.message as string}</p>)}
           </label>
 
           <label htmlFor="password">
@@ -123,6 +125,7 @@ export default function Page() {
                 {showPassword ? <LuEyeOff /> : <LuEye />}
               </span>
             </div>
+            {errors.password && (<p className="text-sm text-red-500">{errors.password.message as string}</p>)}
           </label>
           <div className="relative  flex w-auto flex-row items-center justify-end gap-3">
             <Link

@@ -11,13 +11,14 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { LuEye, LuEyeOff } from "react-icons/lu";
 import { FaRegCircleUser } from "react-icons/fa6";
+// import { error } from "console";
 
 export default function Page() {
   const {
     register,
     setValue,
     reset,
-    // formState: { error },
+    formState: { errors },
     getValues,
     handleSubmit,
   } = useForm<any>();
@@ -36,14 +37,16 @@ export default function Page() {
       .then((res) => res.json())
       .then((data) => {
         if (!data.success) {
-          throw Error(data || "Something went wrong");
+          throw Error(data.message || "Something went wrong");
         }
         toast.success(data.message || "Successfully registered user.");
         setTimeout(() => {
           router.push(`/otp?email=${payload.email}`);
         }, 1000);
       })
-      .catch((err) => toast.error("Something went wrong"));
+      .catch((err) => {
+        console.log(err)
+        toast.error(err.message || "Something went wrong")});
   };
 
   return (
@@ -91,9 +94,10 @@ export default function Page() {
                 className="w-full bg-neutral-100  font-normal text-neutral-500 outline-none"
                 placeholder="Enter your username."
                 id="username"
-                {...register("username", { required: "Username is required" })}
+                {...register("username", { required: "* Username is required" })}
               />
             </div>
+            {errors.username && (<p className="text-sm text-red-500">{errors.username.message as string}</p>)}
           </label>
           <label htmlFor="email">
             Email
@@ -109,11 +113,12 @@ export default function Page() {
               <input
                 type="email"
                 className="w-full bg-neutral-100  font-normal text-neutral-500 outline-none"
-                placeholder="Enter your college id."
+                placeholder="Enter your college email"
                 id="email"
-                {...register("email", { required: "Email is required" })}
+                {...register("email", { required: "* Email is required" })}
               />
             </div>
+            {errors.email && (<p className="text-sm text-red-500">{errors.email.message as string}</p>)}
           </label>
           <label htmlFor="password">
             Password
@@ -131,7 +136,7 @@ export default function Page() {
                 id="password"
                 className="w-full bg-neutral-100  font-normal text-neutral-500 outline-none "
                 placeholder="Enter your password."
-                {...register("password", { required: "Password is required" })}
+                {...register("password", { required: "* Password is required" })}
               />
               <span
                 className="cursor-pointer"
@@ -142,6 +147,7 @@ export default function Page() {
                 {showPassword ? <LuEyeOff /> : <LuEye />}
               </span>
             </div>
+            {errors.password && (<p className="text-sm text-red-500">{errors.password.message as string}</p>)}
           </label>
 
           {/* <div className="relative bottom-2 flex h-9 w-auto flex-row items-center gap-3">
