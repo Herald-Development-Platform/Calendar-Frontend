@@ -12,6 +12,8 @@ import {
   SelectValue,
 } from "./ui/select";
 import toast from "react-hot-toast";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
 
 const NOTIFICATION_CONTEXT = {
   DEPARTMENT_REQUEST: "DEPARTMENT_REQUEST",
@@ -94,7 +96,15 @@ export const NotificationList = (props: any) => {
           Mark all as Read
         </span>
       </div>
-      <div className="mt-[40px] flex h-[400px] flex-col  gap-3 overflow-y-scroll">
+
+      <Tabs defaultValue="all" className="mt-[20px]">
+  <TabsList>
+    <TabsTrigger value="all">All</TabsTrigger>
+    <TabsTrigger value="unread">Unread</TabsTrigger>
+    <TabsTrigger value="already-read">Already Read</TabsTrigger>
+  </TabsList>
+  <TabsContent value="all" className="w-full">
+  <div className="mt-[20px] flex h-[400px] flex-col  gap-3 overflow-y-scroll w-full">
         {notificationsLoading ? (
           <div className="menu-title">Loading...</div>
         ) : notifications?.length === 0 ? (
@@ -181,6 +191,188 @@ export const NotificationList = (props: any) => {
           })
         )}
       </div>
+  </TabsContent>
+  <TabsContent value="unread">
+  <div className="mt-[20px] flex h-[400px] flex-col  gap-3 overflow-y-scroll">
+        {notificationsLoading ? (
+          <div className="menu-title">Loading...</div>
+        ) : notifications?.filter((not) => !not.isRead)?.length === 0 ? (
+          <div>No Unread Notifications to View</div>
+        ) : (
+          notifications?.filter((not) => !not.isRead).map((notification: any, i: any) => {
+            let notificationDate = new Date(notification.date);
+            let showDate = false;
+            if (i === 0) {
+              showDate = true;
+            } else if (
+              notificationDate.getDate() !==
+              new Date(notifications[i - 1].date).getDate()
+            ) {
+              console.log(
+                "Date from notification: ",
+                notificationDate.getDate(),
+              );
+              console.log(
+                "Date from previous notification: ",
+                new Date(notifications[i - 1].date).getDate(),
+              );
+              showDate = true;
+            }
+            let icon = getNotificationIconLetter(notification);
+            return (
+              <div
+                onMouseEnter={() => {
+                  if (!notification.isRead) {
+                    markAsRead(notification._id);
+                  }
+                }}
+                key={notification._id}
+                className="flex flex-col items-start py-3"
+              >
+                {showDate && (
+                  <div className="mb-3 text-[13px] text-sm font-semibold text-neutral-600 ">
+                    {Math.abs(
+                      new Date().getTime() - notificationDate.getTime(),
+                    ) <
+                    86400000 / 2
+                      ? "Today"
+                      : notificationDate.toDateString()}
+                  </div>
+                )}
+                <div className="flex flex-row items-start justify-start gap-2">
+                  <div
+                    className={`relative flex min-h-10 min-w-10 flex-grow-0 items-center justify-center rounded-full ${icon && "bg-primary-100"}`}
+                  >
+                    {!notification.isRead && (
+                      <div>
+                        <div className="absolute right-0 top-0 min-h-[10px] min-w-[10px] rounded-full bg-[#FA3E3E]"></div>
+                      </div>
+                    )}
+                    {icon ? (
+                      <span className="flex h-full w-full flex-grow-0 items-center justify-center text-primary-600">
+                        {icon}
+                      </span>
+                    ) : (
+                      <Image
+                        className=" rounded-full p-0.5"
+                        width={32}
+                        height={32}
+                        src={"/images/LoginPage/HeraldLogo.png"}
+                        alt="Herald Logo"
+                      />
+                    )}
+                  </div>
+                  <div className="flex flex-col items-start justify-center">
+                    <p className="text-[16px] font-normal text-neutral-900 ">
+                      {notification.message}
+                    </p>
+                    <span className="text-[13px] text-neutral-600">
+                      {notificationDate.toLocaleString("en-US", {
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: true,
+                      })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+  </TabsContent>
+  <TabsContent value="already-read">
+  <div className="mt-[20px] flex h-[400px] flex-col  gap-3 overflow-y-scroll">
+        {notificationsLoading ? (
+          <div className="menu-title">Loading...</div>
+        ) : notifications?.filter((not) => not.isRead)?.length === 0 ? (
+          <div>No Already Read Notifications to View</div>
+        ) : (
+          notifications?.filter((not) => not.isRead).map((notification: any, i: any) => {
+            let notificationDate = new Date(notification.date);
+            let showDate = false;
+            if (i === 0) {
+              showDate = true;
+            } else if (
+              notificationDate.getDate() !==
+              new Date(notifications[i - 1].date).getDate()
+            ) {
+              console.log(
+                "Date from notification: ",
+                notificationDate.getDate(),
+              );
+              console.log(
+                "Date from previous notification: ",
+                new Date(notifications[i - 1].date).getDate(),
+              );
+              showDate = true;
+            }
+            let icon = getNotificationIconLetter(notification);
+            return (
+              <div
+                onMouseEnter={() => {
+                  if (!notification.isRead) {
+                    markAsRead(notification._id);
+                  }
+                }}
+                key={notification._id}
+                className="flex flex-col items-start py-3"
+              >
+                {showDate && (
+                  <div className="mb-3 text-[13px] text-sm font-semibold text-neutral-600 ">
+                    {Math.abs(
+                      new Date().getTime() - notificationDate.getTime(),
+                    ) <
+                    86400000 / 2
+                      ? "Today"
+                      : notificationDate.toDateString()}
+                  </div>
+                )}
+                <div className="flex flex-row items-start justify-start gap-2">
+                  <div
+                    className={`relative flex min-h-10 min-w-10 flex-grow-0 items-center justify-center rounded-full ${icon && "bg-primary-100"}`}
+                  >
+                    {!notification.isRead && (
+                      <div>
+                        <div className="absolute right-0 top-0 min-h-[10px] min-w-[10px] rounded-full bg-[#FA3E3E]"></div>
+                      </div>
+                    )}
+                    {icon ? (
+                      <span className="flex h-full w-full flex-grow-0 items-center justify-center text-primary-600">
+                        {icon}
+                      </span>
+                    ) : (
+                      <Image
+                        className=" rounded-full p-0.5"
+                        width={32}
+                        height={32}
+                        src={"/images/LoginPage/HeraldLogo.png"}
+                        alt="Herald Logo"
+                      />
+                    )}
+                  </div>
+                  <div className="flex flex-col items-start justify-center">
+                    <p className="text-[16px] font-normal text-neutral-900 ">
+                      {notification.message}
+                    </p>
+                    <span className="text-[13px] text-neutral-600">
+                      {notificationDate.toLocaleString("en-US", {
+                        hour: "numeric",
+                        minute: "numeric",
+                        hour12: true,
+                      })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    </TabsContent>  
+</Tabs>
+
+      
       <div className="flex items-center justify-end gap-2 py-2">
         <span className="text-[14px] font-semibold text-neutral-700">
           Don&apos;t disturb for

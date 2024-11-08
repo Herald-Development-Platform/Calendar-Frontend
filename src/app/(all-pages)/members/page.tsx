@@ -306,6 +306,8 @@ export default function Page() {
     addUserMutation.mutate(data);
   };
 
+  const filteredDepartments = profile?.role === ROLES.SUPER_ADMIN ? departments : departments?.filter((dep) => dep._id === profile?.department?._id);
+
   return (
     <>
       <Headers.GeneralHeader />
@@ -398,7 +400,7 @@ export default function Page() {
                   Department <br />
                 </span>
                 <div className=" flex flex-row flex-wrap items-center justify-start gap-2">
-                  {departments.map((department: Department) => (
+                  {filteredDepartments?.map((department: Department) => (
                     <DepartmentBtn
                       id={department._id}
                       key={department._id}
@@ -631,7 +633,7 @@ export default function Page() {
                   Department <br />
                 </span>
                 <div className=" flex flex-row flex-wrap items-center justify-start gap-2">
-                  {departments.map((department: Department) => (
+                  {filteredDepartments?.map((department: Department) => (
                     <DepartmentBtn
                       id={department._id}
                       key={department._id}
