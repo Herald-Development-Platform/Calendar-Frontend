@@ -151,7 +151,7 @@ export default function EditEventModal1({
         console.log("Onsuccess", res);
         queryClient.invalidateQueries({ queryKey: ["Events"] });
 
-        toast.success(`${res?.data?.message}`);
+        // toast.success(`${res?.data?.message}`);
 
         setNewEvent &&
           setNewEvent({

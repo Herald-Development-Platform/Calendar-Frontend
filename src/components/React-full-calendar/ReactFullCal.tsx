@@ -23,6 +23,7 @@ import { isMultiDay, useApplyHighlightOrOngoing } from "./utils";
 import { allPlugins } from "@/constants/CalendarViews";
 import { RecurringEventTypes } from "@/constants/RecurringEvents";
 import EditEventModal1 from "../AddEventModal/EditEventModal1";
+import toast from "react-hot-toast";
 
 export default function ReactFullCal() {
   const {
@@ -427,7 +428,11 @@ export default function ReactFullCal() {
 
   const handleDelete = (e: any) => {
     const { value } = e.target;
-    deleteEvent({ id: value });
+    deleteEvent({ id: value }, {
+      onError: (error:any) => {
+        toast.error(error.response.data.message);
+      }
+    });
   };
 
   // useApplyYearlySemesterView({
