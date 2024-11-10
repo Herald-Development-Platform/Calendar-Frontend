@@ -55,6 +55,9 @@ import {
 import Image from "next/image";
 import { LuTrash2 } from "react-icons/lu";
 import { set } from "date-fns";
+import { LoaderCircle } from "lucide-react";
+import { useGetProfile } from "@/services/api/profile";
+import NewMembersAction from "@/components/Members/NewMembersAction";
 
 export default function Page() {
   const router = useRouter();
@@ -69,6 +72,7 @@ export default function Page() {
   const [updatingUserData, setUpdatingUserData] = useState<User>();
 
   const { userData: profile } = useContext(Context);
+  // const {data: profile , isLoading: profileLoading} = useGetProfile();
   console.log("User data from members page", profile);
 
   const queryClient = useQueryClient();
@@ -76,16 +80,17 @@ export default function Page() {
     useQuery({
       queryKey: ["UnapprovedUsers"],
       queryFn: async () => {
-        if (
-          profile &&
-          profile.permissions.includes(PERMISSIONS.MANAGE_DEPARTMENT_REQUEST)
-        ) {
-          return {
-            data: {
-              data: [],
-            },
-          };
-        }
+        // Changes
+        // if (
+        //   profile &&
+        //   profile.permissions.includes(PERMISSIONS.MANAGE_DEPARTMENT_REQUEST)
+        // ) {
+        //   return {
+        //     data: {
+        //       data: [],
+        //     },
+        //   };
+        // }
 
         return await Axios.get("/department/request?status=PENDING");
       },
@@ -103,33 +108,6 @@ export default function Page() {
       filterList("");
     }
   }, [allUsers]);
-
-  const { mutate: approveUser } = useMutation({
-    mutationFn: (payload: any) =>
-      Axios.put(`/department/request/${payload?._id}`, {
-        status: payload?.status,
-      }),
-    onSuccess: async (response: any) => {
-      if (response.status >= 400 && response.status < 500) {
-        toast.error(
-          response?.data?.message ||
-            response?.data?.error ||
-            "Error process request!",
-        );
-        return;
-      } else {
-        toast.success(
-          `User ${
-            response.data?.data?.request?.status === "APPROVED"
-              ? "approved successfully"
-              : "rejected"
-          }`,
-        );
-      }
-      queryClient.invalidateQueries({ queryKey: ["AllUsers"] });
-      queryClient.invalidateQueries({ queryKey: ["UnapprovedUsers"] });
-    },
-  });
 
   const {
     register: registerUser,
@@ -303,7 +281,15 @@ export default function Page() {
   }, [profile]);
 
   const onAddUserSubmit = async (data: any) => {
-    addUserMutation.mutate(data);
+
+    if(addUserMutation.isPending) return; 
+
+    addUserMutation.mutate(data, {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["AllUsers"] });     
+        setAddUserDialogOpen(false);
+      }
+    });
   };
 
   const filteredDepartments = profile?.role === ROLES.SUPER_ADMIN ? departments : departments?.filter((dep) => dep._id === profile?.department?._id);
@@ -687,11 +673,12 @@ export default function Page() {
               <button
                 onClick={() => {
                   handleAddUserSubmit(onAddUserSubmit)();
-                  setAddUserDialogOpen(false);
                 }}
-                className=" text-normal flex w-fit items-center justify-center rounded-md border-none bg-primary-600 px-4 py-3 font-medium text-primary-50 hover:bg-primary-700"
+                className=" text-normal flex gap-2 w-fit items-center justify-center rounded-md border-none bg-primary-600 px-4 py-3 font-medium text-primary-50 hover:bg-primary-700"
               >
-                Add
+                Add {
+                  addUserMutation.isPending && <LoaderCircle className="animate-spin" size={19}/>
+                }
               </button>
             </div>
           </DialogContent>
@@ -745,7 +732,7 @@ export default function Page() {
         <div className=" flex flex-col gap-[27px]">
           <div className="flex flex-row justify-start gap-3">
             <h1 className=" mr-auto text-[28px] font-[700] text-black">Team</h1>
-            {profile?.permissions.includes(PERMISSIONS.CREATE_USER) && (
+            {profile?.permissions?.includes(PERMISSIONS.CREATE_USER) && (
               <button
                 onClick={() => {
                   setAddUserDialogOpen(true);
@@ -777,7 +764,7 @@ export default function Page() {
           </div>
           <>
             {profile &&
-              profile.permissions.includes(
+              profile?.permissions.includes(
                 PERMISSIONS.MANAGE_DEPARTMENT_REQUEST,
               ) &&
               departmentRequests?.data?.data?.map((request: any) => {
@@ -816,24 +803,7 @@ export default function Page() {
                         </p>
                       </div>
                     </div>
-                    <div className=" flex h-8 flex-row gap-4 ">
-                      <button
-                        className=" text-500 flex items-center justify-center rounded-md bg-success-500 px-4 py-2 text-[13px] text-white"
-                        onClick={() => {
-                          approveUser({ _id: request._id, status: "APPROVED" });
-                        }}
-                      >
-                        Approve
-                      </button>
-                      <button
-                        className="text-500 flex items-center justify-center rounded-md bg-danger-500 px-4 py-2 text-[13px] text-white"
-                        onClick={() => {
-                          approveUser({ _id: request._id, status: "REJECTED" });
-                        }}
-                      >
-                        Deny
-                      </button>
-                    </div>
+                    <NewMembersAction actionId={request._id}/>
                   </div>
                 );
               })}
@@ -865,7 +835,7 @@ export default function Page() {
                     <DepartmentBtn
                       id={department._id}
                       key={department._id}
-                      selectedCross={false}
+                      selectedCross={true}
                       value={department.code}
                       onClick={() => {
                         let newSelectedDepartments = [...selDepartments];
@@ -888,8 +858,11 @@ export default function Page() {
                         }
                         if (newSelectedDepartments.length === 0) {
                           newSelectedDepartments = ["All"];
+                          setSelDepartments(newSelectedDepartments);
                           return;
                         }
+
+                        
                         setSelDepartments(newSelectedDepartments);
                       }}
                       selected={selDepartments.includes(department.code)}

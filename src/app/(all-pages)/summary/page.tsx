@@ -178,14 +178,14 @@ export default function SummaryPage() {
                   >
                     1 year
                   </SelectItem>
-                  <SelectItem
+                  {/* <SelectItem
                     value="custom-date"
                     className={`${
                       filter.toLowerCase() === "15000000" && "text-primary-600"
                     }`}
                   >
                     Custom Date
-                  </SelectItem>
+                  </SelectItem> */}
                   <SelectItem
                     value="15000000"
                     className={`${
@@ -217,7 +217,7 @@ export default function SummaryPage() {
                 <DepartmentButton
                   id={department._id}
                   key={department._id}
-                  selectedCross={false}
+                  selectedCross={true}
                   value={department.code}
                   onClick={() => {
                     let newSelectedDepartments = [...selDepartments];
@@ -238,6 +238,7 @@ export default function SummaryPage() {
                     }
                     if (newSelectedDepartments.length === 0) {
                       newSelectedDepartments = ["All"];
+                      setSelDepartments(newSelectedDepartments);
                       return;
                     }
                     setSelDepartments(newSelectedDepartments);
