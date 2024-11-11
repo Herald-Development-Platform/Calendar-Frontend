@@ -39,6 +39,7 @@ import Endpoints from "@/services/API_ENDPOINTS";
 import Locations from "./Locations";
 import DatePicker from "./DatePicker";
 import "./EventModal.css";
+import { LoaderCircle } from "lucide-react";
 
 interface PickedDateType {
   startDate: Date | undefined;
@@ -93,10 +94,12 @@ export default function EventModal({
   const { userData } = useContext(Context);
 
   const { data: departmentsRes } = useGetDepartments();
-  const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
+  const { mutate: postNewEvent, isPending: Posting } = usePostEventMutation({ setNewEvent });
 
   const queryClient = useQueryClient();
   function handleAddEvent() {
+
+    if(Posting) return;
     if (!validateAndFocus()) return;
     postNewEvent(newEvent, {
       onSuccess: () => {
@@ -591,10 +594,11 @@ export default function EventModal({
             {/* create btn  */}
             <div className="flex w-full items-center justify-end gap-5">
               <button
-                className="rounded-md border-none bg-primary-600 px-4 py-2 text-base font-medium text-primary-50 hover:bg-primary-700"
+                className="rounded-md border-none flex gap-2 bg-primary-600 px-4 py-2 text-base font-medium text-primary-50 hover:bg-primary-700"
                 onClick={handleAddEvent}
               >
-                {type === "Add" ? "Create" : "Edit"}
+                {type === "Add" ? "Create" : "Edit"}{Posting && <LoaderCircle className="animate-spin"/>}
+                
               </button>
             </div>
           </div>
