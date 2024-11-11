@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
 import { FaEye } from "react-icons/fa6";
 import { LuEye, LuEyeOff } from "react-icons/lu";
+import { LoaderCircle } from "lucide-react";
 
 export default function Page() {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
@@ -17,8 +18,10 @@ export default function Page() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const { register, handleSubmit, formState:{errors} } = useForm<any>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const loginUser = (payload: any) => {
+    setIsLoading(true);
     fetch(`${baseUrl}/login`, {
       method: "POST",
       body: JSON.stringify(payload),
@@ -32,17 +35,21 @@ export default function Page() {
         if (!data.success) {
           console.log(data);
           toast.error(data.message || "Something went wrong.");
+          setIsLoading(false);
           return;
         }
         CookieHooks.setCookie("token", data.data, 1);
         toast.success(data.message || "Successfully registered user.");
         queryClient.invalidateQueries();
         router.push("/");
+        setIsLoading(false);
       })
       .catch((err) => {
         toast.remove();
         toast.error(err.message || "Something went wrong");
+        setIsLoading(false);
       });
+      
   };
   return (
     <>
@@ -136,8 +143,8 @@ export default function Page() {
             </Link>
           </div>
           <div className="space-y-4">
-            <button className="btn w-full rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
-              Login
+            <button className="btn w-full gap-2 flex rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
+              Login {isLoading && <LoaderCircle className="animate-spin"/>}
             </button>
             <Link
               href={`${baseUrl}/googleAuth`}

@@ -7,6 +7,8 @@ import "./scrollbar.css";
 import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
+import { set } from "date-fns";
+import { LoaderCircle } from "lucide-react";
 interface Department {
   _id: string;
   name: string;
@@ -18,6 +20,7 @@ export default function Page() {
   const [departments, setDepartments] = useState<Department[]>([]);
   const [alreadySent, setAlreadySent] = useState<boolean>(false);
   const Router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [selectedDepartment, setSelectedDepartment] =
     useState<Department | null>(null);
@@ -89,14 +92,17 @@ export default function Page() {
         toast.error("Please select a department");
         return;
       }
+      setIsLoading(true);
       const response = await Axios.post(`/department/request`, {
         department: selectedDepartment?._id,
       });
       if (response.data.success) {
         toast.success("Join request sent successfully");
+        setIsLoading(false);
         fetchMyRequests();
         console.log("Join request sent successfully");
       } else {
+        setIsLoading(false);
         toast.error(response.data.message || "Error sending join request");
         console.error("Error sending join request:", response.data.message);
       }
@@ -105,6 +111,7 @@ export default function Page() {
         toast.error(error.response?.data?.message || "Error sending join request");
       }
       console.error("Error sending join request:", error);
+      setIsLoading(false);
     }
   };
 
@@ -200,7 +207,7 @@ export default function Page() {
             onClick={sendJoinRequest}
             className="btn w-full rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400"
           >
-            Send Join Request
+            Send Join Request {isLoading && <LoaderCircle className="animate-spin"/>}
           </button>
         </div>
       )}

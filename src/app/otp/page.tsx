@@ -1,16 +1,20 @@
 "use client";
-import React, { Suspense } from "react";
+import React, { Suspense, useState } from "react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { baseUrl } from "@/services/baseUrl";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
+import { set } from "date-fns";
+import { LoaderCircle } from "lucide-react";
 
 export default function _Suspense () {
   return <Suspense fallback={<div>Loding...</div>}><OTP></OTP></Suspense>;
 }
 
 function OTP() {
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const router = useRouter();
   const {
@@ -34,6 +38,7 @@ function OTP() {
       return;
     }
     if (forgetPassword) {
+      setIsLoading(true);
       fetch(`${baseUrl}/validateResetPasswordOTP?email=${email}&OTP=${otp}`, {
         method: "POST",
         headers: {
@@ -44,23 +49,28 @@ function OTP() {
         .then((data) => {
           if (!data.success) {
             toast.error(data.message || "Something went wrong");
+            setIsLoading(false);
             return;
           }
           toast.success(data.message || "OTP verified successfully");
+          setIsLoading(false);
           setTimeout(() => {
             router.push(`/resetPassword?email=${email}&OTP=${otp}`);
           }, 200);
         });
       return;
     }
+    setIsLoading(true);
     fetch(`${baseUrl}/verifyOtp?email=${email}&OTP=${otp}`)
       .then((res) => res.json())
       .then((data) => {
         if (!data.success) {
+          setIsLoading(false);
           toast.error(data.message || "Something went wrong");
           return;
         }
         toast.success(data.message || "OTP verified successfully");
+        setIsLoading(false);
         setTimeout(() => {
           router.push("/login");
         }, 1000);
@@ -257,8 +267,8 @@ function OTP() {
             />
           </div>
           <div className="space-y-4" style={{ marginTop: 40 }}>
-            <button className="btn w-full rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
-              Verify
+            <button className="btn w-full flex gap-2 rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
+              Verify {isLoading && <LoaderCircle className="animate-spin"/>}
             </button>
           </div>
         </form>

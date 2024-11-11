@@ -11,9 +11,13 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { LuEye, LuEyeOff } from "react-icons/lu";
 import { FaRegCircleUser } from "react-icons/fa6";
+import { LoaderCircle } from "lucide-react";
 // import { error } from "console";
 
 export default function Page() {
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const {
     register,
     setValue,
@@ -27,6 +31,7 @@ export default function Page() {
   const router = useRouter();
 
   const registerUser = (payload: any) => {
+    setIsLoading(true);
     fetch(`${baseUrl}/register`, {
       method: "POST",
       body: JSON.stringify(payload),
@@ -37,15 +42,19 @@ export default function Page() {
       .then((res) => res.json())
       .then((data) => {
         if (!data.success) {
+          setIsLoading(false);  
           throw Error(data.message || "Something went wrong");
         }
         toast.success(data.message || "Successfully registered user.");
+        setIsLoading(false);
         setTimeout(() => {
           router.push(`/otp?email=${payload.email}`);
         }, 1000);
+        
       })
       .catch((err) => {
         console.log(err)
+        setIsLoading(false);
         toast.error(err.message || "Something went wrong")});
   };
 
@@ -165,8 +174,8 @@ export default function Page() {
               <span className="">Remember me</span>
             </label>
           </div> */}
-          <button className="btn w-full rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
-            Register
+          <button className="btn w-full flex gap-2 rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
+            Register {isLoading && <LoaderCircle className="animate-spin"/>}
           </button>
         </form>
       </div>
