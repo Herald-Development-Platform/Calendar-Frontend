@@ -49,6 +49,7 @@ export default function Locations({
     time: 150,
   });
 
+
   return (
     <>
       <div className="relative flex flex-col items-start text-sm">
@@ -64,10 +65,10 @@ export default function Locations({
         <div
           className={`${
             showPopup ? "block" : "hidden"
-          } absolute right-0 z-20 flex h-[440px] w-[370px] -translate-y-full flex-col gap-[10px] rounded-[4px] border border-neutral-300 bg-white px-6 py-4`}
+          } absolute right-0 z-20 flex h-[440px] w-[370px] -translate-y-full flex-col gap-[10px] rounded-[4px] border border-neutral-300 bg-white px-4 py-4`}
           style={{ boxShadow: "0px 4px 16px 4px #00000014" }}
         >
-          <div className="green-scrollbar flex-grow space-y-[10px] overflow-y-auto">
+          <div className="green-scrollbar flex-grow space-y-[8px] overflow-y-auto">
             {filteredLocations?.length === 0 ? (
               <div className="w-full text-center">No locations added.</div>
             ) : (
@@ -77,22 +78,23 @@ export default function Locations({
                   <>
                     <div
                       key={i}
-                      onClick={() =>
+                      onClick={() => {
                         handleValueChange({
                           target: { name: "location", value: location?.name },
-                        })
-                      }
-                      className="group flex w-full cursor-pointer flex-row items-center gap-2 rounded-[4px] px-3 py-1.5 hover:bg-neutral-100"
+                        });
+                        setShowPopup(false);
+                      }}
+                      className="group flex w-full cursor-pointer flex-row items-center gap-2 rounded-[4px] px-3 py-1 hover:bg-neutral-100"
                     >
                       <span className="text-2xl text-neutral-600">
-                        <GrLocationPin />
+                        <GrLocationPin size={18} />
                       </span>
-                      <div className="flex flex-col items-start justify-center gap-1">
-                        <span className="text-[16px] font-semibold text-neutral-700">
+                      <div className="flex flex-col items-start justify-center gap-0">
+                        <span className="text-[14px] font-semibold text-neutral-700">
                           {location.name}
                         </span>
                         {location?.description && (
-                          <span className="text-[13px] font-normal text-neutral-400">
+                          <span className="text-[12px] font-normal text-neutral-400">
                             {location.description}
                           </span>
                         )}
@@ -117,7 +119,7 @@ export default function Locations({
             <input
               type="text"
               className="group w-full bg-neutral-100 text-sm font-medium text-neutral-500 outline-none"
-              placeholder="Search members"
+              placeholder="Search Locations"
               id="date-search"
               onChange={(e) => {
                 setFilterQuery(e.target.value);
@@ -129,7 +131,7 @@ export default function Locations({
       <div
         className={`${
           showPopup ? "block" : "hidden"
-        } absolute left-0 top-0 z-10 h-full w-full bg-black opacity-5`}
+        } absolute -left-8 -top-28 z-10 h-[1080px] w-[740px] bg-black opacity-5`}
         onClick={() => setShowPopup(false)}
       ></div>
     </>
