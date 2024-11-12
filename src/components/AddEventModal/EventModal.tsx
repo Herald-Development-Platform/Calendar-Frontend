@@ -255,7 +255,7 @@ export default function EventModal({
             </div>
 
             {/* input section  */}
-            <div className="relative flex flex-col gap-8">
+            <div className=" flex flex-col gap-8">
               {/* Title input section  */}
               <label htmlFor="add-title">
                 <div className="group flex h-11 w-full items-center gap-2  border-b-[1px] border-neutral-300 px-4 focus-within:border-primary-600">
