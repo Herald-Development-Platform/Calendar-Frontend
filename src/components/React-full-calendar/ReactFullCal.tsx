@@ -24,6 +24,7 @@ import { allPlugins } from "@/constants/CalendarViews";
 import { RecurringEventTypes } from "@/constants/RecurringEvents";
 import EditEventModal1 from "../AddEventModal/EditEventModal1";
 import toast from "react-hot-toast";
+import EventDialog, { EventDialogRef } from "../AddEventModal/EventDialog";
 
 export default function ReactFullCal() {
   const {
@@ -70,6 +71,7 @@ export default function ReactFullCal() {
   const { data: semesterData } = useGetSemester();
   const { mutate: updateEvent } = useUpdateEvents();
   const { mutate: deleteEvent } = useDeleteEvent({});
+  const modalRef = useRef<EventDialogRef | null>(null);
 
   const handleSelect = async ({
     start,
@@ -190,10 +192,18 @@ export default function ReactFullCal() {
       // if (!addEventModalRef.current) return;
       // @ts-ignore
       // ?.firstChild?.click(),
-      const modal_4 = document.getElementById(
-        "my_modal_5",
-      ) as HTMLDialogElement;
-      modal_4.showModal();
+      // const modal_4 = document.getElementById(
+      //   "my_modal_5",
+      // ) as HTMLDialogElement;
+      // modal_4.showModal();
+
+      toast.success("heelo")
+      if (modalRef.current) {
+        toast.success("hi")
+        modalRef.current.openDialog(); // Open the dialog
+      }
+      toast.error("error")
+      
     });
     lastSelCell?.firstChild?.appendChild(selectContextEl);
 
@@ -553,8 +563,9 @@ export default function ReactFullCal() {
         handleDelete={handleDelete}
         width={eventDetailWidth || null}
       ></EventDetails>
-      <EditEventModal1
-        // type="Add"
+      <EventDialog
+      ref={modalRef}
+        type="Add"
         defaultData={{
           start: selectedDate?.start
             ? new Date(selectedDate?.start)
@@ -568,7 +579,7 @@ export default function ReactFullCal() {
           involvedUsers: [],
           recurrenceEnd: null,
         }}
-      ></EditEventModal1>
+      ></EventDialog>
     </>
   );
 }

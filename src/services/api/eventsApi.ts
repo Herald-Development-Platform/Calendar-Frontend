@@ -64,6 +64,21 @@ export const useDeleteEvent = ({
   });
 };
 
+export const useCreateEventMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: postEvents,
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ["Events"] });
+      toast.success(res?.data.message);
+    },
+    onError: (err:any) => {
+      toast.error(err?.data?.message || "something went wrong");
+    },
+  });
+}
+
 export const usePostEventMutation = ({
   setNewEvent,
 }: {

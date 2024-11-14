@@ -65,6 +65,7 @@ import Link from "next/link";
 
 import ToggleSidebar from "../Sidebar/ToggleSidebar";
 import { set } from "date-fns";
+import EventDialog from "../AddEventModal/EventDialog";
 
 export function HomeHeader() {
   // const [redner, setredner] = useState<number>(1);
@@ -358,6 +359,8 @@ export function HomeHeader() {
                 </SelectItem>
               </SelectContent>
             </Select>
+
+            <EventDialog type={"Add"} defaultData={null}/>
 
             <EventModal type={"Add"} defaultData={null} />
           </div>

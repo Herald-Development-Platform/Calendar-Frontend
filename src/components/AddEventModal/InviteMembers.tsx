@@ -94,6 +94,7 @@ export default function InviteMembers({
         <div className="flex">
           <div className=" relative flex h-fit w-fit gap-1">
             <button
+              type="button"
               className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-300 bg-primary-500 text-base text-white"
               onClick={() => {
                 setShowPopover((prev) => !prev);
@@ -109,7 +110,7 @@ export default function InviteMembers({
                   return (
                     <div
                       key={i}
-                      className=" flex flex-col items-start justify-start group tooltip relative bg-white text-black"
+                      className=" group tooltip relative flex flex-col items-start justify-start bg-white text-black"
                       data-tip={selMembers?.username}
                     >
                       <Image
@@ -121,6 +122,7 @@ export default function InviteMembers({
                         className="rounded-full"
                       ></Image>
                       <button
+                        type="button"
                         name={"removeMember"}
                         value={selMembers._id}
                         onClick={handleInviteMembers}
@@ -136,7 +138,7 @@ export default function InviteMembers({
                     <div
                       key={i}
                       // className="tooltip  bg-white text-black "
-                      className=" flex flex-col items-start justify-start group tooltip relative bg-white text-black"
+                      className=" group tooltip relative flex flex-col items-start justify-start bg-white text-black"
                       data-tip={selMembers?.username}
                     >
                       <Image
@@ -148,6 +150,7 @@ export default function InviteMembers({
                         className="rounded-full"
                       ></Image>
                       <button
+                        type="button"
                         name={"removeMember"}
                         value={selMembers._id}
                         onClick={handleInviteMembers}
@@ -194,15 +197,16 @@ export default function InviteMembers({
                           ></Image>
                         </>
                       )}
-                      <div className="flex flex-grow justify-start flex-col">
-                        <p className="text-sm font-semibold text-neutral-900 text-left">
+                      <div className="flex flex-grow flex-col justify-start">
+                        <p className="text-left text-sm font-semibold text-neutral-900">
                           {userData?.username}
                         </p>
-                        <p className="text-xs text-neutral-600 text-left">
+                        <p className="text-left text-xs text-neutral-600">
                           {userData?.role}
                         </p>
                       </div>
                       <button
+                        type="button"
                         name="addMember"
                         value={userData?._id}
                         onClick={handleInviteMembers}

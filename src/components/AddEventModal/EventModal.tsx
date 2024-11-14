@@ -98,6 +98,7 @@ export default function EventModal({
 
   const queryClient = useQueryClient();
   function handleAddEvent() {
+    console.log("newEvent", newEvent);
 
     if(Posting) return;
     if (!validateAndFocus()) return;
