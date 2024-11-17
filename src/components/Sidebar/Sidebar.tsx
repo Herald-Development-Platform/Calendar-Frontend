@@ -12,8 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { FaCheck } from "react-icons/fa";
-
+import Cookies from "js-cookie";
 import "./SideBarCss.css";
 
 import { Context } from "@/app/clientWrappers/ContextProvider";
@@ -24,9 +23,22 @@ import Endpoints from "@/services/API_ENDPOINTS";
 import toast from "react-hot-toast";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { RxCross2 } from "react-icons/rx";
+import { PROCUREMENT_URL } from "@/constants";
+import { useGetProfile } from "@/services/api/profile";
+import { ROLES } from "@/constants/role";
+
+interface ISidebar {
+  name: string;
+  icon: JSX.Element;
+  navigation: string;
+}
 
 export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   const currentRoute = usePathname();
+
+  const { userData: profile } = useContext(Context);
+
+  console.clear();
 
   const highlightedStyles =
     "flex h-11 w-full items-center gap-2 rounded px-3 bg-primary-100 text-primary-700";
@@ -62,7 +74,14 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       ),
       navigation: "/summary",
     },
-  ];
+    profile &&
+      [ROLES.DEPARTMENT_ADMIN, ROLES.SUPER_ADMIN].includes(profile.role) && {
+        name: "Requisition",
+        icon: <HiOutlineDocumentReport />,
+        navigation: PROCUREMENT_URL + "/",
+        // navigation: `${PROCUREMENT_URL}?url_token=${encodeURIComponent(Cookies.get("token") || "")}`,
+      },
+  ].filter(Boolean) as ISidebar[];
 
   const { data: semesters, isLoading: semestersLoading } = useGetSemesters();
   const [selectedActiveSemesters, setSelectedActiveSemesters] = useState<
@@ -128,8 +147,6 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
     }
   }, [semesters]);
 
-  const { userData: profile } = useContext(Context);
-
   useEffect(() => {
     if (profile) {
       setSelectedActiveSemesters(profile.activeSemester ?? []);
@@ -164,7 +181,9 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
             open ? "gap-14" : "gap-1.5"
           }  font-medium`}
         >
-          <span className="bg-red-500 text-lg px-6 pb-0 py-3 text-white absolute -top-2.5 left-[-28px] -rotate-[40deg]">Beta</span>
+          <span className="absolute -top-2.5 left-[-28px] -rotate-[40deg] bg-red-500 px-6 py-3 pb-0 text-lg text-white">
+            Beta
+          </span>
           <div
             className={`flex ${
               open ? "flex-row" : "flex-col"
