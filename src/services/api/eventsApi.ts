@@ -141,7 +141,7 @@ export const useUpdateEvents = () => {
     },
     onError: (err) => {
       toast.error("Something went wrong.");
-      console.error("error here");
+      console.log("error here", err);
     },
   });
 };

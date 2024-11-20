@@ -28,6 +28,7 @@ import colors from "@/constants/Colors";
 import {
   Dispatch,
   SetStateAction,
+  useContext,
   useEffect,
   useState,
 } from "react";
@@ -46,6 +47,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useEditEventMutation } from "@/services/api/eventsApi";
 import { convertToLink } from "@/lib/utils";
 import { FaCircleUser } from "react-icons/fa6";
+import { Context } from "@/app/clientWrappers/ContextProvider";
 export default function EventDetails({
   selectedEvent,
   setSelectedEvent,
@@ -68,10 +70,13 @@ export default function EventDetails({
   const [recurringDialogOpen, setRecurringDialogOpen] =
     useState<boolean>(false);
   const [deleteType, setDeleteType] = useState<string>("all");
+const {setSelectedEventData, openDialog, setOpenDialog} = useContext(Context)
 
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    console.log("SELECTED EVENT::::", selectedEvent);
+    setSelectedEventData(selectedEvent);
     setSelectedColor(selectedEvent?.color);
   }, [selectedEvent]);
 
@@ -211,11 +216,12 @@ export default function EventDetails({
               <DropdownMenuContent className="h-[115px] w-[300px] px-5 py-4 text-sm font-semibold">
                 <button
                   onClick={(e: any) => {
-                    const modal_4 = document.getElementById(
-                      "my_modal_4",
-                    ) as HTMLDialogElement;
-                    console.log("modal elemenet", modal_4);
-                    modal_4.showModal();
+                    // const modal_4 = document.getElementById(
+                    //   "my_modal_4",
+                    // ) as HTMLDialogElement;
+                    // console.log("modal elemenet", modal_4);
+                    // modal_4.showModal();
+setOpenDialog(true)
                     // setDropDown(false);
                   }}
                   className="flex w-full items-center justify-start gap-2 px-2 py-1 text-neutral-700 transition-colors duration-150 hover:bg-neutral-100  hover:text-neutral-800"
@@ -408,12 +414,13 @@ export default function EventDetails({
                 <DropdownMenuContent className="h-[115px] w-[300px] px-5 py-4 text-sm font-semibold">
                   <button
                     onClick={(e: any) => {
-                      const modal_4 = document.getElementById(
-                        "my_modal_4",
-                      ) as HTMLDialogElement;
-                      console.log("modal elemenet", modal_4);
-                      modal_4.showModal();
+                      // const modal_4 = document.getElementById(
+                      //   "my_modal_4",
+                      // ) as HTMLDialogElement;
+                      // console.log("modal elemenet", modal_4);
+                      // modal_4.showModal();
                       // setDropDown(false);
+                      setOpenDialog(true)
                     }}
                     className="flex w-full items-center justify-start gap-2 px-2 py-1 text-neutral-700 transition-colors duration-150 hover:bg-neutral-100  hover:text-neutral-800"
                   >

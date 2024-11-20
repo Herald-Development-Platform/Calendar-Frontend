@@ -34,6 +34,7 @@ import DepartmentButton from "../DepartmentButton";
 import Locations from "./Locations";
 import DatePicker from "./DatePicker";
 import { ROLES } from "@/constants/role";
+import { LocationSelect } from "./LocationSelect";
 
 export default function EditEventModal1({
   defaultData,
@@ -564,6 +565,11 @@ export default function EditEventModal1({
                   {formErrors?.message}
                 </span>
               )}
+
+<LocationSelect
+        value={newEvent?.location ?? ""}
+        handleValueChange={handleValueChange}
+      />
               {/* Departments section  */}
               <div className="flex flex-col items-start text-sm">
                 <span>Departments:</span>

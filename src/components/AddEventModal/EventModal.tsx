@@ -225,9 +225,10 @@ export default function EventModal({
   return (
     <>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
+        {/* Dont remove hidden from this button... */}
         <button
-          className=" btn btn-sm
-           relative flex h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
+          className=" btn btn-sm hidden
+           relative  h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
           onClick={() => {
             const modal_3 = document.getElementById(
               "my_modal_3",

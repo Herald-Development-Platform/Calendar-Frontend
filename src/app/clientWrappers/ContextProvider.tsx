@@ -19,6 +19,17 @@ import {
 } from "react";
 import toast from "react-hot-toast";
 
+function totalDaysInMonth(month:number, year:number) {
+  // month is 1-indexed (1 for January, 2 for February, ..., 12 for December)
+  if (month < 1 || month > 12) {
+      throw new Error("Month must be between 1 and 12");
+  }
+
+  // Use Date object to calculate the last day of the given month
+  return new Date(year, month, 0).getDate();
+}
+
+
 interface SelectedDateType {
   start: Date | undefined;
   end: Date | undefined;
@@ -38,6 +49,12 @@ export interface ContextType {
   notificationsLoading: boolean;
   currentView: string;
   setCurrentView: Dispatch<SetStateAction<string>>;
+  openDialog: boolean;
+  setOpenDialog: Dispatch<SetStateAction<boolean>>;
+  selectedEventData: eventType | null;
+  setSelectedEventData: Dispatch<SetStateAction<eventType | null>>;
+  calenderDate: SelectedDateType | undefined;
+  setCalenderDate: Dispatch<SetStateAction<SelectedDateType | undefined>>;
 }
 
 export const Context = createContext<ContextType>({
@@ -58,6 +75,17 @@ export const Context = createContext<ContextType>({
   notificationsLoading: true,
   currentView: "",
   setCurrentView: () => {},
+  openDialog: false,
+  setOpenDialog: () => {},
+  selectedEventData: null,
+  setSelectedEventData: () => {},
+  calenderDate:{
+    start: undefined,
+    end: undefined,
+    startStr: undefined,
+    endStr: undefined,
+  },
+  setCalenderDate: () => {},
 });
 // const calendarRef = createRef(undefined);
 
@@ -77,6 +105,8 @@ export default function ContextProvider({
     queryKey: ["Notification"],
     queryFn: () => Axios.get("/notification"),
   });
+
+  const [openDialog, setOpenDialog] = useState<boolean>(false);
 
   const { data: userData } = useQuery({
     queryKey: ["profile"],
@@ -129,15 +159,27 @@ export default function ContextProvider({
       console.error("Error syncing with google:", error);
     }
   };
+  const date = new Date();
+    const currentDay = date.getDate();
+    const lastDay = totalDaysInMonth(date.getMonth()+1, date.getFullYear());
 
   const [selectedDate, setSelectedDate] = useState<
     SelectedDateType | undefined
   >({
     start: new Date(),
-    end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
+    end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * (lastDay - currentDay)),
     endStr: "",
     startStr: "",
   });
+
+  const [calenderDate, setCalenderDate] = useState<SelectedDateType | undefined>({
+    start: new Date(),
+    end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * (lastDay - currentDay)),
+    endStr: "",
+    startStr: "",
+  });
+
+  const [selectedEventData, setSelectedEventData] = useState<eventType | null>(null);
 
   return (
     <Context.Provider
@@ -154,6 +196,12 @@ export default function ContextProvider({
         timeout,
         notifications: notifications?.data?.data,
         notificationsLoading,
+        openDialog,
+        setOpenDialog,
+        selectedEventData,
+        setSelectedEventData,
+        calenderDate,
+        setCalenderDate,
       }}
     >
       {children}

@@ -66,6 +66,7 @@ import Link from "next/link";
 import ToggleSidebar from "../Sidebar/ToggleSidebar";
 import { set } from "date-fns";
 import EventDialog from "../AddEventModal/EventDialog";
+import { totalDaysInMonth } from "../React-full-calendar/lastDay";
 
 export function HomeHeader() {
   // const [redner, setredner] = useState<number>(1);
@@ -82,6 +83,8 @@ export function HomeHeader() {
     timeout,
     notifications,
     setCurrentView,
+    calenderDate,
+    setCalenderDate
   } = useContext(Context);
 
   let newNotifications = false;
@@ -106,25 +109,44 @@ export function HomeHeader() {
 
   const handleNext = () => {
     calendarApi?.next();
-    if (!selectedDate?.start || !selectedDate?.end) return;
+    if (!calenderDate?.start || !calenderDate?.end) return;
     let start = null;
     let end = null;
     let startStr = null;
     let endStr = null;
 
+    let lastDate = null
+
     switch (currentView) {
       case "dayGridMonth":
-        start = new Date(selectedDate.start).setMonth(
-          selectedDate.start.getMonth() + 1,
+        start = new Date(calenderDate.start).setMonth(
+          calenderDate.start.getMonth() + 1,
         );
-        end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
+
+        let todaysDate = new Date()
+        let todaysMonth = todaysDate.getMonth() ;
+        let startDate = new Date(start)
+        let startMonth = startDate.getMonth() 
+
+        console.log("todaysMonth", todaysMonth)
+        console.log("startMonth", startMonth)
+
+        if(todaysMonth !== startMonth){
+          start = new Date(startDate.getFullYear(), startMonth, 1)
+          console.log("start", start)
+        }else{
+          start = new Date();
+        }
+        let date = new Date(start)
+        lastDate = totalDaysInMonth(date.getMonth()+1, date.getFullYear())
+        end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * (lastDate - date.getDate()));
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
         break;
 
       case "timeGridWeek":
-        start = new Date(selectedDate.start).setDate(
-          selectedDate.start.getDate() + 7,
+        start = new Date(calenderDate.start).setDate(
+          calenderDate.start.getDate() + 7,
         );
         end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
         startStr = format(start, "yyyy-MM-dd");
@@ -132,8 +154,8 @@ export function HomeHeader() {
         break;
 
       case "timeGridDay":
-        start = new Date(selectedDate.start).setDate(
-          selectedDate.start.getDate() + 1,
+        start = new Date(calenderDate.start).setDate(
+          calenderDate.start.getDate() + 1,
         );
         end = new Date(start).setDate(new Date(start).getDate() + 1);
         startStr = format(start, "yyyy-MM-dd");
@@ -141,15 +163,15 @@ export function HomeHeader() {
         break;
 
       case "multiMonthYear":
-        start = new Date(selectedDate.start).setFullYear(
-          selectedDate.start.getFullYear() + 1,
+        start = new Date(calenderDate.start).setFullYear(
+          calenderDate.start.getFullYear() + 1,
         );
         end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
         break;
     }
-    setSelectedDate({
+    setCalenderDate({
       start: start ? new Date(start) : undefined,
       end: end ? new Date(end) : undefined,
       endStr: endStr === null ? undefined : endStr,
@@ -177,46 +199,64 @@ export function HomeHeader() {
 
   const handlePrevious = () => {
     calendarApi?.prev();
-    if (!selectedDate?.start || !selectedDate?.end) return;
+    if (!calenderDate?.start || !calenderDate?.end) return;
     let start = null;
     let end = null;
     let startStr = null;
     let endStr = null;
+
+    let lastDay = null
     switch (currentView) {
       case "dayGridMonth":
-        start = new Date(selectedDate.start).setMonth(
-          selectedDate.start.getMonth() - 1,
+        start = new Date(calenderDate.start).setMonth(
+          calenderDate.start.getMonth() - 1,
         );
-        end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
+        let todaysDate = new Date()
+        let todaysMonth = todaysDate.getMonth() ;
+        let startDate = new Date(start)
+        let startMonth = startDate.getMonth() 
+
+        console.log("todaysMonth", todaysMonth)
+        console.log("startMonth", startMonth)
+
+        if(todaysMonth !== startMonth){
+          start = new Date(startDate.getFullYear(), startMonth, 1)
+          console.log("start", start)
+        }else{
+          start = new Date();
+        }
+        let date = new Date(start)
+        lastDay = totalDaysInMonth(date.getMonth()+1, date.getFullYear())
+        end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * (lastDay - date.getDate()));
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
         break;
       case "timeGridWeek":
-        start = new Date(selectedDate.start).setDate(
-          selectedDate.start.getDate() - 7,
+        start = new Date(calenderDate.start).setDate(
+          calenderDate.start.getDate() - 7,
         );
         end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
         break;
       case "timeGridDay":
-        start = new Date(selectedDate.start).setDate(
-          selectedDate.start.getDate() - 1,
+        start = new Date(calenderDate.start).setDate(
+          calenderDate.start.getDate() - 1,
         );
         end = new Date(start).setDate(new Date(start).getDate() + 1);
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
         break;
       case "multiMonthYear":
-        start = new Date(selectedDate.start).setFullYear(
-          selectedDate.start.getFullYear() - 1,
+        start = new Date(calenderDate.start).setFullYear(
+          calenderDate.start.getFullYear() - 1,
         );
         end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
         break;
     }
-    setSelectedDate({
+    setCalenderDate({
       start: start ? new Date(start) : undefined,
       end: end ? new Date(end) : undefined,
       endStr: endStr === null ? undefined : endStr,

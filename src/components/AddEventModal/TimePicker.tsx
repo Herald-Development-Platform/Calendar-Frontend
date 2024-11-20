@@ -76,6 +76,25 @@ const TimePicker = ({
     newTime.setMinutes(minutes);
     handleTimeChange({ target: { name: dateType, value: newTime } });
   }
+
+  const handleNewTime = (e: any) => {
+    const newTime = new Date();
+    let time = e.target.value.split(":");
+
+    let hours = parseInt(time[0]);
+    let minutes = parseInt(time[1]);
+
+    setSelectedTime({
+      hours: parseInt(time[0]),
+      minutes: parseInt(time[1]),
+      ampm: parseInt(time[0]) >= 12 ? "PM" : "AM",
+    });
+
+    newTime.setHours(hours);
+    newTime.setMinutes(minutes);
+    handleTimeChange({ target: { name: dateType, value: newTime } });
+  };
+  console.log("time value", value);
   return (
     <Popover>
       <PopoverTrigger className="w-full">
@@ -90,9 +109,9 @@ const TimePicker = ({
           })()}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0">
+      <PopoverContent className="w-auto p-0 overflow-auto">
         <div className="flex flex-col divide-y sm:h-[300px] sm:flex-row sm:divide-x sm:divide-y-0">
-          <ScrollArea className="w-64 sm:w-auto">
+          <ScrollArea className="w-64 sm:w-auto overflow-y-auto max-h-[300px]">
             <div className="flex p-2 sm:flex-col">
               {Array.from({ length: 12 }, (_, i) => i + 1)
                 .reverse()
@@ -159,6 +178,8 @@ const TimePicker = ({
         </div>
       </PopoverContent>
     </Popover>
+
+    // <input type="time" onChange={handleNewTime}/>
   );
 };
 

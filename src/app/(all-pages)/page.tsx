@@ -57,7 +57,7 @@ export default function page() {
           </div>
         </div>
         <UpcommingEvents
-          elHeight={calendarHeight + DepFilHeight + DepFilMarginY}
+          elHeight={calendarHeight + DepFilHeight + DepFilMarginY -90}
         />
       </div>
     </div>

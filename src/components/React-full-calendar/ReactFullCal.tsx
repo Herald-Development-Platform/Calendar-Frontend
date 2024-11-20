@@ -25,6 +25,7 @@ import { RecurringEventTypes } from "@/constants/RecurringEvents";
 import EditEventModal1 from "../AddEventModal/EditEventModal1";
 import toast from "react-hot-toast";
 import EventDialog, { EventDialogRef } from "../AddEventModal/EventDialog";
+import { totalDaysInMonth } from "./lastDay";
 
 export default function ReactFullCal() {
   const {
@@ -35,6 +36,7 @@ export default function ReactFullCal() {
     selectedDate,
     timeout,
     events,
+    setOpenDialog,
   } = useContext(Context);
 
   const calWrapper = useRef<HTMLDivElement>(null);
@@ -190,19 +192,22 @@ export default function ReactFullCal() {
       e.preventDefault();
 
       // if (!addEventModalRef.current) return;
-      // @ts-ignore
-      // ?.firstChild?.click(),
+      //@ts-ignore
+      // addEventModalRef?.firstChild?.click(),
       // const modal_4 = document.getElementById(
       //   "my_modal_5",
       // ) as HTMLDialogElement;
       // modal_4.showModal();
+      setOpenDialog(true);
 
-      toast.success("heelo")
-      if (modalRef.current) {
-        toast.success("hi")
-        modalRef.current.openDialog(); // Open the dialog
-      }
-      toast.error("error")
+      // toast.success("heelo")
+      // console.log(modalRef, "MODAL REFFFF")
+
+      // if (modalRef.current) {
+      //   toast.success("hi")
+      //   modalRef.current.openDialog(); // Open the dialog
+      // }
+      // toast.error("error")
       
     });
     lastSelCell?.firstChild?.appendChild(selectContextEl);
@@ -210,12 +215,15 @@ export default function ReactFullCal() {
     return;
   };
   const handleUnselect = (arg: DateUnselectArg) => {
+    const date = new Date();
+    const currentDay = date.getDate();
+    const lastDay = totalDaysInMonth(date.getMonth()+1, date.getFullYear());
     // @ts-ignore
 
     timeout.current = setTimeout(function () {
       setSelectedDate({
         start: new Date(),
-        end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
+        end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * (lastDay - currentDay)), 
         startStr: undefined,
         endStr: undefined,
       });
@@ -563,9 +571,9 @@ export default function ReactFullCal() {
         handleDelete={handleDelete}
         width={eventDetailWidth || null}
       ></EventDetails>
-      <EventDialog
-      ref={modalRef}
-        type="Add"
+      {/* <EditEventModal1
+      // ref={modalRef}
+        // type="Add"
         defaultData={{
           start: selectedDate?.start
             ? new Date(selectedDate?.start)
@@ -579,7 +587,7 @@ export default function ReactFullCal() {
           involvedUsers: [],
           recurrenceEnd: null,
         }}
-      ></EventDialog>
+      ></EditEventModal1> */}
     </>
   );
 }

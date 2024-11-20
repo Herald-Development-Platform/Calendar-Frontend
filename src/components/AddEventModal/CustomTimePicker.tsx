@@ -26,7 +26,7 @@ export default function CustomTimePicker({
             id={`pickTime-${type}`}
             type="text"
             onFocus={() => setShowTimePicker(true)}
-            value={value ? format(value, "hh : mm  a") : "00 : 00 "}
+            value={value ? format(new Date(value), "hh : mm  a") : "00 : 00 "}
           />
         </label>
 

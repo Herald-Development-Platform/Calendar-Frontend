@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle, useState } from "react";
+import React, { useContext, useEffect, useImperativeHandle, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,42 +9,55 @@ import {
 } from "@/components/ui/dialog";
 import { AiOutlinePlus } from "react-icons/ai";
 import EventForm from "./EventForm";
+import { Context } from "@/app/clientWrappers/ContextProvider";
+import toast from "react-hot-toast";
 
 export interface EventDialogRef {
   openDialog: () => void;
   closeDialog: () => void;
 }
 
-const EventDialog = React.forwardRef<EventDialogRef, { type: string; defaultData: any }>(
-  ({ type, defaultData }, ref) => {
+const EventDialog = ({ type, defaultData }:{ type: string; defaultData: any }) => {
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  // const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  useEffect(() => {
-    // Log only when `isDialogOpen` changes to true
-    if (isDialogOpen) {
-      console.log("Dialog opened");
-    }
-  }, [isDialogOpen]);
+  const {openDialog, setOpenDialog, setSelectedDate, setSelectedEventData} = useContext(Context)
 
-  // Expose method to parent through `useImperativeHandle`
-  useImperativeHandle(ref, () => ({
-    openDialog: () => {
-      console.log("openDialog called");
-      if (!isDialogOpen) {
-        setIsDialogOpen(true); // Open dialog only if it's not already open
-      }
-    },
-    closeDialog: () => {
-      console.log("closeDialog called");
-      if (isDialogOpen) {
-        setIsDialogOpen(false); // Close dialog only if it's open
-      }
-    },
-  }));
+  console.log("EVENT DIALOG ijsdfiodsajfadklsfn")
+
+  // useEffect(() => {
+  //   // Log only when `isDialogOpen` changes to true
+  //   if (isDialogOpen) {
+  //     console.log("Dialog opened");
+  //   }
+  // }, [isDialogOpen]);
+
+  // // Expose method to parent through `useImperativeHandle`
+  // useImperativeHandle(ref, () => ({
+  //   openDialog: () => {
+  //     console.log("openDialog called");
+  //     if (!isDialogOpen) {
+  //       setIsDialogOpen(true); // Open dialog only if it's not already open
+  //     }
+  //   },
+  //   closeDialog: () => {
+  //     console.log("closeDialog called");
+  //     if (isDialogOpen) {
+  //       setIsDialogOpen(false); // Close dialog only if it's open
+  //     }
+  //   },
+  // }));
   
   return (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+    <Dialog open={openDialog} onOpenChange={() => {
+      setSelectedDate({start: undefined, end: undefined, startStr: undefined, endStr: undefined})
+      if(!openDialog) {
+        
+      }
+      
+      setOpenDialog((prev) => !prev)
+      // setSelectedEventData(null)
+      }}>
       <DialogTrigger asChild>
         <button
           className=" btn btn-sm
@@ -54,7 +67,7 @@ const EventDialog = React.forwardRef<EventDialogRef, { type: string; defaultData
           {type} Event
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-[600px] h-[600px] overflow-y-scroll hide-scrollbar">
+      <DialogContent className="max-w-[700px] h-[600px] overflow-y-scroll hide-scrollbar">
         <DialogHeader>
           <DialogTitle className="text-center">
             {" "}
@@ -65,6 +78,6 @@ const EventDialog = React.forwardRef<EventDialogRef, { type: string; defaultData
       </DialogContent>
     </Dialog>
   );
-});
+};
 
 export default EventDialog;

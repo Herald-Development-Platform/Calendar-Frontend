@@ -15,11 +15,11 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
   const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
   let lastDate: string;
 
-  const { selectedDate, timeout, currentView } = useContext(Context);
-  const selectedStartTime = selectedDate?.start
-    ? selectedDate?.start.getTime()
+  const { calenderDate, timeout, currentView, setSelectedEventData } = useContext(Context);
+  const selectedStartTime = calenderDate?.start
+    ? calenderDate?.start.getTime()
     : 0;
-  const selectedEndTime = selectedDate?.end ? selectedDate.end.getTime() : 0;
+  const selectedEndTime = calenderDate?.end ? calenderDate.end.getTime() : 0;
 
   const upcommingEventRef = useRef<HTMLDivElement>(null);
 
@@ -42,6 +42,7 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
   const handleCardClick = (eventData: eventType) => {
     clearTimeout(timeout.current);
     setSelectedEvent(eventData);
+    // setSelectedEventData(eventData);
 
     if (!upcommingEventRef?.current) return;
     upcommingEventRef.current.scrollTop = 0;
@@ -56,7 +57,7 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
     <div
       ref={upcommingEventRef}
       id="upcomming-events"
-      className={`${selectedEvent ? "" : "overflow-y-auto"
+      className={`${selectedEvent ? "" : ""
         } hide-scrollbar relative flex h-auto w-1/3 flex-col gap-10 overflow-hidden px-6`}
       style={{
         height: currentView !== "multiMonthYear" ? `${elHeight}px` : `100%`,
@@ -70,7 +71,7 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
         </h3>
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-3 overflow-y-auto hide-scrollbar">
         {eventsLoading ? (
           <></>
         ) : (
@@ -101,15 +102,15 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
                 lastDate = format(new Date(eventStart), "MMMM d");
                 displayDate = true;
               }
-              console.log(
-                "selectedDate selectedDate selectedDate",
-                selectedDate,
-                eventsData,
-              );
+              // console.log(
+              //   "selectedDate selectedDate selectedDate",
+              //   calenderDate,
+              //   eventsData,
+              // );
               return (
                 <React.Fragment key={event._id}>
                   {displayDate && (
-                    <div className="relative flex h-5 w-full items-center">
+                    <div className="relative flex h-5 w-full items-center mt-2">
                       <div className="w-full border-t border-neutral-300"></div>
                       <h1 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform bg-white px-2 text-sm text-neutral-600">
                         {lastDate && format(new Date(lastDate), "MMMM d")}

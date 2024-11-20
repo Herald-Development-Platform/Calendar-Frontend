@@ -24,6 +24,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { GrLocationPin } from "react-icons/gr";
 import { FaPlus } from "react-icons/fa";
 import { PopoverClose } from "@radix-ui/react-popover";
+import { Input } from "../ui/input";
 
 export function LocationSelect({
   value,
@@ -43,17 +44,26 @@ export function LocationSelect({
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between"
+          className="w-full justify-between px-0"
         >
-          {value
+          <Input
+            type="text"
+            value={locations?.find((location) => location.name === value)?.name}
+            onChange={(e) => {
+              handleValueChange({
+                target: { name: "location", value: e.target.value },
+              });
+            }}
+          />
+          {/* {value
             ? locations?.find((location) => location.name === value)?.name
-            : "Select Locations..."}
+            : "Select Locations..."} */}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[400px] p-0" align="end">
+      <PopoverContent className="z-[999] w-[400px] p-0" align="end">
         <Command>
-          <CommandInput placeholder="Search framework..." />
+          <CommandInput placeholder="Search Location..." />
           <CommandList>
             <CommandEmpty>No Location found.</CommandEmpty>
             <CommandGroup>
@@ -69,31 +79,31 @@ export function LocationSelect({
                   }}
                   className="group flex w-full cursor-pointer flex-row items-center gap-2 rounded-[4px] px-3 py-1 hover:bg-neutral-100"
                 >
-                    <Check
-                      className={cn(
-                        "mr-2 h-4 w-4",
-                        value === location.name ? "opacity-100" : "opacity-0",
-                      )}
-                    />
-                    <span className="text-2xl text-neutral-600">
-                      <GrLocationPin size={18} />
+                  <Check
+                    className={cn(
+                      "mr-2 h-4 w-4",
+                      value === location.name ? "opacity-100" : "opacity-0",
+                    )}
+                  />
+                  <span className="text-2xl text-neutral-600">
+                    <GrLocationPin size={18} />
+                  </span>
+                  <div className="flex flex-col items-start justify-center gap-0">
+                    <span className="text-[14px] font-semibold text-neutral-700">
+                      {location.name}
                     </span>
-                    <div className="flex flex-col items-start justify-center gap-0">
-                      <span className="text-[14px] font-semibold text-neutral-700">
-                        {location.name}
+                    {location?.description && (
+                      <span className="text-[12px] font-normal text-neutral-400">
+                        {location.description}
                       </span>
-                      {location?.description && (
-                        <span className="text-[12px] font-normal text-neutral-400">
-                          {location.description}
-                        </span>
-                      )}
-                    </div>
-                    <button
-                      name="location"
-                      className="ml-auto hidden h-[26px] w-[26px] cursor-pointer items-center justify-center rounded-full bg-white group-hover:flex"
-                    >
-                      <FaPlus></FaPlus>
-                    </button>
+                    )}
+                  </div>
+                  <button
+                    name="location"
+                    className="ml-auto hidden h-[26px] w-[26px] cursor-pointer items-center justify-center rounded-full bg-white group-hover:flex"
+                  >
+                    <FaPlus></FaPlus>
+                  </button>
                 </CommandItem>
               ))}
             </CommandGroup>

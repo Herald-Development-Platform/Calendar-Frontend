@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { format } from "date-fns";
 import { Dot } from "lucide-react";
 import { LuDot } from "react-icons/lu";
+import { Context } from "@/app/clientWrappers/ContextProvider";
 
 export default function EventCard({
   event,
@@ -14,7 +15,12 @@ export default function EventCard({
     ? format(new Date(event.start), "h:mm aa")
     : "NA";
   const endTime = event?.end ? format(new Date(event?.end), "h:mm aa") : "NA";
+
+  const {setSelectedEventData} = useContext(Context)
+  
   if (!event?.start) return null;
+
+  
 
   return (
     <>
@@ -30,6 +36,7 @@ export default function EventCard({
         }}
         onClick={() => {
           handleCardClick && handleCardClick(event);
+          setSelectedEventData(event);
         }}
       >
         <div className="flex items-start justify-start">

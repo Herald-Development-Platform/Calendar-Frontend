@@ -18,5 +18,5 @@
   
     /* background-color: white; */
     border: 1px solid #ccc;
-    z-index: 111; /* Set the desired z-index */
+    z-index: -10 !important; /* Set the desired z-index */
 }
