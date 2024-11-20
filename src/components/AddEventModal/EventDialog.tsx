@@ -67,4 +67,6 @@ const EventDialog = React.forwardRef<EventDialogRef, { type: string; defaultData
   );
 });
 
+EventDialog.displayName = "EventDialog";
+
 export default EventDialog;
