@@ -80,4 +80,6 @@ const EventDialog = ({ type, defaultData }:{ type: string; defaultData: any }) =
   );
 };
 
+EventDialog.displayName = "EventDialog";
+
 export default EventDialog;
