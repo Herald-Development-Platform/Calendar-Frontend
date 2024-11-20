@@ -1,6 +1,6 @@
 import Sidebar from "@/components/Sidebar";
-import { PROCUREMENT_URL } from "@/constants";
 import AppWrapper from "../clientWrappers/AppWrapper";
+import { Suspense } from "react";
 
 export default function RootLayout({
   children,
@@ -12,9 +12,13 @@ export default function RootLayout({
   console.log(searchParams);
   return (
     <div className="flex">
-      <Sidebar hasBreakpoint={true}></Sidebar>
+      <Suspense>
+        <Sidebar hasBreakpoint={true}></Sidebar>
+      </Suspense>
       <div className="flex h-screen w-full flex-col">
-        <AppWrapper>{children}</AppWrapper>
+        <Suspense>
+          <AppWrapper>{children}</AppWrapper>
+        </Suspense>
       </div>
     </div>
   );
