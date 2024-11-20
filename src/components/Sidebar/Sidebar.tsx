@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { IoIosSearch, IoMdArrowDropdown } from "react-icons/io";
 import { AiOutlineHome } from "react-icons/ai";
 import { HiOutlineDocumentReport, HiOutlineUserGroup } from "react-icons/hi";
@@ -12,7 +12,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import Cookies from "js-cookie";
 import "./SideBarCss.css";
 
 import { Context } from "@/app/clientWrappers/ContextProvider";
@@ -35,10 +34,9 @@ interface ISidebar {
 
 export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   const currentRoute = usePathname();
+  const searchParams = useSearchParams();
 
   const { userData: profile } = useContext(Context);
-
-  console.clear();
 
   const highlightedStyles =
     "flex h-11 w-full items-center gap-2 rounded px-3 bg-primary-100 text-primary-700";
@@ -78,8 +76,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       [ROLES.DEPARTMENT_ADMIN, ROLES.SUPER_ADMIN].includes(profile.role) && {
         name: "Requisition",
         icon: <HiOutlineDocumentReport />,
-        navigation: PROCUREMENT_URL + "/",
-        // navigation: `${PROCUREMENT_URL}?url_token=${encodeURIComponent(Cookies.get("token") || "")}`,
+        navigation: "?show_procurement=true",
       },
   ].filter(Boolean) as ISidebar[];
 
@@ -236,30 +233,46 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                 />
               </div>
             )}
-            {sidebarItems.map((item, i) => (
-              <Link
-                href={item.navigation}
-                className={`
-                  ${
-                    currentRoute == item.navigation
-                      ? highlightedStyles
-                      : nonHighlightedStyles
-                  }
-                    `}
-                key={i}
-              >
-                <span
-                  className={
-                    currentRoute == item.navigation
-                      ? "text-2xl text-primary-700"
-                      : "text-2xl text-neutral-500"
-                  }
+            {sidebarItems.map((item, i) => {
+              return searchParams.get("show_procurement") &&
+                item.name === "Requisition" ? (
+                <Link
+                  href={item.navigation}
+                  className={highlightedStyles}
+                  key={i}
                 >
-                  {item.icon}
-                </span>
-                {open && <span>{item.name}</span>}
-              </Link>
-            ))}
+                  <span className={"text-2xl text-primary-700"}>
+                    {item.icon}
+                  </span>
+                  {open && <span>{item.name}</span>}
+                </Link>
+              ) : (
+                <Link
+                  href={item.navigation}
+                  className={`
+             ${
+               !searchParams.get("show_procurement") &&
+               currentRoute == item.navigation
+                 ? highlightedStyles
+                 : nonHighlightedStyles
+             }
+               `}
+                  key={i}
+                >
+                  <span
+                    className={
+                      !searchParams.get("show_procurement") &&
+                      currentRoute == item.navigation
+                        ? "text-2xl text-primary-700"
+                        : "text-2xl text-neutral-500"
+                    }
+                  >
+                    {item.icon}
+                  </span>
+                  {open && <span>{item.name}</span>}
+                </Link>
+              );
+            })}
           </div>
           <div className="mt-auto">
             <Popover>
