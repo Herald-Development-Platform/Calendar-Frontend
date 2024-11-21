@@ -1,5 +1,4 @@
 import Sidebar from "@/components/Sidebar";
-import AppWrapper from "../clientWrappers/AppWrapper";
 import { Suspense } from "react";
 
 export default function RootLayout({
@@ -15,11 +14,7 @@ export default function RootLayout({
       <Suspense>
         <Sidebar hasBreakpoint={true}></Sidebar>
       </Suspense>
-      <div className="flex h-screen w-full flex-col">
-        <Suspense>
-          <AppWrapper>{children}</AppWrapper>
-        </Suspense>
-      </div>
+      <div className="flex h-screen w-full flex-col">{children}</div>
     </div>
   );
 }

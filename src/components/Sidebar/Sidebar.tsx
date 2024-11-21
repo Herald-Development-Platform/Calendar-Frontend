@@ -76,7 +76,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       [ROLES.DEPARTMENT_ADMIN, ROLES.SUPER_ADMIN].includes(profile.role) && {
         name: "Requisition",
         icon: <HiOutlineDocumentReport />,
-        navigation: "?show_procurement=true",
+        navigation: "/procurement",
       },
   ].filter(Boolean) as ISidebar[];
 
@@ -233,46 +233,30 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                 />
               </div>
             )}
-            {sidebarItems.map((item, i) => {
-              return searchParams.get("show_procurement") &&
-                item.name === "Requisition" ? (
-                <Link
-                  href={item.navigation}
-                  className={highlightedStyles}
-                  key={i}
-                >
-                  <span className={"text-2xl text-primary-700"}>
-                    {item.icon}
-                  </span>
-                  {open && <span>{item.name}</span>}
-                </Link>
-              ) : (
-                <Link
-                  href={item.navigation}
-                  className={`
+            {sidebarItems.map((item, i) => (
+              <Link
+                href={item.navigation}
+                className={`
              ${
-               !searchParams.get("show_procurement") &&
                currentRoute == item.navigation
                  ? highlightedStyles
                  : nonHighlightedStyles
              }
                `}
-                  key={i}
+                key={i}
+              >
+                <span
+                  className={
+                    currentRoute == item.navigation
+                      ? "text-2xl text-primary-700"
+                      : "text-2xl text-neutral-500"
+                  }
                 >
-                  <span
-                    className={
-                      !searchParams.get("show_procurement") &&
-                      currentRoute == item.navigation
-                        ? "text-2xl text-primary-700"
-                        : "text-2xl text-neutral-500"
-                    }
-                  >
-                    {item.icon}
-                  </span>
-                  {open && <span>{item.name}</span>}
-                </Link>
-              );
-            })}
+                  {item.icon}
+                </span>
+                {open && <span>{item.name}</span>}
+              </Link>
+            ))}
           </div>
           <div className="mt-auto">
             <Popover>

@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useState } from "react";
 import * as Headers from "@/components/Header";
 import { Axios } from "@/services/baseUrl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { CiSearch } from "react-icons/ci";
 import { MdArrowDropDown } from "react-icons/md";
 import { MdCheckBoxOutlineBlank, MdCheckBox } from "react-icons/md";
 
@@ -272,7 +271,7 @@ export default function Page() {
       permissions: [],
       department,
     });
-  }
+  };
 
   useEffect(() => {
     if (profile && profile?.department) {
@@ -281,18 +280,20 @@ export default function Page() {
   }, [profile]);
 
   const onAddUserSubmit = async (data: any) => {
-
-    if(addUserMutation.isPending) return; 
+    if (addUserMutation.isPending) return;
 
     addUserMutation.mutate(data, {
       onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ["AllUsers"] });     
+        queryClient.invalidateQueries({ queryKey: ["AllUsers"] });
         setAddUserDialogOpen(false);
-      }
+      },
     });
   };
 
-  const filteredDepartments = profile?.role === ROLES.SUPER_ADMIN ? departments : departments?.filter((dep) => dep._id === profile?.department?._id);
+  const filteredDepartments =
+    profile?.role === ROLES.SUPER_ADMIN
+      ? departments
+      : departments?.filter((dep) => dep._id === profile?.department?._id);
 
   return (
     <>
@@ -350,7 +351,7 @@ export default function Page() {
             </DialogHeader>
             <form
               className="flex max-h-[60vh] flex-col gap-8 overflow-y-scroll px-1 py-2"
-              onSubmit={(e)=>e.preventDefault()}
+              onSubmit={(e) => e.preventDefault()}
             >
               <label htmlFor="add-title">
                 <div className="group flex h-11 w-full items-center gap-2 border-b-[1px] border-neutral-300 px-4 focus-within:border-primary-600">
@@ -584,7 +585,7 @@ export default function Page() {
               </DialogTitle>
             </DialogHeader>
             <form
-            onSubmit={(e)=>e.preventDefault()}
+              onSubmit={(e) => e.preventDefault()}
               className="flex max-h-[60vh] flex-col gap-8 overflow-y-scroll px-1 py-2"
             >
               <label htmlFor="add-title">
@@ -674,11 +675,12 @@ export default function Page() {
                 onClick={() => {
                   handleAddUserSubmit(onAddUserSubmit)();
                 }}
-                className=" text-normal flex gap-2 w-fit items-center justify-center rounded-md border-none bg-primary-600 px-4 py-3 font-medium text-primary-50 hover:bg-primary-700"
+                className=" text-normal flex w-fit items-center justify-center gap-2 rounded-md border-none bg-primary-600 px-4 py-3 font-medium text-primary-50 hover:bg-primary-700"
               >
-                Add {
-                  addUserMutation.isPending && <LoaderCircle className="animate-spin" size={19}/>
-                }
+                Add{" "}
+                {addUserMutation.isPending && (
+                  <LoaderCircle className="animate-spin" size={19} />
+                )}
               </button>
             </div>
           </DialogContent>
@@ -803,13 +805,13 @@ export default function Page() {
                         </p>
                       </div>
                     </div>
-                    <NewMembersAction actionId={request._id}/>
+                    <NewMembersAction actionId={request._id} />
                   </div>
                 );
               })}
           </>
           <div className="flex flex-row justify-between">
-            <div className="flex max-w-[65vw] overflow-x-scroll hide-scrollbar flex-row items-center justify-start gap-1.5">
+            <div className="hide-scrollbar flex max-w-[65vw] flex-row items-center justify-start gap-1.5 overflow-x-scroll">
               {profile && profile.role === ROLES.SUPER_ADMIN && (
                 <DepartmentBtn
                   selectedCross={false}
@@ -862,7 +864,6 @@ export default function Page() {
                           return;
                         }
 
-                        
                         setSelDepartments(newSelectedDepartments);
                       }}
                       selected={selDepartments.includes(department.code)}
