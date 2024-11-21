@@ -13,8 +13,8 @@ export default function RootLayout({
     <div className="flex">
       <Suspense>
         <Sidebar hasBreakpoint={true}></Sidebar>
+        <div className="flex h-screen w-full flex-col">{children}</div>
       </Suspense>
-      <div className="flex h-screen w-full flex-col">{children}</div>
     </div>
   );
 }
