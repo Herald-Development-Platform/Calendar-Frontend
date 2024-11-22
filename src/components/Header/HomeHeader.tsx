@@ -413,7 +413,7 @@ export function HomeHeader() {
 
             <EventDialog type={"Add"}    />
 
-            <EventModal type={"Add"} defaultData={null} />
+            {/* <EventModal type={"Add"} defaultData={null} /> */}
           </div>
         </div>
 

@@ -253,7 +253,6 @@ export default function Page() {
           </div>
         </div>
         <EventDialog type="Edit" className="hidden"/>
-        <EventModal type={"Add"} defaultData={null} />
 
         <EventDetails
           selectedEvent={selectedEvent}

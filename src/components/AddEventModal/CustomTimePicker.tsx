@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StaticTimePicker } from "@mui/x-date-pickers/StaticTimePicker";
 import { DemoContainer, DemoItem } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -16,6 +16,10 @@ export default function CustomTimePicker({
 }) {
   const [showTimePicker, setShowTimePicker] = useState<boolean>(false);
 
+  useEffect(() => {
+    setShowTimePicker(false);
+  }, []);
+
   return (
     <>
       <div className="relative flex-grow">
@@ -30,7 +34,8 @@ export default function CustomTimePicker({
           />
         </label>
 
-        <StaticTimePicker
+<div className={`${showTimePicker ? "inline-block": "hidden"}`}>
+<StaticTimePicker
           className={`${showTimePicker ? "inline-block" : "hidden"} ${
             type === "start" ? "left-0" : "right-0"
           } absolute top-12 z-20 rounded-sm `}
@@ -44,6 +49,8 @@ export default function CustomTimePicker({
           }}
           onAccept={() => setShowTimePicker(false)}
         />
+</div>
+        
       </div>
       <div
         onClick={() => {

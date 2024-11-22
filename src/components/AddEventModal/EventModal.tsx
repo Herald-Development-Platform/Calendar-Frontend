@@ -223,11 +223,11 @@ export default function EventModal({
     return true;
   };
   return (
-    <>
+    <div className="hidden">
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         {/* Dont remove hidden from this button... */}
         <button
-          className=" btn btn-sm hidden
+          className=" btn btn-sm
            relative  h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
           onClick={() => {
             const modal_3 = document.getElementById(
@@ -609,6 +609,6 @@ export default function EventModal({
           </form>
         </dialog>
       </LocalizationProvider>
-    </>
+    </div>
   );
 }
