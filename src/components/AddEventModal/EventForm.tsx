@@ -1,5 +1,9 @@
-import { useCreateEventMutation, useEditEventMutation, useUpdateEvents } from "@/services/api/eventsApi";
-import React, { useContext, useEffect, useState } from "react";
+import {
+  useCreateEventMutation,
+  useEditEventMutation,
+  useUpdateEvents,
+} from "@/services/api/eventsApi";
+import React, { use, useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { BiPencil } from "react-icons/bi";
 import { Textarea } from "../ui/textarea";
@@ -20,16 +24,12 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LoaderCircle } from "lucide-react";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import './EventForm.css'
-
-
+import "./EventForm.css";
 
 const EventForm = ({
   type,
-  defaultData,
 }: {
   type: string;
-  defaultData: eventType | null;
 }) => {
   const [dateType, setDateType] = useState<"single" | "multi">("single");
 
@@ -87,8 +87,7 @@ const EventForm = ({
   // });
 
   useEffect(() => {
-
-    console.log("selectedEventData",selectedEventData)  
+    console.log("selectedEventData", selectedEventData);
     if (selectedEventData) {
       reset({
         title: selectedEventData?.title,
@@ -103,11 +102,10 @@ const EventForm = ({
         recurringType: selectedEventData?.recurringType,
         involvedUsers: selectedEventData?.involvedUsers,
         recurrenceEnd: selectedEventData?.recurrenceEnd,
-
       });
     }
 
-    console.log(selectedEventData)
+    console.log(selectedEventData);
   }, [selectedEventData]);
 
   const handleValueChange = (e: any) => {
@@ -121,13 +119,17 @@ const EventForm = ({
 
     switch (name) {
       case "department":
+        if (userData?.department?._id === value) return;
         let departments = watch("departments");
         if (departments?.includes(value)) {
           setValue("departments", [
             ...departments?.filter((item) => item !== value),
           ]);
         } else {
-          setValue("departments", [...departments, value]);
+          let updatedDepartments = [...departments, value];
+          let departmentSet = new Set(updatedDepartments);
+          updatedDepartments = Array.from(departmentSet);
+          setValue("departments", updatedDepartments);
         }
         break;
 
@@ -152,6 +154,10 @@ const EventForm = ({
         break;
     }
   };
+
+  useEffect(() => {
+    console.log("departments", watch("departments"));
+  }, [watch("departments")]);
 
   useEffect(() => {
     let currentDepartments: string[] = [];
@@ -180,10 +186,31 @@ const EventForm = ({
   const onSubmit = (data: eventType) => {
     console.log(data);
 
+    if (!data.start || !data.end) {
+      toast.error("Start date and end date must be valid.");
+      return;
+    }
+
+
+    if(data.recurrenceEnd){
+      if(new Date(data.recurrenceEnd).getTime() < new Date(data.start).getTime()){
+        toast.error("Recurrence end date cannot be earlier than start date");
+        return;
+      }
+    }
+    
+
+    const startDate = new Date(data.start);
+    const endDate = new Date(data.end);
+
+    if (startDate.getTime() >= endDate.getTime()) {
+      toast.error("End date/time cannot be earlier than start date/time");
+      return;
+    }
     if (!isEdit) {
       postNewEvent(data, {
         onSuccess: () => {
-          toast.success("Event created successfully");
+          // toast.success("Event created successfully");
           queryClient.invalidateQueries({ queryKey: ["Events"] });
           reset();
           setOpenDialog(false);
@@ -196,9 +223,9 @@ const EventForm = ({
       const updateData = {
         ...selectedEventData,
         ...data,
-      }
+      };
 
-      console.log("update",data)
+      console.log("update", data);
       updateEvent(updateData, {
         onSuccess: () => {
           toast.success("Event updated successfully");
@@ -499,7 +526,11 @@ const EventForm = ({
                 selectedCross={false}
                 onClick={() => {
                   if (watch("departments")?.length === departmentsRes?.length) {
-                    setValue("departments", []);
+                    if (userData?.department?._id) {
+                      setValue("departments", [userData?.department?._id]);
+                    } else {
+                      setValue("departments", []);
+                    }
                   } else {
                     setValue(
                       "departments",
@@ -566,7 +597,9 @@ const EventForm = ({
           <div className="flex w-full items-center justify-end gap-5">
             <button className="flex gap-2 rounded-md border-none bg-primary-600 px-4 py-2 text-base font-medium text-primary-50 hover:bg-primary-700">
               {!isEdit ? "Create" : "Edit"}
-              {(Posting || Updating) && <LoaderCircle className="animate-spin" />}
+              {(Posting || Updating) && (
+                <LoaderCircle className="animate-spin" />
+              )}
             </button>
           </div>
         </div>

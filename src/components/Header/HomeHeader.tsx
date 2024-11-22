@@ -84,7 +84,7 @@ export function HomeHeader() {
     notifications,
     setCurrentView,
     calenderDate,
-    setCalenderDate
+    setCalenderDate,
   } = useContext(Context);
 
   let newNotifications = false;
@@ -115,7 +115,7 @@ export function HomeHeader() {
     let startStr = null;
     let endStr = null;
 
-    let lastDate = null
+    let lastDate = null;
 
     switch (currentView) {
       case "dayGridMonth":
@@ -123,23 +123,26 @@ export function HomeHeader() {
           calenderDate.start.getMonth() + 1,
         );
 
-        let todaysDate = new Date()
-        let todaysMonth = todaysDate.getMonth() ;
-        let startDate = new Date(start)
-        let startMonth = startDate.getMonth() 
+        let todaysDate = new Date();
+        let todaysMonth = todaysDate.getMonth();
+        let startDate = new Date(start);
+        let startMonth = startDate.getMonth();
 
-        console.log("todaysMonth", todaysMonth)
-        console.log("startMonth", startMonth)
+        console.log("todaysMonth", todaysMonth);
+        console.log("startMonth", startMonth);
 
-        if(todaysMonth !== startMonth){
-          start = new Date(startDate.getFullYear(), startMonth, 1)
-          console.log("start", start)
-        }else{
+        if (todaysMonth !== startMonth) {
+          start = new Date(startDate.getFullYear(), startMonth, 1);
+          console.log("start", start);
+        } else {
           start = new Date();
         }
-        let date = new Date(start)
-        lastDate = totalDaysInMonth(date.getMonth()+1, date.getFullYear())
-        end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * (lastDate - date.getDate()));
+        let date = new Date(start);
+        lastDate = totalDaysInMonth(date.getMonth() + 1, date.getFullYear());
+        end = new Date(
+          new Date(start).getTime() +
+            1000 * 60 * 60 * 24 * (lastDate - date.getDate()),
+        );
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
         break;
@@ -205,29 +208,32 @@ export function HomeHeader() {
     let startStr = null;
     let endStr = null;
 
-    let lastDay = null
+    let lastDay = null;
     switch (currentView) {
       case "dayGridMonth":
         start = new Date(calenderDate.start).setMonth(
           calenderDate.start.getMonth() - 1,
         );
-        let todaysDate = new Date()
-        let todaysMonth = todaysDate.getMonth() ;
-        let startDate = new Date(start)
-        let startMonth = startDate.getMonth() 
+        let todaysDate = new Date();
+        let todaysMonth = todaysDate.getMonth();
+        let startDate = new Date(start);
+        let startMonth = startDate.getMonth();
 
-        console.log("todaysMonth", todaysMonth)
-        console.log("startMonth", startMonth)
+        console.log("todaysMonth", todaysMonth);
+        console.log("startMonth", startMonth);
 
-        if(todaysMonth !== startMonth){
-          start = new Date(startDate.getFullYear(), startMonth, 1)
-          console.log("start", start)
-        }else{
+        if (todaysMonth !== startMonth) {
+          start = new Date(startDate.getFullYear(), startMonth, 1);
+          console.log("start", start);
+        } else {
           start = new Date();
         }
-        let date = new Date(start)
-        lastDay = totalDaysInMonth(date.getMonth()+1, date.getFullYear())
-        end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * (lastDay - date.getDate()));
+        let date = new Date(start);
+        lastDay = totalDaysInMonth(date.getMonth() + 1, date.getFullYear());
+        end = new Date(
+          new Date(start).getTime() +
+            1000 * 60 * 60 * 24 * (lastDay - date.getDate()),
+        );
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
         break;
@@ -267,11 +273,16 @@ export function HomeHeader() {
 
   const handleToday = () => {
     calendarApi?.today();
-    setSelectedDate({
+    const date = new Date();
+    const currentDay = date.getDate();
+    const lastDay = totalDaysInMonth(date.getMonth() + 1, date.getFullYear());
+    setCalenderDate({
       start: new Date(),
-      end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * 7),
-      startStr: "",
+      end: new Date(
+        new Date().getTime() + 1000 * 60 * 60 * 24 * (lastDay - currentDay),
+      ),
       endStr: "",
+      startStr: "",
     });
   };
 
@@ -324,10 +335,10 @@ export function HomeHeader() {
             {/* Selected date display */}
             <div className="">
               <h6 className="text-2xl font-bold">
-                {selectedDate?.start &&
-                  format(selectedDate.start, "MMMM d', '")}
+                {calenderDate?.start &&
+                  format(calenderDate.start, "MMMM d', '")}
                 <span className="text-lg font-medium">
-                  {selectedDate?.start?.getFullYear()}
+                  {calenderDate?.start?.getFullYear()}
                 </span>
               </h6>
             </div>
@@ -344,7 +355,7 @@ export function HomeHeader() {
                       listView
                         ? "bg-primary-500 text-white"
                         : "text-neutral-500"
-                    } max-w-32 h-full rounded-sm border border-neutral-300 px-3 text-2xl font-semibold transition duration-200`}
+                    } h-full max-w-32 rounded-sm border border-neutral-300 px-3 text-2xl font-semibold transition duration-200`}
                     onClick={(e) => {
                       setListView((prev) => !prev);
                     }}
@@ -400,7 +411,7 @@ export function HomeHeader() {
               </SelectContent>
             </Select>
 
-            <EventDialog type={"Add"} defaultData={null}/>
+            <EventDialog type={"Add"}    />
 
             <EventModal type={"Add"} defaultData={null} />
           </div>

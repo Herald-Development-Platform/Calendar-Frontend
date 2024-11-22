@@ -12,6 +12,8 @@ import { format } from "date-fns";
 import { RxArrowTopRight } from "react-icons/rx";
 import EventDetails from "./EventDetails";
 import { useDebounce } from "@/hooks/useDebounce";
+import EventDialog from "@/components/AddEventModal/EventDialog";
+import EventModal from "@/components/AddEventModal/EventModal";
 
 export default function Page() {
   const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
@@ -250,6 +252,8 @@ export default function Page() {
               ))}
           </div>
         </div>
+        <EventDialog type="Edit" className="hidden"/>
+        <EventModal type={"Add"} defaultData={null} />
 
         <EventDetails
           selectedEvent={selectedEvent}

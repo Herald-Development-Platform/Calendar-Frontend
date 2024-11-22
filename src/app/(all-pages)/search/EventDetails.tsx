@@ -76,8 +76,12 @@ const {setSelectedEventData, openDialog, setOpenDialog} = useContext(Context)
 
   useEffect(() => {
     console.log("SELECTED EVENT::::", selectedEvent);
-    setSelectedEventData(selectedEvent);
-    setSelectedColor(selectedEvent?.color);
+    if(selectedEvent){
+      const event = {...selectedEvent, departments: selectedEvent?.departments.map((dep: any) => dep._id)}
+      setSelectedEventData(event);
+      setSelectedColor(selectedEvent?.color);
+    }
+    
   }, [selectedEvent]);
 
   const { mutate: updateEventDetail } = useEditEventMutation();

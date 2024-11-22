@@ -48,7 +48,7 @@ export function LocationSelect({
         >
           <Input
             type="text"
-            value={locations?.find((location) => location.name === value)?.name}
+            value={locations?.find((location) => location.name === value)?.name || value}
             onChange={(e) => {
               handleValueChange({
                 target: { name: "location", value: e.target.value },

@@ -24,6 +24,7 @@ import { profile } from "console";
 import { ROLES } from "@/constants/role";
 import { PERMISSIONS } from "@/constants/permissions";
 import { useGetEvents } from "@/services/api/eventsApi";
+import * as Headers from "@/components/Header";
 
 export default function ManageDepartment() {
   const router = useRouter();
@@ -103,7 +104,9 @@ export default function ManageDepartment() {
   };
 
   return (
-    <div className="ml-10 mt-[110px] flex max-w-[40vw] flex-col gap-6">
+    <>
+    <Headers.GeneralHeader />
+    <div className="ml-10 mt-10 flex max-w-[40vw] flex-col gap-6">
       <div className="flex flex-row items-center justify-start gap-2">
         <span
           onClick={() => {
@@ -254,5 +257,6 @@ export default function ManageDepartment() {
         </DialogContent>
       </Dialog>
     </div>
+    </>
   );
 }

@@ -37,6 +37,7 @@ export default function ReactFullCal() {
     timeout,
     events,
     setOpenDialog,
+    setSelectedEventData,
   } = useContext(Context);
 
   const calWrapper = useRef<HTMLDivElement>(null);
@@ -198,6 +199,7 @@ export default function ReactFullCal() {
       //   "my_modal_5",
       // ) as HTMLDialogElement;
       // modal_4.showModal();
+      setSelectedEventData(null);
       setOpenDialog(true);
 
       // toast.success("heelo")
