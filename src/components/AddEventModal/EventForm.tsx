@@ -26,11 +26,7 @@ import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import "./EventForm.css";
 
-const EventForm = ({
-  type,
-}: {
-  type: string;
-}) => {
+const EventForm = ({ type }: { type: string }) => {
   const [dateType, setDateType] = useState<"single" | "multi">("single");
 
   const { data: departmentsRes } = useGetDepartments();
@@ -160,10 +156,10 @@ const EventForm = ({
   }, [watch("departments")]);
 
   useEffect(() => {
-    let currentDepartments: string[] = [];
+    let currentDepartments: string[] = watch("departments") ?? [];
     if (userData?.department) {
       currentDepartments = [userData?.department?._id].concat(
-        watch("departments") ?? [],
+        watch("departments") ?? [watch("departments")],
       );
       currentDepartments = Array.from(new Set(currentDepartments));
       // setNewEvent((prev) => ({ ...prev, departments: currentDepartments }));
@@ -191,14 +187,14 @@ const EventForm = ({
       return;
     }
 
-
-    if(data.recurrenceEnd){
-      if(new Date(data.recurrenceEnd).getTime() < new Date(data.start).getTime()){
+    if (data.recurrenceEnd) {
+      if (
+        new Date(data.recurrenceEnd).getTime() < new Date(data.start).getTime()
+      ) {
         toast.error("Recurrence end date cannot be earlier than start date");
         return;
       }
     }
-    
 
     const startDate = new Date(data.start);
     const endDate = new Date(data.end);
@@ -512,11 +508,13 @@ const EventForm = ({
           )}
         </div>
 
-        <LocationSelect
-          value={watch("location") as string}
-          handleValueChange={handleValueChange}
-        />
-
+        <div>
+        <span className="text-sm">Location:</span>
+          <LocationSelect
+            value={watch("location") as string}
+            handleValueChange={handleValueChange}
+          />
+        </div>
         {/* Departments section  */}
         <div className="text-sm">
           <span>Departments:</span>
