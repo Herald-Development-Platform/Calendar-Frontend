@@ -6,9 +6,9 @@ import * as Headers from "@/components/Header";
 
 const ProcurementPage = () => {
   return (
-    <main>
+    <main className="h-screen overflow-hidden">
       <Headers.GeneralHeader />
-      <iframe src={PROCUREMENT_URL} className="h-screen w-full" />
+      <iframe src={PROCUREMENT_URL} className="h-full w-full" />
     </main>
   );
 };
