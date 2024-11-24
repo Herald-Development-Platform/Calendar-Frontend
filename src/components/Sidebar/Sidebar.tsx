@@ -268,7 +268,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                   "_blank",
                 )
               }
-              className="flex text-sm items-center cursor-pointer gap-2 text-neutral-600 rounded-full border border-[#D4D4D4] px-[46px]  -mr-2  py-2  font-medium"
+              className="flex text-sm items-center cursor-pointer gap-2 text-neutral-600 rounded-full border border-[#D4D4D4] px-[46px]  -mr-2  py-2  font-bold"
             >
               <Bug size={18} /> Report a Bug
             </button>
