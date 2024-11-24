@@ -25,6 +25,7 @@ import { RxCross2 } from "react-icons/rx";
 import { PROCUREMENT_URL } from "@/constants";
 import { useGetProfile } from "@/services/api/profile";
 import { ROLES } from "@/constants/role";
+import { Bug } from "lucide-react";
 
 interface ISidebar {
   name: string;
@@ -258,7 +259,21 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
               </Link>
             ))}
           </div>
-          <div className="mt-auto">
+          <div className="mt-auto space-y-2 ">
+          <div className="flex justify-end">
+            <button
+              onClick={() =>
+                window.open(
+                  "https://docs.google.com/spreadsheets/d/16DQW5IOkN3DrfI3bVFugeRvA88uCafq7A6O4g1BCmWg/edit?usp=sharing",
+                  "_blank",
+                )
+              }
+              className="flex text-sm items-center cursor-pointer gap-2 text-neutral-600 rounded-full border border-[#D4D4D4] px-[46px]  -mr-2  py-2  font-medium"
+            >
+              <Bug size={18} /> Report a Bug
+            </button>
+            </div>
+            
             <Popover>
               <PopoverTrigger>
                 <div
