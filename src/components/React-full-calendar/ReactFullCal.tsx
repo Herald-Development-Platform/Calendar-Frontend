@@ -26,6 +26,7 @@ import EditEventModal1 from "../AddEventModal/EditEventModal1";
 import toast from "react-hot-toast";
 import EventDialog, { EventDialogRef } from "../AddEventModal/EventDialog";
 import { totalDaysInMonth } from "./lastDay";
+import { AiOutlineConsoleSql } from "react-icons/ai";
 
 export default function ReactFullCal() {
   const {
@@ -326,6 +327,9 @@ export default function ReactFullCal() {
     const departments = info?.event?._def?.extendedProps?.departments;
     const start = info.event._instance?.range?.start;
     const end = info.event._instance?.range?.end;
+    
+    const role = info.event._def?.extendedProps?.createdBy.role;
+    console.log("role", role);
 
     const displayStart = start?.toISOString() ?? new Date().toISOString();
     const displayEnd = end?.toISOString() ?? new Date().toISOString();
@@ -402,7 +406,7 @@ export default function ReactFullCal() {
         departmentElement.textContent = department?.code;
         departmentElement.style.fontWeight = "400";
 
-        if (i === 0) {
+        if (i === 0 && role !== "SUPER_ADMIN") {
           departmentElement.style.backgroundColor = "#737373";
           departmentElement.style.border = "0.4px solid #d4d4d4";
         } else {

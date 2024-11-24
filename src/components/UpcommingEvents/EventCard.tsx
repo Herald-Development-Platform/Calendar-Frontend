@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { Dot } from "lucide-react";
 import { LuDot } from "react-icons/lu";
 import { Context } from "@/app/clientWrappers/ContextProvider";
+import { ROLES } from "@/constants/role";
 
 export default function EventCard({
   event,
@@ -15,6 +16,7 @@ export default function EventCard({
     ? format(new Date(event.start), "h:mm aa")
     : "NA";
   const endTime = event?.end ? format(new Date(event?.end), "h:mm aa") : "NA";
+
 
   const {setSelectedEventData} = useContext(Context)
   
@@ -46,7 +48,7 @@ export default function EventCard({
                 <div
                   key={i}
                   className={`${
-                    i === 0
+                    (i === 0 && event?.createdBy?.role !== ROLES.SUPER_ADMIN )
                       ? "bg-neutral-400 text-white"
                       : "bg-white text-neutral-400"
                   } flex h-[15px] items-center justify-center rounded-[20px] border-[0.4px] border-neutral-400  px-[5px] text-[11px] `}
