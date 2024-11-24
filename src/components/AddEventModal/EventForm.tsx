@@ -521,6 +521,7 @@ const EventForm = ({ type }: { type: string }) => {
           <div className="my-2 flex flex-wrap items-center gap-1">
             {Array.isArray(departmentsRes) && (
               <DepartmentButton
+              className="font-bold"
                 selectedCross={false}
                 onClick={() => {
                   if (watch("departments")?.length === departmentsRes?.length) {
