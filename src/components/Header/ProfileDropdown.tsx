@@ -13,6 +13,7 @@ import { CgProfile } from "react-icons/cg";
 import { MdOutlineSettings } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { Bug } from "lucide-react";
 
 export default function ProfileDropdown({
   userData,
@@ -48,6 +49,19 @@ export default function ProfileDropdown({
           Profile and Settings
         </DropdownMenuItem>
 
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          onClick={() =>
+            window.open(
+              "https://docs.google.com/spreadsheets/d/16DQW5IOkN3DrfI3bVFugeRvA88uCafq7A6O4g1BCmWg/edit?gid=51746687#gid=51746687",
+              "_blank",
+            )
+          }
+          className="flex cursor-pointer  gap-2 text-base font-semibold"
+        >
+          <Bug size={18} /> Report a Bug
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem
           className="flex cursor-pointer gap-2 text-base font-semibold"

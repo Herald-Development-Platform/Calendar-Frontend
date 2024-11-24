@@ -23,30 +23,9 @@ const EventDialog = ({ type, className }:{ type: string,  className?:string }) =
 
   const {openDialog, setOpenDialog, setSelectedDate, setSelectedEventData} = useContext(Context)
 
-  console.log("EVENT DIALOG ijsdfiodsajfadklsfn")
+  const {  selectedEventData } = useContext(Context);
 
-  // useEffect(() => {
-  //   // Log only when `isDialogOpen` changes to true
-  //   if (isDialogOpen) {
-  //     console.log("Dialog opened");
-  //   }
-  // }, [isDialogOpen]);
-
-  // // Expose method to parent through `useImperativeHandle`
-  // useImperativeHandle(ref, () => ({
-  //   openDialog: () => {
-  //     console.log("openDialog called");
-  //     if (!isDialogOpen) {
-  //       setIsDialogOpen(true); // Open dialog only if it's not already open
-  //     }
-  //   },
-  //   closeDialog: () => {
-  //     console.log("closeDialog called");
-  //     if (isDialogOpen) {
-  //       setIsDialogOpen(false); // Close dialog only if it's open
-  //     }
-  //   },
-  // }));
+  const isEdit = selectedEventData ? true : false;
   
   return (
     <Dialog open={openDialog} onOpenChange={() => {
@@ -74,7 +53,7 @@ const EventDialog = ({ type, className }:{ type: string,  className?:string }) =
         <DialogHeader>
           <DialogTitle className="text-center">
             {" "}
-            <h3 className="text-lg font-bold">{type} Event</h3>
+            <h3 className="text-lg font-bold">{isEdit ? "Edit" : type} Event</h3>
           </DialogTitle>
         </DialogHeader>
         <EventForm type={type} />

@@ -141,7 +141,7 @@ export function HomeHeader() {
         lastDate = totalDaysInMonth(date.getMonth() + 1, date.getFullYear());
         end = new Date(
           new Date(start).getTime() +
-            1000 * 60 * 60 * 24 * (lastDate - date.getDate()),
+            1000 * 60 * 60 * 24 * ((lastDate - date.getDate())<7 ? 7 : (lastDate - date.getDate())),
         );
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
@@ -232,7 +232,7 @@ export function HomeHeader() {
         lastDay = totalDaysInMonth(date.getMonth() + 1, date.getFullYear());
         end = new Date(
           new Date(start).getTime() +
-            1000 * 60 * 60 * 24 * (lastDay - date.getDate()),
+            1000 * 60 * 60 * 24 * ((lastDay - date.getDate())<7?7:(lastDay - date.getDate())),
         );
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
@@ -276,10 +276,11 @@ export function HomeHeader() {
     const date = new Date();
     const currentDay = date.getDate();
     const lastDay = totalDaysInMonth(date.getMonth() + 1, date.getFullYear());
+    const dayDiff = lastDay - currentDay;
     setCalenderDate({
       start: new Date(),
       end: new Date(
-        new Date().getTime() + 1000 * 60 * 60 * 24 * (lastDay - currentDay),
+        new Date().getTime() + 1000 * 60 * 60 * 24 * (dayDiff < 7 ? 7 : dayDiff),
       ),
       endStr: "",
       startStr: "",

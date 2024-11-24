@@ -162,6 +162,8 @@ export default function ContextProvider({
   const date = new Date();
     const currentDay = date.getDate();
     const lastDay = totalDaysInMonth(date.getMonth()+1, date.getFullYear());
+    const dayDiff = lastDay - currentDay;
+
 
   const [selectedDate, setSelectedDate] = useState<
     SelectedDateType | undefined
@@ -174,7 +176,7 @@ export default function ContextProvider({
 
   const [calenderDate, setCalenderDate] = useState<SelectedDateType | undefined>({
     start: new Date(),
-    end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * (lastDay - currentDay)),
+    end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * (dayDiff<7 ? 7 : dayDiff)),
     endStr: "",
     startStr: "",
   });
