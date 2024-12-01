@@ -57,6 +57,18 @@ const READABLE_PERMISSIONS = {
   //Location Permissions
   CREATE_LOCATION: "Add location shortcut",
   DELETE_LOCATION: "Remove location shortcut",
+
+  //Procurement Permissions
+  CREATE_REQUISITION: "Create Requisition",
+  UPDATE_REQUISITION: "Update Requisition",
+  DELETE_REQUISITION: "Delete Requisition",
+
+  VIEW_ALL_REQUISITION: "View All Requisitions",
+  VIEW_MY_REQUISITION: "View My Requisitions",
+  VIEW_DEPARTMENT_REQUISITION: "View Department Requisitions",
+
+  VERIFY_REJECT_LEVEL_1: "Verify/Reject Requisition Level 1",
+  VERIFY_REJECT_LEVEL_2: "Verify/Reject Requisition Level 2",
 };
 
 const PERMISSION_GROUPS = {
@@ -80,6 +92,16 @@ const PERMISSION_GROUPS = {
   "Location permissions": [
     PERMISSIONS.CREATE_LOCATION,
     PERMISSIONS.DELETE_LOCATION,
+  ],
+  "Procurement Permissions": [
+    PERMISSIONS.CREATE_REQUISITION,
+    PERMISSIONS.UPDATE_REQUISITION,
+    PERMISSIONS.DELETE_REQUISITION,
+    PERMISSIONS.VIEW_ALL_REQUISITION,
+    PERMISSIONS.VIEW_MY_REQUISITION,
+    PERMISSIONS.VIEW_DEPARTMENT_REQUISITION,
+    PERMISSIONS.VERIFY_REJECT_LEVEL_1,
+    PERMISSIONS.VERIFY_REJECT_LEVEL_2,
   ],
 };
 
