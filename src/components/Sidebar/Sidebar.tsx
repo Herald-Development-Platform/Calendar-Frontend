@@ -22,11 +22,8 @@ import Endpoints from "@/services/API_ENDPOINTS";
 import toast from "react-hot-toast";
 import { PopoverClose } from "@radix-ui/react-popover";
 import { RxCross2 } from "react-icons/rx";
-import { PROCUREMENT_URL } from "@/constants";
-import { useGetProfile } from "@/services/api/profile";
-import { ROLES } from "@/constants/role";
 import { Bug } from "lucide-react";
-import { PERMISSIONS } from "@/constants/permissions";
+import { PERMISSIONS, PROCUREMENT_PERMISSIONS } from "@/constants/permissions";
 
 interface ISidebar {
   name: string;
@@ -36,9 +33,15 @@ interface ISidebar {
 
 export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   const currentRoute = usePathname();
-  const searchParams = useSearchParams();
 
   const { userData: profile } = useContext(Context);
+
+  console.log(
+    "PROFILE",
+    profile?.permissions?.some((permission) =>
+      PROCUREMENT_PERMISSIONS.includes(permission),
+    ),
+  );
 
   const highlightedStyles =
     "flex h-11 w-full items-center gap-2 rounded px-3 bg-primary-100 text-primary-700";
@@ -75,11 +78,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       navigation: "/summary",
     },
     profile?.permissions?.some((permission) =>
-      [
-        PERMISSIONS.VIEW_ALL_REQUISITION,
-        PERMISSIONS.VIEW_MY_REQUISITION,
-        PERMISSIONS.VIEW_DEPARTMENT_REQUISITION,
-      ].includes(permission),
+      PROCUREMENT_PERMISSIONS.includes(permission),
     ) && {
       name: "Requisition",
       icon: <HiOutlineDocumentReport />,

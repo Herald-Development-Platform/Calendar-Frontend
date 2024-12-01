@@ -57,6 +57,7 @@ import { set } from "date-fns";
 import { LoaderCircle } from "lucide-react";
 import { useGetProfile } from "@/services/api/profile";
 import NewMembersAction from "@/components/Members/NewMembersAction";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function Page() {
   const router = useRouter();
@@ -477,8 +478,11 @@ export default function Page() {
                         <MdArrowDropDown />
                       </span>
                     </PopoverTrigger>
-                    {/* <PopoverContent
+                    <PopoverContent
                       side="top"
+                      onWheel={(e) => {
+                        e.stopPropagation();
+                      }}
                       className="max-h-[370px] w-[350px] gap-2.5 overflow-y-scroll px-6 py-4"
                     >
                       <div className=" flex flex-col gap-2.5">
@@ -546,7 +550,7 @@ export default function Page() {
                           );
                         })}
                       </div>
-                    </PopoverContent> */}
+                    </PopoverContent>
                   </Popover>
                 </div>
               </div>
