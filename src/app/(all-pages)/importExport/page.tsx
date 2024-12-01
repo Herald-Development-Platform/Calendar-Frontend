@@ -150,7 +150,7 @@ export default function ImportExport() {
     setEventDialogOpen(false);
   };
 
-  const { mutate: postMemberFiles, isPending: membersUploading} = useMutation({
+  const { mutate: postMemberFiles, isPending: membersUploading } = useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
@@ -168,12 +168,9 @@ export default function ImportExport() {
       setMemberDialogOpen(false);
       if (data.data.uploadReportFilename) {
         // download the file data, set it to form and download
-        Axios.get(
-          `/userUploadReport/${data.data.uploadReportFilename}`,
-          {
-            responseType: "blob",
-          },
-        ).then((response) => {
+        Axios.get(`/userUploadReport/${data.data.uploadReportFilename}`, {
+          responseType: "blob",
+        }).then((response) => {
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
           link.href = url;
@@ -789,7 +786,9 @@ export default function ImportExport() {
                   </div>
                 </div>
               </div>
-              {userData?.permissions?.includes(PERMISSIONS.CREATE_DEPARTMENT) && (
+              {userData?.permissions?.includes(
+                PERMISSIONS.CREATE_DEPARTMENT,
+              ) && (
                 <div className="space-y-2">
                   <h1>Import Departments</h1>
                   <div className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50">

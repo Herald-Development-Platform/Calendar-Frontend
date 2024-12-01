@@ -26,6 +26,7 @@ import { PROCUREMENT_URL } from "@/constants";
 import { useGetProfile } from "@/services/api/profile";
 import { ROLES } from "@/constants/role";
 import { Bug } from "lucide-react";
+import { PERMISSIONS } from "@/constants/permissions";
 
 interface ISidebar {
   name: string;
@@ -73,12 +74,17 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       ),
       navigation: "/summary",
     },
-    profile &&
-      [ROLES.DEPARTMENT_ADMIN, ROLES.SUPER_ADMIN].includes(profile.role) && {
-        name: "Requisition",
-        icon: <HiOutlineDocumentReport />,
-        navigation: "/procurement",
-      },
+    profile?.permissions?.some((permission) =>
+      [
+        PERMISSIONS.VIEW_ALL_REQUISITION,
+        PERMISSIONS.VIEW_MY_REQUISITION,
+        PERMISSIONS.VIEW_DEPARTMENT_REQUISITION,
+      ].includes(permission),
+    ) && {
+      name: "Requisition",
+      icon: <HiOutlineDocumentReport />,
+      navigation: "/procurement",
+    },
   ].filter(Boolean) as ISidebar[];
 
   const { data: semesters, isLoading: semestersLoading } = useGetSemesters();
@@ -260,20 +266,20 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
             ))}
           </div>
           <div className="mt-auto space-y-2 ">
-          <div className="flex justify-end">
-            <button
-              onClick={() =>
-                window.open(
-                  "https://docs.google.com/spreadsheets/d/16DQW5IOkN3DrfI3bVFugeRvA88uCafq7A6O4g1BCmWg/edit?usp=sharing",
-                  "_blank",
-                )
-              }
-              className="flex text-sm items-center cursor-pointer gap-2 text-neutral-600 rounded-full border border-[#D4D4D4] px-[46px]  -mr-2  py-2  font-bold"
-            >
-              <Bug size={18} /> Report a Bug
-            </button>
+            <div className="flex justify-end">
+              <button
+                onClick={() =>
+                  window.open(
+                    "https://docs.google.com/spreadsheets/d/16DQW5IOkN3DrfI3bVFugeRvA88uCafq7A6O4g1BCmWg/edit?usp=sharing",
+                    "_blank",
+                  )
+                }
+                className="-mr-2 flex cursor-pointer items-center gap-2 rounded-full border border-[#D4D4D4] px-[46px] py-2  text-sm  font-bold  text-neutral-600"
+              >
+                <Bug size={18} /> Report a Bug
+              </button>
             </div>
-            
+
             <Popover>
               <PopoverTrigger>
                 <div
