@@ -105,158 +105,156 @@ export default function ManageDepartment() {
 
   return (
     <>
-    <Headers.GeneralHeader />
-    <div className="ml-10 mt-10 flex max-w-[40vw] flex-col gap-6">
-      <div className="flex flex-row items-center justify-start gap-2">
-        <span
-          onClick={() => {
-            router.back();
-          }}
-          className="cursor-pointer text-4xl font-bold text-neutral-600"
-        >
-          <IoMdArrowBack />
-        </span>
-        <p className="text-[28px] font-semibold text-neutral-700">
-          Manage Department
-        </p>
-        {userData?.permissions.includes(PERMISSIONS.CREATE_DEPARTMENT) && (
-          <button
+      <Headers.GeneralHeader />
+      <div className="ml-10 mt-10 flex max-w-[40vw] flex-col gap-6">
+        <div className="flex flex-row items-center justify-start gap-2">
+          <span
             onClick={() => {
-              setDepartmentDialogOpen(true);
+              router.back();
             }}
-            className="ml-7 flex items-center gap-2 rounded-[4px] bg-primary-600 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary-700"
+            className="cursor-pointer text-4xl font-bold text-neutral-600"
           >
-            <FaPlus />
-            <span>Add Department</span>
-          </button>
-        )}
-      </div>
-      <div className="flex w-full flex-col gap-5 transition-all duration-100">
-        {departments &&
-          departments.length > 0 &&
-          departments.map((department: Department) => {
-            return (
-              <>
-                <div
-                  onClick={() => {
-                    setSideBarDepartment(department);
-                    setSideBarOpen(true);
-                    console.log("Department selected: ", department);
-                  }}
-                  className={`group flex w-full cursor-pointer flex-row items-center gap-[16px] rounded-[4px] px-[12px] py-3 hover:bg-neutral-50`}
-                >
+            <IoMdArrowBack />
+          </span>
+          <p className="text-[28px] font-semibold text-neutral-700">
+            Manage Department
+          </p>
+          {userData?.permissions.includes(PERMISSIONS.CREATE_DEPARTMENT) && (
+            <button
+              onClick={() => {
+                setDepartmentDialogOpen(true);
+              }}
+              className="ml-7 flex items-center gap-2 rounded-[4px] bg-primary-600 px-3 py-1.5 text-[13px] font-semibold text-white transition-colors duration-150 hover:bg-primary-700"
+            >
+              <FaPlus />
+              <span>Add Department</span>
+            </button>
+          )}
+        </div>
+        <div className="flex w-full flex-col gap-5 transition-all duration-100">
+          {departments &&
+            departments.length > 0 &&
+            departments.map((department: Department) => {
+              return (
+                <>
                   <div
-                    className={`flex  h-[32px] w-[32px] items-center justify-center rounded-[4px] bg-neutral-100 p-[3px] group-hover:bg-neutral-200`}
+                    onClick={() => {
+                      setSideBarDepartment(department);
+                      setSideBarOpen(true);
+                    }}
+                    className={`group flex w-full cursor-pointer flex-row items-center gap-[16px] rounded-[4px] px-[12px] py-3 hover:bg-neutral-50`}
                   >
-                    <HiOutlineUsers className={`text-md text-neutral-600`} />
+                    <div
+                      className={`flex  h-[32px] w-[32px] items-center justify-center rounded-[4px] bg-neutral-100 p-[3px] group-hover:bg-neutral-200`}
+                    >
+                      <HiOutlineUsers className={`text-md text-neutral-600`} />
+                    </div>
+                    <div className="flex flex-col gap-0">
+                      <h2 className="text-[16px] font-bold text-neutral-700 group-hover:text-neutral-900">
+                        {department.name}
+                      </h2>
+                      <p className="flex flex-row items-center gap-1 text-[13px] text-neutral-400">
+                        <span className="font-semibold text-neutral-600">
+                          {departmentEventsCount
+                            ? departmentEventsCount[department._id]
+                            : 0}{" "}
+                          Events •{" "}
+                        </span>
+                        <span className=" text-[11px] font-normal text-neutral-500">
+                          {department.membersCount} members
+                        </span>
+                      </p>
+                    </div>
+                    <span className="ml-auto h-6 w-6 rotate-45 rounded-full bg-white p-1 opacity-0 group-hover:opacity-100">
+                      <HiArrowNarrowUp />
+                    </span>
                   </div>
-                  <div className="flex flex-col gap-0">
-                    <h2 className="text-[16px] font-bold text-neutral-700 group-hover:text-neutral-900">
-                      {department.name}
-                    </h2>
-                    <p className="flex flex-row items-center gap-1 text-[13px] text-neutral-400">
-                      <span className="font-semibold text-neutral-600">
-                        {departmentEventsCount
-                          ? departmentEventsCount[department._id]
-                          : 0}{" "}
-                        Events •{" "}
-                      </span>
-                      <span className=" text-[11px] font-normal text-neutral-500">
-                        {department.membersCount} members
-                      </span>
-                    </p>
-                  </div>
-                  <span className="ml-auto h-6 w-6 rotate-45 rounded-full bg-white p-1 opacity-0 group-hover:opacity-100">
-                    <HiArrowNarrowUp />
+                </>
+              );
+            })}
+          {sideBarDepartment && sideBarOpen && eventsData && (
+            <DepartmentDetails
+              department={sideBarDepartment}
+              events={eventsData}
+              closeDetail={() => {
+                setSideBarOpen(false);
+                setSideBarDepartment(undefined);
+              }}
+              invalidationFunction={() => {
+                setSideBarOpen(false);
+                setSideBarDepartment(undefined);
+                queryClient.invalidateQueries({ queryKey: ["Departments"] });
+              }}
+            ></DepartmentDetails>
+          )}
+        </div>
+        <Dialog
+          open={departmentDialogOpen}
+          onOpenChange={setDepartmentDialogOpen}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="text-[19px] font-semibold ">
+                Add Department
+              </DialogTitle>
+            </DialogHeader>
+            <form
+              className="py-2"
+              onSubmit={handleDepartmentSubmit(onDepartmentSubmit)}
+            >
+              <label htmlFor="add-title">
+                <div className="group flex h-11 w-full items-center gap-2  border-b-[1px] border-neutral-300 px-4 focus-within:border-primary-600">
+                  <span className="text-xl">
+                    <BiPencil />
                   </span>
+                  <input
+                    type="text"
+                    placeholder="Department Code"
+                    className="w-full text-lg font-normal text-neutral-900 outline-none"
+                    {...registerDepartment("code", {
+                      required: "Code is required",
+                    })}
+                  />
                 </div>
-              </>
-            );
-          })}
-        {sideBarDepartment && sideBarOpen && eventsData && (
-          <DepartmentDetails
-            department={sideBarDepartment}
-            events={eventsData}
-            closeDetail={() => {
-              setSideBarOpen(false);
-              setSideBarDepartment(undefined);
-            }}
-            invalidationFunction={() => {
-              console.log("Invalidating");
-              setSideBarOpen(false);
-              setSideBarDepartment(undefined);
-              queryClient.invalidateQueries({ queryKey: ["Departments"] });
-            }}
-          ></DepartmentDetails>
-        )}
-      </div>
-      <Dialog
-        open={departmentDialogOpen}
-        onOpenChange={setDepartmentDialogOpen}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="text-[19px] font-semibold ">
-              Add Department
-            </DialogTitle>
-          </DialogHeader>
-          <form
-            className="py-2"
-            onSubmit={handleDepartmentSubmit(onDepartmentSubmit)}
-          >
-            <label htmlFor="add-title">
-              <div className="group flex h-11 w-full items-center gap-2  border-b-[1px] border-neutral-300 px-4 focus-within:border-primary-600">
-                <span className="text-xl">
-                  <BiPencil />
+              </label>
+              <div className="mt-[32px]">
+                <span className="font-500 text-[14px]">
+                  Department Name <br />
                 </span>
                 <input
                   type="text"
-                  placeholder="Department Code"
-                  className="w-full text-lg font-normal text-neutral-900 outline-none"
-                  {...registerDepartment("code", {
-                    required: "Code is required",
+                  className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
+                  {...registerDepartment("name", {
+                    required: "Name is required",
                   })}
                 />
               </div>
-            </label>
-            <div className="mt-[32px]">
-              <span className="font-500 text-[14px]">
-                Department Name <br />
-              </span>
-              <input
-                type="text"
-                className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
-                {...registerDepartment("name", {
-                  required: "Name is required",
-                })}
-              />
-            </div>
-            <div className="mt-[32px]">
-              <span className="font-500 text-[14px]">
-                Description <br />
-              </span>
-              <textarea
-                className=" h-20 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
-                {...registerDepartment("description", {
-                  required: "Description is required",
-                })}
-              />
-            </div>
-          </form>
-          <DialogFooter className=" flex flex-row items-center justify-end py-4">
-            <button
-              onClick={() => {
-                handleDepartmentSubmit(onDepartmentSubmit)();
-                setDepartmentDialogOpen(false);
-              }}
-              className="btn btn-md h-5 border-none bg-primary-600 text-sm font-medium text-primary-50 hover:bg-primary-700"
-            >
-              Create
-            </button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </div>
+              <div className="mt-[32px]">
+                <span className="font-500 text-[14px]">
+                  Description <br />
+                </span>
+                <textarea
+                  className=" h-20 w-full rounded border-[1px] border-neutral-300 px-2 text-neutral-900 focus:border-primary-600"
+                  {...registerDepartment("description", {
+                    required: "Description is required",
+                  })}
+                />
+              </div>
+            </form>
+            <DialogFooter className=" flex flex-row items-center justify-end py-4">
+              <button
+                onClick={() => {
+                  handleDepartmentSubmit(onDepartmentSubmit)();
+                  setDepartmentDialogOpen(false);
+                }}
+                className="btn btn-md h-5 border-none bg-primary-600 text-sm font-medium text-primary-50 hover:bg-primary-700"
+              >
+                Create
+              </button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     </>
   );
 }

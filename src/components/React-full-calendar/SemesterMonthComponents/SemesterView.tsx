@@ -11,18 +11,15 @@ export default function SemesterView({
   year: number;
   events: eventType[];
 }) {
-  console.log("SemesterViewSemesterView", year);
   const eventsAccordingToMonth = getParsedDateForSemView({
     events,
   });
   const semViewRef = useRef<HTMLDivElement>(null);
   const { selectedDate } = useContext(Context);
   const selMonthIndex = selectedDate?.start?.getMonth();
-  console.log("selMonthIndex", selMonthIndex);
 
   useEffect(() => {
     const selEl = semViewRef.current?.querySelector(`#month-${selMonthIndex}`);
-    console.log("semViewRef", selEl);
 
     setTimeout(() => {
       selEl?.scrollIntoView({

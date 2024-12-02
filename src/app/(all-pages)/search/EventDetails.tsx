@@ -70,18 +70,20 @@ export default function EventDetails({
   const [recurringDialogOpen, setRecurringDialogOpen] =
     useState<boolean>(false);
   const [deleteType, setDeleteType] = useState<string>("all");
-const {setSelectedEventData, openDialog, setOpenDialog} = useContext(Context)
+  const { setSelectedEventData, openDialog, setOpenDialog } =
+    useContext(Context);
 
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    console.log("SELECTED EVENT::::", selectedEvent);
-    if(selectedEvent){
-      const event = {...selectedEvent, departments: selectedEvent?.departments.map((dep: any) => dep._id)}
+    if (selectedEvent) {
+      const event = {
+        ...selectedEvent,
+        departments: selectedEvent?.departments.map((dep: any) => dep._id),
+      };
       setSelectedEventData(event);
       setSelectedColor(selectedEvent?.color);
     }
-    
   }, [selectedEvent]);
 
   const { mutate: updateEventDetail } = useEditEventMutation();
@@ -161,9 +163,6 @@ const {setSelectedEventData, openDialog, setOpenDialog} = useContext(Context)
                       45 * 60 * 1000,
                   );
                 }
-                console.log("SELECTED EVENT::::", selectedEvent);
-                console.log("EXCEPTION START::::", exceptionStart);
-                console.log("EXCEPTION END::::", exceptionEnd);
                 let newEvent = {
                   ...selectedEvent,
                   exceptionRanges: [
@@ -223,9 +222,8 @@ const {setSelectedEventData, openDialog, setOpenDialog} = useContext(Context)
                     // const modal_4 = document.getElementById(
                     //   "my_modal_4",
                     // ) as HTMLDialogElement;
-                    // console.log("modal elemenet", modal_4);
                     // modal_4.showModal();
-setOpenDialog(true)
+                    setOpenDialog(true);
                     // setDropDown(false);
                   }}
                   className="flex w-full items-center justify-start gap-2 px-2 py-1 text-neutral-700 transition-colors duration-150 hover:bg-neutral-100  hover:text-neutral-800"
@@ -421,10 +419,9 @@ setOpenDialog(true)
                       // const modal_4 = document.getElementById(
                       //   "my_modal_4",
                       // ) as HTMLDialogElement;
-                      // console.log("modal elemenet", modal_4);
                       // modal_4.showModal();
                       // setDropDown(false);
-                      setOpenDialog(true)
+                      setOpenDialog(true);
                     }}
                     className="flex w-full items-center justify-start gap-2 px-2 py-1 text-neutral-700 transition-colors duration-150 hover:bg-neutral-100  hover:text-neutral-800"
                   >

@@ -18,7 +18,7 @@ export default function WebSocketProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const notifyMe = (data:any) => {
+  const notifyMe = (data: any) => {
     if (!("Notification" in window)) {
       alert("This browser does not support desktop notification");
     } else if (Notification.permission === "granted") {
@@ -29,7 +29,6 @@ export default function WebSocketProvider({
     } else if (Notification.permission !== "denied") {
       Notification.requestPermission().then((permission) => {
         if (permission === "granted") {
-          console.log("Permission granted")
           const notification = new Notification(`This is good`, {
             body: `Output: ${data}`,
             data,
@@ -42,19 +41,16 @@ export default function WebSocketProvider({
   const { userData } = useContext(Context);
   const queryClient = useQueryClient();
   useEffect(() => {
-    const connection = io(webSocketUrl??"");
+    const connection = io(webSocketUrl ?? "");
     connection.on("connect", () => {
       connection.emit("authenticate", getCookie("token"));
       setConnection(connection);
     });
     connection.on("notification", (notification) => {
-      new Notification(
-        `New Notification`,
-        {
-          body: notification.message,
-          data: new Date(notification.date).toLocaleString(),
-        }
-      );
+      new Notification(`New Notification`, {
+        body: notification.message,
+        data: new Date(notification.date).toLocaleString(),
+      });
       queryClient.invalidateQueries({
         queryKey: ["Notification"],
       });
@@ -64,9 +60,7 @@ export default function WebSocketProvider({
         });
       }
     });
-    connection.on("disconnect", () => {
-      console.log("disconnected");
-    });
+    connection.on("disconnect", () => {});
     return () => {
       connection.disconnect();
     };

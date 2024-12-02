@@ -19,16 +19,15 @@ import {
 } from "react";
 import toast from "react-hot-toast";
 
-function totalDaysInMonth(month:number, year:number) {
+function totalDaysInMonth(month: number, year: number) {
   // month is 1-indexed (1 for January, 2 for February, ..., 12 for December)
   if (month < 1 || month > 12) {
-      throw new Error("Month must be between 1 and 12");
+    throw new Error("Month must be between 1 and 12");
   }
 
   // Use Date object to calculate the last day of the given month
   return new Date(year, month, 0).getDate();
 }
-
 
 interface SelectedDateType {
   start: Date | undefined;
@@ -79,7 +78,7 @@ export const Context = createContext<ContextType>({
   setOpenDialog: () => {},
   selectedEventData: null,
   setSelectedEventData: () => {},
-  calenderDate:{
+  calenderDate: {
     start: undefined,
     end: undefined,
     startStr: undefined,
@@ -149,39 +148,45 @@ export default function ContextProvider({
   const syncWithGoogle = async () => {
     try {
       const response = await Axios.post("/google/sync");
-      console.log("SYNC response : ", response);
       if (response.data.success) {
         return response.data.data;
       } else {
-        toast.error
+        toast.error;
       }
     } catch (error) {
       console.error("Error syncing with google:", error);
     }
   };
   const date = new Date();
-    const currentDay = date.getDate();
-    const lastDay = totalDaysInMonth(date.getMonth()+1, date.getFullYear());
-    const dayDiff = lastDay - currentDay;
-
+  const currentDay = date.getDate();
+  const lastDay = totalDaysInMonth(date.getMonth() + 1, date.getFullYear());
+  const dayDiff = lastDay - currentDay;
 
   const [selectedDate, setSelectedDate] = useState<
     SelectedDateType | undefined
   >({
     start: new Date(),
-    end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * (lastDay - currentDay)),
+    end: new Date(
+      new Date().getTime() + 1000 * 60 * 60 * 24 * (lastDay - currentDay),
+    ),
     endStr: "",
     startStr: "",
   });
 
-  const [calenderDate, setCalenderDate] = useState<SelectedDateType | undefined>({
+  const [calenderDate, setCalenderDate] = useState<
+    SelectedDateType | undefined
+  >({
     start: new Date(),
-    end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * (dayDiff<7 ? 7 : dayDiff)),
+    end: new Date(
+      new Date().getTime() + 1000 * 60 * 60 * 24 * (dayDiff < 7 ? 7 : dayDiff),
+    ),
     endStr: "",
     startStr: "",
   });
 
-  const [selectedEventData, setSelectedEventData] = useState<eventType | null>(null);
+  const [selectedEventData, setSelectedEventData] = useState<eventType | null>(
+    null,
+  );
 
   return (
     <Context.Provider

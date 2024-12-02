@@ -44,13 +44,9 @@ export default function Page() {
     deleteEvent({ id: value });
   };
 
-  console.log("queryParams", queryParams);
-  console.log("filteredEvents", filteredEvents);
-
   const handleQueryParams = (e: any) => {
     const { name, value } = e.target;
 
-    console.log("departmentAdd", value);
     let startDate, endDate;
     switch (name) {
       case "query":
@@ -91,7 +87,6 @@ export default function Page() {
         break;
 
       case "single":
-        console.log("singledate", new Date(value).getTime());
         {
           const startDate = new Date(value);
           const endDate = new Date(startDate);
@@ -163,7 +158,6 @@ export default function Page() {
 
       const eventStart = event?.start ? new Date(event.start).getTime() : 0;
       const eventEnd = event?.end ? new Date(event.end).getTime() : 0;
-      console.log("eventStart", eventStart, "eventEnd", eventEnd);
       const inFirstEdge =
         eventStart <= selectedStartTime && eventEnd > selectedStartTime;
       const inBetween =
@@ -192,7 +186,7 @@ export default function Page() {
     time: 150,
   });
 
-  useEffect(()=>{
+  useEffect(() => {
     if (selectedEvent && eventsData?.length && eventsData?.length > 0) {
       let newlyFetchedSelectedEvent = eventsData.find(
         (event: eventType) => event._id === selectedEvent._id,
@@ -252,7 +246,7 @@ export default function Page() {
               ))}
           </div>
         </div>
-        <EventDialog type="Edit" className="hidden"/>
+        <EventDialog type="Edit" className="hidden" />
 
         <EventDetails
           selectedEvent={selectedEvent}

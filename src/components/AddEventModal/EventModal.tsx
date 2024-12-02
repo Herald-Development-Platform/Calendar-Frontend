@@ -76,7 +76,6 @@ export default function EventModal({
   const eventFormRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log("defaultData in useEffect", defaultData);
     if (!defaultData) return;
     const modifiedData = {
       ...defaultData,
@@ -88,19 +87,18 @@ export default function EventModal({
       end: defaultData.end ? new Date(defaultData.end) : new Date(),
     };
     setNewEvent(modifiedData);
-    console.log("modifiedData", modifiedData);
   }, [defaultData]);
 
   const { userData } = useContext(Context);
 
   const { data: departmentsRes } = useGetDepartments();
-  const { mutate: postNewEvent, isPending: Posting } = usePostEventMutation({ setNewEvent });
+  const { mutate: postNewEvent, isPending: Posting } = usePostEventMutation({
+    setNewEvent,
+  });
 
   const queryClient = useQueryClient();
   function handleAddEvent() {
-    console.log("newEvent", newEvent);
-
-    if(Posting) return;
+    if (Posting) return;
     if (!validateAndFocus()) return;
     postNewEvent(newEvent, {
       onSuccess: () => {
@@ -118,8 +116,6 @@ export default function EventModal({
       name = e.currentTarget.name;
       value = e.currentTarget.value;
     }
-
-    // console.log("name value", name, value);
 
     switch (name) {
       case "department":
@@ -596,11 +592,11 @@ export default function EventModal({
             {/* create btn  */}
             <div className="flex w-full items-center justify-end gap-5">
               <button
-                className="rounded-md border-none flex gap-2 bg-primary-600 px-4 py-2 text-base font-medium text-primary-50 hover:bg-primary-700"
+                className="flex gap-2 rounded-md border-none bg-primary-600 px-4 py-2 text-base font-medium text-primary-50 hover:bg-primary-700"
                 onClick={handleAddEvent}
               >
-                {type === "Add" ? "Create" : "Edit"}{Posting && <LoaderCircle className="animate-spin"/>}
-                
+                {type === "Add" ? "Create" : "Edit"}
+                {Posting && <LoaderCircle className="animate-spin" />}
               </button>
             </div>
           </div>

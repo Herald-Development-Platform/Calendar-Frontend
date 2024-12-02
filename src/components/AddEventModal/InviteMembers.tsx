@@ -54,7 +54,6 @@ export default function InviteMembers({
   // const inviteRef = useRef<HTMLDivElement>(null);
 
   const handleHidePopover = () => {
-    console.log("handleHidePopover");
     setShowPopover(false);
   };
 
@@ -84,7 +83,6 @@ export default function InviteMembers({
     time: 150,
   });
 
-  // console.log("userData?.data.data --", filteredUserData);
   // useHidePopOver(inviteRef, showPopover, handleHidePopover);
 
   return (
@@ -238,7 +236,6 @@ export default function InviteMembers({
       </div>
       <div
         onClick={() => {
-          console.log("close popup");
           setShowPopover(false);
         }}
         className={`${
@@ -255,7 +252,6 @@ const useHidePopOver = (
   handleHidePopover: () => void,
 ) => {
   useEffect(() => {
-    console.log("showPopover", showPopover);
     if (showPopover) {
       inviteRef.current?.parentNode?.addEventListener(
         "click",
@@ -263,7 +259,6 @@ const useHidePopOver = (
       );
       inviteRef.current?.addEventListener("click", (e) => {
         e.stopPropagation();
-        console.log("addevent");
       });
     }
 

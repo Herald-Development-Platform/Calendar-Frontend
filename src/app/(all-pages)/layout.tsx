@@ -8,7 +8,6 @@ export default function RootLayout({
   children: React.ReactNode;
   searchParams: { show_procurement: boolean };
 }) {
-  console.log(searchParams);
   return (
     <div className="flex">
       <Suspense>

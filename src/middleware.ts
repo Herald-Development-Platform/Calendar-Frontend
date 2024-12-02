@@ -10,7 +10,6 @@ export default function middleware(request: NextRequest) {
   const data = decryptJwtPayload(request.cookies?.get("token")?.value || "");
   if (data.role && data.role !== "SUPER_ADMIN" && data.department) {
     const currentPath = request.nextUrl.pathname;
-    console.log("currentPath", currentPath);
     if (
       currentPath.includes("selectDepartment") ||
       currentPath.includes("login") ||

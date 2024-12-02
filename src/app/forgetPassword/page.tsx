@@ -8,7 +8,6 @@ import toast from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
 
 export default function Page() {
-
   const router = useRouter();
   const { register, handleSubmit } = useForm<any>();
 
@@ -18,7 +17,6 @@ export default function Page() {
     },
     mutationKey: ["forgetPassword"],
     onSuccess: (response) => {
-        console.log(response);
       if (!response.data.success) {
         toast.error(response.data.message || "Something went wrong.");
         return;
@@ -26,9 +24,9 @@ export default function Page() {
       toast.success(response.data.message || "Reset OTP sent to your email.");
       router.push(`/otp?email=${response.data.data}&forgetPassword=true`);
     },
-    onError: (error:any) => {
+    onError: (error: any) => {
       toast.error(error?.response?.data?.message || "Something went wrong.");
-    }
+    },
   });
 
   const forgetPassword = (payload: any) => {

@@ -111,9 +111,7 @@ export default function ImportExport() {
         departments: selectedDepartments,
       });
       toast.success(response.data.message);
-    } catch (error) {
-      console.log("Error importing file:", error);
-    }
+    } catch (error) {}
     setEventDialogOpen(false);
   };
 
@@ -126,7 +124,6 @@ export default function ImportExport() {
       const response = await Axios.post(`/event/exportIcs`, {
         departments: selectedDepartments,
       });
-      console.log("Export response: ", response);
       if (!response.data?.success) {
         toast.error(response.data?.message || "Error exporting calendar");
         return;
@@ -163,7 +160,6 @@ export default function ImportExport() {
       return response.data;
     },
     onSuccess: (data) => {
-      console.log("data", data);
       toast.success(data?.message || "Success");
       setMemberDialogOpen(false);
       if (data.data.uploadReportFilename) {
@@ -181,7 +177,6 @@ export default function ImportExport() {
       }
     },
     onError: (err: any) => {
-      console.log("err", err);
       setUploadErrors(err?.response?.data?.data || []);
       setMemberDialogOpen(false);
       setUploadErrorDialogOpen(true);
@@ -202,12 +197,10 @@ export default function ImportExport() {
       return response.data;
     },
     onSuccess: (data) => {
-      console.log("onSucess -> data:", data);
       toast.success(data?.message || "Success");
       setLocationDialogOpen(false);
     },
     onError: (err: any) => {
-      console.log("err", err);
       setUploadErrors(err?.response?.data?.data || []);
       setLocationDialogOpen(false);
       setUploadErrorDialogOpen(true);
@@ -228,12 +221,10 @@ export default function ImportExport() {
       return response.data;
     },
     onSuccess: (data) => {
-      console.log("onSucess -> data:", data);
       toast.success(data?.message || "Success");
       setDepartmentDialogOpen(false);
     },
     onError: (err: any) => {
-      console.log("err", err);
       setUploadErrors(err?.response?.data?.data || []);
       setDepartmentDialogOpen(false);
       setUploadErrorDialogOpen(true);
@@ -254,12 +245,10 @@ export default function ImportExport() {
       return response.data;
     },
     onSuccess: (data) => {
-      console.log("onSucess -> data:", data);
       toast.success(data?.message || "Success");
       setSemesterDialogOpen(false);
     },
     onError: (err: any) => {
-      console.log("err", err);
       setUploadErrors(err?.response?.data?.data || []);
       setSemesterDialogOpen(false);
       setUploadErrorDialogOpen(true);
@@ -829,7 +818,6 @@ export default function ImportExport() {
                   <div
                     className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50"
                     // onClick={() => {
-                    //   console.log("asdlf");
                     // }}
                   >
                     <input

@@ -3,8 +3,6 @@ import { Calendar } from "../ui/calendar";
 import { format } from "date-fns";
 import { CiCalendar } from "react-icons/ci";
 
-
-
 export default function DatePicker({
   value,
   handleValueChange,
@@ -16,10 +14,8 @@ export default function DatePicker({
   name: string;
   align?: string;
 }) {
-  // console.log('date', new Date())
   // const [date, setDate] = useState<Date|null>(null);
   const [displayCal, setDisplayCal] = useState<boolean>(false);
-
 
   let alignmentStyle = "";
   switch (align) {
@@ -38,8 +34,6 @@ export default function DatePicker({
     default:
       alignmentStyle = "bottom-full";
   }
-
-  console.log("value", value);
 
   return (
     <>
@@ -62,7 +56,6 @@ export default function DatePicker({
           mode="single"
           selected={value || new Date()}
           onSelect={(val) => {
-            console.log("val;lllllllllllllllllllllllllllll:::", val);
             handleValueChange({ target: { name, value: val } });
           }}
         />

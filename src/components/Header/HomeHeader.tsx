@@ -128,12 +128,8 @@ export function HomeHeader() {
         let startDate = new Date(start);
         let startMonth = startDate.getMonth();
 
-        console.log("todaysMonth", todaysMonth);
-        console.log("startMonth", startMonth);
-
         if (todaysMonth !== startMonth) {
           start = new Date(startDate.getFullYear(), startMonth, 1);
-          console.log("start", start);
         } else {
           start = new Date();
         }
@@ -141,7 +137,11 @@ export function HomeHeader() {
         lastDate = totalDaysInMonth(date.getMonth() + 1, date.getFullYear());
         end = new Date(
           new Date(start).getTime() +
-            1000 * 60 * 60 * 24 * ((lastDate - date.getDate())<7 ? 7 : (lastDate - date.getDate())),
+            1000 *
+              60 *
+              60 *
+              24 *
+              (lastDate - date.getDate() < 7 ? 7 : lastDate - date.getDate()),
         );
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
@@ -219,12 +219,8 @@ export function HomeHeader() {
         let startDate = new Date(start);
         let startMonth = startDate.getMonth();
 
-        console.log("todaysMonth", todaysMonth);
-        console.log("startMonth", startMonth);
-
         if (todaysMonth !== startMonth) {
           start = new Date(startDate.getFullYear(), startMonth, 1);
-          console.log("start", start);
         } else {
           start = new Date();
         }
@@ -232,7 +228,11 @@ export function HomeHeader() {
         lastDay = totalDaysInMonth(date.getMonth() + 1, date.getFullYear());
         end = new Date(
           new Date(start).getTime() +
-            1000 * 60 * 60 * 24 * ((lastDay - date.getDate())<7?7:(lastDay - date.getDate())),
+            1000 *
+              60 *
+              60 *
+              24 *
+              (lastDay - date.getDate() < 7 ? 7 : lastDay - date.getDate()),
         );
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
@@ -280,7 +280,8 @@ export function HomeHeader() {
     setCalenderDate({
       start: new Date(),
       end: new Date(
-        new Date().getTime() + 1000 * 60 * 60 * 24 * (dayDiff < 7 ? 7 : dayDiff),
+        new Date().getTime() +
+          1000 * 60 * 60 * 24 * (dayDiff < 7 ? 7 : dayDiff),
       ),
       endStr: "",
       startStr: "",
@@ -374,7 +375,6 @@ export function HomeHeader() {
                 if (listView && calendarApi)
                   return findListView(calView, calendarApi, setCurrentView);
                 setCurrentView(calView);
-                console.log("calView", calView);
 
                 // calendarApi?.changeView(calView);
               }}
@@ -412,7 +412,7 @@ export function HomeHeader() {
               </SelectContent>
             </Select>
 
-            <EventDialog type={"Add"}    />
+            <EventDialog type={"Add"} />
 
             {/* <EventModal type={"Add"} defaultData={null} /> */}
           </div>

@@ -42,7 +42,6 @@ export default function SemesterMonth({
   const { data: semesterData } = useGetSemester();
   const { userData: profile } = useContext(Context);
 
-
   const gridRef = useRef<HTMLDivElement>(null);
   const calRef = useRef<FullCalendar>(null);
 
@@ -50,11 +49,8 @@ export default function SemesterMonth({
 
   // const [calendarApi, setCalendarApi] = useState<CalendarApi>();
   // useEffect(() => {
-  //   console.log("getApi", calRef.current?.getApi());
-  //   console.log("calREf", calRef.current);
 
   //   setCalendarApi(calRef.current?.getApi());
-  //   console.log("calendarApi", calendarApi);
   // }, [calRef]);
 
   const { setSelectedDate, selectedDate } = useContext(Context);
@@ -67,28 +63,31 @@ export default function SemesterMonth({
     1;
 
   useEffect(() => {
-    console.log("render", openWeekView);
     if (!calRef.current) return;
     // @ts-ignore
-    // console.log("calRef", calRef.current.elRef.current.children[0]);
     // @ts-ignore
     const TableEl = calRef.current.elRef.current.children[0];
     TableEl.style.height = `590px`;
   }, [calRef, isDoubleClick, openWeekView]);
 
-  // console.log("toay", calRef);
-
   const handleEventDidMount = async (info: EventMountArg) => {
     const departments = info?.event?._def?.extendedProps?.departments;
 
-    const displayStart = info.event._instance?.range?.start?.toISOString() ?? new Date().toISOString();
-    const displayEnd = info.event._instance?.range?.end?.toISOString() ?? new Date().toISOString();
-
+    const displayStart =
+      info.event._instance?.range?.start?.toISOString() ??
+      new Date().toISOString();
+    const displayEnd =
+      info.event._instance?.range?.end?.toISOString() ??
+      new Date().toISOString();
 
     // const startTime = displayStart ? format(displayStart, "h:mm a") : "00: 00 am";
     // const endTime = displayEnd ? format(displayEnd, "h:mm a") : "00: 00 am";
 
-    const startTime = displayStart.split("T")[1].split(":").slice(0, 2).join(":");
+    const startTime = displayStart
+      .split("T")[1]
+      .split(":")
+      .slice(0, 2)
+      .join(":");
     const endTime = displayEnd.split("T")[1].split(":").slice(0, 2).join(":");
     // const startTime = info.event._instance?.range?.start
     //   ? format(info.event._instance?.range.start, "h:mm a")
@@ -97,9 +96,7 @@ export default function SemesterMonth({
     //   ? format(info.event._instance?.range.end, "h:mm a")
     //   : "00: 00 am";
 
-    console.log("info", info);
     // if (currentView === "timeGridWeek" || currentView === "timeGridDay") {
-    console.log("Week event", info);
 
     const timeEl = document.createElement("div");
 
@@ -146,12 +143,9 @@ export default function SemesterMonth({
 
   useEffect(() => {
     if (!semesterData || !profile) return;
-    console.log("semesterData", semesterData);
-    console.log("profile", profile);
     let timFrame = profile?.activeSemester?.map((semesterId: string) => {
       const semester = semesterData?.find((sem: any) => sem.id == semesterId);
       if (!semester) return;
-      console.log("SEMESTER:::", semester);
       return {
         start: new Date(semester?.start ?? ""),
         end: new Date(semester?.end ?? ""),
@@ -160,7 +154,7 @@ export default function SemesterMonth({
     });
 
     const currnetDate = new Date();
-    
+
     timFrame = timFrame?.filter((sem: any) => {
       if (!sem) return false;
       let startDate = new Date(sem?.start ?? "");
@@ -169,7 +163,6 @@ export default function SemesterMonth({
     });
 
     setSemTimeFrame(timFrame ?? []);
-
   }, [semesterData, profile]);
 
   return (
@@ -236,8 +229,8 @@ export default function SemesterMonth({
                   i === firstDaysOfWeeks.length - 1
                     ? new Date(year, month, 0).getTime()
                     : firstDaysOfWeeks[i + 1]
-                    ? new Date(firstDaysOfWeeks[i + 1]).getTime()
-                    : 0;
+                      ? new Date(firstDaysOfWeeks[i + 1]).getTime()
+                      : 0;
 
                 inFirstEdge =
                   eventStart <= selectedStartTime &&
@@ -277,11 +270,15 @@ export default function SemesterMonth({
 
                   <div
                     className="flex flex-nowrap items-center overflow-hidden truncate border-[0.5px] border-[#DDDDDD] bg-[#ffffff] pl-5 text-xl text-neutral-600 focus:border-primary-600"
-                    style={{ gridColumn: `span ${gridSpanValue}`, backgroundColor: weekActive ? "rgba(227, 242, 218, 0.4)" : "#ffffff" }}
+                    style={{
+                      gridColumn: `span ${gridSpanValue}`,
+                      backgroundColor: weekActive
+                        ? "rgba(227, 242, 218, 0.4)"
+                        : "#ffffff",
+                    }}
                     tabIndex={0}
                     onClick={(e: any) => {
                       const start = new Date(firstDaysOfWeeks[i]);
-                      // console.log("isDoubleClick", i, isDoubleClick.current);
                       if (isDoubleClick === i) {
                         setOpenWeekView(true);
                         // calendarApi?.gotoDate(
@@ -377,7 +374,6 @@ export default function SemesterMonth({
               initialDate={selectedDate?.start}
               // select={handleSelect}
               viewDidMount={async (info: any) => {
-                console.log("viewdidmount", info);
                 // await delay(200);
                 // if (
                 //   calendarRef?.current?.getApi()?.view?.type !== "dayGridMonth"
@@ -388,7 +384,6 @@ export default function SemesterMonth({
                 // );
                 // if (!scrollerEl) return;
                 // scrollerEl.style.overflow = "visible";
-                // console.log("viewdidmount ------------------", scrollerEl);
               }}
               // windowResize={async (arg) => {
               //   await delay(200);
@@ -426,13 +421,10 @@ function getFirstDaysOfWeeks({ year, month }: { year: number; month: number }) {
   const firstDayOfWeek = [];
 
   let date = new Date(year, month - 1, 1);
-  // console.log("--------------date-ddddddddddddd", date, year, month);
   firstDayOfWeek.push(date.toISOString());
-  // console.log("date.getDay()", date.getDay());
 
   const daysTillUpcommingSunday = 7 - date.getDay();
   date.setDate(date.getDate() + daysTillUpcommingSunday);
-  // console.log("after set date", date);
   while (true) {
     firstDayOfWeek.push(date.toISOString());
     date.setDate(date.getDate() + 7);

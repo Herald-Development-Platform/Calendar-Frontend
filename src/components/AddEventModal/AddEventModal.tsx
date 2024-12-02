@@ -75,7 +75,6 @@ export default function AddEventModal({
       end: defaultData.end ? new Date(defaultData.end) : new Date(),
     };
     setNewEvent(modifiedData);
-    console.log("modifiedData", modifiedData);
   }, [defaultData]);
 
   const { userData } = useContext(Context);
@@ -85,7 +84,6 @@ export default function AddEventModal({
   const { mutate: postNewEvent } = usePostEventMutation({ setNewEvent });
 
   function handleAddEvent() {
-    // console.log("handle add event ", newEvent);
     postNewEvent(newEvent);
   }
 
@@ -95,8 +93,6 @@ export default function AddEventModal({
       name = e.currentTarget.name;
       value = e.currentTarget.value;
     }
-
-    // console.log("name value", name, value);
 
     switch (name) {
       case "department":
@@ -303,7 +299,6 @@ export default function AddEventModal({
                         handleValueChange({
                           target: { name: "end", value: new Date(datePicked) },
                         });
-                        // console.log("newEvent", datePicked);
                       }}
                       value={
                         newEvent?.end
@@ -394,9 +389,6 @@ export default function AddEventModal({
                         className="absolute hidden"
                         value={Color.color}
                         // onChange={() => {
-                        //   console.log(
-                        //     ` index addeventmodal ${i} clicked, Color.color: ${Color.color}`,
-                        //   );
                         //   setNewEvent({ ...newEvent, color: Color.color });
                         // }}
                         onChange={handleValueChange}
@@ -504,7 +496,6 @@ export default function AddEventModal({
 //   switch (action) {
 //     case "add":
 //       if (newEvent?.involvedUsers.includes(user._id)) {
-//         console.log("adding", newEvent?.involvedUsers?.includes(user._id));
 //         return;
 //       }
 

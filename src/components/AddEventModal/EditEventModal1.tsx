@@ -41,7 +41,6 @@ export default function EditEventModal1({
 }: {
   defaultData: eventType | null;
 }) {
-  console.log("defaultData", defaultData);
   const [dateType, setDateType] = useState<"single" | "multi">("single");
   const [defaultValuesArr, setDefaultValuesArr] = useState<any[]>([]);
   const { userData } = useContext(Context);
@@ -86,8 +85,6 @@ export default function EditEventModal1({
     recurrenceEnd: null,
     notifyUpdate: false,
   });
-
-  // console.log("userData:::::::::", userData);
 
   const [formErrors, setFormErrors] = useState<any>({});
   const eventFormRef = useRef<HTMLDivElement>(null);
@@ -141,7 +138,6 @@ export default function EditEventModal1({
     );
 
     setNewEvent(correctDefault);
-    // console.log("modifiedData", modifiedData);
   }, [defaultData]);
 
   function handleCreateEvent() {
@@ -149,7 +145,6 @@ export default function EditEventModal1({
 
     postNewEvent(newEvent, {
       onSuccess: (res) => {
-        console.log("Onsuccess", res);
         queryClient.invalidateQueries({ queryKey: ["Events"] });
 
         // toast.success(`${res?.data?.message}`);
@@ -176,7 +171,6 @@ export default function EditEventModal1({
         modal_5.close();
       },
       onError: (err: any) => {
-        console.log("error", err);
         toast.error(err?.response?.data?.message || "something went wrong");
       },
     });
@@ -188,9 +182,6 @@ export default function EditEventModal1({
       name = e.currentTarget.name;
       value = e.currentTarget.value;
     }
-
-    // console.log("name value", name, value);
-    console.log("default", name, value);
 
     switch (name) {
       case "department":
@@ -238,7 +229,6 @@ export default function EditEventModal1({
   };
 
   const validateAndFocus = () => {
-    console.log("departments", newEvent?.departments);
     if (!eventFormRef.current) return;
 
     if (!newEvent?.title) {
@@ -278,8 +268,6 @@ export default function EditEventModal1({
   };
 
   useEffect(() => {}, [userData, defaultValuesArr]);
-
-  console.log("newEvent", newEvent);
 
   return (
     <>
@@ -565,11 +553,10 @@ export default function EditEventModal1({
                   {formErrors?.message}
                 </span>
               )}
-
-<LocationSelect
-        value={newEvent?.location ?? ""}
-        handleValueChange={handleValueChange}
-      />
+              <LocationSelect
+                value={newEvent?.location ?? ""}
+                handleValueChange={handleValueChange}
+              />
               {/* Departments section  */}
               <div className="flex flex-col items-start text-sm">
                 <span>Departments:</span>

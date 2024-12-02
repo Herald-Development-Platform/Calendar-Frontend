@@ -40,7 +40,7 @@ export default function Page() {
           }
         }
       } else {
-        toast.error("Error fetching my requests")
+        toast.error("Error fetching my requests");
       }
     } catch (error) {
       console.error("Error fetching my requests:", error);
@@ -57,7 +57,7 @@ export default function Page() {
     } catch (error) {
       return null;
     }
-  }
+  };
 
   const checkApproved = async () => {
     try {
@@ -66,7 +66,9 @@ export default function Page() {
         const userData = response.data.data;
         if (userData.department) {
           const newToken = await generateNewToken();
-          Cookies.set("token", newToken, {expires: Date.now()+40*86400*1000});
+          Cookies.set("token", newToken, {
+            expires: Date.now() + 40 * 86400 * 1000,
+          });
           Router.push("/");
         }
       } else {
@@ -75,7 +77,7 @@ export default function Page() {
     } catch (error) {
       console.error("Error fetching user data:", error);
     }
-  }
+  };
 
   const fetchDepartments = async () => {
     try {
@@ -100,15 +102,16 @@ export default function Page() {
         toast.success("Join request sent successfully");
         setIsLoading(false);
         fetchMyRequests();
-        console.log("Join request sent successfully");
       } else {
         setIsLoading(false);
         toast.error(response.data.message || "Error sending join request");
         console.error("Error sending join request:", response.data.message);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       if (error?.response) {
-        toast.error(error.response?.data?.message || "Error sending join request");
+        toast.error(
+          error.response?.data?.message || "Error sending join request",
+        );
       }
       console.error("Error sending join request:", error);
       setIsLoading(false);
@@ -133,16 +136,19 @@ export default function Page() {
             </div>
           </div>
 
-          <Image src={`/alreadySentRequest.svg`} alt={""} width={737} height={362} className=" mt-[60px]" />
-          <div className=" mt-[24px] flex flex-row gap-[6px] items-center">
+          <Image
+            src={`/alreadySentRequest.svg`}
+            alt={""}
+            width={737}
+            height={362}
+            className=" mt-[60px]"
+          />
+          <div className=" mt-[24px] flex flex-row items-center gap-[6px]">
             <p className=" text-primary-600">Join request has been sent!</p>
             <p>You will receive a mail about the request acceptance</p>
           </div>
         </div>
-      ) 
-      : 
-      
-      (
+      ) : (
         <div className="relative mx-auto my-[60px] flex h-auto w-[660px] flex-col items-center gap-8  pb-[84px] pt-12 font-medium">
           {/* Logo  */}
           <div className="absolute top-0 flex -translate-y-1/2 transform items-center justify-between gap-[4px] bg-[#FFFFFF] px-3">
@@ -207,7 +213,8 @@ export default function Page() {
             onClick={sendJoinRequest}
             className="btn w-full rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400"
           >
-            Send Join Request {isLoading && <LoaderCircle className="animate-spin"/>}
+            Send Join Request{" "}
+            {isLoading && <LoaderCircle className="animate-spin" />}
           </button>
         </div>
       )}

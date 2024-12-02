@@ -94,14 +94,13 @@ const TimePicker = ({
     newTime.setMinutes(minutes);
     handleTimeChange({ target: { name: dateType, value: newTime } });
   };
-  console.log("time value", value);
   return (
     <Popover>
       <PopoverTrigger className="w-full">
         <Button
           type="button"
           variant="outline"
-          className="w-full flex-grow flex justify-center"
+          className="flex w-full flex-grow justify-center"
         >
           {(() => {
             let hours12 = selectedTime.hours % 12 || 12;
@@ -109,9 +108,9 @@ const TimePicker = ({
           })()}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0 overflow-auto">
+      <PopoverContent className="w-auto overflow-auto p-0">
         <div className="flex flex-col divide-y sm:h-[300px] sm:flex-row sm:divide-x sm:divide-y-0">
-          <ScrollArea className="w-64 sm:w-auto overflow-y-auto max-h-[300px]">
+          <ScrollArea className="max-h-[300px] w-64 overflow-y-auto sm:w-auto">
             <div className="flex p-2 sm:flex-col">
               {Array.from({ length: 12 }, (_, i) => i + 1)
                 .reverse()

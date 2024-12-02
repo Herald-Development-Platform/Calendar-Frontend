@@ -73,7 +73,6 @@ export default function Page() {
 
   const { userData: profile } = useContext(Context);
   // const {data: profile , isLoading: profileLoading} = useGetProfile();
-  console.log("User data from members page", profile);
 
   const queryClient = useQueryClient();
   const { data: departmentRequests, isLoading: departmentRequestsLoading } =
@@ -255,9 +254,7 @@ export default function Page() {
       resetAddUserFormDefault();
       queryClient.invalidateQueries({ queryKey: ["AllUsers"] });
     },
-    onError: (err) => {
-      console.log("Error adding user", err);
-    },
+    onError: (err) => {},
   });
 
   const resetAddUserFormDefault = () => {

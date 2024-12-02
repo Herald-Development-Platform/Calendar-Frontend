@@ -64,7 +64,6 @@ export function SearchHeader({
   const { notifications } = useContext(Context);
 
   let newNotifications = false;
-  // console.log("notifications", notifications);
   if (notifications) {
     newNotifications = notifications.some(
       (notification: any) => !notification.isRead,
@@ -109,7 +108,7 @@ export function SearchHeader({
                 </h3>
                 <div className="flex w-full flex-col text-sm text-neutral-600">
                   <span>Department</span>
-                  <div className="flex gap-1 overflow-x-scroll hide-scrollbar">
+                  <div className="hide-scrollbar flex gap-1 overflow-x-scroll">
                     {departments?.data?.data?.map((department: Department) => {
                       const departmentExists =
                         queryParams?.departments?.includes(department?._id);

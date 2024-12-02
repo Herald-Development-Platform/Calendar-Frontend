@@ -81,7 +81,6 @@ const useApplySemesterDot = ({
         ".fc-custom-semester-dot",
       );
       allDotElements = Array.from(allDotElements);
-      console.log("allDotElements", allDotElements);
 
       Array.isArray(allDotElements) &&
         allDotElements?.forEach((dotEl: any) => dotEl.remove());
@@ -164,8 +163,6 @@ const useApplyYearlySemesterView = ({
       ?.querySelectorAll("tr");
     const trEls = tbody && Array.from(tbody);
     if (!trEls) return;
-
-    console.log("multiMonthElsArr[0]", trEls && trEls[0]);
 
     const dayCells = trEls[0].querySelectorAll(".fc-daygrid-day");
     dayCells.forEach((cell) => {

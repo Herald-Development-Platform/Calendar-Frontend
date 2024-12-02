@@ -36,13 +36,6 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
 
   const { userData: profile } = useContext(Context);
 
-  console.log(
-    "PROFILE",
-    profile?.permissions?.some((permission) =>
-      PROCUREMENT_PERMISSIONS.includes(permission),
-    ),
-  );
-
   const highlightedStyles =
     "flex h-11 w-full items-center gap-2 rounded px-3 bg-primary-100 text-primary-700";
   const nonHighlightedStyles =
@@ -457,7 +450,6 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                             (semester) => semester?._id ?? "",
                           );
                           setSelectedActiveSemesters(ongoingSemestersIds);
-                          console.log("ONGOING::::", ongoingSemestersIds);
                         }
                       }}
                       className={`flex cursor-pointer items-center justify-start gap-3 pl-2.5 ${

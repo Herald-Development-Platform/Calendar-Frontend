@@ -87,7 +87,6 @@ export default function EditEventModal({
     );
 
     setNewEvent(modifiedData);
-    console.log("modifiedData", modifiedData);
   }, [defaultData]);
 
   const { userData } = useContext(Context);
@@ -121,7 +120,6 @@ export default function EditEventModal({
         onEdit && onEdit();
       },
       onError: (err: any) => {
-        console.log("error", err);
         toast.error(err?.response?.data?.message || "something went wrong");
       },
     });
@@ -133,8 +131,6 @@ export default function EditEventModal({
       name = e.currentTarget.name;
       value = e.currentTarget.value;
     }
-
-    // console.log("name value", name, value);
 
     switch (name) {
       case "department":
@@ -180,7 +176,6 @@ export default function EditEventModal({
         setNewEvent((prev) => ({ ...prev, [name]: value }));
     }
   };
-  console.log("neweent", newEvent);
   return (
     <>
       <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -448,7 +443,6 @@ export default function EditEventModal({
                         className="absolute hidden"
                         value={Color.color}
                         onChange={(e) => {
-                          console.log("COLOR:))))))))):::::::", e);
                           handleValueChange(e);
                         }}
                       />

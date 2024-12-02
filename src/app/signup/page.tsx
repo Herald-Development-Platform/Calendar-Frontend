@@ -15,7 +15,6 @@ import { LoaderCircle } from "lucide-react";
 // import { error } from "console";
 
 export default function Page() {
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const {
@@ -42,7 +41,7 @@ export default function Page() {
       .then((res) => res.json())
       .then((data) => {
         if (!data.success) {
-          setIsLoading(false);  
+          setIsLoading(false);
           throw Error(data.message || "Something went wrong");
         }
         toast.success(data.message || "Successfully registered user.");
@@ -50,12 +49,11 @@ export default function Page() {
         setTimeout(() => {
           router.push(`/otp?email=${payload.email}`);
         }, 1000);
-        
       })
       .catch((err) => {
-        console.log(err)
         setIsLoading(false);
-        toast.error(err.message || "Something went wrong")});
+        toast.error(err.message || "Something went wrong");
+      });
   };
 
   return (
@@ -103,10 +101,16 @@ export default function Page() {
                 className="w-full bg-neutral-100  font-normal text-neutral-500 outline-none"
                 placeholder="Enter your username."
                 id="username"
-                {...register("username", { required: "* Username is required" })}
+                {...register("username", {
+                  required: "* Username is required",
+                })}
               />
             </div>
-            {errors.username && (<p className="text-sm text-red-500">{errors.username.message as string}</p>)}
+            {errors.username && (
+              <p className="text-sm text-red-500">
+                {errors.username.message as string}
+              </p>
+            )}
           </label>
           <label htmlFor="email">
             Email
@@ -127,7 +131,11 @@ export default function Page() {
                 {...register("email", { required: "* Email is required" })}
               />
             </div>
-            {errors.email && (<p className="text-sm text-red-500">{errors.email.message as string}</p>)}
+            {errors.email && (
+              <p className="text-sm text-red-500">
+                {errors.email.message as string}
+              </p>
+            )}
           </label>
           <label htmlFor="password">
             Password
@@ -145,7 +153,9 @@ export default function Page() {
                 id="password"
                 className="w-full bg-neutral-100  font-normal text-neutral-500 outline-none "
                 placeholder="Enter your password."
-                {...register("password", { required: "* Password is required" })}
+                {...register("password", {
+                  required: "* Password is required",
+                })}
               />
               <span
                 className="cursor-pointer"
@@ -156,7 +166,11 @@ export default function Page() {
                 {showPassword ? <LuEyeOff /> : <LuEye />}
               </span>
             </div>
-            {errors.password && (<p className="text-sm text-red-500">{errors.password.message as string}</p>)}
+            {errors.password && (
+              <p className="text-sm text-red-500">
+                {errors.password.message as string}
+              </p>
+            )}
           </label>
 
           {/* <div className="relative bottom-2 flex h-9 w-auto flex-row items-center gap-3">
@@ -174,8 +188,8 @@ export default function Page() {
               <span className="">Remember me</span>
             </label>
           </div> */}
-          <button className="btn w-full flex gap-2 rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
-            Register {isLoading && <LoaderCircle className="animate-spin"/>}
+          <button className="btn flex w-full gap-2 rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
+            Register {isLoading && <LoaderCircle className="animate-spin" />}
           </button>
         </form>
       </div>

@@ -56,7 +56,6 @@ export default function DepartmentDetails({
       mutationFn: async (data: Department) =>
         Axios.put(Endpoints.departmentById(data._id), data),
       onSuccess: (response) => {
-        console.log("Response: ", response);
         if (response.status >= 400 && response.status < 500) {
           toast.error(
             response?.data?.message ||
@@ -236,7 +235,10 @@ export default function DepartmentDetails({
                   <BsThreeDotsVertical />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-[300px] px-5 py-4 text-sm font-semibold">
+              <DropdownMenuContent
+                align="end"
+                className="w-[300px] px-5 py-4 text-sm font-semibold"
+              >
                 {userData &&
                   userData?.permissions?.includes(
                     PERMISSIONS.UPDATE_DEPARTMENT,
@@ -295,7 +297,6 @@ export default function DepartmentDetails({
         <div className=" flex flex-col ">
           {events &&
             events.map((event) => {
-              console.log("Event: ", event);
               if (
                 !event.departments
                   .map((d: any) => d?._id)

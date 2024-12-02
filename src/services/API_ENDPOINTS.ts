@@ -20,7 +20,6 @@ const Endpoints = {
     eventTo,
     eventFrom,
   }: eventByParamsType) => {
-    // console.log("eventTo", eventTo, "eventFrom", eventFrom);
     const departmentsSearchParam = departments
       .filter((dept) => dept.trim() !== "")
       .reduce((last, current) => (last ? last + "," + current : current), "");
@@ -30,10 +29,6 @@ const Endpoints = {
       .map((color) => color.replace(/^#/, ""))
       .reduce((last, current) => (last ? last + "," + current : current), "");
 
-    console.log(
-      "event?q=${query}&departments",
-      `/event?q=${q}&departments=${departmentsSearchParam}&colors=${colorsSearchParam}&eventFrom=${eventFrom}&eventTo=${eventTo}`,
-    );
     return `/event?q=${q}&departments=${departmentsSearchParam}&colors=${colorsSearchParam}&eventFrom=${eventFrom}&eventTo=${eventTo}`;
   },
   profile: `/profile/all`,

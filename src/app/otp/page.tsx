@@ -8,33 +8,29 @@ import toast from "react-hot-toast";
 import { set } from "date-fns";
 import { LoaderCircle } from "lucide-react";
 
-export default function _Suspense () {
-  return <Suspense fallback={<div>Loding...</div>}><OTP></OTP></Suspense>;
+export default function _Suspense() {
+  return (
+    <Suspense fallback={<div>Loding...</div>}>
+      <OTP></OTP>
+    </Suspense>
+  );
 }
 
 function OTP() {
-
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const router = useRouter();
-  const {
-    register,
-    setValue,
-    handleSubmit,
-  } = useForm<any>();
+  const { register, setValue, handleSubmit } = useForm<any>();
 
   const searchParams = useSearchParams();
 
   const email = searchParams.get("email");
   const forgetPassword = searchParams.get("forgetPassword");
 
-  console.log(email);
-
   const verifyOtp = (payload: any) => {
     const otp = `${payload.otp1}${payload.otp2}${payload.otp3}${payload.otp4}${payload.otp5}${payload.otp6}`;
     if (!email || !otp) {
       toast.error("Email and OTP is required");
-      console.log("Toast is required");
       return;
     }
     if (forgetPassword) {
@@ -81,7 +77,6 @@ function OTP() {
   const handleOTPChange = (e: any) => {
     const otpNumber = e.target.getAttribute("name")?.replace("otp", "");
     if (parseInt(otpNumber) < 6 && e.target.value.length === 1) {
-      console.log("e.target.nextSibling", e.target.nextSibling);
       e.target.nextSibling.focus();
     } else if (parseInt(otpNumber) > 1 && e.target.value.length === 0) {
       e.target.previousSibling.focus();
@@ -267,8 +262,8 @@ function OTP() {
             />
           </div>
           <div className="space-y-4" style={{ marginTop: 40 }}>
-            <button className="btn w-full flex gap-2 rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
-              Verify {isLoading && <LoaderCircle className="animate-spin"/>}
+            <button className="btn flex w-full gap-2 rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
+              Verify {isLoading && <LoaderCircle className="animate-spin" />}
             </button>
           </div>
         </form>

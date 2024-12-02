@@ -33,7 +33,6 @@ const EventForm = ({ type }: { type: string }) => {
   const { userData, setOpenDialog } = useContext(Context);
   const queryClient = useQueryClient();
 
-  // console.log("EVENT FORM RENDERERED")
   const { selectedDate, selectedEventData } = useContext(Context);
 
   const isEdit = selectedEventData ? true : false;
@@ -83,7 +82,6 @@ const EventForm = ({ type }: { type: string }) => {
   // });
 
   useEffect(() => {
-    console.log("selectedEventData", selectedEventData);
     if (selectedEventData) {
       reset({
         title: selectedEventData?.title,
@@ -100,8 +98,6 @@ const EventForm = ({ type }: { type: string }) => {
         recurrenceEnd: selectedEventData?.recurrenceEnd,
       });
     }
-
-    console.log(selectedEventData);
   }, [selectedEventData]);
 
   const handleValueChange = (e: any) => {
@@ -110,8 +106,6 @@ const EventForm = ({ type }: { type: string }) => {
       name = e.currentTarget.name;
       value = e.currentTarget.value;
     }
-
-    console.log(name, value);
 
     switch (name) {
       case "department":
@@ -151,9 +145,7 @@ const EventForm = ({ type }: { type: string }) => {
     }
   };
 
-  useEffect(() => {
-    console.log("departments", watch("departments"));
-  }, [watch("departments")]);
+  useEffect(() => {}, [watch("departments")]);
 
   useEffect(() => {
     let currentDepartments: string[] = watch("departments") ?? [];
@@ -180,8 +172,6 @@ const EventForm = ({ type }: { type: string }) => {
   }, [selectedDate]);
 
   const onSubmit = (data: eventType) => {
-    console.log(data);
-
     if (!data.start || !data.end) {
       toast.error("Start date and end date must be valid.");
       return;
@@ -221,7 +211,6 @@ const EventForm = ({ type }: { type: string }) => {
         ...data,
       };
 
-      console.log("update", data);
       updateEvent(updateData, {
         onSuccess: () => {
           toast.success("Event updated successfully");
@@ -408,7 +397,6 @@ const EventForm = ({ type }: { type: string }) => {
                 keyof typeof RecurringEventTypes
               >
             ).map((eventKey, i) => {
-              console.log(`eventKey for ${i}`, eventKey);
               return (
                 <label
                   className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"
@@ -509,7 +497,7 @@ const EventForm = ({ type }: { type: string }) => {
         </div>
 
         <div>
-        <span className="text-sm">Location:</span>
+          <span className="text-sm">Location:</span>
           <LocationSelect
             value={watch("location") as string}
             handleValueChange={handleValueChange}
@@ -521,7 +509,7 @@ const EventForm = ({ type }: { type: string }) => {
           <div className="my-2 flex flex-wrap items-center gap-1">
             {Array.isArray(departmentsRes) && (
               <DepartmentButton
-              className="font-bold"
+                className="font-bold"
                 selectedCross={false}
                 onClick={() => {
                   if (watch("departments")?.length === departmentsRes?.length) {

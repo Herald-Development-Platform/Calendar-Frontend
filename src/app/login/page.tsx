@@ -17,7 +17,11 @@ export default function Page() {
   const queryClient = useQueryClient();
   const router = useRouter();
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const { register, handleSubmit, formState:{errors} } = useForm<any>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<any>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const loginUser = (payload: any) => {
@@ -33,7 +37,6 @@ export default function Page() {
       .then((data) => {
         toast.remove();
         if (!data.success) {
-          console.log(data);
           toast.error(data.message || "Something went wrong.");
           setIsLoading(false);
           return;
@@ -49,7 +52,6 @@ export default function Page() {
         toast.error(err.message || "Something went wrong");
         setIsLoading(false);
       });
-      
   };
   return (
     <>
@@ -103,7 +105,11 @@ export default function Page() {
                 {...register("email", { required: "Email is required" })}
               />
             </div>
-            {errors.email && (<p className="text-sm text-red-500">{errors.email.message as string}</p>)}
+            {errors.email && (
+              <p className="text-sm text-red-500">
+                {errors.email.message as string}
+              </p>
+            )}
           </label>
 
           <label htmlFor="password">
@@ -132,7 +138,11 @@ export default function Page() {
                 {showPassword ? <LuEyeOff /> : <LuEye />}
               </span>
             </div>
-            {errors.password && (<p className="text-sm text-red-500">{errors.password.message as string}</p>)}
+            {errors.password && (
+              <p className="text-sm text-red-500">
+                {errors.password.message as string}
+              </p>
+            )}
           </label>
           <div className="relative  flex w-auto flex-row items-center justify-end gap-3">
             <Link
@@ -143,8 +153,8 @@ export default function Page() {
             </Link>
           </div>
           <div className="space-y-4">
-            <button className="btn w-full gap-2 flex rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
-              Login {isLoading && <LoaderCircle className="animate-spin"/>}
+            <button className="btn flex w-full gap-2 rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400">
+              Login {isLoading && <LoaderCircle className="animate-spin" />}
             </button>
             <Link
               href={`${baseUrl}/googleAuth`}

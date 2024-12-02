@@ -39,8 +39,6 @@ export default function page() {
   const calLayoutWidth = calLayoutRef.current?.offsetWidth || 0;
   const calContainerWidth = calContainerRef.current?.offsetWidth || 0;
   const eventDetailWidth = calLayoutWidth - calContainerWidth - 56;
-
-  console.log("eventDetailWidth", eventDetailWidth);
   return (
     <div className="flex h-full w-full flex-col gap-8">
       <div className="w-full">
@@ -52,12 +50,12 @@ export default function page() {
       >
         <div ref={calContainerRef} className="flex h-fit w-full flex-col">
           <DepartmentFilter ref={depFilterRef} />
-          <div className="w-full overflow-x-scroll hide-scrollbar">
+          <div className="hide-scrollbar w-full overflow-x-scroll">
             <ReactFullCalendar />
           </div>
         </div>
         <UpcommingEvents
-          elHeight={calendarHeight + DepFilHeight + DepFilMarginY -90}
+          elHeight={calendarHeight + DepFilHeight + DepFilMarginY - 90}
         />
       </div>
     </div>

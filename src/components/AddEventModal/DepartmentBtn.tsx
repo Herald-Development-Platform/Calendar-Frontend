@@ -17,7 +17,6 @@ export default function DepartmentBtn({
     if (departmentState) setDepartmentColor(true);
     else setDepartmentColor(false);
   }, [departmentState]);
-  console.log("selDepartments", departmentColor);
   return (
     <>
       <span

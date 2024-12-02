@@ -35,7 +35,6 @@ export const useGetEvents = () =>
     queryFn: async () => {
       // await new Promise((resolve) => setTimeout(resolve, 1000));
       const axiosRes = await Axios.get(Endpoints.event);
-      console.log("axiosRes EVENTS:::: ", axiosRes);
       if (!(axiosRes.status >= 200 && axiosRes.status < 300)) {
         toast.error(axiosRes?.data?.message || `Someting went wrong.`);
         return axiosRes.data;
@@ -56,7 +55,6 @@ export const useDeleteEvent = ({
       return axiosRes.data;
     },
     onSuccess: (res) => {
-      console.log("res", res);
       toast.success(res.data.message || "Successfuly Deleted Event");
       queryClient.invalidateQueries({ queryKey: ["Events"] });
       // onSuccessFn && onSuccessFn();
@@ -73,11 +71,11 @@ export const useCreateEventMutation = () => {
       queryClient.invalidateQueries({ queryKey: ["Events"] });
       toast.success(res?.data.message);
     },
-    onError: (err:any) => {
+    onError: (err: any) => {
       toast.error(err?.data?.message || "something went wrong");
     },
   });
-}
+};
 
 export const usePostEventMutation = ({
   setNewEvent,
@@ -89,7 +87,6 @@ export const usePostEventMutation = ({
   return useMutation({
     mutationFn: postEvents,
     onSuccess: (res) => {
-      // console.log("Onsuccess", res);
       queryClient.invalidateQueries({ queryKey: ["Events"] });
 
       toast.success(`${res?.data?.message}`);
@@ -111,7 +108,6 @@ export const usePostEventMutation = ({
         });
     },
     onError: (err: any) => {
-      console.log("error", err);
       toast.error(err?.data?.message || "something went wrong");
     },
   });
@@ -136,12 +132,10 @@ export const useUpdateEvents = () => {
       return Axios.put(Endpoints.eventById(payload.id), payload.newEvent);
     },
     onSuccess: async () => {
-      console.log("response after updating");
       queryClient.invalidateQueries({ queryKey: ["Events"] });
     },
     onError: (err) => {
       toast.error("Something went wrong.");
-      console.log("error here", err);
     },
   });
 };
@@ -160,7 +154,6 @@ export const useGetEventByQuery = (queryParams: eventByParamsType) =>
             eventFrom: queryParams.eventFrom,
           }),
         );
-        console.log("eventby query", res);
         if (!(res.status >= 200 && res.status < 300)) {
           toast.error(res.data.message);
           return res.data;

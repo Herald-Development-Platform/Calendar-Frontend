@@ -11,8 +11,6 @@ export default function Page() {
 function Oauth() {
   const searchParams = useSearchParams();
   const token = searchParams.get("access_token");
-  console.log("token", token);
-  // console.log("accestoken", access_token);
   const router = useRouter();
   useEffect(() => {
     if (typeof token === "string") {

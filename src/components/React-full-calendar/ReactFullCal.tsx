@@ -101,11 +101,10 @@ export default function ReactFullCal() {
       return cellDate >= start.getTime() && cellDate < end.getTime();
     });
     const lastSelCell = selectedCells[selectedCells.length - 1];
-    const isElsHighlight = selectedCells.every(
-      (cell: any) =>
-        userData?.importantDates.includes(
-          new Date(cell.getAttribute("data-date")).toISOString(),
-        ),
+    const isElsHighlight = selectedCells.every((cell: any) =>
+      userData?.importantDates.includes(
+        new Date(cell.getAttribute("data-date")).toISOString(),
+      ),
     );
 
     const selectContextEl = document.createElement("div");
@@ -204,14 +203,12 @@ export default function ReactFullCal() {
       setOpenDialog(true);
 
       // toast.success("heelo")
-      // console.log(modalRef, "MODAL REFFFF")
 
       // if (modalRef.current) {
       //   toast.success("hi")
       //   modalRef.current.openDialog(); // Open the dialog
       // }
       // toast.error("error")
-      
     });
     lastSelCell?.firstChild?.appendChild(selectContextEl);
 
@@ -220,13 +217,15 @@ export default function ReactFullCal() {
   const handleUnselect = (arg: DateUnselectArg) => {
     const date = new Date();
     const currentDay = date.getDate();
-    const lastDay = totalDaysInMonth(date.getMonth()+1, date.getFullYear());
+    const lastDay = totalDaysInMonth(date.getMonth() + 1, date.getFullYear());
     // @ts-ignore
 
     timeout.current = setTimeout(function () {
       setSelectedDate({
         start: new Date(),
-        end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * (lastDay - currentDay)), 
+        end: new Date(
+          new Date().getTime() + 1000 * 60 * 60 * 24 * (lastDay - currentDay),
+        ),
         startStr: undefined,
         endStr: undefined,
       });
@@ -327,9 +326,8 @@ export default function ReactFullCal() {
     const departments = info?.event?._def?.extendedProps?.departments;
     const start = info.event._instance?.range?.start;
     const end = info.event._instance?.range?.end;
-    
+
     const role = info.event._def?.extendedProps?.createdBy.role;
-    console.log("role", role);
 
     const displayStart = start?.toISOString() ?? new Date().toISOString();
     const displayEnd = end?.toISOString() ?? new Date().toISOString();
@@ -452,11 +450,14 @@ export default function ReactFullCal() {
 
   const handleDelete = (e: any) => {
     const { value } = e.target;
-    deleteEvent({ id: value }, {
-      onError: (error:any) => {
-        toast.error(error.response.data.message);
-      }
-    });
+    deleteEvent(
+      { id: value },
+      {
+        onError: (error: any) => {
+          toast.error(error.response.data.message);
+        },
+      },
+    );
   };
 
   // useApplyYearlySemesterView({
@@ -614,7 +615,6 @@ export default function ReactFullCal() {
 // eventLimit={true}
 
 // eventDidMount={(info) => {
-//   console.log("info", info);
 // }}
 
 // useEffect(() => {
@@ -642,7 +642,6 @@ export default function ReactFullCal() {
 // }, [userData?.importantDates]);
 // dayCellDidMount={handleDayCellMount}
 // dateClick={(info) => {
-//   console.log("info", info);
 // }}
 
 // const handleMouseLeave = (info: EventHoveringArg) => {
