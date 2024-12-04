@@ -24,6 +24,7 @@ import { PopoverClose } from "@radix-ui/react-popover";
 import { RxCross2 } from "react-icons/rx";
 import { Bug } from "lucide-react";
 import { PERMISSIONS, PROCUREMENT_PERMISSIONS } from "@/constants/permissions";
+import { FaAddressCard } from "react-icons/fa6";
 
 interface ISidebar {
   name: string;
@@ -76,6 +77,11 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       name: "Requisition",
       icon: <HiOutlineDocumentReport />,
       navigation: "/procurement",
+    },
+    profile?.permissions?.includes(PERMISSIONS.GENERATE_CERTIFICATE) && {
+      name: "Certificate",
+      icon: <FaAddressCard />,
+      navigation: "/certificate",
     },
   ].filter(Boolean) as ISidebar[];
 
