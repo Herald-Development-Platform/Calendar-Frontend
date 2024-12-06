@@ -26,7 +26,7 @@ export default function Page() {
 
   const loginUser = (payload: any) => {
     setIsLoading(true);
-    fetch(`${baseUrl}/login`, {
+    fetch(`/calendarTesting/api/login`, {
       method: "POST",
       body: JSON.stringify(payload),
       headers: {
