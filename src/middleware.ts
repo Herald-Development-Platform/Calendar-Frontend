@@ -4,7 +4,10 @@ import { decryptJwtPayload } from "./lib/utils";
 export default function middleware(request: NextRequest) {
   if (!request.cookies.get("token")) {
     return NextResponse.redirect(
-      new URL(`/login?from=${request.nextUrl.pathname}`, request.url),
+      new URL(
+        `${process.env.DOMAIN_PREFIX || ""}/login?from=${request.nextUrl.pathname}`,
+        request.url,
+      ),
     );
   }
   const data = decryptJwtPayload(request.cookies?.get("token")?.value || "");
