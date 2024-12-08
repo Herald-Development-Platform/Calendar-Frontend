@@ -46,7 +46,7 @@ export default function page() {
       </div>
       <div
         ref={calLayoutRef}
-        className="relative flex h-full w-full justify-between overflow-hidden overflow-y-auto pl-8"
+        className="relative flex flex-col md:flex-row gap-y-8 h-fit md:h-full w-full justify-between md:overflow-hidden md:overflow-y-auto px-4 md:pl-8"
       >
         <div ref={calContainerRef} className="flex h-fit w-full flex-col">
           <DepartmentFilter ref={depFilterRef} />

@@ -116,11 +116,11 @@ export default function SummaryPage() {
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="flex max-h-[100vh] flex-col gap-9 overflow-y-scroll px-[70px] pl-9">
+      <div className="flex max-h-[100vh] flex-col gap-9 overflow-y-scroll md:px-[70px] px-4 pb-6 md:pb-0 md:pl-9">
         <Toaster />
         <div className=" mt-[40px] flex flex-col gap-[18px]">
-          <div className="flex flex-row justify-between">
-            <h1 className=" text-[28px] font-[700] text-neutral-700">
+          <div className="flex flex-row items-center justify-between">
+            <h1 className=" text-[20px] sm:text-[28px] font-[700] text-neutral-700">
               Summary
             </h1>
             <span className="ml-auto w-40 text-neutral-500">
@@ -198,7 +198,7 @@ export default function SummaryPage() {
               </Select>
             </span>
           </div>
-          <div className=" flex gap-2 overflow-x-scroll max-w-[75vw] hide-scrollbar ">
+          <div className=" flex gap-2 overflow-x-scroll md:max-w-[75vw] hide-scrollbar ">
             <DepartmentButton
               selectedCross={false}
               value={"All"}
@@ -247,7 +247,7 @@ export default function SummaryPage() {
                 />
               ))}
           </div>
-          <div className={`flex flex-row justify-between gap-14`}>
+          <div className={`flex flex-col md:flex-row justify-between gap-y-8 md:gap-14`}>
             <SummaryCard
               title="Upcoming Events"
               loading={eventsLoading}
@@ -273,13 +273,13 @@ export default function SummaryPage() {
           </div>
           <div className="mt-4 flex w-full flex-row flex-wrap items-start gap-4 ">
             {/** Card */}
-            <div className="flex h-auto w-fit flex-col">
+            <div className="flex h-auto w-full md:w-fit   flex-col">
               <div className="flex w-full flex-row  items-center justify-start gap-3.5 rounded-md border-[0.6px] bg-neutral-100 px-5 py-1 text-neutral-700">
                 <span className="text-[16px]">Events by Priority</span>
               </div>
               <div className="bg-neutral-50">
-                <div className="flex flex-row items-center gap-16 p-5 px-7">
-                  <div style={{ width: "100%", height: 200 }}>
+                <div className="flex flex-row items-center justify-between md:gap-16 p-5 px-7">
+                  <div className="md:w-full max-h-[150px] md:max-h-[200px]">
                     <PieChart data={pieChartData}></PieChart>
                   </div>
                   <div className="flex flex-col items-start justify-center gap-3">
@@ -303,20 +303,21 @@ export default function SummaryPage() {
               </div>
             </div>
 
-            <div className="flex h-auto w-fit flex-col">
+            <div className="flex h-auto w-full md:w-fit flex-col">
               <div className="flex h-full w-full flex-row  items-center justify-start gap-3.5 rounded-md border-[0.6px] bg-neutral-100 px-5 py-1 text-neutral-700">
                 <span className="text-[16px]">Events by Department</span>
               </div>
               <div className=" bg-neutral-50 px-7 py-5">
                 <div
-                  style={{
-                    width: "100%",
-                    height: 200,
-                    minWidth: 400,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
+                  className="w-full max-h-[200px] md:min-w-[400px] flex items-center justify-center"
+                  // style={{
+                  //   width: "100%",
+                  //   height: 200,
+                  //   minWidth: 400,
+                  //   display: "flex",
+                  //   alignItems: "center",
+                  //   justifyContent: "center",
+                  // }}
                 >
                   <BarChart data={barChartData}></BarChart>
                 </div>

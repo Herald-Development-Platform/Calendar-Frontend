@@ -10,6 +10,7 @@ import {
 import EventCard from "./EventCard";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import EventDetails from "@/app/(all-pages)/search/EventDetails";
+import clsx from "clsx";
 
 export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
   const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
@@ -58,12 +59,12 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
     <div
       ref={upcommingEventRef}
       id="upcomming-events"
-      className={`${
+      className={clsx(`${
         selectedEvent ? "" : ""
-      } hide-scrollbar relative flex h-auto w-1/3 flex-col gap-10 overflow-hidden px-6`}
-      style={{
-        height: currentView !== "multiMonthYear" ? `${elHeight}px` : `100%`,
-      }}
+      } hide-scrollbar relative flex h-auto md:w-1/3 flex-col gap-10 overflow-hidden px-6`,currentView !== "multiMonthYear" ? `md:h-[${elHeight}px]` : `h-full`)}
+      // style={{
+      //   height: currentView !== "multiMonthYear" ? `${elHeight}px` : `100%`,
+      // }}
     >
       <div className="flex flex-col gap-1 text-neutral-600 ">
         <h2 className="font-semibold">Upcomming Events</h2>

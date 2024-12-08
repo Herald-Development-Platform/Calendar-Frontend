@@ -34,7 +34,7 @@ export default function ProfileDropdown({
           />
           <p className="font-medium text-neutral-600 "></p>
         </div>
-        {userData?.username} <IoMdArrowDropdown />
+        <span className="hidden md:inline-block">{userData?.username}</span> <IoMdArrowDropdown />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem

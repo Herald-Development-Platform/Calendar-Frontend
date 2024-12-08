@@ -106,17 +106,17 @@ export default function ManageDepartment() {
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="ml-10 mt-10 flex max-w-[40vw] flex-col gap-6">
+      <div className="md:ml-10 mx-4 mt-10 flex md:max-w-[40vw] flex-col gap-6">
         <div className="flex flex-row items-center justify-start gap-2">
           <span
             onClick={() => {
               router.back();
             }}
-            className="cursor-pointer text-4xl font-bold text-neutral-600"
+            className="cursor-pointer text-xl sm:text-4xl font-bold text-neutral-600"
           >
             <IoMdArrowBack />
           </span>
-          <p className="text-[28px] font-semibold text-neutral-700">
+          <p className="text-[20px] md:text-[28px] font-semibold text-neutral-700">
             Manage Department
           </p>
           {userData?.permissions.includes(PERMISSIONS.CREATE_DEPARTMENT) && (

@@ -296,7 +296,7 @@ export default function Page() {
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="mt-[40px] flex max-h-[100vh] flex-col gap-9 overflow-y-scroll px-[70px] pl-3">
+      <div className="mt-[40px] flex max-h-[100vh] flex-col gap-9 overflow-y-scroll md:px-[70px] px-4 md:pl-3">
         <Toaster />
 
         <Dialog
@@ -733,7 +733,8 @@ export default function Page() {
         </Dialog>
 
         <div className=" flex flex-col gap-[27px]">
-          <div className="flex flex-row justify-start gap-3">
+          <div className="flex flex-col md:flex-row gap-y-5 gap-3">
+            <div className="flex justify-start gap-3 flex-grow">
             <h1 className=" mr-auto text-[28px] font-[700] text-black">Team</h1>
             {profile?.permissions?.includes(PERMISSIONS.CREATE_USER) && (
               <button
@@ -748,7 +749,10 @@ export default function Page() {
                 <span>Add Members</span>
               </button>
             )}
-            <div className=" flex h-[32px] w-[280px] flex-row items-center justify-start gap-3 rounded-[4px] border bg-neutral-100 px-3 py-2">
+            </div>
+            
+            <div className="flex justify-end">
+            <div className=" flex h-[32px]  w-[280px] flex-row items-center justify-start gap-3 rounded-[4px] border bg-neutral-100 px-3 py-2">
               <Image
                 src="/SearchOutline.svg"
                 alt="Search"
@@ -764,6 +768,8 @@ export default function Page() {
                 className="rounded-md border-2 border-none border-gray-300 bg-neutral-100 p-1 outline-none"
               />
             </div>
+            </div>
+            
           </div>
           <>
             {profile &&
@@ -811,8 +817,8 @@ export default function Page() {
                 );
               })}
           </>
-          <div className="flex flex-row justify-between">
-            <div className="hide-scrollbar flex max-w-[65vw] flex-row items-center justify-start gap-1.5 overflow-x-scroll">
+          <div className="flex flex-col gap-y-4 sm:flex-row justify-between">
+            <div className="hide-scrollbar flex sm:max-w-[65vw] flex-row items-center justify-start gap-1.5 overflow-x-scroll">
               {profile && profile.role === ROLES.SUPER_ADMIN && (
                 <DepartmentBtn
                   selectedCross={false}

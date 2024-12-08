@@ -19,7 +19,7 @@ export function GeneralHeader() {
   }
 
   return (
-    <div className="ml-8 mr-16 mt-8 flex h-12 w-auto items-center justify-end">
+    <div className="md:ml-8 mx-4 md:mr-16 mt-8 flex h-12 w-auto items-center justify-end">
       <div className="mr-auto flex items-center justify-between gap-2 xl:hidden">
         <ToggleSidebar>
           <Menu />
