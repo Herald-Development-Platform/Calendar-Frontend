@@ -76,12 +76,12 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
     ) && {
       name: "Requisition",
       icon: <HiOutlineDocumentReport />,
-      navigation: "/procurement",
+      navigation: "/procurement_",
     },
     profile?.permissions?.includes(PERMISSIONS.GENERATE_CERTIFICATE) && {
       name: "Certificate",
       icon: <FaAddressCard />,
-      navigation: "/certificate",
+      navigation: "/certificate_",
     },
   ].filter(Boolean) as ISidebar[];
 
