@@ -4,7 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URI;
 const WEBSOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URI;
 
 const nextConfig = {
-  basePath: process.env.NEXT_PUBLIC_DOMAIN_PREFIX,
+  basePath: process.env.NEXT_PUBLIC_DOMAIN_PREFIX || "",
   reactStrictMode: false,
   images: {
     remotePatterns: [
