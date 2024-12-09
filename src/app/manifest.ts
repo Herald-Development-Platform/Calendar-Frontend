@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Next.js PWA",
-    short_name: "NextPWA",
+    name: "Calendar App",
+    short_name: "CalendarPWA",
     description: "A Progressive Web App built with Next.js",
-    start_url: process.env.NEXT_PUBLIC_DOMAIN_PREFIX,
+    start_url: process.env.NEXT_PUBLIC_DOMAIN_PREFIX || "/",
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#000000",
