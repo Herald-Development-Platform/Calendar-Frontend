@@ -10,6 +10,7 @@ const inter = Inter({ subsets: ["latin"], fallback: ["Arial"] });
 
 export const metadata: Metadata = {
   title: "Calendar Application",
+  manifest: "/manifest.json",
   description:
     "Intra college calender application of Herald College Kathmandu.",
 };
@@ -21,6 +22,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body className={`${inter.className} flex flex-col`}>
         <Toaster />
         <ReactQueryClientProvider>
