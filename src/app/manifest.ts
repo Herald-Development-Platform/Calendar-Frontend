@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "Calendar App",
     short_name: "CalendarPWA",
     description: "A Progressive Web App built with Next.js",
-    start_url: process.env.NEXT_PUBLIC_DOMAIN_PREFIX || "/",
+    start_url: "/calendarTesting",
     display: "standalone",
     background_color: "#ffffff",
     theme_color: "#000000",
