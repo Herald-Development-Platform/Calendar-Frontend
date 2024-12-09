@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 // "https://calendar-backend-txel.onrender.com/api";
 const WEBSOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URI;
 
-export const baseUrl = process.env.NEXT_PUBLIC_DOMAIN_PREFIX + "/api";
+export const baseUrl = (process.env.NEXT_PUBLIC_DOMAIN_PREFIX || "") + "/api";
 export const webSocketUrl = WEBSOCKET_URL;
 
 export const Axios = axios.create({
