@@ -69,7 +69,7 @@ const DepartmentFilter = forwardRef(
     };
 
     return (
-      <div ref={ref} className="mb-4 ml-2 flex gap-2 max-w-[60vw] overflow-x-scroll hide-scrollbar ">
+      <div ref={ref} className="pb-4 ml-2 flex gap-2 max-w-[60vw] sticky top-0 bg-white overflow-x-scroll hide-scrollbar ">
         {Array.isArray(departments) &&
           departments?.map((department: any) => (
             <DepartmentButton

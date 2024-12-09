@@ -45,12 +45,12 @@ export default function page() {
         <Headers.HomeHeader />
       </div>
       <div
-        ref={calLayoutRef}
-        className="relative flex flex-col md:flex-row gap-y-8 h-fit md:h-full w-full justify-between md:overflow-hidden md:overflow-y-auto px-4 md:pl-8"
+        ref={calLayoutRef} 
+        className="relative flex flex-col md:flex-row gap-y-8   md:h-full w-full justify-between  px-4 md:pl-8 overflow-hidden   "
       >
-        <div ref={calContainerRef} className="flex h-fit w-full flex-col">
+        <div ref={calContainerRef} className="flex w-full h-full flex-col relative overflow-hidden overflow-y-auto">
           <DepartmentFilter ref={depFilterRef} />
-          <div className="hide-scrollbar w-full overflow-x-scroll">
+          <div className="hide-scrollbar w-full overflow-x-scroll ">
             <ReactFullCalendar />
           </div>
         </div>
