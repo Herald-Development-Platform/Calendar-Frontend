@@ -12,7 +12,6 @@ import { LuEye, LuEyeOff } from "react-icons/lu";
 import { LoaderCircle } from "lucide-react";
 
 import img1 from "@/public/images/LoginPage/GoogleIcon.png";
-import img2 from "/images/LoginPage/GoogleIcon.png";
 
 export default function Page() {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
@@ -164,7 +163,6 @@ export default function Page() {
               type="button"
             >
               <Image unoptimized src={img1} width={24} height={24} alt="img1" />
-              <Image unoptimized src={img2} width={24} height={24} alt="img2" />
               <Image
                 unoptimized
                 src={"/images/LoginPage/GoogleIcon.png"}
