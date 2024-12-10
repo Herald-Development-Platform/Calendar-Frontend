@@ -8,9 +8,11 @@ import toast from "react-hot-toast";
 import * as CookieHooks from "@/hooks/CookieHooks";
 import Link from "next/link";
 import { useQueryClient } from "@tanstack/react-query";
-import { FaEye } from "react-icons/fa6";
 import { LuEye, LuEyeOff } from "react-icons/lu";
 import { LoaderCircle } from "lucide-react";
+
+import img1 from "@/public/images/LoginPage/GoogleIcon.png";
+import img2 from "/images/LoginPage/GoogleIcon.png";
 
 export default function Page() {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
@@ -161,6 +163,8 @@ export default function Page() {
               className="btn w-full rounded-[4px] bg-primary-50  text-sm  hover:bg-primary-100"
               type="button"
             >
+              <Image unoptimized src={img1} width={24} height={24} alt="img1" />
+              <Image unoptimized src={img2} width={24} height={24} alt="img2" />
               <Image
                 unoptimized
                 src={"/images/LoginPage/GoogleIcon.png"}
