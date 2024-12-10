@@ -15,12 +15,15 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { Bug } from "lucide-react";
 
+import defaultPfp from "@/imgs/DummyProfile.jpg";
+
 export default function ProfileDropdown({
   userData,
 }: {
   userData: User | undefined;
 }) {
   const router = useRouter();
+  console.log(userData, "userData");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-2">
@@ -28,13 +31,14 @@ export default function ProfileDropdown({
           <Image
             className="h-8 w-8 rounded-full"
             alt={"profile pic"}
-            src={userData?.photo ?? "/DummyProfile.jpg"}
+            src={userData?.photo ?? defaultPfp}
             width={32}
             height={32}
           />
           <p className="font-medium text-neutral-600 "></p>
         </div>
-        <span className="hidden md:inline-block">{userData?.username}</span> <IoMdArrowDropdown />
+        <span className="hidden md:inline-block">{userData?.username}</span>{" "}
+        <IoMdArrowDropdown />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem
