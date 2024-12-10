@@ -11,7 +11,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { LuEye, LuEyeOff } from "react-icons/lu";
 import { LoaderCircle } from "lucide-react";
 
-import img1 from "../../../public/images/LoginPage/GoogleIcon.png";
+import img1 from "@/images/images/LoginPage/GoogleIcon.png";
 
 export default function Page() {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
@@ -164,8 +164,7 @@ export default function Page() {
             >
               <Image src={img1} width={24} height={24} alt="img1" />
               <Image
-                unoptimized
-                src={"/images/LoginPage/GoogleIcon.png"}
+                src={`${process.env.NEXT_PUBLIC_DOMAIN_PREFIX}/images/LoginPage/GoogleIcon.png`}
                 width={24}
                 height={24}
                 alt="GoogleIcon"
