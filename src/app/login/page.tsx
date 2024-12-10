@@ -161,7 +161,7 @@ export default function Page() {
               className="btn w-full rounded-[4px] bg-primary-50  text-sm  hover:bg-primary-100"
               type="button"
             >
-              <Image
+              <img
                 src={"/images/LoginPage/GoogleIcon.png"}
                 width={24}
                 height={24}
