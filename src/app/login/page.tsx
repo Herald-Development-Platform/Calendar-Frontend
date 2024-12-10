@@ -166,7 +166,7 @@ export default function Page() {
                 width={24}
                 height={24}
                 alt="GoogleIcon"
-              ></Image>{" "}
+              />
               Continue With Google
             </Link>
 
