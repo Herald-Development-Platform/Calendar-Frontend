@@ -304,7 +304,7 @@ export function HomeHeader() {
               width={32}
               height={32}
               alt="Herald Logo"
-            ></Image>
+            />
           </Link>
         </div>
         <div className="flex w-9/12 justify-between">

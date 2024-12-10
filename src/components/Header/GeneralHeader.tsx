@@ -32,7 +32,7 @@ export function GeneralHeader() {
             height={32}
             // className="rounded-xs"
             alt="Herald Logo"
-          ></Image>
+          />
         </Link>
       </div>
 

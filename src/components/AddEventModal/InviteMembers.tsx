@@ -118,7 +118,7 @@ export default function InviteMembers({
                         width={33}
                         height={33}
                         className="rounded-full"
-                      ></Image>
+                      />
                       <button
                         type="button"
                         name={"removeMember"}
@@ -146,7 +146,7 @@ export default function InviteMembers({
                         width={33}
                         height={33}
                         className="rounded-full"
-                      ></Image>
+                      />
                       <button
                         type="button"
                         name={"removeMember"}
@@ -182,7 +182,7 @@ export default function InviteMembers({
                             width={33}
                             alt={"user image"}
                             className="rounded-full"
-                          ></Image>
+                          />
                         </>
                       ) : (
                         <>
@@ -192,7 +192,7 @@ export default function InviteMembers({
                             width={33}
                             alt={"user image"}
                             className="rounded-full"
-                          ></Image>
+                          />
                         </>
                       )}
                       <div className="flex flex-grow flex-col justify-start">
@@ -299,7 +299,7 @@ const useHidePopOver = (
 //       alt={"User Image"}
 //       width={32}
 //       height={32}
-//     ></Image>
+//     />
 //   );
 // } else {
 //   return (
@@ -308,6 +308,6 @@ const useHidePopOver = (
 //       alt={"User Image"}
 //       width={32}
 //       height={32}
-//     ></Image>
+//     />
 //   );
 // }
