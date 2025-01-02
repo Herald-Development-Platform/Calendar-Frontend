@@ -398,23 +398,39 @@ export default function ReactFullCal() {
 
       const departmentsWrapper = document.createElement("div");
       departmentsWrapper.classList.add("department-wrapper");
-      departments?.map((department: any, i: number) => {
-        const departmentElement = document.createElement("div");
-        departmentElement.classList.add("department-item");
-        departmentElement.textContent = department?.code;
-        departmentElement.style.fontWeight = "400";
+      // departments?.map((department: any, i: number) => {
+      //   const departmentElement = document.createElement("div");
+      //   departmentElement.classList.add("department-item");
+      //   departmentElement.textContent = department?.code;
+      //   departmentElement.style.fontWeight = "400";
 
-        if (i === 0 && role !== "SUPER_ADMIN") {
-          departmentElement.style.backgroundColor = "#737373";
-          departmentElement.style.border = "0.4px solid #d4d4d4";
-        } else {
-          departmentElement.style.backgroundColor = "#F5F5F5";
-          departmentElement.style.color = "#737373";
-          departmentElement.style.border = "0.4px solid #d4d4d4";
-        }
+      //   if (i === 0 && role !== "SUPER_ADMIN") {
+      //     departmentElement.style.backgroundColor = "#737373";
+      //     departmentElement.style.border = "0.4px solid #d4d4d4";
+      //   } else {
+      //     departmentElement.style.backgroundColor = "#F5F5F5";
+      //     departmentElement.style.color = "#737373";
+      //     departmentElement.style.border = "0.4px solid #d4d4d4";
+      //   }
 
-        departmentsWrapper.appendChild(departmentElement);
-      });
+      //   departmentsWrapper.appendChild(departmentElement);
+      // });
+
+      const departmentsElement = document.createElement("div");
+      departmentsElement.classList.add("department-item");
+      departmentsElement.textContent = departments[0]?.code;
+      departmentsElement.style.fontWeight = "400";
+
+      if (role !== "SUPER_ADMIN") {
+        departmentsElement.style.backgroundColor = "#737373";
+        departmentsElement.style.border = "0.4px solid #d4d4d4";
+      } else {
+        departmentsElement.style.backgroundColor = "#F5F5F5";
+        departmentsElement.style.color = "#737373";
+        departmentsElement.style.border = "0.4px solid #d4d4d4";
+      }
+
+      departmentsWrapper.appendChild(departmentsElement);
 
       //for multidate
       if (start && end && isMultiDay(start.getTime(), end.getTime())) {
