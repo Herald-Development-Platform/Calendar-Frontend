@@ -23,7 +23,9 @@ function Oauth() {
   const router = useRouter();
   useEffect(() => {
     if (typeof token === "string") {
-      Cookies.set("token", token);
+      Cookies.set("token", token, {
+        expires: 60
+      });
       router.push("/");
     }
   }, [token]);
