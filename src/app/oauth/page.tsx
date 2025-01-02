@@ -5,13 +5,15 @@ import Cookies from "js-cookie";
 import LoadingBar from "@/components/Loading";
 
 export default function Page() {
-  return <Suspense fallback={<Oauth />}></Suspense>;
+  console.log("Oauth Page");
+  return <Suspense fallback={<LoadingBar />}><Oauth /></Suspense>;
 }
 
 function Oauth() {
   const searchParams = useSearchParams();
   const token = searchParams.get("access_token");
   const router = useRouter();
+  console.log('TOken:::', searchParams);
   useEffect(() => {
     if (typeof token === "string") {
       Cookies.set("token", token);
