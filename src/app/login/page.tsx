@@ -158,7 +158,7 @@ export default function Page() {
               Login {isLoading && <LoaderCircle className="animate-spin" />}
             </button>
             <Link
-              href={`${baseUrl}/googleAuth`}
+              href={`/api/googleAuth`}
               className="btn w-full rounded-[4px] bg-primary-50  text-sm  hover:bg-primary-100"
               type="button"
             >
