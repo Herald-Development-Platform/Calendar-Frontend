@@ -24,7 +24,7 @@ export default function middleware(request: NextRequest) {
   }
   if (data.role && data.role !== "SUPER_ADMIN" && !data.department) {
     if (!request.nextUrl.pathname.includes("selectDepartment")) {
-      return NextResponse.redirect(new URL(`/selectDepartment`, request.url));
+      return NextResponse.redirect(new URL(`${process.env.DOMAIN_PREFIX || ""}/selectDepartment`, request.url));
     }
   }
 }

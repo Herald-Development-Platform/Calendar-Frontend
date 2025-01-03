@@ -26,7 +26,7 @@ function Oauth() {
       Cookies.set("token", token, {
         expires: 60
       });
-      router.push(`${process.env.NEXT_PUBLIC_DOMAIN_PREFIX || "/"}`);
+      router.push(`/`);
     }
   }, [token]);
   return (
