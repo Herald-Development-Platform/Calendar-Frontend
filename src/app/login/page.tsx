@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form";
 import { baseUrl } from "@/services/baseUrl";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import * as CookieHooks from "@/hooks/CookieHooks";
 import Link from "next/link";
+import Cookies from "js-cookie";
 import { useQueryClient } from "@tanstack/react-query";
 import { LuEye, LuEyeOff } from "react-icons/lu";
 import { LoaderCircle } from "lucide-react";
@@ -42,7 +42,10 @@ export default function Page() {
           setIsLoading(false);
           return;
         }
-        CookieHooks.setCookie("token", data.data, 1);
+
+        Cookies.set("token", data.data, { expires: 14, path: "/" });
+        Cookies.set("token", data.data, { expires: 14 });
+
         toast.success(data.message || "Successfully registered user.");
         queryClient.invalidateQueries();
         router.push("/");
