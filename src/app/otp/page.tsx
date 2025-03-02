@@ -7,6 +7,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
 import { set } from "date-fns";
 import { LoaderCircle } from "lucide-react";
+import HeraldLogo from "@/imgs/images/heraldLogo.svg";
+
 
 export default function _Suspense() {
   return (
@@ -117,7 +119,7 @@ function OTP() {
           <Image
             width="32"
             height="32"
-            src={"/images/LoginPage/HeraldLogo.png"}
+            src={HeraldLogo}
             alt="HeraldLogo"
             className="h-auto w-auto"
           />

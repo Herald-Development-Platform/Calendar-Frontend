@@ -6,6 +6,8 @@ import { Axios, baseUrl } from "@/services/baseUrl";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { useMutation } from "@tanstack/react-query";
+import HeraldLogo from "@/imgs/images/heraldLogo.svg";
+import EmailLogo from "@/imgs/images/LoginPage/EmailLogo.png";
 
 export default function Page() {
   const router = useRouter();
@@ -41,7 +43,7 @@ export default function Page() {
           <Image
             width="32"
             height="32"
-            src={"/images/LoginPage/HeraldLogo.png"}
+            src={HeraldLogo}
             alt="HeraldLogo"
             className="h-auto w-auto"
           />
@@ -60,7 +62,7 @@ export default function Page() {
             <br />
             <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4 ">
               <Image
-                src={"/images/LoginPage/EmailLogo.png"}
+                src={EmailLogo}
                 width={"20"}
                 height={"20"}
                 alt="emailLogo"

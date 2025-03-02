@@ -25,7 +25,8 @@ import { Context } from "@/app/clientWrappers/ContextProvider";
 import { profile } from "console";
 import { ROLES } from "@/constants/role";
 import { PERMISSIONS, READABLE_PERMISSIONS } from "@/constants/permissions";
-import { useGetEvents } from "@/services/api/eventsApi";
+import PasswordLogo from "@/imgs/images/LoginPage/PasswordLogo.png";
+import GoogleLogo from "@/imgs/images/google.logo.svg";
 import Image from "next/image";
 import {
   MdImportExport,
@@ -219,7 +220,7 @@ export default function ManageDepartment() {
                   <br />
                   <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4">
                     <Image
-                      src={"/images/LoginPage/PasswordLogo.png"}
+                      src={PasswordLogo}
                       width={"20"}
                       height={"20"}
                       alt="passwordLogo"
@@ -237,7 +238,7 @@ export default function ManageDepartment() {
                   <br />
                   <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4">
                     <Image
-                      src={"/images/LoginPage/PasswordLogo.png"}
+                      src={PasswordLogo}
                       width={"20"}
                       height={"20"}
                       alt="passwordLogo"
@@ -257,7 +258,7 @@ export default function ManageDepartment() {
                   <br />
                   <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4">
                     <Image
-                      src={"/images/LoginPage/PasswordLogo.png"}
+                      src={PasswordLogo}
                       width={"20"}
                       height={"20"}
                       alt="passwordLogo"
@@ -441,7 +442,7 @@ export default function ManageDepartment() {
                 <div className="flex w-full flex-row items-center justify-start gap-4 rounded-md bg-neutral-100 px-3 py-1.5">
                   <div className="flex h-11 w-11 items-center justify-center rounded-md bg-neutral-200 text-[20px] text-neutral-400">
                     <Image
-                      src={`/images/google.logo.svg`}
+                      src={GoogleLogo}
                       alt="Google logo"
                       width={24}
                       height={24}
@@ -491,7 +492,7 @@ export default function ManageDepartment() {
                 >
                   <div className=" flex h-11 w-11 items-center justify-center rounded-md bg-neutral-200 text-[20px] text-neutral-400">
                     <Image
-                      src={`/images/google.logo.svg`}
+                      src={GoogleLogo}
                       alt="Google logo"
                       width={20}
                       height={20}

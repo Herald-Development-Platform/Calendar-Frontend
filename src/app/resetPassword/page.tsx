@@ -5,6 +5,8 @@ import { useForm } from "react-hook-form";
 import { baseUrl } from "@/services/baseUrl";
 import { useRouter, useSearchParams } from "next/navigation";
 import toast from "react-hot-toast";
+import HeraldLogo from "@/imgs/images/heraldLogo.svg";
+import PasswordLogo from "@/imgs/images/LoginPage/PasswordLogo.png";
 
 export default function Page() {
   return (
@@ -63,7 +65,7 @@ function ResetPassword() {
           <Image
             width="32"
             height="32"
-            src={"/images/LoginPage/HeraldLogo.png"}
+            src={HeraldLogo}
             alt="HeraldLogo"
             className="h-auto w-auto"
           />
@@ -91,7 +93,7 @@ function ResetPassword() {
             <br />
             <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4">
               <Image
-                src={"/images/LoginPage/PasswordLogo.png"}
+                src={PasswordLogo}
                 width={"20"}
                 height={"20"}
                 alt="passwordLogo"
@@ -112,7 +114,7 @@ function ResetPassword() {
             <br />
             <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4">
               <Image
-                src={"/images/LoginPage/PasswordLogo.png"}
+                src={PasswordLogo}
                 width={"20"}
                 height={"20"}
                 alt="passwordLogo"

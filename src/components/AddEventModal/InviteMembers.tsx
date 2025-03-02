@@ -28,6 +28,7 @@ import { IoIosSearch } from "react-icons/io";
 import { Span } from "next/dist/trace";
 import { GoDash } from "react-icons/go";
 import { RxCross2 } from "react-icons/rx";
+import DummyProfile from "@/imgs/DummyProfile.jpg";
 
 interface User {
   email: string;
@@ -141,7 +142,7 @@ export default function InviteMembers({
                     >
                       <Image
                         key={selMembers._id}
-                        src={"/DummyProfile.jpg"}
+                        src={DummyProfile}
                         alt={"User Image"}
                         width={33}
                         height={33}
@@ -187,7 +188,7 @@ export default function InviteMembers({
                       ) : (
                         <>
                           <Image
-                            src={"/DummyProfile.jpg"}
+                            src={DummyProfile}
                             height={33}
                             width={33}
                             alt={"user image"}
@@ -274,40 +275,3 @@ const useHidePopOver = (
   }, [showPopover]);
 };
 
-// const useDebounce = ({
-//   dependency,
-//   debounceFn,
-//   time,
-// }: {
-//   dependency: any;
-//   debounceFn: () => void;
-//   time: number;
-// }) => {
-//   useEffect(() => {
-//     const timeout = setTimeout(() => {
-//       debounceFn();
-//     }, time);
-
-//     return () => clearTimeout(timeout);
-//   }, [...dependency]);
-// };
-
-// if (userData?.photo) {
-//   return (
-//     <Image
-//       src={userData.photo}
-//       alt={"User Image"}
-//       width={32}
-//       height={32}
-//     />
-//   );
-// } else {
-//   return (
-//     <Image
-//       src={"/DummyProfile.jpg"}
-//       alt={"User Image"}
-//       width={32}
-//       height={32}
-//     />
-//   );
-// }

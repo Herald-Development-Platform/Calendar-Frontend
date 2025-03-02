@@ -25,7 +25,9 @@ import { RxCross2 } from "react-icons/rx";
 import { Bug } from "lucide-react";
 import { PERMISSIONS, PROCUREMENT_PERMISSIONS } from "@/constants/permissions";
 import { FaAddressCard } from "react-icons/fa6";
-
+import SummaryIcon from "@/imgs/SummaryIcon.svg";
+import sidebarIcon from "@/imgs/sidebarButton.svg";
+import HeraldLogo from "@/imgs/images/heraldLogo.svg";
 interface ISidebar {
   name: string;
   icon: JSX.Element;
@@ -62,7 +64,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       name: "Summary",
       icon: (
         <Image
-          src={"/SummaryIcon.svg"}
+          src={SummaryIcon}
           width={20}
           height={20}
           alt={""}
@@ -194,7 +196,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
             <Image
               width={32}
               height={32}
-              src={"/images/heraldLogo.svg"}
+              src={HeraldLogo}
               alt="HeraldLogo"
               className="mb-1"
             />
@@ -210,7 +212,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                   }}
                   width={20}
                   height={17}
-                  src={"/sidebarButton.svg"}
+                  src={sidebarIcon}
                   alt="Sidebar"
                   className=" ml-auto rotate-180 cursor-pointer"
                 />
@@ -229,7 +231,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                 <Image
                   width={20}
                   height={17}
-                  src={"/sidebarButton.svg"}
+                  src={sidebarIcon}
                   alt="Sidebar"
                   onClick={() => {
                     setOpen(!open);

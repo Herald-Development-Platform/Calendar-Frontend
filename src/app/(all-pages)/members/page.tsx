@@ -18,6 +18,7 @@ import {
 import { MdDelete, MdOutlineEdit } from "react-icons/md";
 import { toast, Toaster } from "react-hot-toast";
 import { FaCircleUser, FaPlus } from "react-icons/fa6";
+import SearchOutline from "@/imgs/SearchOutline.svg";
 
 import {
   Dialog,
@@ -754,7 +755,7 @@ export default function Page() {
             <div className="flex justify-end">
             <div className=" flex h-[32px]  w-[280px] flex-row items-center justify-start gap-3 rounded-[4px] border bg-neutral-100 px-3 py-2">
               <Image
-                src="/SearchOutline.svg"
+                src={SearchOutline}
                 alt="Search"
                 width={20}
                 height={20}

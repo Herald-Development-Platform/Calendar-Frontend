@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import HeraldLogo from "@/imgs/images/heraldLogo.svg";
 
 export default function Botom() {
   return (
@@ -10,7 +11,7 @@ export default function Botom() {
           <div className="h-full border border-blue-500">
             <div>
               <Image
-                src="/images/LoginPage/HeraldLogo.png"
+                src={HeraldLogo}
                 alt="logo"
                 width={204}
                 height={122}

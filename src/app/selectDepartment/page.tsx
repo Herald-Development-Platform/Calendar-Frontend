@@ -9,6 +9,9 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import { set } from "date-fns";
 import { LoaderCircle } from "lucide-react";
+import HeraldLogo from "@/imgs/images/heraldLogo.svg";
+import alreadySentRequest from "@/imgs/alreadySentRequest.svg"
+
 interface Department {
   _id: string;
   name: string;
@@ -126,7 +129,7 @@ export default function Page() {
             <Image
               width="32"
               height="32"
-              src={"/images/LoginPage/HeraldLogo.png"}
+              src={HeraldLogo}
               alt="HeraldLogo"
               className="h-auto w-auto"
             />
@@ -137,7 +140,7 @@ export default function Page() {
           </div>
 
           <Image
-            src={`/alreadySentRequest.svg`}
+            src={alreadySentRequest}
             alt={""}
             width={737}
             height={362}
@@ -155,7 +158,7 @@ export default function Page() {
             <Image
               width="32"
               height="32"
-              src={"/images/LoginPage/HeraldLogo.png"}
+              src={HeraldLogo}
               alt="HeraldLogo"
               className="h-auto w-auto"
             />
