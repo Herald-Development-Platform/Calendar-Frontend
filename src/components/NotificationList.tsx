@@ -3,6 +3,7 @@ import { useUpdateProfileMutation } from "@/services/api/profile";
 import { Axios } from "@/services/baseUrl";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
+import HeraldLogo from "@/imgs/images/heraldLogo.svg";
 import { useContext } from "react";
 import {
   Select,
@@ -158,7 +159,7 @@ export const NotificationList = (props: any) => {
                             className=" rounded-full p-0.5"
                             width={32}
                             height={32}
-                            src={"/images/LoginPage/HeraldLogo.png"}
+                            src={HeraldLogo}
                             alt="Herald Logo"
                           />
                         )}
@@ -241,7 +242,7 @@ export const NotificationList = (props: any) => {
                               className=" rounded-full p-0.5"
                               width={32}
                               height={32}
-                              src={"/images/LoginPage/HeraldLogo.png"}
+                              src={HeraldLogo}
                               alt="Herald Logo"
                             />
                           )}
@@ -324,7 +325,7 @@ export const NotificationList = (props: any) => {
                               className=" rounded-full p-0.5"
                               width={32}
                               height={32}
-                              src={"/images/LoginPage/HeraldLogo.png"}
+                              src={HeraldLogo}
                               alt="Herald Logo"
                             />
                           )}

@@ -12,6 +12,9 @@ import { LuEye, LuEyeOff } from "react-icons/lu";
 import { LoaderCircle } from "lucide-react";
 
 import googleImg from "@/imgs/images/LoginPage/GoogleIcon.png";
+import atSymbol from "@/imgs/images/atsymbol.svg";
+import heraldLogo from "@/imgs/images/heraldLogo.svg";
+import lockSymbol from "@/imgs/images/lockSymbol.svg";
 
 export default function Page() {
   const [rememberMe, setRememberMe] = useState<boolean>(false);
@@ -65,7 +68,7 @@ export default function Page() {
           <Image
             width="32"
             height="32"
-            src={"/images/heraldLogo.svg"}
+            src={heraldLogo}
             alt="HeraldLogo"
             className="h-auto w-auto"
           />
@@ -95,7 +98,7 @@ export default function Page() {
             <br />
             <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4 ">
               <Image
-                src={"/images/atsymbol.svg"}
+                src={atSymbol}
                 width={"20"}
                 height={"20"}
                 alt="emailLogo"
@@ -121,7 +124,7 @@ export default function Page() {
             <br />
             <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4">
               <Image
-                src={"/images/lockSymbol.svg"}
+                src={lockSymbol}
                 width={"20"}
                 height={"20"}
                 alt="passwordLogo"

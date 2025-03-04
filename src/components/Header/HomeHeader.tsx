@@ -67,7 +67,7 @@ import ToggleSidebar from "../Sidebar/ToggleSidebar";
 import { set } from "date-fns";
 import EventDialog from "../AddEventModal/EventDialog";
 import { totalDaysInMonth } from "../React-full-calendar/lastDay";
-
+import HeraldLogo from "@/imgs/images/heraldLogo.svg";
 export function HomeHeader() {
   // const [redner, setredner] = useState<number>(1);
   const [calendarApi, setCalendarApi] = useState<CalendarApi>();
@@ -300,7 +300,7 @@ export function HomeHeader() {
 
           <Link href={"/"} className="h-fit w-fit">
             <Image
-              src={"/images/LoginPage/HeraldLogo.png"}
+              src={HeraldLogo}
               width={32}
               height={32}
               alt="Herald Logo"

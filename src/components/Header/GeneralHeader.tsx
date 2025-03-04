@@ -8,6 +8,8 @@ import ToggleSidebar from "../Sidebar/ToggleSidebar";
 import { Menu } from "lucide-react";
 import { useContext } from "react";
 import { Context } from "@/app/clientWrappers/ContextProvider";
+import HeraldLogo from "@/imgs/images/heraldLogo.svg";
+
 export function GeneralHeader() {
   const { notifications, userData } = useContext(Context);
 
@@ -27,7 +29,7 @@ export function GeneralHeader() {
 
         <Link href={"/"} className="h-fit w-fit">
           <Image
-            src={"/images/LoginPage/HeraldLogo.png"}
+            src={HeraldLogo}
             width={32}
             height={32}
             // className="rounded-xs"
