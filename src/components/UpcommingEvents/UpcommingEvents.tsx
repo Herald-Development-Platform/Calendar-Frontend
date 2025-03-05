@@ -1,8 +1,7 @@
 //tsoding daily
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { parseISO, format } from "date-fns";
+import { format } from "date-fns";
 import {
-  getEvents,
   useDeleteEvent,
   useGetEvents,
   useUpdateEvents,
@@ -11,13 +10,13 @@ import EventCard from "./EventCard";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import EventDetails from "@/app/(all-pages)/search/EventDetails";
 import clsx from "clsx";
+import { useSearchParams } from "next/navigation";
 
 export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
   const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
   let lastDate: string;
 
-  const { calenderDate, timeout, currentView, setSelectedEventData } =
-    useContext(Context);
+  const { calenderDate, timeout, currentView } = useContext(Context);
   const selectedStartTime = calenderDate?.start
     ? calenderDate?.start.getTime()
     : 0;
@@ -26,6 +25,13 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
   const upcommingEventRef = useRef<HTMLDivElement>(null);
 
   const { data: eventsData, isLoading: eventsLoading } = useGetEvents();
+
+  const searchParams = useSearchParams();
+  const paramsID = searchParams.get("id");
+
+  const paramsEvent = eventsData?.find((event) => event._id === paramsID);
+
+  const btnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (selectedEvent && eventsData?.length && eventsData?.length > 0) {
@@ -37,6 +43,19 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
       }
     }
   }, [eventsData]);
+
+  useEffect(() => {
+    if (!paramsEvent || !btnRef.current) return;
+    setSelectedEvent(paramsEvent);
+  }, [paramsEvent, btnRef]);
+
+  useEffect(() => {
+    if (!selectedEvent || !paramsEvent || !btnRef.current) return;
+
+    if (selectedEvent?._id === paramsEvent?._id) {
+      btnRef.current?.click();
+    }
+  }, [selectedEvent, paramsEvent]);
 
   const { mutate: deleteEvent } = useDeleteEvent({});
   const { mutate: updateEvent } = useUpdateEvents();
@@ -59,9 +78,12 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
     <div
       ref={upcommingEventRef}
       id="upcomming-events"
-      className={clsx(`${
-        selectedEvent ? "" : ""
-      } hide-scrollbar relative flex h-auto md:w-1/3 flex-col gap-10 overflow-hidden px-6`,currentView !== "multiMonthYear" ? `md:h-[${elHeight}px]` : `h-full`)}
+      className={clsx(
+        `${
+          selectedEvent ? "" : ""
+        } hide-scrollbar relative flex h-auto flex-col gap-10 overflow-hidden px-6 md:w-1/3`,
+        currentView !== "multiMonthYear" ? `md:h-[${elHeight}px]` : `h-full`,
+      )}
       // style={{
       //   height: currentView !== "multiMonthYear" ? `${elHeight}px` : `100%`,
       // }}
@@ -128,6 +150,8 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
       </div>
 
       <EventDetails
+        btnRef={btnRef}
+        paramsEvent={paramsEvent}
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
         updateEvent={updateEvent}

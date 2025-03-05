@@ -6,16 +6,10 @@ import "react-datepicker/dist/react-datepicker.css";
 import UpcommingEvents from "@/components/UpcommingEvents";
 import * as Headers from "@/components/Header";
 import ReactFullCalendar from "@/components/React-full-calendar";
-import { useQuery } from "@tanstack/react-query";
-import DepartmentButton from "@/components/DepartmentButton";
 import DepartmentFilter from "@/components/utils/DepartmentFilter";
 import { Context } from "../clientWrappers/ContextProvider";
 
 export default function page() {
-  const { data: departments } = useQuery<eventType[]>({
-    queryKey: ["Departments"],
-  });
-
   const depFilterRef = useRef<HTMLDivElement>(null);
   const calLayoutRef = useRef<HTMLDivElement>(null);
   const calContainerRef = useRef<HTMLDivElement>(null);
@@ -45,10 +39,13 @@ export default function page() {
         <Headers.HomeHeader />
       </div>
       <div
-        ref={calLayoutRef} 
-        className="relative flex flex-col md:flex-row gap-y-8   md:h-full w-full justify-between  px-4 md:pl-8 overflow-hidden   "
+        ref={calLayoutRef}
+        className="relative flex w-full flex-col justify-between   gap-y-8 overflow-hidden px-4  md:h-full md:flex-row md:pl-8   "
       >
-        <div ref={calContainerRef} className="flex w-full h-full flex-col relative overflow-hidden overflow-y-auto">
+        <div
+          ref={calContainerRef}
+          className="relative flex h-full w-full flex-col overflow-hidden overflow-y-auto"
+        >
           <DepartmentFilter ref={depFilterRef} />
           <div className="hide-scrollbar w-full overflow-x-scroll ">
             <ReactFullCalendar />

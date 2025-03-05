@@ -30,6 +30,7 @@ import {
   SetStateAction,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import EditEventModal from "@/components/AddEventModal/EditEventModal";
@@ -50,11 +51,15 @@ import { FaCircleUser } from "react-icons/fa6";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 export default function EventDetails({
   selectedEvent,
+  paramsEvent,
+  btnRef,
   setSelectedEvent,
   updateEvent,
   width,
   handleDelete,
 }: {
+  btnRef: any;
+  paramsEvent: eventType | undefined;
   selectedEvent: eventType | null;
   setSelectedEvent: Dispatch<SetStateAction<eventType | null>>;
   updateEvent: any;
@@ -204,6 +209,7 @@ export default function EventDetails({
           <span className="text-base font-semibold">Event Details</span>
           <span className="ml-auto flex items-center gap-[6px] text-black">
             <button
+              ref={btnRef}
               className="text-base"
               onClick={() => setExpandDetails(true)}
             >

@@ -22,7 +22,7 @@ const nextConfig = {
       },
       {
         source: "/socket.io/:path*",
-        destination: `${WEBSOCKET_URL}/socket.io/:path*`,
+        destination: `${WEBSOCKET_URL || ""}/socket.io/:path*`,
       },
     ];
   },
