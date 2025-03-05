@@ -51,15 +51,13 @@ import { FaCircleUser } from "react-icons/fa6";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 export default function EventDetails({
   selectedEvent,
-  paramsEvent,
-  btnRef,
   setSelectedEvent,
   updateEvent,
   width,
+  btnRef,
   handleDelete,
 }: {
-  btnRef: any;
-  paramsEvent: eventType | undefined;
+  btnRef?: any;
   selectedEvent: eventType | null;
   setSelectedEvent: Dispatch<SetStateAction<eventType | null>>;
   updateEvent: any;

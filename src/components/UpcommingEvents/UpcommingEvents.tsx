@@ -151,7 +151,6 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
 
       <EventDetails
         btnRef={btnRef}
-        paramsEvent={paramsEvent}
         selectedEvent={selectedEvent}
         setSelectedEvent={setSelectedEvent}
         updateEvent={updateEvent}

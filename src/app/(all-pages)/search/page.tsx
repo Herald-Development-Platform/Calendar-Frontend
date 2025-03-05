@@ -198,7 +198,7 @@ export default function Page() {
   }, [eventsData]);
 
   return (
-    <div className="flex h-full flex-col gap-9 overflow-hidden pl-4 md:pl-8 pt-10 ">
+    <div className="flex h-full flex-col gap-9 overflow-hidden pl-4 pt-10 md:pl-8 ">
       <Headers.SearchHeader
         queryParams={queryParams}
         handleQueryParams={handleQueryParams}
@@ -207,7 +207,7 @@ export default function Page() {
       <div className="relative flex h-full w-full flex-grow flex-col">
         <div
           ref={filteredEventsRef}
-          className="flex h-full md:w-1/2 flex-col gap-2 pb-20"
+          className="flex h-full flex-col gap-2 pb-20 md:w-1/2"
         >
           <p className="text-base text-neutral-500">Recent Searches</p>
           <div className="green-scrollbar flex flex-grow flex-col overflow-hidden overflow-y-auto">
