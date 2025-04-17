@@ -69,7 +69,6 @@ const READABLE_PERMISSIONS = {
 
   VERIFY_REJECT_LEVEL_1: "Verify/Reject Requisition Level 1",
   VERIFY_REJECT_LEVEL_2: "Verify/Reject Requisition Level 2",
-  VERIFY_REJECT_LEVEL_3: "Verify/Reject Requisition Level 3",
 
   // Certificate Permissions
   GENERATE_CERTIFICATE: "Generate Certificate",
@@ -104,7 +103,6 @@ const PERMISSION_GROUPS = {
     PERMISSIONS.VIEW_DEPARTMENT_REQUISITION,
     PERMISSIONS.VERIFY_REJECT_LEVEL_1,
     PERMISSIONS.VERIFY_REJECT_LEVEL_2,
-    PERMISSIONS.VERIFY_REJECT_LEVEL_3,
   ],
 
   "Certificate Permissions": [PERMISSIONS.GENERATE_CERTIFICATE],
