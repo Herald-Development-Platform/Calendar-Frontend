@@ -56,7 +56,9 @@ export default function ProfileDropdown({
         <DropdownMenuItem
           className="flex cursor-pointer gap-2 text-base font-semibold"
           onClick={() => {
-            Cookies.remove("token");
+            Object.keys(Cookies.get()).forEach(function (cookieName) {
+              Cookies.remove(cookieName, { path: "/" });
+            });
             router.push("/login");
           }}
         >
