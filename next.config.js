@@ -1,7 +1,11 @@
 /** @type {import('next').NextConfig} */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URI;
-const WEBSOCKET_URL = process.env.NEXT_PUBLIC_WEBSOCKET_URI;
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URI ||
+  "https://events.heraldcollege.edu.np/api_/api";
+const WEBSOCKET_URL =
+  process.env.NEXT_PUBLIC_WEBSOCKET_URI ||
+  "https://events.heraldcollege.edu.np/";
 
 const nextConfig = {
   basePath: process.env.NEXT_PUBLIC_DOMAIN_PREFIX || "",
