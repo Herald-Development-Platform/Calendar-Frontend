@@ -13,6 +13,8 @@ const ProcurementPage = ({ params }: { params: { id?: string[] } }) => {
     path = path.trim().slice(1);
   }
 
+  console.log(path, decodeURIComponent(path));
+
   return (
     <main className="h-screen overflow-hidden">
       <Headers.GeneralHeader />
