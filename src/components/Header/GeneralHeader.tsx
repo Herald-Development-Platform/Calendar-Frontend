@@ -10,7 +10,7 @@ import { useContext } from "react";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import HeraldLogo from "@/imgs/images/heraldLogo.svg";
 
-export function GeneralHeader() {
+export function GeneralHeader({ className }: { className?: string }) {
   const { notifications, userData } = useContext(Context);
 
   let newNotifications = false;
@@ -21,7 +21,9 @@ export function GeneralHeader() {
   }
 
   return (
-    <div className="md:ml-8 mx-4 md:mr-16 mt-8 flex h-12 w-auto items-center justify-end">
+    <div
+      className={`mx-4 mt-8 flex h-12 w-auto items-center justify-end md:ml-8 md:mr-16 ${className}`}
+    >
       <div className="mr-auto flex items-center justify-between gap-2 xl:hidden">
         <ToggleSidebar>
           <Menu />
