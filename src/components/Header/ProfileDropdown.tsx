@@ -56,7 +56,7 @@ export default function ProfileDropdown({
         <DropdownMenuItem
           className="flex cursor-pointer gap-2 text-base font-semibold"
           onClick={() => {
-            const pathsToTry = ["/", "/calenderTesting"];
+            const pathsToTry = ["/", "/calendarTesting"];
 
             Object.keys(Cookies.get()).forEach(function (cookieName) {
               pathsToTry.forEach(function (path) {
