@@ -78,7 +78,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
     ) && {
       name: "Requisition",
       icon: <HiOutlineDocumentReport />,
-      navigation: "/procurement_",
+      navigation: "/procurement",
     },
     profile?.permissions?.includes(PERMISSIONS.GENERATE_CERTIFICATE) && {
       name: "Certificate",
