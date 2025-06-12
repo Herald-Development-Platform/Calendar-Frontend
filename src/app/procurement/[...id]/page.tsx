@@ -42,8 +42,8 @@ const ProcurementPage = () => {
   };
 
   return (
-    <main className="h-screen overflow-hidden">
-      <Headers.GeneralHeader className="absolute -left-20 top-0 w-full" />
+    <main className="h-screen overflow-hidden ">
+      <Headers.GeneralHeader className="absolute -right-8 top-0 w-1/2 " />
       <iframe
         ref={iframeRef}
         src={fullIframeUrl}
