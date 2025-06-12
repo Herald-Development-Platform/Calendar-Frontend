@@ -23,7 +23,6 @@ export default function ProfileDropdown({
   userData: User | undefined;
 }) {
   const router = useRouter();
-  console.log(userData, "userData");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-2">
