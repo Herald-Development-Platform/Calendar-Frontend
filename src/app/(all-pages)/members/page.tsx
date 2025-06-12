@@ -59,6 +59,7 @@ import { LoaderCircle } from "lucide-react";
 import { useGetProfile } from "@/services/api/profile";
 import NewMembersAction from "@/components/Members/NewMembersAction";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 export default function Page() {
   const router = useRouter();
@@ -123,6 +124,7 @@ export default function Page() {
     role: string;
     department: string;
     permissions: string[];
+    reportsTo: string;
   }>({
     defaultValues: {
       email: "",
@@ -130,6 +132,7 @@ export default function Page() {
       role: "",
       department: "",
       permissions: [],
+      reportsTo: "",
     },
   });
 
@@ -157,6 +160,10 @@ export default function Page() {
     },
   });
 
+  const handleToggle = (id: string) => {
+    setUserValue("reportsTo", id);
+  };
+
   const onUserEditSubmit = async (data: any) => {
     const previousData = allUsers?.data?.data?.find(
       (user: any) => user.email === data.email,
@@ -164,7 +171,8 @@ export default function Page() {
     if (
       data.role === previousData.role &&
       data.department === previousData.department._id &&
-      data.permissions.join(",") === previousData.permissions.join(",")
+      data.permissions.join(",") === previousData.permissions.join(",") &&
+      data.reportsTo === previousData.reportsTo
     ) {
       return;
     }
@@ -173,6 +181,7 @@ export default function Page() {
       role: data.role,
       department: data.department,
       permissions: data.permissions,
+      reportsTo: data.reportsTo,
     });
     if (response.status >= 400 && response.status < 500) {
       toast.error(
@@ -297,7 +306,7 @@ export default function Page() {
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="mt-[40px] flex max-h-[100vh] flex-col gap-9 overflow-y-scroll md:px-[70px] px-4 md:pl-3">
+      <div className="mt-[40px] flex max-h-[100vh] flex-col gap-9 overflow-y-scroll px-4 md:px-[70px] md:pl-3">
         <Toaster />
 
         <Dialog
@@ -552,6 +561,74 @@ export default function Page() {
                   </Popover>
                 </div>
               </div>
+
+              <div>
+                <span className="font-500 text-[14px]">
+                  Reports To <br />
+                </span>
+
+                <Popover>
+                  <PopoverTrigger className="mt-2 w-full rounded-md border-[1px] border-neutral-300 px-3 py-3">
+                    {watchUserValues("reportsTo") ? (
+                      <div className="flex items-center gap-2">
+                        {allUsers?.data?.data
+                          ?.filter((user: any) =>
+                            watchUserValues("reportsTo")?.includes(user._id),
+                          )
+                          .map((user: any) => (
+                            <span
+                              key={user._id}
+                              className="font-medium text-neutral-900 flex items-center gap-2"
+                            >
+                              <img
+                                src={
+                                  user.photo ||
+                                  `https://avatar.oxro.io/avatar.svg?name=${user.username}`
+                                }
+                                alt=""
+                                className="h-6 w-6 rounded-full"
+                              />
+                              {user.username}
+                            </span>
+                          ))}
+                      </div>
+                    ) : (
+                      <span className="text-sm text-neutral-500">
+                        Select User
+                      </span>
+                    )}
+                  </PopoverTrigger>
+                  <PopoverContent className="">
+                    {allUsers?.data?.data?.map((user: any) => {
+                      const isSelected = watchUserValues("reportsTo")?.includes(
+                        user._id,
+                      );
+                      return (
+                        <button
+                          type="button"
+                          key={user._id}
+                          onClick={() => handleToggle(user._id)}
+                          className={cn(
+                            "flex items-center gap-3 px-4 w-full py-2.5 hover:bg-[#f0f1f2]",
+                            isSelected &&
+                              "border-l-4 border-[#75bf43] bg-green-50 px-3",
+                          )}
+                        >
+                          <img
+                            src={
+                              user.photo ||
+                              `https://avatar.oxro.io/avatar.svg?name=${user.username}`
+                            }
+                            alt=""
+                            className="h-6 w-6 rounded-full"
+                          />
+                          <span className="text-sm text-left">{user.username}</span>
+                        </button>
+                      );
+                    })}
+                  </PopoverContent>
+                </Popover>
+              </div>
               <div className="flex flex-col gap-2 ">
                 <span className="font-500 text-[14px]">
                   Remove Member <br />
@@ -734,43 +811,44 @@ export default function Page() {
         </Dialog>
 
         <div className=" flex flex-col gap-[27px]">
-          <div className="flex flex-col md:flex-row gap-y-5 gap-3">
-            <div className="flex justify-start gap-3 flex-grow">
-            <h1 className=" mr-auto text-[28px] font-[700] text-black">Team</h1>
-            {profile?.permissions?.includes(PERMISSIONS.CREATE_USER) && (
-              <button
-                onClick={() => {
-                  setAddUserDialogOpen(true);
-                }}
-                className="flex items-center justify-center gap-1 rounded-md bg-primary-600 px-3 py-2 text-[13px] text-neutral-50 hover:bg-primary-700"
-              >
-                <span className="text-[18px]">
-                  <IoIosAdd />
-                </span>
-                <span>Add Members</span>
-              </button>
-            )}
+          <div className="flex flex-col gap-3 gap-y-5 md:flex-row">
+            <div className="flex flex-grow justify-start gap-3">
+              <h1 className=" mr-auto text-[28px] font-[700] text-black">
+                Team
+              </h1>
+              {profile?.permissions?.includes(PERMISSIONS.CREATE_USER) && (
+                <button
+                  onClick={() => {
+                    setAddUserDialogOpen(true);
+                  }}
+                  className="flex items-center justify-center gap-1 rounded-md bg-primary-600 px-3 py-2 text-[13px] text-neutral-50 hover:bg-primary-700"
+                >
+                  <span className="text-[18px]">
+                    <IoIosAdd />
+                  </span>
+                  <span>Add Members</span>
+                </button>
+              )}
             </div>
-            
+
             <div className="flex justify-end">
-            <div className=" flex h-[32px]  w-[280px] flex-row items-center justify-start gap-3 rounded-[4px] border bg-neutral-100 px-3 py-2">
-              <Image
-                src={SearchOutline}
-                alt="Search"
-                width={20}
-                height={20}
-              />
-              <input
-                onChange={(e) => {
-                  filterList(e.target.value);
-                }}
-                type="text"
-                placeholder="Search"
-                className="rounded-md border-2 border-none border-gray-300 bg-neutral-100 p-1 outline-none"
-              />
+              <div className=" flex h-[32px]  w-[280px] flex-row items-center justify-start gap-3 rounded-[4px] border bg-neutral-100 px-3 py-2">
+                <Image
+                  src={SearchOutline}
+                  alt="Search"
+                  width={20}
+                  height={20}
+                />
+                <input
+                  onChange={(e) => {
+                    filterList(e.target.value);
+                  }}
+                  type="text"
+                  placeholder="Search"
+                  className="rounded-md border-2 border-none border-gray-300 bg-neutral-100 p-1 outline-none"
+                />
+              </div>
             </div>
-            </div>
-            
           </div>
           <>
             {profile &&
@@ -818,8 +896,8 @@ export default function Page() {
                 );
               })}
           </>
-          <div className="flex flex-col gap-y-4 sm:flex-row justify-between">
-            <div className="hide-scrollbar flex sm:max-w-[65vw] flex-row items-center justify-start gap-1.5 overflow-x-scroll">
+          <div className="flex flex-col justify-between gap-y-4 sm:flex-row">
+            <div className="hide-scrollbar flex flex-row items-center justify-start gap-1.5 overflow-x-scroll sm:max-w-[65vw]">
               {profile && profile.role === ROLES.SUPER_ADMIN && (
                 <DepartmentBtn
                   selectedCross={false}
@@ -1013,6 +1091,7 @@ export default function Page() {
                                       role: user?.role,
                                       department: user?.department?._id,
                                       permissions: user?.permissions,
+                                      reportsTo: user?.reportsTo || [],
                                     });
                                     setEditUserDialogOpen(true);
                                   }}
