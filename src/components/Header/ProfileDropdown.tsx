@@ -68,6 +68,9 @@ export default function ProfileDropdown({
                 Cookies.remove(cookieName, { path: path });
               });
             });
+            sessionStorage.clear();
+            localStorage.clear();
+
             router.push("/login");
           }}
         >
