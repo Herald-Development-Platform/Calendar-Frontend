@@ -1,5 +1,5 @@
 import { Axios } from "@/services/baseUrl";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useCreateColumn = () => {
   return useMutation({
@@ -7,5 +7,17 @@ export const useCreateColumn = () => {
       const response = await Axios.post("/task-management/columns", { title });
       return response.data;
     },
+  });
+};
+
+export const useGetColumns = () => {
+  return useQuery({
+    queryKey: ["columns"],
+    queryFn: async () => {
+      const response = await Axios.get("/task-management/columns");
+      return response.data;
+    },
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 };
