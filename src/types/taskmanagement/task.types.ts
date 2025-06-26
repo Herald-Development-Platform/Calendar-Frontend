@@ -1,5 +1,5 @@
 export interface User {
-  id: string
+  _id: string
   name: string
   email: string
   avatar?: string
@@ -7,7 +7,7 @@ export interface User {
 }
 
 export interface ITask {
-  id: string
+  _id: string
   title: string
   description?: string
   priority?: "low" | "medium" | "high"
@@ -22,13 +22,13 @@ export interface ITask {
 }
 
 export interface ChecklistItem {
-  id: string
+  _id: string
   text: string
   completed: boolean
 }
 
 export interface Comment {
-  id: string
+  _id: string
   text: string
   author: User
   createdAt: string

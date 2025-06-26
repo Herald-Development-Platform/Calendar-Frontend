@@ -20,7 +20,10 @@ import { AddCardInput } from "./add-card-input";
 import { ITaskColumnBase } from "@/types/taskmanagement/column.types";
 import { TaskCard } from "./task-card";
 import { ITask } from "@/types/taskmanagement/task.types";
-import { useCreateTask } from "@/services/api/taskManagement/taskApi";
+import {
+  useCreateTask,
+  useGetTaskByColumn,
+} from "@/services/api/taskManagement/taskApi";
 import toast from "react-hot-toast";
 import { EditColumnDialog } from "./edit-column-dialog";
 import {
@@ -62,9 +65,14 @@ export function BoardColumn({
     useState(false);
 
   // API CALLS
+  const { data: tasksData, isLoading: isTasksLoading } = useGetTaskByColumn(
+    column._id,
+  );
   const { mutate: createTask, isPending: isCreatingTask } = useCreateTask();
   const { mutate: updateColumn, isPending: isUpdatingColumn } =
     useUpdateColumn();
+
+  console.log(column.title, tasksData);
 
   const handleAddTask = (title: string) => {
     if (isCreatingTask) return;
@@ -73,6 +81,9 @@ export function BoardColumn({
       {
         onSuccess: () => {
           setShowAddCard(false);
+          queryClient.invalidateQueries({
+            queryKey: ["tasks", column._id],
+          });
         },
         onError: (error) => {
           toast.error(
@@ -116,7 +127,7 @@ export function BoardColumn({
             </CardTitle>
             <div className="flex items-center gap-1">
               <span className="rounded bg-muted px-2 py-1 text-xs text-muted-foreground">
-                {tasks.length}
+                {tasksData?.data?.length}
               </span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -142,24 +153,26 @@ export function BoardColumn({
           </div>
         </CardHeader>
         <CardContent className="px-4  pt-0">
-          <div ref={setNodeRef} className="min-h-[1px] space-y-2">
-            <SortableContext
-              items={tasks.map((task: ITask) => task.id)}
-              strategy={verticalListSortingStrategy}
-            >
-              {tasks
-                .filter((task: ITask) => !task.archived)
-                .map((task: ITask) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    // onEdit={onEditTask}
-                    // onArchive={onArchiveTask}
-                    // onToggleComplete={onToggleComplete}
-                  />
-                ))}
-            </SortableContext>
-          </div>
+          {!isTasksLoading && (
+            <div ref={setNodeRef} className="min-h-[1px] space-y-2">
+              <SortableContext
+                items={tasksData?.data?.map((task: ITask) => task?._id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {tasksData?.data
+                  ?.filter((task: ITask) => !task.archived)
+                  .map((task: ITask) => (
+                    <TaskCard
+                      key={task?._id}
+                      task={task}
+                      // onEdit={onEditTask}
+                      // onArchive={onArchiveTask}
+                      // onToggleComplete={onToggleComplete}
+                    />
+                  ))}
+              </SortableContext>
+            </div>
+          )}
           {showAddCard ? (
             <AddCardInput
               onAdd={handleAddTask}

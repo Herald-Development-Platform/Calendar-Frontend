@@ -53,7 +53,7 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task}: TaskCardProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task.id })
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: task._id })
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -108,7 +108,7 @@ export function TaskCard({ task}: TaskCardProps) {
       style={style}
       {...attributes}
       {...listeners}
-      className={`cursor-grab active:cursor-grabbing py-0 hover:shadow-sm transition-shadow group ${isDragging ? "opacity-50" : ""} ${
+      className={`cursor-grab active:cursor-grabbing rounded py-0 hover:shadow-sm transition-shadow group ${isDragging ? "opacity-50" : ""} ${
         task.completed ? "opacity-60 bg-gray-50" : ""
       }`}
       // onClick={() => onEdit(task)}
