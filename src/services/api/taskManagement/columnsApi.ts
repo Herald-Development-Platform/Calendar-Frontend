@@ -21,3 +21,21 @@ export const useGetColumns = () => {
     refetchOnReconnect: false,
   });
 };
+
+export const useUpdateColumn = () => {
+  return useMutation({
+    mutationFn: async ({ columnId, title }: { columnId: string; title: string }) => {
+      const response = await Axios.put(`/task-management/columns/${columnId}`, { title });
+      return response.data;
+    },
+  });
+}
+
+export const useDeleteColumn = () => {
+  return useMutation({
+    mutationFn: async (columnId: string) => {
+      const response = await Axios.delete(`/task-management/columns/${columnId}`);
+      return response.data;
+    },
+  });
+};

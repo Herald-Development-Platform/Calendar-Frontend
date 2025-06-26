@@ -37,7 +37,7 @@ const TaskPage = () => {
   return (
     <>
       <Headers.GeneralHeader />
-      <main className="p-4">
+      <main className="p-4 xl:max-w-[calc(100vw-260px)]">
         <h1 className="text-2xl font-semibold">Task Boardss</h1>
 
         <div className="flex items-center  justify-end gap-2">
@@ -61,7 +61,7 @@ const TaskPage = () => {
           onDragOver={() => {}}
           onDragEnd={() => {}}
         >
-          <div className="flex gap-6 overflow-x-auto pb-6">
+          <div className="flex gap-6 overflow-x-auto pb-6 mt-10">
             {columnsData?.data?.map((column: ITaskColumnBase) => (
               <BoardColumn key={column._id} column={column} />
             ))}

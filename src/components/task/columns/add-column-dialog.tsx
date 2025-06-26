@@ -14,9 +14,13 @@ import { DialogTrigger } from "@radix-ui/react-dialog";
 import { Plus } from "lucide-react";
 import { useCreateColumn } from "@/services/api/taskManagement/columnsApi";
 import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 export function AddColumnDialog() {
+  const queryClient = useQueryClient();
+
   const [title, setTitle] = useState("");
+  const [showAddColumnDialog, setShowAddColumnDialog] = useState(false);
 
   // API CALLS
   const { mutate: createColumn } = useCreateColumn();
@@ -29,6 +33,8 @@ export function AddColumnDialog() {
       onSuccess: () => {
         toast.success("Column added successfully!");
         setTitle("");
+        queryClient.invalidateQueries({ queryKey: ["columns"] });
+        setShowAddColumnDialog(false);
       },
       onError: (error) => {
         toast.error(
@@ -39,7 +45,7 @@ export function AddColumnDialog() {
   };
 
   return (
-    <Dialog>
+    <Dialog  open={showAddColumnDialog} onOpenChange={setShowAddColumnDialog}>
       <DialogTrigger asChild>
         <Button size="sm">
           <Plus className="mr-2 h-4 w-4" />
