@@ -62,7 +62,7 @@ const ArchieveSheet = ({
           ) : (
             archivedTasks.map((task) => (
               <Card
-                key={task.id}
+                key={task._id}
                 className="group cursor-pointer hover:shadow-sm"
                 onClick={() => onEdit(task)}
               >
@@ -80,7 +80,7 @@ const ArchieveSheet = ({
                         className="h-6 w-6 p-0"
                         onClick={(e) => {
                           e.stopPropagation();
-                          onRestore(task.id);
+                          onRestore(task._id);
                         }}
                         title="Restore task"
                       >
@@ -92,7 +92,7 @@ const ArchieveSheet = ({
                         className="h-6 w-6 p-0 text-red-600 hover:text-red-700"
                         onClick={(e) => {
                           e.stopPropagation();
-                          onDelete(task.id);
+                          onDelete(task._id);
                         }}
                         title="Delete permanently"
                       >

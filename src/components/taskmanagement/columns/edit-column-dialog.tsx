@@ -77,7 +77,7 @@ export function EditColumnDialog({
               autoFocus
             />
             <p className="text-xs text-gray-500">
-              Choose a descriptive name that reflects the column's purpose
+              Choose a descriptive name that reflects the column&apos;s purpose
             </p>
           </div>
         </div>

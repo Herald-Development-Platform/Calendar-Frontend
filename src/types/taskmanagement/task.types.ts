@@ -19,6 +19,10 @@ export interface ITask {
   createdBy?: User
   comments?: Comment[]
   createdAt?: string
+  column: {
+    _id: string;
+    title: string;  
+  };
 }
 
 export interface ChecklistItem {

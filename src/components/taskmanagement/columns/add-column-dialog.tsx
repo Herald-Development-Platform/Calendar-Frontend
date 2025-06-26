@@ -88,7 +88,7 @@ export function AddColumnDialog() {
               autoFocus
             />
             <p className="text-xs text-gray-500">
-              Choose a descriptive name that reflects the column's purpose
+              Choose a descriptive name that reflects the column&apsos;s purpose
             </p>
           </div>
         </div>

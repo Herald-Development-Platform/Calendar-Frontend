@@ -2,10 +2,10 @@
 
 import React from "react";
 import * as Headers from "@/components/Header";
-import ArchieveSheet from "@/components/task/ArchieveSheet";
+import ArchieveSheet from "@/components/taskmanagement/ArchieveSheet";
 import { Button } from "@/components/ui/button";
 import { Archive } from "lucide-react";
-import { AddColumnDialog } from "@/components/task/columns/add-column-dialog";
+import { AddColumnDialog } from "@/components/taskmanagement/columns/add-column-dialog";
 
 import {
   DndContext,
@@ -20,7 +20,7 @@ import {
 import { arrayMove } from "@dnd-kit/sortable";
 import { useGetColumns } from "@/services/api/taskManagement/columnsApi";
 import { ITaskColumnBase } from "@/types/taskmanagement/column.types";
-import { BoardColumn } from "@/components/task/columns/board-column";
+import { BoardColumn } from "@/components/taskmanagement/columns/board-column";
 
 const TaskPage = () => {
   // API CALLS
