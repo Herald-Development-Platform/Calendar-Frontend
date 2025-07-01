@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -24,12 +24,13 @@ import {
 import {
   ChecklistItem,
   ITask,
-  User,
   Comment,
 } from "@/types/taskmanagement/task.types";
 import { ITaskColumnBase } from "@/types/taskmanagement/column.types";
 import { UserAvatar } from "../user-avatar";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Context } from "@/app/clientWrappers/ContextProvider";
+import { Axios } from "@/services/baseUrl";
 
 interface TaskDialogProps {
   openTaskDialog: boolean;
@@ -48,6 +49,10 @@ export function TaskDialog({
   // availableUsers
 }: TaskDialogProps) {
   const queryClient = useQueryClient();
+
+  const {  userData } = useContext(Context);
+
+  console.log("userData", userData);
 
   const {
     register,
@@ -69,6 +74,11 @@ export function TaskDialog({
 
   const columnData: { data: ITaskColumnBase[] } | undefined =
     queryClient.getQueryData(["columns"]);
+
+    const { data: allUsers, isLoading: allUsersLoading } = useQuery({
+        queryKey: ["AllUsers"],
+        queryFn: () => Axios.get("/profile/all"),
+      });
 
   const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
@@ -130,11 +140,7 @@ export function TaskDialog({
       const comment: Comment = {
         _id: Date.now().toString(),
         text: newComment.trim(),
-        author: {
-          _id: "currentUserId", // Replace with actual current user ID
-          name: "Current User", // Replace with actual current user name
-          email: "",
-        },
+        author: userData as User,
         createdAt: new Date().toISOString(),
       };
       setComments([...comments, comment]);
@@ -146,15 +152,17 @@ export function TaskDialog({
     if (userId === "unassigned") {
       setValue("assignee", undefined);
     } else {
-      // const selectedUser = availableUsers.find((user) => user._id === userId)
-      // if (selectedUser) {
-      //   setValue("assignee", selectedUser)
-      // }
+      const selectedUser = allUsers?.data?.data?.find((user:User) => user._id === userId)
+      if (selectedUser) {
+        setValue("assignee", selectedUser)
+      }
     }
   };
 
   const onSubmit = (data: Partial<ITask>) => {
     if (!data.title?.trim()) return;
+
+    console.log("Task data to save:", data);
     const taskData: ITask = {
       _id: task?._id || Date.now().toString(),
       title: data.title,
@@ -164,11 +172,7 @@ export function TaskDialog({
       assignee: data.assignee,
       checklist,
       comments,
-      createdBy: task?.createdBy || {
-        _id: "currentUserId", // Replace with actual current user ID
-        name: "Current User", // Replace with actual current user name
-        email: "",
-      },
+      createdBy: task?.createdBy || userData as User,
       column: {
         _id: selectedColumn,
         title: columnData?.data.find((col) => col._id === selectedColumn)?.
@@ -341,7 +345,7 @@ export function TaskDialog({
                     <div className="flex-1">
                       <div className="mb-1 flex items-center gap-2">
                         <span className="text-sm font-medium">
-                          {comment.author.name}
+                          {comment.author.username}
                         </span>
                         <span className="text-xs text-muted-foreground">
                           {formatDate(comment.createdAt)}
@@ -355,7 +359,7 @@ export function TaskDialog({
                 ))}
               </div>
               <div className="flex gap-3">
-                {/* <UserAvatar user={currentUser} size="sm" /> */}
+                <UserAvatar user={userData as User} size="sm" />
                 <div className="flex flex-1 gap-2">
                   <Input
                     value={newComment}
@@ -417,9 +421,9 @@ export function TaskDialog({
                       <SelectValue>
                         {watch("assignee") ? (
                           <div className="flex items-center gap-2">
-                            {/* <UserAvatar user={watch("assignee")!} size="sm" /> */}
+                            <UserAvatar user={watch("assignee")!} size="sm" />
                             <span className="text-sm">
-                              {watch("assignee")!.name}
+                              {watch("assignee")!.username}
                             </span>
                           </div>
                         ) : (
@@ -439,14 +443,14 @@ export function TaskDialog({
                           <span>Unassigned</span>
                         </div>
                       </SelectItem>
-                      {/* {availableUsers.map((user) => (
+                      {allUsers?.data?.data.map((user:User) => (
                         <SelectItem key={user._id} value={user._id}>
                           <div className="flex items-center gap-2">
                             <UserAvatar user={user} size="sm" />
-                            <span>{user.name}</span>
+                            <span>{user.username}</span>
                           </div>
                         </SelectItem>
-                      ))} */}
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -462,8 +466,8 @@ export function TaskDialog({
               <div className="space-y-2 text-sm">
                 {task?.createdBy && (
                   <div className="flex items-center gap-2">
-                    {/* <UserAvatar user={task.createdBy} size="sm" /> */}
-                    <span>{task.createdBy.name}</span>
+                    <UserAvatar user={task.createdBy} size="sm" />
+                    <span>{task.createdBy.username}</span>
                   </div>
                 )}
                 {task?.createdAt && (

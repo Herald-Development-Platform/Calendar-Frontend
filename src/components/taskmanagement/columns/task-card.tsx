@@ -11,6 +11,7 @@ import { ITask } from "@/types/taskmanagement/task.types";
 import { TaskDialog } from "../task/task-dialog";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useUpdateTask } from "@/services/api/taskManagement/taskApi";
 
 export interface User {
   id: string;
@@ -63,12 +64,14 @@ export function TaskCard({ task }: TaskCardProps) {
     transform,
     transition,
     isDragging,
-  } = useSortable({ id: task._id });
+  } = useSortable({ id: task?._id });
 
   const queryClient = useQueryClient();
 
+  // API CALLS
+  const { mutate: updateTask, isPending } = useUpdateTask();
+
   const [openTaskDialog, setOpenTaskDialog] = useState(false);
-   
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -93,7 +96,7 @@ export function TaskCard({ task }: TaskCardProps) {
     });
 
     let colorClass = "text-muted-foreground";
-    if (task.completed) {
+    if (task?.isCompleted) {
       colorClass = "text-green-600";
     } else if (diffDays < 0) {
       colorClass = "text-red-600";
@@ -104,10 +107,10 @@ export function TaskCard({ task }: TaskCardProps) {
     return { formatted, colorClass };
   };
 
-  const checklistProgress = task.checklist
+  const checklistProgress = task?.checklist
     ? {
-        completed: task.checklist.filter((item) => item.completed).length,
-        total: task.checklist.length,
+        completed: task?.checklist.filter((item) => item.completed).length,
+        total: task?.checklist.length,
       }
     : null;
 
@@ -117,6 +120,66 @@ export function TaskCard({ task }: TaskCardProps) {
     return doc.body.textContent || "";
   };
 
+  const onToggleComplete = (taskId: string) => {
+    const updatedTask = { ...task, isCompleted: !task?.isCompleted };
+
+    updateTask(updatedTask, {
+      onSuccess: () => {
+        const columnTasks: { data: ITask[] } | undefined =
+          queryClient.getQueryData(["tasks", task?.column?._id]);
+
+        const updatedTasks = columnTasks?.data?.map((t: ITask) => {
+          if (t._id === taskId) {
+            return updatedTask;
+          }
+          return t;
+        });
+
+        queryClient.setQueryData(["tasks", task?.column?._id], {
+          data: updatedTasks,
+        });
+      },
+      onError: (error) => {
+        console.error("Error updating task:", error);
+      },
+    });
+  };
+
+  const onToggleArchive = (taskId: string) => {
+    const updatedTask = { ...task, isArchived: !task?.isArchived };
+
+    updateTask(updatedTask, {
+      onSuccess: () => {
+        const columnTasks: { data: ITask[] } | undefined =
+          queryClient.getQueryData(["tasks", task?.column?._id]);
+
+        const updatedTasks = columnTasks?.data?.map((t: ITask) => {
+          if (t._id !== taskId) {
+            return t;
+          }
+        });
+
+        queryClient.setQueryData(["tasks", task?.column?._id], {
+          data: updatedTasks,
+        });
+
+        // Update archived tasks
+        const archivedTasks: { data: ITask[] } | undefined =
+          queryClient.getQueryData(["archived-tasks"]);
+
+        if (updatedTask.isArchived) {
+          // Add to archived tasks
+          queryClient.setQueryData(["archived-tasks"], {
+            data: [...(archivedTasks?.data || []), updatedTask],
+          });
+        }
+      },
+      onError: (error) => {
+        console.error("Error updating task:", error);
+      },
+    });
+  };
+
   return (
     <>
       <Card
@@ -124,31 +187,31 @@ export function TaskCard({ task }: TaskCardProps) {
         style={style}
         {...attributes}
         {...listeners}
-        className={`group cursor-grab rounded py-0 transition-shadow hover:shadow-sm hover:border-black active:cursor-grabbing ${isDragging ? "opacity-50" : ""} ${
-          task.completed ? "bg-gray-50 opacity-60" : ""
+        className={`group cursor-grab rounded py-0 transition-shadow hover:border-black hover:shadow-sm active:cursor-grabbing ${isDragging ? "opacity-50" : ""} ${
+          task?.isCompleted ? "bg-gray-50 opacity-60" : ""
         }`}
         onClick={() => setOpenTaskDialog(true)}
       >
         <CardContent className="relative p-3">
           <h3
-            className={`mb-2 text-sm font-medium ${task.completed ? "text-gray-500 line-through" : ""}`}
+            className={`mb-2 text-sm font-medium ${task?.isCompleted ? "text-gray-500 line-through" : ""}`}
           >
-            {task.title}
+            {task?.title}
           </h3>
           {task.description && (
             <p className="mb-2 line-clamp-2 text-xs text-muted-foreground">
-              {stripHtml(task.description)}
+              {stripHtml(task?.description)}
             </p>
           )}
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              {task.priority && (
+              {task?.priority && (
                 <Badge
                   variant="secondary"
-                  className={`text-xs ${priorityColors[task.priority]}`}
+                  className={`text-xs ${priorityColors[task?.priority]}`}
                 >
-                  {task.priority}
+                  {task?.priority}
                 </Badge>
               )}
               {checklistProgress && checklistProgress.total > 0 && (
@@ -156,27 +219,27 @@ export function TaskCard({ task }: TaskCardProps) {
                   <CheckSquare className="h-3 w-3" />
                   <span
                     className={
-                      checklistProgress.completed === checklistProgress.total
+                      checklistProgress?.completed === checklistProgress?.total
                         ? "text-green-600"
                         : ""
                     }
                   >
-                    {checklistProgress.completed}/{checklistProgress.total}
+                    {checklistProgress?.completed}/{checklistProgress?.total}
                   </span>
                 </div>
               )}
             </div>
             <div className="flex items-center gap-2 text-xs">
-              {task.dueDate && (
+              {task?.dueDate && (
                 <div className="flex items-center gap-1">
                   <Calendar className="h-3 w-3" />
-                  <span className={formatDate(task.dueDate).colorClass}>
-                    {formatDate(task.dueDate).formatted}
+                  <span className={formatDate(task?.dueDate).colorClass}>
+                    {formatDate(task?.dueDate).formatted}
                   </span>
                 </div>
               )}
-              {task.assignee && (
-                <UserAvatar user={task.assignee} size="sm" showPopover />
+              {task?.assignee && (
+                <UserAvatar user={task?.assignee} size="sm" showPopover />
               )}
             </div>
           </div>
@@ -192,18 +255,18 @@ export function TaskCard({ task }: TaskCardProps) {
               className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
               onClick={(e) => {
                 e.stopPropagation();
-                // onToggleComplete(task.id)
+                onToggleComplete(task?._id);
               }}
               onMouseDown={(e) => e.stopPropagation()}
             >
               <div
                 className={`flex h-4 w-4 items-center justify-center rounded-full border-2 ${
-                  task.completed
+                  task?.isCompleted
                     ? "border-green-500 bg-green-500"
                     : "border-gray-400"
                 }`}
               >
-                {task.completed && (
+                {task?.isCompleted && (
                   <div className="text-xs leading-none text-white">✓</div>
                 )}
               </div>
@@ -226,7 +289,7 @@ export function TaskCard({ task }: TaskCardProps) {
               className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
               onClick={(e) => {
                 e.stopPropagation();
-                // onArchive(task.id)
+                onToggleArchive(task?._id);
               }}
               onMouseDown={(e) => e.stopPropagation()}
             >
@@ -240,8 +303,7 @@ export function TaskCard({ task }: TaskCardProps) {
         task={task}
         openTaskDialog={openTaskDialog}
         setOpenTaskDialog={setOpenTaskDialog}
-        
-       />
+      />
     </>
   );
 }

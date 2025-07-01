@@ -14,12 +14,14 @@ import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Calendar } from "../ui/calendar";
 import { UserAvatar } from "./user-avatar";
+import {
+  useDeleteTask,
+  useGetArchivedTasks,
+  useUpdateTask,
+} from "@/services/api/taskManagement/taskApi";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface ArchivedTasksSheetProps {
-  archivedTasks: ITask[];
-  onRestore: (taskId: string) => void;
-  onDelete: (taskId: string) => void;
-  onEdit: (task: ITask) => void;
   children: React.ReactNode;
 }
 
@@ -36,40 +38,78 @@ const formatDate = (dateString: string) => {
   });
 };
 
-const ArchieveSheet = ({
-  archivedTasks,
-  onRestore,
-  onDelete,
-  onEdit,
-  children,
-}: ArchivedTasksSheetProps) => {
+const ArchieveSheet = () => {
+  const { data: archivedTasks } = useGetArchivedTasks();
+  const queryClient = useQueryClient();
+  const { mutate: updateTask } = useUpdateTask();
+  const { mutate: deleteTask } = useDeleteTask();
+
+  const handleRestore = (task: ITask) => {
+    const updatedTask = {
+      ...task,
+      isArchived: false,
+    };
+
+    updateTask(updatedTask, {
+      onSuccess: () => {
+        const updatedTasks = archivedTasks?.data?.filter(
+          (t: ITask) => t._id !== task._id,
+        );
+        queryClient.setQueryData(["archived-tasks"], { data: updatedTasks });
+        const columnTasks: { data: ITask[] } | undefined =
+          queryClient.getQueryData(["tasks", task.column._id]);
+        const updatedColumnTasks = [...(columnTasks?.data ?? []), updatedTask];
+
+        queryClient.setQueryData(["tasks", task.column._id], {
+          data: updatedColumnTasks,
+        });
+      },
+    });
+  };
+
+  const handleDelete = (taskId: string) => {
+    deleteTask(taskId, {
+      onSuccess: () => {
+        const updatedTasks = archivedTasks?.data?.filter(
+          (task: ITask) => task._id !== taskId,
+        );
+        queryClient.setQueryData(["archived-tasks"], { data: updatedTasks });
+      },
+    });
+  };
+
   return (
     <Sheet>
-      <SheetTrigger asChild>{children}</SheetTrigger>
+      <SheetTrigger asChild>
+        <Button variant="outline" size="sm">
+          <Archive className="mr-2 h-4 w-4" />
+          Archived ({archivedTasks?.data?.length})
+        </Button>
+      </SheetTrigger>
       <SheetContent className="w-[400px] sm:w-[540px]">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Archive className="h-5 w-5" />
-            Archived Tasks ({archivedTasks.length})
+            Archived Tasks ({archivedTasks?.data?.length})
           </SheetTitle>
         </SheetHeader>
         <div className="mt-6 max-h-[calc(100vh-120px)] space-y-4 overflow-y-auto">
-          {archivedTasks.length === 0 ? (
+          {archivedTasks?.data?.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">
               <Archive className="mx-auto mb-4 h-12 w-12 opacity-50" />
               <p>No archived tasks</p>
             </div>
           ) : (
-            archivedTasks.map((task) => (
+            archivedTasks?.data?.map((task: ITask) => (
               <Card
                 key={task._id}
                 className="group cursor-pointer hover:shadow-sm"
-                onClick={() => onEdit(task)}
+                // onClick={() => onEdit(task)}
               >
                 <CardContent className="p-4">
                   <div className="mb-2 flex items-start justify-between">
                     <h3
-                      className={`text-sm font-medium ${task.completed ? "text-gray-500 line-through" : ""}`}
+                      className={`text-sm font-medium ${task.isCompleted ? "text-gray-500 line-through" : ""}`}
                     >
                       {task.title}
                     </h3>
@@ -80,7 +120,7 @@ const ArchieveSheet = ({
                         className="h-6 w-6 p-0"
                         onClick={(e) => {
                           e.stopPropagation();
-                          onRestore(task._id);
+                          handleRestore(task);
                         }}
                         title="Restore task"
                       >
@@ -92,7 +132,7 @@ const ArchieveSheet = ({
                         className="h-6 w-6 p-0 text-red-600 hover:text-red-700"
                         onClick={(e) => {
                           e.stopPropagation();
-                          onDelete(task._id);
+                          handleDelete(task._id);
                         }}
                         title="Delete permanently"
                       >
@@ -115,7 +155,7 @@ const ArchieveSheet = ({
                           {task.priority}
                         </Badge>
                       )}
-                      {task.completed && (
+                      {task.isCompleted && (
                         <Badge
                           variant="secondary"
                           className="bg-green-100 text-xs text-green-800"
@@ -134,7 +174,7 @@ const ArchieveSheet = ({
                       {task.assignee && (
                         <div className="flex items-center gap-1">
                           <UserAvatar user={task.assignee} size="sm" />
-                          <span className="ml-1">{task.assignee.name}</span>
+                          <span className="ml-1">{task.assignee.username}</span>
                         </div>
                       )}
                     </div>

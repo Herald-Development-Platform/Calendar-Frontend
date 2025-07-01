@@ -173,7 +173,7 @@ export function BoardColumn({
                 strategy={verticalListSortingStrategy}
               >
                 {tasksData?.data
-                  ?.filter((task: ITask) => !task.archived)
+                  ?.filter((task: ITask) => !task?.isArchived)
                   .map((task: ITask) => (
                     <TaskCard
                       key={task?._id}

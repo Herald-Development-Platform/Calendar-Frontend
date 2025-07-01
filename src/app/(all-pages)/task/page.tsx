@@ -41,17 +41,9 @@ const TaskPage = () => {
         <h1 className="text-2xl font-semibold">Task Boardss</h1>
 
         <div className="flex items-center  justify-end gap-2">
-          <ArchieveSheet
-            archivedTasks={[]}
-            onRestore={() => {}}
-            onDelete={() => {}}
-            onEdit={() => {}}
-          >
-            <Button variant="outline" size="sm">
-              <Archive className="mr-2 h-4 w-4" />
-              Archived ({[].length})
-            </Button>
-          </ArchieveSheet>
+          <ArchieveSheet/>
+           
+        
           <AddColumnDialog />
         </div>
 

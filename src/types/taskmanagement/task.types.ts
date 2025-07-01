@@ -1,10 +1,3 @@
-export interface User {
-  _id: string
-  name: string
-  email: string
-  avatar?: string
-  role?: string
-}
 
 export interface ITask {
   _id: string
@@ -14,8 +7,8 @@ export interface ITask {
   dueDate?: string
   assignee?: User
   checklist?: ChecklistItem[]
-  archived?: boolean
-  completed?: boolean
+  isArchived?: boolean
+  isCompleted?: boolean
   createdBy?: User
   comments?: Comment[]
   createdAt?: string

@@ -4,7 +4,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
 import { Mail, UserIcon } from "lucide-react"
-import { User } from "@/types/taskmanagement/task.types"
 interface UserAvatarProps {
   user: User
   size?: "sm" | "md" | "lg"
@@ -29,8 +28,8 @@ export function UserAvatar({ user, size = "md", showPopover = false }: UserAvata
 
   const avatar = (
     <Avatar className={sizeClasses[size]}>
-      <AvatarImage src={user.avatar || "/placeholder.svg?height=32&width=32"} alt={user.name} />
-      <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+      <AvatarImage src={user.photo || "/placeholder.svg?height=32&width=32"} alt={user.username} />
+      <AvatarFallback>{getInitials(user.username)}</AvatarFallback>
     </Avatar>
   )
 
@@ -46,11 +45,11 @@ export function UserAvatar({ user, size = "md", showPopover = false }: UserAvata
       <PopoverContent className="w-64" align="end">
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-12 w-12">
-            <AvatarImage src={user.avatar || "/placeholder.svg?height=48&width=48"} alt={user.name} />
-            <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+            <AvatarImage src={user.photo || "/placeholder.svg?height=48&width=48"} alt={user.username} />
+            <AvatarFallback>{getInitials(user.username)}</AvatarFallback>
           </Avatar>
           <div>
-            <h4 className="font-medium">{user.name}</h4>
+            <h4 className="font-medium">{user.username}</h4>
             {user.role && (
               <Badge variant="secondary" className="text-xs">
                 {user.role}
