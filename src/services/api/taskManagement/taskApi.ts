@@ -68,3 +68,12 @@ export const useDeleteTask = () => {
     },
   });
 }
+
+export const useBulkUpdateTaskPositions = () => {
+  return useMutation({
+    mutationFn: async (tasks: { _id: string; position: number }[]) => {
+      const response = await Axios.patch("/task-management/tasks", { tasks });
+      return response.data;
+    },
+  });
+};

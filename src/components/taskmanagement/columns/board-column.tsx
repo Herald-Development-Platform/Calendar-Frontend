@@ -34,7 +34,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import DeleteColumnDialog from "./delete-column-dialog";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import { useUpdateTask } from "@/services/api/taskManagement/taskApi";
+import { useUpdateTask, useBulkUpdateTaskPositions } from "@/services/api/taskManagement/taskApi";
 
 interface BoardColumnProps {
   column: ITaskColumnBase;
@@ -56,6 +56,7 @@ export function BoardColumn({ column }: BoardColumnProps) {
   const { mutate: createTask, isPending: isCreatingTask } = useCreateTask();
   const { mutate: updateColumn, isPending: isUpdatingColumn } = useUpdateColumn();
   const { mutate: updateTask } = useUpdateTask();
+  const { mutate: bulkUpdateTaskPositions } = useBulkUpdateTaskPositions();
 
   // Local state for task order
   const [tasks, setTasks] = useState<any[]>([]);
@@ -80,8 +81,8 @@ export function BoardColumn({ column }: BoardColumnProps) {
       task.position = idx;
     });
     setTasks(newTasks);
-    // Persist changes
-    newTasks.forEach((task) => updateTask(task));
+    // Persist changes in bulk
+    bulkUpdateTaskPositions(newTasks.map(task => ({ _id: task._id, position: task.position })));
   };
 
   const handleAddTask = (title: string) => {
