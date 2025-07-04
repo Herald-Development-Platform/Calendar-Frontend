@@ -9,7 +9,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -32,26 +32,15 @@ import {
 } from "@/services/api/taskManagement/columnsApi";
 import { useQueryClient } from "@tanstack/react-query";
 import DeleteColumnDialog from "./delete-column-dialog";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
+import { useUpdateTask } from "@/services/api/taskManagement/taskApi";
 
 interface BoardColumnProps {
   column: ITaskColumnBase;
-  // onAddTask: (columnId: string, title: string) => void
-  // onEditTask: (task: Task) => void
-  // onArchiveTask: (taskId: string) => void
-  // onToggleComplete: (taskId: string) => void
-  // onEditColumn: (columnId: string) => void
-  // onDeleteColumn: (columnId: string) => void
 }
 
-export function BoardColumn({
-  column,
-  // onAddTask,
-  // onEditTask,
-  // onArchiveTask,
-  // onToggleComplete,
-  // onEditColumn,
-  // onDeleteColumn,
-}: BoardColumnProps) {
+export function BoardColumn({ column }: BoardColumnProps) {
   const { setNodeRef } = useDroppable({
     id: column._id,
   });
@@ -59,20 +48,41 @@ export function BoardColumn({
   const queryClient = useQueryClient();
 
   const [showAddCard, setShowAddCard] = useState(false);
-  const [showEditColumnDialogOpen, setShowEditColumnDialogOpen] =
-    useState(false);
-  const [showDeleteColumnDialogOpen, setShowDeleteColumnDialogOpen] =
-    useState(false);
+  const [showEditColumnDialogOpen, setShowEditColumnDialogOpen] = useState(false);
+  const [showDeleteColumnDialogOpen, setShowDeleteColumnDialogOpen] = useState(false);
 
   // API CALLS
-  const { data: tasksData, isLoading: isTasksLoading } = useGetTaskByColumn(
-    column._id,
-  );
+  const { data: tasksData, isLoading: isTasksLoading } = useGetTaskByColumn(column._id);
   const { mutate: createTask, isPending: isCreatingTask } = useCreateTask();
-  const { mutate: updateColumn, isPending: isUpdatingColumn } =
-    useUpdateColumn();
+  const { mutate: updateColumn, isPending: isUpdatingColumn } = useUpdateColumn();
+  const { mutate: updateTask } = useUpdateTask();
 
-  console.log(column.title, tasksData);
+  // Local state for task order
+  const [tasks, setTasks] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (tasksData?.data) {
+      // Sort by position field if present
+      setTasks([...tasksData.data].sort((a, b) => (a.position ?? 0) - (b.position ?? 0)));
+    }
+  }, [tasksData]);
+
+  // Drag and drop handler for within-column reordering
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+    const oldIndex = tasks.findIndex((t) => t._id === active.id);
+    const newIndex = tasks.findIndex((t) => t._id === over.id);
+    if (oldIndex === -1 || newIndex === -1) return;
+    const newTasks = arrayMove(tasks, oldIndex, newIndex);
+    // Update positions
+    newTasks.forEach((task, idx) => {
+      task.position = idx;
+    });
+    setTasks(newTasks);
+    // Persist changes
+    newTasks.forEach((task) => updateTask(task));
+  };
 
   const handleAddTask = (title: string) => {
     if (isCreatingTask) return;
@@ -81,14 +91,10 @@ export function BoardColumn({
       {
         onSuccess: () => {
           setShowAddCard(false);
-          queryClient.invalidateQueries({
-            queryKey: ["tasks", column._id],
-          });
+          queryClient.invalidateQueries({ queryKey: ["tasks", column._id] });
         },
         onError: (error) => {
-          toast.error(
-            (error as any)?.response?.data?.message || "Failed to create task",
-          );
+          toast.error((error as any)?.response?.data?.message || "Failed to create task");
         },
       },
     );
@@ -101,21 +107,14 @@ export function BoardColumn({
       {
         onSuccess: () => {
           setShowEditColumnDialogOpen(false);
-          queryClient.invalidateQueries({
-            queryKey: ["columns"],
-          });
+          queryClient.invalidateQueries({ queryKey: ["columns"] });
         },
         onError: (error) => {
-          toast.error(
-            (error as any)?.response?.data?.message ||
-              "Failed to update column",
-          );
+          toast.error((error as any)?.response?.data?.message || "Failed to update column");
         },
       },
     );
   };
-
-  const tasks: any = [];
 
   return (
     <>
@@ -130,7 +129,7 @@ export function BoardColumn({
             </div>
             <div className="flex items-center gap-2">
               <span className="rounded-full border border-gray-200 bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
-                {tasksData?.data?.length}
+                {tasks.length}
               </span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -142,10 +141,7 @@ export function BoardColumn({
                     <MoreHorizontal className="h-3.5 w-3.5 text-gray-500" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  align="end"
-                  className="w-48 border border-gray-200 bg-white shadow-lg"
-                >
+                <DropdownMenuContent align="end" className="w-48 border border-gray-200 bg-white shadow-lg">
                   <DropdownMenuItem
                     onClick={() => setShowEditColumnDialogOpen(true)}
                     className="flex cursor-pointer items-center gap-2 text-sm hover:bg-gray-50"
@@ -166,26 +162,15 @@ export function BoardColumn({
           </div>
         </CardHeader>
         <CardContent className="bg-gray-50 px-4 pb-4 pt-3">
-          {!isTasksLoading && (
-            <div ref={setNodeRef} className="min-h-[1px] space-y-3">
-              <SortableContext
-                items={tasksData?.data?.map((task: ITask) => task?._id)}
-                strategy={verticalListSortingStrategy}
-              >
-                {tasksData?.data
-                  ?.filter((task: ITask) => !task?.isArchived)
-                  .map((task: ITask) => (
-                    <TaskCard
-                      key={task?._id}
-                      task={task}
-                      // onEdit={onEditTask}
-                      // onArchive={onArchiveTask}
-                      // onToggleComplete={onToggleComplete}
-                    />
-                  ))}
-              </SortableContext>
-            </div>
-          )}
+          <DndContext onDragEnd={handleDragEnd}>
+            <SortableContext items={tasks.map((task) => task._id)} strategy={verticalListSortingStrategy}>
+              <div ref={setNodeRef} className="min-h-[1px] space-y-3">
+                {tasks.filter((task) => !task?.isArchived).map((task) => (
+                  <TaskCard key={task._id} task={task} />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
           {showAddCard ? (
             <AddCardInput
               onAdd={handleAddTask}

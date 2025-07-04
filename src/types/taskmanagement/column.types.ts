@@ -1,3 +1,5 @@
+import { ITask } from "./task.types";
+
 export interface ITaskColumnBase {
   _id: string;
   title: string;
