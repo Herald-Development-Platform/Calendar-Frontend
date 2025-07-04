@@ -406,3 +406,34 @@ cursor: pointer;
 
 
 /* .fc-v-event{background-color: black !important;} */
+
+/* Custom style for calendar tasks */
+.fc-task-event {
+  background-color: #2D9CDB !important;
+  color: #fff !important;
+  border-left: 5px solid #1565c0 !important;
+  border-radius: 4px;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(45,156,219,0.08);
+}
+
+.fc-task-completed {
+  background-color: #43A047 !important;
+  color: #fff !important;
+  border-left: 5px solid #1b5e20 !important;
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.fc-task-due-soon {
+  background-color: #FFA726 !important;
+  color: #fff !important;
+  border-left: 5px solid #f57c00 !important;
+  font-weight: bold;
+  animation: pulse-due-soon 1.5s infinite alternate;
+}
+
+@keyframes pulse-due-soon {
+  0% { box-shadow: 0 0 0 0 rgba(255,167,38,0.4); }
+  100% { box-shadow: 0 0 8px 4px rgba(255,167,38,0.15); }
+}

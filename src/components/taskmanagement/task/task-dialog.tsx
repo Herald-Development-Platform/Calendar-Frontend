@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -31,11 +31,13 @@ import { UserAvatar } from "../user-avatar";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import { Axios } from "@/services/baseUrl";
+import { useUpdateTask } from "@/services/api/taskManagement/taskApi";
+import toast from "react-hot-toast";
 
 interface TaskDialogProps {
   openTaskDialog: boolean;
   setOpenTaskDialog: (open: boolean) => void;
-  task?: ITask;
+  task: ITask;
 
   // currentUser: User
   // availableUsers: User[]
@@ -50,7 +52,10 @@ export function TaskDialog({
 }: TaskDialogProps) {
   const queryClient = useQueryClient();
 
-  const {  userData } = useContext(Context);
+  const { userData } = useContext(Context);
+
+  // API CALLS
+  const { mutate: updateTask, isPending: isUpdatingTask } = useUpdateTask();
 
   console.log("userData", userData);
 
@@ -62,29 +67,31 @@ export function TaskDialog({
     setValue,
     watch,
     formState: { errors },
-  } = useForm<Partial<ITask>>({
+  } = useForm<Partial<Omit<ITask, 'column'> & { column: string }>>({
     defaultValues: {
       title: "",
       description: "",
       priority: "medium",
       dueDate: "",
-      assignee: undefined,
-    },
+      invitedUsers: [],
+      column: "",
+    }
   });
 
   const columnData: { data: ITaskColumnBase[] } | undefined =
     queryClient.getQueryData(["columns"]);
 
-    const { data: allUsers, isLoading: allUsersLoading } = useQuery({
-        queryKey: ["AllUsers"],
-        queryFn: () => Axios.get("/profile/all"),
-      });
+  const { data: allUsers, isLoading: allUsersLoading } = useQuery({
+    queryKey: ["AllUsers"],
+    queryFn: () => Axios.get("/profile/all"),
+  });
 
   const [checklist, setChecklist] = useState<ChecklistItem[]>([]);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newChecklistItem, setNewChecklistItem] = useState("");
   const [newComment, setNewComment] = useState("");
-  const [selectedColumn, setSelectedColumn] = useState<string>("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (task) {
@@ -93,21 +100,40 @@ export function TaskDialog({
         description: task.description || "",
         priority: task.priority || "medium",
         dueDate: task.dueDate || "",
-        assignee: task.assignee,
-        
+        invitedUsers: task.invitedUsers || [],
+        column: task.column._id
       });
       setChecklist(task.checklist || []);
       setComments(task.comments || []);
-      //   const column = columns.find((col) => col.tasks.some((t) => t._id === task._id))
-      //   setSelectedColumn(column?.id || "")
-      setSelectedColumn(task.column._id)
     } else {
-      reset();
+      reset({
+        title: "",
+        description: "",
+        priority: "medium",
+        dueDate: "",
+        invitedUsers: [],
+        column: ""
+      });
       setChecklist([]);
       setComments([]);
-      setSelectedColumn("");
     }
   }, [task, columnData, reset]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+      }
+    }
+    if (dropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownOpen]);
 
   const addChecklistItem = () => {
     if (newChecklistItem.trim()) {
@@ -148,41 +174,32 @@ export function TaskDialog({
     }
   };
 
-  const handleAssigneeChange = (userId: string) => {
-    if (userId === "unassigned") {
-      setValue("assignee", undefined);
-    } else {
-      const selectedUser = allUsers?.data?.data?.find((user:User) => user._id === userId)
-      if (selectedUser) {
-        setValue("assignee", selectedUser)
-      }
-    }
+  const handleInvitedUsersChange = (userIds: string[]) => {
+    const selectedUsers = allUsers?.data?.data?.filter((user: User) => userIds.includes(user._id)) || [];
+    setValue("invitedUsers", selectedUsers);
   };
 
-  const onSubmit = (data: Partial<ITask>) => {
+  const onSubmit = (data: Partial<Omit<ITask, 'column'> & { column: string }>) => {
     if (!data.title?.trim()) return;
 
-    console.log("Task data to save:", data);
-    const taskData: ITask = {
-      _id: task?._id || Date.now().toString(),
+    const selectedColumnObj = columnData?.data?.find((col) => col._id === data.column);
+
+    updateTask({
+      ...task,
+      dueDate: data.dueDate,
       title: data.title,
       description: data.description,
       priority: data.priority || "medium",
-      dueDate: data.dueDate,
-      assignee: data.assignee,
-      checklist,
-      comments,
-      createdBy: task?.createdBy || userData as User,
-      column: {
-        _id: selectedColumn,
-        title: columnData?.data.find((col) => col._id === selectedColumn)?.
-          title || "Untitled Column",
+      column: selectedColumnObj || task.column,
+      invitedUsers: data.invitedUsers,
+    }, {
+      onSuccess: () => {
+        toast.success("Task updated successfully");
       },
-      // createdBy: task?.createdBy || currentUser,
-      createdAt: task?.createdAt || new Date().toISOString(),
-    };
-    // onSave(taskData, selectedColumn)
-    // onClose()
+      onError: (error) => {
+        toast.error(`Failed to update task: `);
+      },
+    });
   };
 
   const handleDelete = () => {
@@ -213,34 +230,57 @@ export function TaskDialog({
       }
     : null;
 
+  // Helper for toggling users
+  const toggleUser = (selectedUsers: User[], user: User, onChange: (users: User[]) => void) => {
+    if (selectedUsers.some(u => u._id === user._id)) {
+      onChange(selectedUsers.filter(u => u._id !== user._id));
+    } else {
+      onChange([...selectedUsers, user]);
+    }
+  };
+
   return (
     <Dialog open={openTaskDialog} onOpenChange={setOpenTaskDialog}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[700px]">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[800px]">
         <DialogHeader className="pb-4">
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <Input
-                {...register("title", { required: true })}
-                className="h-auto border-none p-0 text-lg font-semibold focus-visible:ring-0"
-                placeholder="Task title..."
+              <Controller
+                name="title"
+                control={control}
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    className="h-auto border-none p-0 text-lg font-semibold focus-visible:ring-0"
+                    placeholder="Task title..."
+                  />
+                )}
               />
               <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
                 <span>in list</span>
-                <Select
-                  value={selectedColumn}
-                  onValueChange={setSelectedColumn}
-                >
-                  <SelectTrigger className="h-auto w-auto border-none bg-gray-100 p-1">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {columnData?.data?.map((column) => (
-                      <SelectItem key={column._id} value={column._id}>
-                        {column.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Controller
+                  name="column"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field }) => (
+                    <Select
+                      value={typeof field.value === 'string' ? field.value : ''}
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger className="h-auto w-auto border-none bg-gray-100 p-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {columnData?.data?.map((column) => (
+                          <SelectItem key={column._id} value={column._id}>
+                            {column.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
               </div>
             </div>
           </div>
@@ -255,128 +295,34 @@ export function TaskDialog({
               <label className="mb-2 block text-sm font-semibold">
                 Description
               </label>
-              {/* <Controller
+              <Controller
                 name="description"
                 control={control}
                 render={({ field }) => (
-                  <RichTextEditor
-                    content={field.value || ""}
-                    onChange={field.onChange}
+                  <textarea
+                    {...field}
+                    className="min-h-[80px] w-full rounded border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     placeholder="Add a more detailed description..."
-                    className="min-h-[150px]"
                   />
                 )}
-              /> */}
+              />
             </div>
 
-            <div>
-              <div className="mb-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <CheckSquare className="h-4 w-4" />
-                  <label className="text-sm font-semibold">Checklist</label>
-                  {checklistProgress && (
-                    <Badge variant="secondary" className="text-xs">
-                      {checklistProgress.percentage}%
-                    </Badge>
-                  )}
-                </div>
-              </div>
-              {checklistProgress && (
-                <div className="mb-3">
-                  <div className="h-2 w-full rounded-full bg-gray-200">
-                    <div
-                      className="h-2 rounded-full bg-green-500 transition-all"
-                      style={{ width: `${checklistProgress.percentage}%` }}
-                    />
-                  </div>
-                </div>
-              )}
-              <div className="mb-3 space-y-2">
-                {checklist.map((item) => (
-                  <div
-                    key={item._id}
-                    className="group flex items-center gap-2 rounded p-2 hover:bg-gray-50"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={item.completed}
-                      onChange={() => toggleChecklistItem(item._id)}
-                      className="rounded"
-                    />
-                    <span
-                      className={`flex-1 ${item.completed ? "text-muted-foreground line-through" : ""}`}
-                    >
-                      {item.text}
-                    </span>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeChecklistItem(item._id)}
-                      className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-2">
-                <Input
-                  value={newChecklistItem}
-                  onChange={(e) => setNewChecklistItem(e.target.value)}
-                  placeholder="Add an item..."
-                  onKeyDown={(e) => e.key === "Enter" && addChecklistItem()}
-                />
-                <Button type="button" onClick={addChecklistItem} size="sm">
-                  Add
-                </Button>
-              </div>
-            </div>
+            <ChecklistSection
+              checklist={checklist}
+              setChecklist={setChecklist}
+              newChecklistItem={newChecklistItem}
+              setNewChecklistItem={setNewChecklistItem}
+            />
 
-            <div>
-              <div className="mb-3 flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                <label className="text-sm font-semibold">Activity</label>
-              </div>
-              <div className="mb-4 space-y-3">
-                {comments.map((comment) => (
-                  <div key={comment._id} className="flex gap-3">
-                    {/* <UserAvatar user={comment.author} size="sm" /> */}
-                    <div className="flex-1">
-                      <div className="mb-1 flex items-center gap-2">
-                        <span className="text-sm font-medium">
-                          {comment.author.username}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {formatDate(comment.createdAt)}
-                        </span>
-                      </div>
-                      <div className="rounded bg-gray-50 p-2 text-sm">
-                        {comment.text}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="flex gap-3">
-                <UserAvatar user={userData as User} size="sm" />
-                <div className="flex flex-1 gap-2">
-                  <Input
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Write a comment..."
-                    onKeyDown={(e) => e.key === "Enter" && addComment()}
-                  />
-                  <Button
-                    onClick={addComment}
-                    size="sm"
-                    disabled={!newComment.trim()}
-                  >
-                    Send
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <CommentsSection
+              comments={comments}
+              setComments={setComments}
+              newComment={newComment}
+              setNewComment={setNewComment}
+              userData={userData}
+              formatDate={formatDate}
+            />
           </div>
 
           <div className="space-y-4">
@@ -412,47 +358,77 @@ export function TaskDialog({
                   <Input type="date" {...register("dueDate")} className="h-8" />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm">Assignee</label>
-                  <Select
-                    value={watch("assignee")?._id || "unassigned"}
-                    onValueChange={handleAssigneeChange}
-                  >
-                    <SelectTrigger className="h-8">
-                      <SelectValue>
-                        {watch("assignee") ? (
-                          <div className="flex items-center gap-2">
-                            <UserAvatar user={watch("assignee")!} size="sm" />
-                            <span className="text-sm">
-                              {watch("assignee")!.username}
+                  <label className="mb-1 block text-sm">Invited Users</label>
+                  <Controller
+                    name="invitedUsers"
+                    control={control}
+                    render={({ field }) => {
+                      const selectedUsers: User[] = field.value || [];
+                      return (
+                        <div className="relative" ref={dropdownRef}>
+                          <button
+                            type="button"
+                            className={`flex flex-wrap items-center gap-1 border rounded px-2 py-2 bg-white min-h-[40px] w-full focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow ${dropdownOpen ? 'ring-2 ring-primary/50' : ''}`}
+                            onClick={() => setDropdownOpen(v => !v)}
+                            tabIndex={0}
+                            aria-haspopup="listbox"
+                            aria-expanded={dropdownOpen}
+                          >
+                            {selectedUsers.length === 0 && (
+                              <span className="text-sm text-muted-foreground">Select users...</span>
+                            )}
+                            {selectedUsers.map(user => (
+                              <span key={user._id} className="flex items-center gap-1 bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs mr-1">
+                                <UserAvatar user={user} size="sm" />
+                                {user.username}
+                                <button
+                                  type="button"
+                                  className="ml-1 text-xs text-gray-400 hover:text-red-500 focus:outline-none"
+                                  tabIndex={-1}
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    field.onChange(selectedUsers.filter(u => u._id !== user._id));
+                                  }}
+                                  aria-label={`Remove ${user.username}`}
+                                >
+                                  ×
+                                </button>
+                              </span>
+                            ))}
+                            <span className={`ml-auto transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}>
+                              <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6"/></svg>
                             </span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            <UserIcon className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm text-muted-foreground">
-                              Unassigned
-                            </span>
-                          </div>
-                        )}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="unassigned">
-                        <div className="flex items-center gap-2">
-                          <UserIcon className="h-4 w-4 text-muted-foreground" />
-                          <span>Unassigned</span>
+                          </button>
+                          {dropdownOpen && (
+                            <div className="absolute z-10 mt-1 w-full bg-white border rounded shadow max-h-48 overflow-y-auto animate-fade-in">
+                              {allUsers?.data?.data.map((user: User) => (
+                                <div
+                                  key={user._id}
+                                  className={`flex items-center gap-2 px-3 py-2 cursor-pointer transition-colors ${selectedUsers.some(u => u._id === user._id) ? 'bg-primary/10 text-primary' : 'hover:bg-gray-100'}`}
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    toggleUser(selectedUsers, user, field.onChange);
+                                    setDropdownOpen(false);
+                                  }}
+                                  role="option"
+                                  aria-selected={selectedUsers.some(u => u._id === user._id)}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedUsers.some(u => u._id === user._id)}
+                                    readOnly
+                                    className="accent-primary"
+                                  />
+                                  <UserAvatar user={user} size="sm" />
+                                  <span className="text-sm">{user.username}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                      </SelectItem>
-                      {allUsers?.data?.data.map((user:User) => (
-                        <SelectItem key={user._id} value={user._id}>
-                          <div className="flex items-center gap-2">
-                            <UserAvatar user={user} size="sm" />
-                            <span>{user.username}</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                      );
+                    }}
+                  />
                 </div>
               </div>
             </div>
@@ -500,5 +476,186 @@ export function TaskDialog({
         </form>
       </DialogContent>
     </Dialog>
+  );
+}
+
+// Checklist Section
+function ChecklistSection({ checklist, setChecklist, newChecklistItem, setNewChecklistItem }: {
+  checklist: ChecklistItem[];
+  setChecklist: React.Dispatch<React.SetStateAction<ChecklistItem[]>>;
+  newChecklistItem: string;
+  setNewChecklistItem: React.Dispatch<React.SetStateAction<string>>;
+}) {
+  const checklistProgress = checklist.length
+    ? {
+        completed: checklist.filter((i) => i.completed).length,
+        total: checklist.length,
+        percentage: Math.round(
+          (checklist.filter((i) => i.completed).length / checklist.length) * 100,
+        ),
+      }
+    : null;
+
+  const addChecklistItem = () => {
+    if (newChecklistItem.trim()) {
+      setChecklist([
+        ...checklist,
+        {
+          _id: Date.now().toString(),
+          text: newChecklistItem.trim(),
+          completed: false,
+        },
+      ]);
+      setNewChecklistItem("");
+    }
+  };
+
+  const toggleChecklistItem = (id: string) => {
+    setChecklist(
+      checklist.map((item) =>
+        item._id === id ? { ...item, completed: !item.completed } : item,
+      ),
+    );
+  };
+
+  const removeChecklistItem = (id: string) => {
+    setChecklist(checklist.filter((item) => item._id !== id));
+  };
+
+  return (
+    <div>
+      <div className="mb-3 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <CheckSquare className="h-4 w-4" />
+          <label className="text-sm font-semibold">Checklist</label>
+          {checklistProgress && (
+            <Badge variant="secondary" className="text-xs">
+              {checklistProgress.percentage}%
+            </Badge>
+          )}
+        </div>
+      </div>
+      {checklistProgress && (
+        <div className="mb-3">
+          <div className="h-2 w-full rounded-full bg-gray-200">
+            <div
+              className="h-2 rounded-full bg-green-500 transition-all"
+              style={{ width: `${checklistProgress.percentage}%` }}
+            />
+          </div>
+        </div>
+      )}
+      <div className="mb-3 space-y-2">
+        {checklist.map((item) => (
+          <div
+            key={item._id}
+            className="group flex items-center gap-2 rounded p-2 hover:bg-gray-50"
+          >
+            <input
+              type="checkbox"
+              checked={item.completed}
+              onChange={() => toggleChecklistItem(item._id)}
+              className="rounded"
+            />
+            <span
+              className={`flex-1 ${item.completed ? "text-muted-foreground line-through" : ""}`}
+            >
+              {item.text}
+            </span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => removeChecklistItem(item._id)}
+              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-2">
+        <Input
+          value={newChecklistItem}
+          onChange={(e) => setNewChecklistItem(e.target.value)}
+          placeholder="Add an item..."
+          onKeyDown={(e) => e.key === "Enter" && addChecklistItem()}
+        />
+        <Button type="button" onClick={addChecklistItem} size="sm">
+          Add
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+// Comments Section
+function CommentsSection({ comments, setComments, newComment, setNewComment, userData, formatDate }: {
+  comments: Comment[];
+  setComments: React.Dispatch<React.SetStateAction<Comment[]>>;
+  newComment: string;
+  setNewComment: React.Dispatch<React.SetStateAction<string>>;
+  userData: any;
+  formatDate: (dateString: string) => string;
+}) {
+  const addComment = () => {
+    if (newComment.trim()) {
+      const comment: Comment = {
+        _id: Date.now().toString(),
+        text: newComment.trim(),
+        author: userData as User,
+        createdAt: new Date().toISOString(),
+      };
+      setComments([...comments, comment]);
+      setNewComment("");
+    }
+  };
+
+  return (
+    <div>
+      <div className="mb-3 flex items-center gap-2">
+        <MessageSquare className="h-4 w-4" />
+        <label className="text-sm font-semibold">Activity</label>
+      </div>
+      <div className="mb-4 space-y-3">
+        {comments.map((comment) => (
+          <div key={comment._id} className="flex gap-3">
+            {/* <UserAvatar user={comment.author} size="sm" /> */}
+            <div className="flex-1">
+              <div className="mb-1 flex items-center gap-2">
+                <span className="text-sm font-medium">
+                  {comment.author.username}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {formatDate(comment.createdAt)}
+                </span>
+              </div>
+              <div className="rounded bg-gray-50 p-2 text-sm">
+                {comment.text}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="flex gap-3">
+        <UserAvatar user={userData as User} size="sm" />
+        <div className="flex flex-1 gap-2">
+          <Input
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            placeholder="Write a comment..."
+            onKeyDown={(e) => e.key === "Enter" && addComment()}
+          />
+          <Button
+            onClick={addComment}
+            size="sm"
+            disabled={!newComment.trim()}
+          >
+            Send
+          </Button>
+        </div>
+      </div>
+    </div>
+
   );
 }

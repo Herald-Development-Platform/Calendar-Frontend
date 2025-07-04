@@ -238,9 +238,9 @@ export function TaskCard({ task }: TaskCardProps) {
                   </span>
                 </div>
               )}
-              {task?.assignee && (
-                <UserAvatar user={task?.assignee} size="sm" showPopover />
-              )}
+              {/* {task?.invitedUsers && (
+                <UserAvatar user={task?.invitedUsers} size="sm" showPopover />
+              )} */}
             </div>
           </div>
 

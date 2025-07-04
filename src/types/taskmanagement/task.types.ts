@@ -1,11 +1,10 @@
-
 export interface ITask {
   _id: string
   title: string
   description?: string
   priority?: "low" | "medium" | "high"
   dueDate?: string
-  assignee?: User
+  invitedUsers?: User[]
   checklist?: ChecklistItem[]
   isArchived?: boolean
   isCompleted?: boolean

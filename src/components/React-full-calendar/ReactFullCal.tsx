@@ -27,6 +27,9 @@ import toast from "react-hot-toast";
 import EventDialog, { EventDialogRef } from "../AddEventModal/EventDialog";
 import { totalDaysInMonth } from "./lastDay";
 import { AiOutlineConsoleSql } from "react-icons/ai";
+import { useGetAllTasks } from "@/services/api/taskManagement/taskApi";
+import { TaskDialog } from "@/components/taskmanagement/task/task-dialog";
+import { ITask } from "@/types/taskmanagement/task.types";
 
 export default function ReactFullCal() {
   const {
@@ -40,6 +43,9 @@ export default function ReactFullCal() {
     setOpenDialog,
     setSelectedEventData,
   } = useContext(Context);
+
+  const { data: tasksData } = useGetAllTasks();
+  console.log(tasksData?.data)
 
   const calWrapper = useRef<HTMLDivElement>(null);
   const dayFrameRefs = useRef<HTMLDivElement[]>([]);
@@ -76,6 +82,39 @@ export default function ReactFullCal() {
   const { mutate: updateEvent } = useUpdateEvents();
   const { mutate: deleteEvent } = useDeleteEvent({});
   const modalRef = useRef<EventDialogRef | null>(null);
+
+  // State for TaskDialog
+  const [openTaskDialog, setOpenTaskDialog] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
+
+  // Prepare tasks as calendar items
+  const now = new Date();
+  const soonThreshold = 1000 * 60 * 60 * 24 * 2; // 2 days in ms
+  const taskEvents = (tasksData?.data || [])
+    .filter((task: ITask) => !!task.dueDate)
+    .map((task: ITask) => {
+      const dueDate = new Date(task.dueDate!);
+      const isCompleted = !!task.isCompleted;
+      const isDueSoon = !isCompleted && dueDate.getTime() - now.getTime() <= soonThreshold && dueDate.getTime() - now.getTime() > 0;
+      return {
+        id: task._id,
+        title: task.title,
+        start: dueDate,
+        end: dueDate,
+        type: "task",
+        originalTask: task,
+        color: isCompleted ? "#43A047" : isDueSoon ? "#FFA726" : "#2D9CDB",
+        display: "block",
+        isCompleted,
+        isDueSoon,
+      };
+    });
+
+  // Merge events and tasks for the calendar
+  const mergedEvents = [
+    ...(events || []),
+    ...taskEvents,
+  ];
 
   const handleSelect = async ({
     start,
@@ -521,6 +560,13 @@ export default function ReactFullCal() {
               setCurrentView(info.view.type);
             }}
             eventClick={(info) => {
+              // If it's a task, open TaskDialog
+              if (info.event.extendedProps.type === "task") {
+                setSelectedTask(info.event.extendedProps.originalTask);
+                setOpenTaskDialog(true);
+                return;
+              }
+              // Otherwise, keep event behavior
               const selectedEventObj = {
                 ...info?.event?._def?.extendedProps,
                 start: info?.event?.start,
@@ -530,7 +576,6 @@ export default function ReactFullCal() {
                   info?.event?._def?.ui?.backgroundColor ||
                   info?.event?._def?.ui?.borderColor,
               };
-
               const upcommingEventWidth =
                 // @ts-ignore
                 document.querySelector("#upcomming-events")?.offsetWidth;
@@ -538,8 +583,28 @@ export default function ReactFullCal() {
               setSelectedEvent(selectedEventObj as eventType);
             }}
             initialView={`dayGridMonth`}
-            events={events as EventSourceInput}
-            eventDidMount={handleEventDidMount}
+            events={mergedEvents as EventSourceInput}
+            eventDidMount={(info) => {
+              // Add a custom class for tasks
+              if (info.event.extendedProps.type === "task") {
+                info.el.classList.add("fc-task-event");
+                if (info.event.extendedProps.isCompleted) {
+                  info.el.classList.add("fc-task-completed");
+                } else if (info.event.extendedProps.isDueSoon) {
+                  info.el.classList.add("fc-task-due-soon");
+                }
+                // Optionally, add an icon or change innerHTML for tasks
+                const titleEl = info.el.querySelector(".fc-event-title");
+                if (titleEl) {
+                  let icon = "📝";
+                  if (info.event.extendedProps.isCompleted) icon = "✅";
+                  else if (info.event.extendedProps.isDueSoon) icon = "⏰";
+                  // titleEl.innerHTML = `<span style='font-weight:bold;margin-right:4px;'>${icon}</span>` + titleEl.innerHTML;
+                }
+              } else {
+                handleEventDidMount(info);
+              }
+            }}
             headerToolbar={false}
             selectable={selectable}
             select={handleSelect}
@@ -572,14 +637,14 @@ export default function ReactFullCal() {
 
         {currentView === "multiMonthYear" && (
           <div className="absolute left-0 top-0 z-10 h-full w-full bg-white">
-            {events && selectedDate?.start ? (
+            {mergedEvents && selectedDate?.start ? (
               <SemesterView
-                events={events}
+                events={mergedEvents}
                 year={new Date(selectedDate.start).getFullYear()}
               ></SemesterView>
             ) : (
               <p>
-                Error: <br /> events: {Boolean(events).toString()} <br />{" "}
+                Error: <br /> events: {Boolean(mergedEvents).toString()} <br />{" "}
                 selDate:
                 {Boolean(selectedDate?.start).toString()}
               </p>
@@ -594,6 +659,14 @@ export default function ReactFullCal() {
         handleDelete={handleDelete}
         width={eventDetailWidth || null}
       ></EventDetails>
+      {/* Task Dialog for tasks */}
+      {selectedTask && (
+        <TaskDialog
+          openTaskDialog={openTaskDialog}
+          setOpenTaskDialog={setOpenTaskDialog}
+          task={selectedTask}
+        />
+      )}
       {/* <EditEventModal1
       // ref={modalRef}
         // type="Add"

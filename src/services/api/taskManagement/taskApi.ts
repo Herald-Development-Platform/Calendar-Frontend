@@ -20,6 +20,18 @@ export const useUpdateTask = () => {
   })
 }
 
+export const useGetAllTasks = () => {
+  return useQuery({
+    queryKey: ["tasks"],
+    queryFn: async () => {
+      const response = await Axios.get("/task-management/tasks");
+      return response.data;
+    },
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+}
+
 export const useGetTaskByColumn = (columnId: string) => {
   return useQuery({
     queryKey: ["tasks", columnId],

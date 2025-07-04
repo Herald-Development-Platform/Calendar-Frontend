@@ -171,12 +171,12 @@ const ArchieveSheet = () => {
                           <span>{formatDate(task.dueDate)}</span>
                         </div>
                       )}
-                      {task.assignee && (
+                      {/* {task.assignee && (
                         <div className="flex items-center gap-1">
                           <UserAvatar user={task.assignee} size="sm" />
                           <span className="ml-1">{task.assignee.username}</span>
                         </div>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 </CardContent>
