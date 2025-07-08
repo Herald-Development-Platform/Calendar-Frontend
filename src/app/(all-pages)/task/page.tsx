@@ -107,6 +107,9 @@ const TaskPage = () => {
                 // tasks={column.tasks ? [...column.tasks].sort((a, b) => a.position - b.position) : []}
               />
             ))}
+
+            
+
           </div>
         </DndContext>
       </main>

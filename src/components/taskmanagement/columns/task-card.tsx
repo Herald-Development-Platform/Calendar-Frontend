@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Edit2, Archive, CheckSquare } from "lucide-react";
+import { Calendar, Edit2, Archive, CheckSquare, GripVertical } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
@@ -185,116 +185,125 @@ export function TaskCard({ task }: TaskCardProps) {
       <Card
         ref={setNodeRef}
         style={style}
-        {...attributes}
-        {...listeners}
-        className={`group cursor-grab rounded py-0 transition-shadow hover:border-black hover:shadow-sm active:cursor-grabbing ${isDragging ? "opacity-50" : ""} ${
-          task?.isCompleted ? "bg-gray-50 opacity-60" : ""
-        }`}
+        className={`group cursor-pointer rounded py-0 transition-shadow hover:border-black hover:shadow-sm ${
+          isDragging ? "opacity-50" : ""
+        } ${task?.isCompleted ? "bg-gray-50 opacity-60" : ""}`}
         onClick={() => setOpenTaskDialog(true)}
       >
-        <CardContent className="relative p-3">
-          <h3
-            className={`mb-2 text-sm font-medium ${task?.isCompleted ? "text-gray-500 line-through" : ""}`}
+        <CardContent className="relative p-3 flex flex-row items-start gap-2">
+          {/* Drag Handle */}
+          <span
+            {...attributes}
+            {...listeners}
+            className="flex items-center mt-1 cursor-grab active:cursor-grabbing select-none"
+            onClick={e => e.stopPropagation()} // Prevent opening dialog when clicking handle
           >
-            {task?.title}
-          </h3>
-          {task.description && (
-            <p className="mb-2 line-clamp-2 text-xs text-muted-foreground">
-              {stripHtml(task?.description)}
-            </p>
-          )}
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              {task?.priority && (
-                <Badge
-                  variant="secondary"
-                  className={`text-xs ${priorityColors[task?.priority]}`}
-                >
-                  {task?.priority}
-                </Badge>
-              )}
-              {checklistProgress && checklistProgress.total > 0 && (
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <CheckSquare className="h-3 w-3" />
-                  <span
-                    className={
-                      checklistProgress?.completed === checklistProgress?.total
-                        ? "text-green-600"
-                        : ""
-                    }
-                  >
-                    {checklistProgress?.completed}/{checklistProgress?.total}
-                  </span>
-                </div>
-              )}
-            </div>
-            <div className="flex items-center gap-2 text-xs">
-              {task?.dueDate && (
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-3 w-3" />
-                  <span className={formatDate(task?.dueDate).colorClass}>
-                    {formatDate(task?.dueDate).formatted}
-                  </span>
-                </div>
-              )}
-              {/* {task?.invitedUsers && (
-                <UserAvatar user={task?.invitedUsers} size="sm" showPopover />
-              )} */}
-            </div>
-          </div>
-
-          {/* Hover Actions */}
-          <div
-            className="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
-            onMouseDown={(e) => e.stopPropagation()} // Prevent drag when clicking buttons
-          >
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleComplete(task?._id);
-              }}
-              onMouseDown={(e) => e.stopPropagation()}
+            <GripVertical className="h-4 w-4 text-gray-400" />
+          </span>
+          <div className="flex-1">
+            <h3
+              className={`mb-2 text-sm font-medium ${task?.isCompleted ? "text-gray-500 line-through" : ""}`}
             >
-              <div
-                className={`flex h-4 w-4 items-center justify-center rounded-full border-2 ${
-                  task?.isCompleted
-                    ? "border-green-500 bg-green-500"
-                    : "border-gray-400"
-                }`}
-              >
-                {task?.isCompleted && (
-                  <div className="text-xs leading-none text-white">✓</div>
+              {task?.title}
+            </h3>
+            {task.description && (
+              <p className="mb-2 line-clamp-2 text-xs text-muted-foreground">
+                {stripHtml(task?.description)}
+              </p>
+            )}
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {task?.priority && (
+                  <Badge
+                    variant="secondary"
+                    className={`text-xs ${priorityColors[task?.priority]}`}
+                  >
+                    {task?.priority}
+                  </Badge>
+                )}
+                {checklistProgress && checklistProgress.total > 0 && (
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <CheckSquare className="h-3 w-3" />
+                    <span
+                      className={
+                        checklistProgress?.completed === checklistProgress?.total
+                          ? "text-green-600"
+                          : ""
+                      }
+                    >
+                      {checklistProgress?.completed}/{checklistProgress?.total}
+                    </span>
+                  </div>
                 )}
               </div>
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
-              onClick={(e) => {
-                e.stopPropagation();
-                setOpenTaskDialog(true);
-              }}
-              onMouseDown={(e) => e.stopPropagation()}
+              <div className="flex items-center gap-2 text-xs">
+                {task?.dueDate && (
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-3 w-3" />
+                    <span className={formatDate(task?.dueDate).colorClass}>
+                      {formatDate(task?.dueDate).formatted}
+                    </span>
+                  </div>
+                )}
+                {/* {task?.invitedUsers && (
+                  <UserAvatar user={task?.invitedUsers} size="sm" showPopover />
+                )} */}
+              </div>
+            </div>
+
+            {/* Hover Actions */}
+            <div
+              className="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
+              onMouseDown={(e) => e.stopPropagation()} // Prevent drag when clicking buttons
             >
-              <Edit2 className="h-3 w-3" />
-            </Button>
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
-              onClick={(e) => {
-                e.stopPropagation();
-                onToggleArchive(task?._id);
-              }}
-              onMouseDown={(e) => e.stopPropagation()}
-            >
-              <Archive className="h-3 w-3" />
-            </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleComplete(task?._id);
+                }}
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <div
+                  className={`flex h-4 w-4 items-center justify-center rounded-full border-2 ${
+                    task?.isCompleted
+                      ? "border-green-500 bg-green-500"
+                      : "border-gray-400"
+                  }`}
+                >
+                  {task?.isCompleted && (
+                    <div className="text-xs leading-none text-white">✓</div>
+                  )}
+                </div>
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpenTaskDialog(true);
+                }}
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <Edit2 className="h-3 w-3" />
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleArchive(task?._id);
+                }}
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <Archive className="h-3 w-3" />
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
