@@ -153,7 +153,7 @@ export function TaskCard({ task }: TaskCardProps) {
         const columnTasks: { data: ITask[] } | undefined =
           queryClient.getQueryData(["tasks", task?.column?._id]);
 
-        const updatedTasks = columnTasks?.data?.map((t: ITask) => {
+        const updatedTasks = columnTasks?.data?.filter((t: ITask) => {
           if (t._id !== taskId) {
             return t;
           }
@@ -195,7 +195,7 @@ export function TaskCard({ task }: TaskCardProps) {
           <span
             {...attributes}
             {...listeners}
-            className="flex items-center mt-1 cursor-grab active:cursor-grabbing select-none"
+            className="flex items-center mt-1  cursor-grab max-w-0 group-hover:max-w-4 w-full transition-all active:cursor-grabbing select-none"
             onClick={e => e.stopPropagation()} // Prevent opening dialog when clicking handle
           >
             <GripVertical className="h-4 w-4 text-gray-400" />
@@ -206,7 +206,7 @@ export function TaskCard({ task }: TaskCardProps) {
             >
               {task?.title}
             </h3>
-            {task.description && (
+            {task?.description && (
               <p className="mb-2 line-clamp-2 text-xs text-muted-foreground">
                 {stripHtml(task?.description)}
               </p>

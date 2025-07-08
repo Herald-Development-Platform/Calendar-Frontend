@@ -164,10 +164,10 @@ export function BoardColumn({ column }: BoardColumnProps) {
         </CardHeader>
         <CardContent className="bg-gray-50 px-4 pb-4 pt-3">
           <DndContext onDragEnd={handleDragEnd}>
-            <SortableContext items={tasks.map((task) => task._id)} strategy={verticalListSortingStrategy}>
+            <SortableContext items={tasks.map((task) => task?._id)} strategy={verticalListSortingStrategy}>
               <div ref={setNodeRef} className="min-h-[1px] space-y-3">
                 {tasks.filter((task) => !task?.isArchived).map((task) => (
-                  <TaskCard key={task._id} task={task} />
+                  <TaskCard key={task?._id} task={task} />
                 ))}
               </div>
             </SortableContext>
