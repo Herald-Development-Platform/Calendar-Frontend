@@ -195,7 +195,7 @@ export function TaskCard({ task }: TaskCardProps) {
           <span
             {...attributes}
             {...listeners}
-            className="flex items-center mt-1  cursor-grab max-w-0 group-hover:max-w-4 w-full transition-all active:cursor-grabbing select-none"
+            className="flex items-center mt-1  cursor-grab max-w-0 group-hover:max-w-4 w-full transition-all duration-300 active:cursor-grabbing select-none"
             onClick={e => e.stopPropagation()} // Prevent opening dialog when clicking handle
           >
             <GripVertical className="h-4 w-4 text-gray-400" />
