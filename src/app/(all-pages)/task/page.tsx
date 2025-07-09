@@ -38,7 +38,7 @@ const TaskPage = () => {
         columnsData.data.map((col: any) => ({
           ...col,
           tasks: col.tasks ? [...col.tasks] : [],
-        }))
+        })),
       );
     }
   }, [columnsData]);
@@ -59,7 +59,9 @@ const TaskPage = () => {
     const overId = over.id as string;
 
     // Find the column containing the task
-    const colIdx = columns.findIndex((col) => col.tasks.some((t: any) => t._id === taskId));
+    const colIdx = columns.findIndex((col) =>
+      col.tasks.some((t: any) => t._id === taskId),
+    );
     if (colIdx === -1) return;
     const column = columns[colIdx];
     const oldIndex = column.tasks.findIndex((t: any) => t._id === taskId);
@@ -86,20 +88,15 @@ const TaskPage = () => {
     <>
       <Headers.GeneralHeader />
       <main className="p-4 xl:max-w-[calc(100vw-260px)]">
-        <h1 className="text-2xl font-semibold">Task Boardss</h1>
+        <h1 className="text-2xl font-semibold">Task Boards</h1>
 
         <div className="flex items-center  justify-end gap-2">
-          <ArchieveSheet/>
-           
-        
+          <ArchieveSheet />
           <AddColumnDialog />
         </div>
 
-        <DndContext
-          sensors={sensors}
-          onDragEnd={handleDragEnd}
-        >
-          <div className="flex gap-6 overflow-x-auto pb-6 mt-10">
+        <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+          <div className="mt-6 flex gap-6 overflow-x-auto pb-1">
             {columns.map((column: ITaskColumnBase) => (
               <BoardColumn
                 key={column._id}
@@ -107,9 +104,6 @@ const TaskPage = () => {
                 // tasks={column.tasks ? [...column.tasks].sort((a, b) => a.position - b.position) : []}
               />
             ))}
-
-            
-
           </div>
         </DndContext>
       </main>

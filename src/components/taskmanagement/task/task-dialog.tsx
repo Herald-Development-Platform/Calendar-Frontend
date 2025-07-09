@@ -57,8 +57,6 @@ export function TaskDialog({
   // API CALLS
   const { mutate: updateTask, isPending: isUpdatingTask } = useUpdateTask();
 
-  console.log("userData", userData);
-
   const {
     register,
     handleSubmit,
@@ -67,7 +65,7 @@ export function TaskDialog({
     setValue,
     watch,
     formState: { errors },
-  } = useForm<Partial<Omit<ITask, 'column'> & { column: string }>>({
+  } = useForm<Partial<Omit<ITask, "column"> & { column: string }>>({
     defaultValues: {
       title: "",
       description: "",
@@ -75,7 +73,7 @@ export function TaskDialog({
       dueDate: "",
       invitedUsers: [],
       column: "",
-    }
+    },
   });
 
   const columnData: { data: ITaskColumnBase[] } | undefined =
@@ -101,7 +99,7 @@ export function TaskDialog({
         priority: task.priority || "medium",
         dueDate: task.dueDate || "",
         invitedUsers: task.invitedUsers || [],
-        column: task.column._id
+        column: task.column._id,
       });
       setChecklist(task.checklist || []);
       setComments(task.comments || []);
@@ -112,7 +110,7 @@ export function TaskDialog({
         priority: "medium",
         dueDate: "",
         invitedUsers: [],
-        column: ""
+        column: "",
       });
       setChecklist([]);
       setComments([]);
@@ -121,7 +119,10 @@ export function TaskDialog({
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     }
@@ -175,29 +176,81 @@ export function TaskDialog({
   };
 
   const handleInvitedUsersChange = (userIds: string[]) => {
-    const selectedUsers = allUsers?.data?.data?.filter((user: User) => userIds.includes(user._id)) || [];
+    const selectedUsers =
+      allUsers?.data?.data?.filter((user: User) =>
+        userIds.includes(user._id),
+      ) || [];
     setValue("invitedUsers", selectedUsers);
   };
 
-  const onSubmit = (data: Partial<Omit<ITask, 'column'> & { column: string }>) => {
+  const onSubmit = (
+    data: Partial<Omit<ITask, "column"> & { column: string }>,
+  ) => {
     if (!data.title?.trim()) return;
 
-    const selectedColumnObj = columnData?.data?.find((col) => col._id === data.column);
+    const selectedColumnObj = columnData?.data?.find(
+      (col) => col._id === data.column,
+    );
+    if (!selectedColumnObj) return;
 
-    updateTask({
+    const oldColumnId = task?.column?._id;
+    const newColumnId = data.column;
+
+    const updatedTask: ITask = {
       ...task,
-      dueDate: data.dueDate,
       title: data.title,
       description: data.description,
+      dueDate: data.dueDate,
       priority: data.priority || "medium",
-      column: selectedColumnObj || task.column,
+      column: selectedColumnObj,
       invitedUsers: data.invitedUsers,
-    }, {
+    };
+
+    const oldQueryKey = ["tasks", oldColumnId];
+    const newQueryKey = ["tasks", newColumnId];
+
+    // Get old and new column data
+    const oldColumnTasks: { data: ITask[] } | undefined =
+      queryClient.getQueryData(oldQueryKey);
+    const newColumnTasks: { data: ITask[] } | undefined =
+      queryClient.getQueryData(newQueryKey);
+
+    const previousOldTasks = oldColumnTasks?.data || [];
+    const previousNewTasks = newColumnTasks?.data || [];
+
+    // Prepare optimistic update
+    if (oldColumnId === newColumnId) {
+      // Just update task in the same column
+      const updatedTasks = previousOldTasks.map((t) =>
+        t._id === task._id ? updatedTask : t,
+      );
+      queryClient.setQueryData(oldQueryKey, { data: updatedTasks });
+    } else {
+      // Remove from old column
+      const updatedOldTasks = previousOldTasks.filter(
+        (t) => t._id !== task._id,
+      );
+      queryClient.setQueryData(oldQueryKey, { data: updatedOldTasks });
+
+      // Add to new column
+      queryClient.setQueryData(newQueryKey, {
+        data: [...previousNewTasks, updatedTask],
+      });
+    }
+
+    // Call API
+    updateTask(updatedTask, {
       onSuccess: () => {
         toast.success("Task updated successfully");
       },
       onError: (error) => {
-        toast.error(`Failed to update task: `);
+        toast.error("Failed to update task");
+
+        // Rollback
+        queryClient.setQueryData(oldQueryKey, { data: previousOldTasks });
+        if (oldColumnId !== newColumnId) {
+          queryClient.setQueryData(newQueryKey, { data: previousNewTasks });
+        }
       },
     });
   };
@@ -231,9 +284,13 @@ export function TaskDialog({
     : null;
 
   // Helper for toggling users
-  const toggleUser = (selectedUsers: User[], user: User, onChange: (users: User[]) => void) => {
-    if (selectedUsers.some(u => u._id === user._id)) {
-      onChange(selectedUsers.filter(u => u._id !== user._id));
+  const toggleUser = (
+    selectedUsers: User[],
+    user: User,
+    onChange: (users: User[]) => void,
+  ) => {
+    if (selectedUsers.some((u) => u._id === user._id)) {
+      onChange(selectedUsers.filter((u) => u._id !== user._id));
     } else {
       onChange([...selectedUsers, user]);
     }
@@ -265,7 +322,7 @@ export function TaskDialog({
                   rules={{ required: true }}
                   render={({ field }) => (
                     <Select
-                      value={typeof field.value === 'string' ? field.value : ''}
+                      value={typeof field.value === "string" ? field.value : ""}
                       onValueChange={field.onChange}
                     >
                       <SelectTrigger className="h-auto w-auto border-none bg-gray-100 p-1">
@@ -368,26 +425,35 @@ export function TaskDialog({
                         <div className="relative" ref={dropdownRef}>
                           <button
                             type="button"
-                            className={`flex flex-wrap items-center gap-1 border rounded px-2 py-2 bg-white min-h-[40px] w-full focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow ${dropdownOpen ? 'ring-2 ring-primary/50' : ''}`}
-                            onClick={() => setDropdownOpen(v => !v)}
+                            className={`flex min-h-[40px] w-full flex-wrap items-center gap-1 rounded border bg-white px-2 py-2 transition-shadow focus:outline-none focus:ring-2 focus:ring-primary/50 ${dropdownOpen ? "ring-2 ring-primary/50" : ""}`}
+                            onClick={() => setDropdownOpen((v) => !v)}
                             tabIndex={0}
                             aria-haspopup="listbox"
                             aria-expanded={dropdownOpen}
                           >
                             {selectedUsers.length === 0 && (
-                              <span className="text-sm text-muted-foreground">Select users...</span>
+                              <span className="text-sm text-muted-foreground">
+                                Select users...
+                              </span>
                             )}
-                            {selectedUsers.map(user => (
-                              <span key={user._id} className="flex items-center gap-1 bg-primary/10 text-primary rounded-full px-2 py-0.5 text-xs mr-1">
+                            {selectedUsers.map((user) => (
+                              <span
+                                key={user._id}
+                                className="mr-1 flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary"
+                              >
                                 <UserAvatar user={user} size="sm" />
                                 {user.username}
                                 <button
                                   type="button"
                                   className="ml-1 text-xs text-gray-400 hover:text-red-500 focus:outline-none"
                                   tabIndex={-1}
-                                  onClick={e => {
+                                  onClick={(e) => {
                                     e.stopPropagation();
-                                    field.onChange(selectedUsers.filter(u => u._id !== user._id));
+                                    field.onChange(
+                                      selectedUsers.filter(
+                                        (u) => u._id !== user._id,
+                                      ),
+                                    );
                                   }}
                                   aria-label={`Remove ${user.username}`}
                                 >
@@ -395,32 +461,57 @@ export function TaskDialog({
                                 </button>
                               </span>
                             ))}
-                            <span className={`ml-auto transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}>
-                              <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6"/></svg>
+                            <span
+                              className={`ml-auto transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
+                            >
+                              <svg
+                                width="18"
+                                height="18"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M6 9l6 6 6-6"
+                                />
+                              </svg>
                             </span>
                           </button>
                           {dropdownOpen && (
-                            <div className="absolute z-10 mt-1 w-full bg-white border rounded shadow max-h-48 overflow-y-auto animate-fade-in">
+                            <div className="animate-fade-in absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded border bg-white shadow">
                               {allUsers?.data?.data.map((user: User) => (
                                 <div
                                   key={user._id}
-                                  className={`flex items-center gap-2 px-3 py-2 cursor-pointer transition-colors ${selectedUsers.some(u => u._id === user._id) ? 'bg-primary/10 text-primary' : 'hover:bg-gray-100'}`}
-                                  onClick={e => {
+                                  className={`flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors ${selectedUsers.some((u) => u._id === user._id) ? "bg-primary/10 text-primary" : "hover:bg-gray-100"}`}
+                                  onClick={(e) => {
                                     e.stopPropagation();
-                                    toggleUser(selectedUsers, user, field.onChange);
+                                    toggleUser(
+                                      selectedUsers,
+                                      user,
+                                      field.onChange,
+                                    );
                                     setDropdownOpen(false);
                                   }}
                                   role="option"
-                                  aria-selected={selectedUsers.some(u => u._id === user._id)}
+                                  aria-selected={selectedUsers.some(
+                                    (u) => u._id === user._id,
+                                  )}
                                 >
                                   <input
                                     type="checkbox"
-                                    checked={selectedUsers.some(u => u._id === user._id)}
+                                    checked={selectedUsers.some(
+                                      (u) => u._id === user._id,
+                                    )}
                                     readOnly
                                     className="accent-primary"
                                   />
                                   <UserAvatar user={user} size="sm" />
-                                  <span className="text-sm">{user.username}</span>
+                                  <span className="text-sm">
+                                    {user.username}
+                                  </span>
                                 </div>
                               ))}
                             </div>
@@ -480,7 +571,12 @@ export function TaskDialog({
 }
 
 // Checklist Section
-function ChecklistSection({ checklist, setChecklist, newChecklistItem, setNewChecklistItem }: {
+function ChecklistSection({
+  checklist,
+  setChecklist,
+  newChecklistItem,
+  setNewChecklistItem,
+}: {
   checklist: ChecklistItem[];
   setChecklist: React.Dispatch<React.SetStateAction<ChecklistItem[]>>;
   newChecklistItem: string;
@@ -491,7 +587,8 @@ function ChecklistSection({ checklist, setChecklist, newChecklistItem, setNewChe
         completed: checklist.filter((i) => i.completed).length,
         total: checklist.length,
         percentage: Math.round(
-          (checklist.filter((i) => i.completed).length / checklist.length) * 100,
+          (checklist.filter((i) => i.completed).length / checklist.length) *
+            100,
         ),
       }
     : null;
@@ -590,7 +687,14 @@ function ChecklistSection({ checklist, setChecklist, newChecklistItem, setNewChe
 }
 
 // Comments Section
-function CommentsSection({ comments, setComments, newComment, setNewComment, userData, formatDate }: {
+function CommentsSection({
+  comments,
+  setComments,
+  newComment,
+  setNewComment,
+  userData,
+  formatDate,
+}: {
   comments: Comment[];
   setComments: React.Dispatch<React.SetStateAction<Comment[]>>;
   newComment: string;
@@ -646,16 +750,11 @@ function CommentsSection({ comments, setComments, newComment, setNewComment, use
             placeholder="Write a comment..."
             onKeyDown={(e) => e.key === "Enter" && addComment()}
           />
-          <Button
-            onClick={addComment}
-            size="sm"
-            disabled={!newComment.trim()}
-          >
+          <Button onClick={addComment} size="sm" disabled={!newComment.trim()}>
             Send
           </Button>
         </div>
       </div>
     </div>
-
   );
 }

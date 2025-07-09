@@ -1,6 +1,12 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, MoreHorizontal, Edit3, Trash2 } from "lucide-react";
 // import { TaskCard, type Task } from "./task-card"
@@ -34,7 +40,10 @@ import { useQueryClient } from "@tanstack/react-query";
 import DeleteColumnDialog from "./delete-column-dialog";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import { useUpdateTask, useBulkUpdateTaskPositions } from "@/services/api/taskManagement/taskApi";
+import {
+  useUpdateTask,
+  useBulkUpdateTaskPositions,
+} from "@/services/api/taskManagement/taskApi";
 
 interface BoardColumnProps {
   column: ITaskColumnBase;
@@ -48,13 +57,18 @@ export function BoardColumn({ column }: BoardColumnProps) {
   const queryClient = useQueryClient();
 
   const [showAddCard, setShowAddCard] = useState(false);
-  const [showEditColumnDialogOpen, setShowEditColumnDialogOpen] = useState(false);
-  const [showDeleteColumnDialogOpen, setShowDeleteColumnDialogOpen] = useState(false);
+  const [showEditColumnDialogOpen, setShowEditColumnDialogOpen] =
+    useState(false);
+  const [showDeleteColumnDialogOpen, setShowDeleteColumnDialogOpen] =
+    useState(false);
 
   // API CALLS
-  const { data: tasksData, isLoading: isTasksLoading } = useGetTaskByColumn(column._id);
+  const { data: tasksData, isLoading: isTasksLoading } = useGetTaskByColumn(
+    column._id,
+  );
   const { mutate: createTask, isPending: isCreatingTask } = useCreateTask();
-  const { mutate: updateColumn, isPending: isUpdatingColumn } = useUpdateColumn();
+  const { mutate: updateColumn, isPending: isUpdatingColumn } =
+    useUpdateColumn();
   const { mutate: updateTask } = useUpdateTask();
   const { mutate: bulkUpdateTaskPositions } = useBulkUpdateTaskPositions();
 
@@ -64,7 +78,11 @@ export function BoardColumn({ column }: BoardColumnProps) {
   useEffect(() => {
     if (tasksData?.data) {
       // Sort by position field if present
-      setTasks([...tasksData.data].sort((a, b) => (a.position ?? 0) - (b.position ?? 0)));
+      setTasks(
+        [...tasksData.data].sort(
+          (a, b) => (a.position ?? 0) - (b.position ?? 0),
+        ),
+      );
     }
   }, [tasksData]);
 
@@ -82,20 +100,39 @@ export function BoardColumn({ column }: BoardColumnProps) {
     });
     setTasks(newTasks);
     // Persist changes in bulk
-    bulkUpdateTaskPositions(newTasks.map(task => ({ _id: task._id, position: task.position })));
+    bulkUpdateTaskPositions(
+      newTasks.map((task) => ({ _id: task._id, position: task.position })),
+    );
   };
 
   const handleAddTask = (title: string) => {
     if (isCreatingTask) return;
+
     createTask(
       { title, column: column._id },
       {
-        onSuccess: () => {
+        onSuccess: (data) => {
+          const newTask = data?.data;
+          console.log("Task created successfully:", newTask);
           setShowAddCard(false);
-          queryClient.invalidateQueries({ queryKey: ["tasks", column._id] });
+
+          const queryKey = ["tasks", column._id];
+
+          // Get current cache
+          const existing = queryClient.getQueryData<{ data: ITask[] }>(
+            queryKey,
+          );
+          const previousTasks = existing?.data || [];
+
+          // Update cache manually
+          queryClient.setQueryData(queryKey, {
+            data: [...previousTasks, newTask],
+          });
         },
         onError: (error) => {
-          toast.error((error as any)?.response?.data?.message || "Failed to create task");
+          toast.error(
+            (error as any)?.response?.data?.message || "Failed to create task",
+          );
         },
       },
     );
@@ -111,7 +148,10 @@ export function BoardColumn({ column }: BoardColumnProps) {
           queryClient.invalidateQueries({ queryKey: ["columns"] });
         },
         onError: (error) => {
-          toast.error((error as any)?.response?.data?.message || "Failed to update column");
+          toast.error(
+            (error as any)?.response?.data?.message ||
+              "Failed to update column",
+          );
         },
       },
     );
@@ -142,7 +182,10 @@ export function BoardColumn({ column }: BoardColumnProps) {
                     <MoreHorizontal className="h-3.5 w-3.5 text-gray-500" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48 border border-gray-200 bg-white shadow-lg">
+                <DropdownMenuContent
+                  align="end"
+                  className="w-48 border border-gray-200 bg-white shadow-lg"
+                >
                   <DropdownMenuItem
                     onClick={() => setShowEditColumnDialogOpen(true)}
                     className="flex cursor-pointer items-center gap-2 text-sm hover:bg-gray-50"
@@ -162,16 +205,23 @@ export function BoardColumn({ column }: BoardColumnProps) {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="bg-gray-50 px-4 pb-4 pt-3">
+        <CardContent className="max-h-[calc(100vh-340px)] overflow-y-auto bg-gray-50 px-4 pr-3 pb-1 pt-3">
           <DndContext onDragEnd={handleDragEnd}>
-            <SortableContext items={tasks.map((task) => task?._id)} strategy={verticalListSortingStrategy}>
+            <SortableContext
+              items={tasks.map((task) => task?._id)}
+              strategy={verticalListSortingStrategy}
+            >
               <div ref={setNodeRef} className="min-h-[1px] space-y-3">
-                {tasks.filter((task) => !task?.isArchived).map((task) => (
-                  <TaskCard key={task?._id} task={task} />
-                ))}
+                {tasks
+                  .filter((task) => !task?.isArchived)
+                  .map((task) => (
+                    <TaskCard key={task?._id} task={task} />
+                  ))}
               </div>
             </SortableContext>
           </DndContext>
+        </CardContent>
+        <CardFooter className="px-4  pb-2">
           {showAddCard ? (
             <AddCardInput
               onAdd={handleAddTask}
@@ -187,7 +237,7 @@ export function BoardColumn({ column }: BoardColumnProps) {
               Add a card
             </Button>
           )}
-        </CardContent>
+        </CardFooter>
       </Card>
 
       <EditColumnDialog

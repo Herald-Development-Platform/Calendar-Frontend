@@ -10,6 +10,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useDeleteColumn } from "@/services/api/taskManagement/columnsApi";
+import { ITaskColumnBase } from "@/types/taskmanagement/column.types";
+import { ITask } from "@/types/taskmanagement/task.types";
 import { useQueryClient } from "@tanstack/react-query";
 
 import { AlertTriangle, Archive, Clock, Plus, Trash2 } from "lucide-react";
@@ -33,17 +35,62 @@ const DeleteColumnDialog = ({
 
   const handleDeleteColumn = () => {
     if (isDeletingColumn) return;
+
+    const queryKey = ["columns"];
+    const existing = queryClient.getQueryData<{ data: ITaskColumnBase[] }>(
+      queryKey,
+    );
+    const previousColumns = existing?.data || [];
+
+    // Optimistically update columns cache
+    const updatedColumns = previousColumns.filter(
+      (col) => col._id !== columnId,
+    );
+    queryClient.setQueryData(queryKey, {
+      data: updatedColumns,
+    });
+
+    // Get all tasks in this column to archive later
+    const tasksKey = ["tasks", columnId];
+    const columnTasksData = queryClient.getQueryData<{ data: ITask[] }>(
+      tasksKey,
+    );
+    const columnTasks = columnTasksData?.data || [];
+
     deleteColumn(columnId, {
       onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: ["columns"],
-        });
         toast.success("Column deleted successfully!");
+
+        // Update columns cache (optional here since optimistic already done)
+        queryClient.setQueryData(queryKey, {
+          data: updatedColumns,
+        });
+
+        // Update archived tasks cache by adding tasks from deleted column
+        const archivedKey = ["archived-tasks"];
+        const archivedData = queryClient.getQueryData<{ data: ITask[] }>(
+          archivedKey,
+        );
+        const archivedTasks = archivedData?.data || [];
+
+        queryClient.setQueryData(archivedKey, {
+          data: [...archivedTasks, ...columnTasks],
+        });
+
+        // Optionally remove the tasks cache for this deleted column
+        queryClient.removeQueries({
+          queryKey: tasksKey,
+        });
       },
       onError: (error) => {
         toast.error(
           (error as any)?.response?.data?.message || "Failed to delete column",
         );
+
+        // Revert columns cache on error
+        queryClient.setQueryData(queryKey, {
+          data: previousColumns,
+        });
       },
     });
   };

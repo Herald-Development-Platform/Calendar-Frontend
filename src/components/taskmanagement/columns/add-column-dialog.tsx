@@ -15,6 +15,7 @@ import { LayoutList, Plus } from "lucide-react";
 import { useCreateColumn } from "@/services/api/taskManagement/columnsApi";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { ITaskColumnBase } from "@/types/taskmanagement/column.types";
 
 export function AddColumnDialog() {
   const queryClient = useQueryClient();
@@ -27,14 +28,26 @@ export function AddColumnDialog() {
 
   const handleAdd = () => {
     if (!title.trim()) return;
-    // onAdd(title.trim())
 
-    createColumn(title.trim(), {
-      onSuccess: () => {
+    const trimmedTitle = title.trim();
+
+    createColumn(trimmedTitle, {
+      onSuccess: (response) => {
+        const newColumn = response?.data;
         toast.success("Column added successfully!");
         setTitle("");
-        queryClient.invalidateQueries({ queryKey: ["columns"] });
         setShowAddColumnDialog(false);
+
+        const queryKey = ["columns"];
+        const existing = queryClient.getQueryData<{ data: ITaskColumnBase[] }>(
+          queryKey,
+        );
+        const previousColumns = existing?.data || [];
+
+        // Update cache manually
+        queryClient.setQueryData(queryKey, {
+          data: [...previousColumns, newColumn],
+        });
       },
       onError: (error) => {
         toast.error(

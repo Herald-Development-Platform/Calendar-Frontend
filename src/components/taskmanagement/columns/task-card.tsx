@@ -2,7 +2,13 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Edit2, Archive, CheckSquare, GripVertical } from "lucide-react";
+import {
+  Calendar,
+  Edit2,
+  Archive,
+  CheckSquare,
+  GripVertical,
+} from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
@@ -121,61 +127,96 @@ export function TaskCard({ task }: TaskCardProps) {
   };
 
   const onToggleComplete = (taskId: string) => {
+    const columnId = task?.column?._id;
+    const queryKey = ["tasks", columnId];
+
+    // Get current cached tasks
+    const columnTasks: { data: ITask[] } | undefined =
+      queryClient.getQueryData(queryKey);
+    const previousTasks = columnTasks?.data;
+
+    // Create updated task
     const updatedTask = { ...task, isCompleted: !task?.isCompleted };
 
+    // Create optimistic update
+    const updatedTasks = previousTasks?.map((t: ITask) => {
+      if (t._id === taskId) {
+        return updatedTask;
+      }
+      return t;
+    });
+
+    // Optimistically update the cache
+    queryClient.setQueryData(queryKey, {
+      data: updatedTasks,
+    });
+
+    // Call the API
     updateTask(updatedTask, {
       onSuccess: () => {
-        const columnTasks: { data: ITask[] } | undefined =
-          queryClient.getQueryData(["tasks", task?.column?._id]);
-
-        const updatedTasks = columnTasks?.data?.map((t: ITask) => {
-          if (t._id === taskId) {
-            return updatedTask;
-          }
-          return t;
-        });
-
-        queryClient.setQueryData(["tasks", task?.column?._id], {
-          data: updatedTasks,
-        });
+        // Optional: Refetch or leave as is if optimistic update matches server
       },
       onError: (error) => {
         console.error("Error updating task:", error);
+
+        // Roll back to previous tasks
+        queryClient.setQueryData(queryKey, {
+          data: previousTasks,
+        });
       },
     });
   };
 
   const onToggleArchive = (taskId: string) => {
+    const columnId = task?.column?._id;
+    const queryKey = ["tasks", columnId];
+    const archivedKey = ["archived-tasks"];
+
     const updatedTask = { ...task, isArchived: !task?.isArchived };
 
+    // Get previous tasks and archived-tasks from cache
+    const columnTasks: { data: ITask[] } | undefined =
+      queryClient.getQueryData(queryKey);
+    const archivedTasks: { data: ITask[] } | undefined =
+      queryClient.getQueryData(archivedKey);
+
+    const previousColumnTasks = columnTasks?.data || [];
+    const previousArchivedTasks = archivedTasks?.data || [];
+
+    // Optimistically update "tasks" list
+    const updatedColumnTasks = updatedTask.isArchived
+      ? previousColumnTasks.filter((t) => t._id !== taskId)
+      : [...previousColumnTasks, updatedTask]; // In case of unarchive
+
+    queryClient.setQueryData(queryKey, {
+      data: updatedColumnTasks,
+    });
+
+    // Optimistically update "archived-tasks" list
+    const updatedArchivedTasks = updatedTask.isArchived
+      ? [...previousArchivedTasks, updatedTask]
+      : previousArchivedTasks.filter((t) => t._id !== taskId);
+
+    queryClient.setQueryData(archivedKey, {
+      data: updatedArchivedTasks,
+    });
+
+    // Perform API call
     updateTask(updatedTask, {
       onSuccess: () => {
-        const columnTasks: { data: ITask[] } | undefined =
-          queryClient.getQueryData(["tasks", task?.column?._id]);
-
-        const updatedTasks = columnTasks?.data?.filter((t: ITask) => {
-          if (t._id !== taskId) {
-            return t;
-          }
-        });
-
-        queryClient.setQueryData(["tasks", task?.column?._id], {
-          data: updatedTasks,
-        });
-
-        // Update archived tasks
-        const archivedTasks: { data: ITask[] } | undefined =
-          queryClient.getQueryData(["archived-tasks"]);
-
-        if (updatedTask.isArchived) {
-          // Add to archived tasks
-          queryClient.setQueryData(["archived-tasks"], {
-            data: [...(archivedTasks?.data || []), updatedTask],
-          });
-        }
+        // Optional: refetch or assume cache is correct
       },
       onError: (error) => {
         console.error("Error updating task:", error);
+
+        // Roll back both caches
+        queryClient.setQueryData(queryKey, {
+          data: previousColumnTasks,
+        });
+
+        queryClient.setQueryData(archivedKey, {
+          data: previousArchivedTasks,
+        });
       },
     });
   };
@@ -185,18 +226,18 @@ export function TaskCard({ task }: TaskCardProps) {
       <Card
         ref={setNodeRef}
         style={style}
-        className={`group cursor-pointer rounded py-0 transition-shadow hover:border-black hover:shadow-sm ${
-          isDragging ? "opacity-50" : ""
+        className={`group cursor-pointer  rounded-lg py-0 shadow-sm transition-shadow hover:border-black/40 hover:shadow-sm ${
+          isDragging ? "opacity-50 " : ""
         } ${task?.isCompleted ? "bg-gray-50 opacity-60" : ""}`}
         onClick={() => setOpenTaskDialog(true)}
       >
-        <CardContent className="relative p-3 flex flex-row items-start gap-2">
+        <CardContent className="relative flex flex-row items-start gap-2 p-3">
           {/* Drag Handle */}
           <span
             {...attributes}
             {...listeners}
-            className="flex items-center mt-1  cursor-grab max-w-0 group-hover:max-w-4 w-full transition-all duration-300 active:cursor-grabbing select-none"
-            onClick={e => e.stopPropagation()} // Prevent opening dialog when clicking handle
+            className="mt-1 flex w-full  max-w-0 cursor-grab select-none items-center transition-all duration-300 active:cursor-grabbing group-hover:max-w-4"
+            onClick={(e) => e.stopPropagation()} // Prevent opening dialog when clicking handle
           >
             <GripVertical className="h-4 w-4 text-gray-400" />
           </span>
@@ -227,7 +268,8 @@ export function TaskCard({ task }: TaskCardProps) {
                     <CheckSquare className="h-3 w-3" />
                     <span
                       className={
-                        checklistProgress?.completed === checklistProgress?.total
+                        checklistProgress?.completed ===
+                        checklistProgress?.total
                           ? "text-green-600"
                           : ""
                       }
