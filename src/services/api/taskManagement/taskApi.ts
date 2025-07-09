@@ -77,3 +77,13 @@ export const useBulkUpdateTaskPositions = () => {
     },
   });
 };
+
+export const useGetInvitedTasks = () => {
+  return useQuery({
+    queryKey: ["invited-tasks"],
+    queryFn: async () => {
+      const response = await Axios.get("/task-management/tasks/invited");
+      return response.data;
+    },
+  });
+};

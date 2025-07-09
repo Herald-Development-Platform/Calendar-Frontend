@@ -57,12 +57,11 @@ export interface Comment {
 
 interface TaskCardProps {
   task: ITask;
-  // onEdit: (task: Task) => void
-  // onArchive: (taskId: string) => void
-  // onToggleComplete: (taskId: string) => void
+  disableDnD?: boolean;
+  disableEditDelete?: boolean;
 }
 
-export function TaskCard({ task }: TaskCardProps) {
+export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps) {
   const {
     attributes,
     listeners,
@@ -233,14 +232,16 @@ export function TaskCard({ task }: TaskCardProps) {
       >
         <CardContent className="relative flex flex-row items-start gap-2 p-3">
           {/* Drag Handle */}
-          <span
-            {...attributes}
-            {...listeners}
-            className="mt-1 flex w-full  max-w-0 cursor-grab select-none items-center transition-all duration-300 active:cursor-grabbing group-hover:max-w-4"
-            onClick={(e) => e.stopPropagation()} // Prevent opening dialog when clicking handle
-          >
-            <GripVertical className="h-4 w-4 text-gray-400" />
-          </span>
+          {!disableDnD && (
+            <span
+              {...attributes}
+              {...listeners}
+              className="mt-1 flex w-full  max-w-0 cursor-grab select-none items-center transition-all duration-300 active:cursor-grabbing group-hover:max-w-4"
+              onClick={(e) => e.stopPropagation()} // Prevent opening dialog when clicking handle
+            >
+              <GripVertical className="h-4 w-4 text-gray-400" />
+            </span>
+          )}
           <div className="flex-1">
             <h3
               className={`mb-2 text-sm font-medium ${task?.isCompleted ? "text-gray-500 line-through" : ""}`}
@@ -295,57 +296,59 @@ export function TaskCard({ task }: TaskCardProps) {
             </div>
 
             {/* Hover Actions */}
-            <div
-              className="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
-              onMouseDown={(e) => e.stopPropagation()} // Prevent drag when clicking buttons
-            >
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleComplete(task?._id);
-                }}
-                onMouseDown={(e) => e.stopPropagation()}
+            {!disableEditDelete && (
+              <div
+                className="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
+                onMouseDown={(e) => e.stopPropagation()} // Prevent drag when clicking buttons
               >
-                <div
-                  className={`flex h-4 w-4 items-center justify-center rounded-full border-2 ${
-                    task?.isCompleted
-                      ? "border-green-500 bg-green-500"
-                      : "border-gray-400"
-                  }`}
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleComplete(task?._id);
+                  }}
+                  onMouseDown={(e) => e.stopPropagation()}
                 >
-                  {task?.isCompleted && (
-                    <div className="text-xs leading-none text-white">✓</div>
-                  )}
-                </div>
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setOpenTaskDialog(true);
-                }}
-                onMouseDown={(e) => e.stopPropagation()}
-              >
-                <Edit2 className="h-3 w-3" />
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onToggleArchive(task?._id);
-                }}
-                onMouseDown={(e) => e.stopPropagation()}
-              >
-                <Archive className="h-3 w-3" />
-              </Button>
-            </div>
+                  <div
+                    className={`flex h-4 w-4 items-center justify-center rounded-full border-2 ${
+                      task?.isCompleted
+                        ? "border-green-500 bg-green-500"
+                        : "border-gray-400"
+                    }`}
+                  >
+                    {task?.isCompleted && (
+                      <div className="text-xs leading-none text-white">✓</div>
+                    )}
+                  </div>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setOpenTaskDialog(true);
+                  }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
+                  <Edit2 className="h-3 w-3" />
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleArchive(task?._id);
+                  }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
+                  <Archive className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

@@ -33,6 +33,7 @@ import { Context } from "@/app/clientWrappers/ContextProvider";
 import { Axios } from "@/services/baseUrl";
 import { useUpdateTask } from "@/services/api/taskManagement/taskApi";
 import toast from "react-hot-toast";
+import { useGetColumns } from "@/services/api/taskManagement/columnsApi";
 
 interface TaskDialogProps {
   openTaskDialog: boolean;
@@ -76,8 +77,7 @@ export function TaskDialog({
     },
   });
 
-  const columnData: { data: ITaskColumnBase[] } | undefined =
-    queryClient.getQueryData(["columns"]);
+  const { data: columnData, isLoading: isColumnsLoading } = useGetColumns();
 
   const { data: allUsers, isLoading: allUsersLoading } = useQuery({
     queryKey: ["AllUsers"],
@@ -189,7 +189,7 @@ export function TaskDialog({
     if (!data.title?.trim()) return;
 
     const selectedColumnObj = columnData?.data?.find(
-      (col) => col._id === data.column,
+      (col: ITaskColumnBase) => col._id === data.column,
     );
     if (!selectedColumnObj) return;
 
@@ -329,7 +329,7 @@ export function TaskDialog({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {columnData?.data?.map((column) => (
+                        {columnData?.data?.map((column: ITaskColumnBase) => (
                           <SelectItem key={column._id} value={column._id}>
                             {column.title}
                           </SelectItem>

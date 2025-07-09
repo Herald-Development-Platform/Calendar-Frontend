@@ -22,10 +22,13 @@ import { useGetColumns } from "@/services/api/taskManagement/columnsApi";
 import { ITaskColumnBase } from "@/types/taskmanagement/column.types";
 import { BoardColumn } from "@/components/taskmanagement/columns/board-column";
 import { useUpdateTask } from "@/services/api/taskManagement/taskApi";
+import { useGetInvitedTasks } from "@/services/api/taskManagement/taskApi";
+import { ITask } from "@/types/taskmanagement/task.types";
 
 const TaskPage = () => {
   // API CALLS
   const { data: columnsData, isLoading: isColumnsLoading } = useGetColumns();
+  const { data: invitedTasksData, isLoading: isInvitedLoading } = useGetInvitedTasks();
 
   // Local state for columns and tasks for optimistic UI
   const [columns, setColumns] = useState<any[]>([]);
@@ -104,6 +107,21 @@ const TaskPage = () => {
                 // tasks={column.tasks ? [...column.tasks].sort((a, b) => a.position - b.position) : []}
               />
             ))}
+
+            {/* Invited Tasks */}
+            <BoardColumn
+              key="invited"
+              column={{
+                _id: "invited",
+                title: "Invited Column",
+                position: 9999,
+                isArchived: false,
+                createdAt: new Date().toISOString(),
+              }}
+              invitedTasks={invitedTasksData?.data || []}
+              disableEditDelete
+              disableDnD
+            />
           </div>
         </DndContext>
       </main>
