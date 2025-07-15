@@ -148,10 +148,10 @@ export function BoardColumn({ column, invitedTasks, disableEditDelete, disableDn
     updateColumn(
       { columnId, title },
       {
-        onSuccess: () => {
-          setShowEditColumnDialogOpen(false);
-          queryClient.invalidateQueries({ queryKey: ["columns"] });
-        },
+          onSuccess: () => {
+            setShowEditColumnDialogOpen(false);
+            queryClient.invalidateQueries({ queryKey: ["columns"] });
+          },
         onError: (error) => {
           toast.error(
             (error as any)?.response?.data?.message ||

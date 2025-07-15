@@ -20,6 +20,16 @@ import {
   Archive,
   Clock,
   User as UserIcon,
+  Calendar,
+  Flag,
+  Users,
+  Plus,
+  Edit3,
+  Trash2,
+  Send,
+  Check,
+  AlertCircle,
+  CheckCircle2,
 } from "lucide-react";
 import {
   ChecklistItem,
@@ -39,20 +49,25 @@ interface TaskDialogProps {
   openTaskDialog: boolean;
   setOpenTaskDialog: (open: boolean) => void;
   task: ITask;
-
-  // currentUser: User
-  // availableUsers: User[]
 }
+
+const formatDateTimeLocal = (date: string) => {
+  if (!date) return '';
+  const d = new Date(date);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+};
 
 export function TaskDialog({
   task,
   openTaskDialog,
   setOpenTaskDialog,
-  // currentUser,
-  // availableUsers
 }: TaskDialogProps) {
   const queryClient = useQueryClient();
-
   const { userData } = useContext(Context);
 
   // API CALLS
@@ -89,6 +104,8 @@ export function TaskDialog({
   const [newChecklistItem, setNewChecklistItem] = useState("");
   const [newComment, setNewComment] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isEditingDescription, setIsEditingDescription] = useState(false);
+  const [activeTab, setActiveTab] = useState<'details' | 'activity'>('details');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -97,7 +114,7 @@ export function TaskDialog({
         title: task.title,
         description: task.description || "",
         priority: task.priority || "medium",
-        dueDate: task.dueDate || "",
+        dueDate: formatDateTimeLocal(task.dueDate || "  ") || "",
         invitedUsers: task.invitedUsers || [],
         column: task.column._id,
       });
@@ -173,14 +190,6 @@ export function TaskDialog({
       setComments([...comments, comment]);
       setNewComment("");
     }
-  };
-
-  const handleInvitedUsersChange = (userIds: string[]) => {
-    const selectedUsers =
-      allUsers?.data?.data?.filter((user: User) =>
-        userIds.includes(user._id),
-      ) || [];
-    setValue("invitedUsers", selectedUsers);
   };
 
   const onSubmit = (
@@ -283,285 +292,434 @@ export function TaskDialog({
       }
     : null;
 
-  // Helper for toggling users
-  const toggleUser = (
-    selectedUsers: User[],
-    user: User,
-    onChange: (users: User[]) => void,
-  ) => {
-    if (selectedUsers.some((u) => u._id === user._id)) {
-      onChange(selectedUsers.filter((u) => u._id !== user._id));
-    } else {
-      onChange([...selectedUsers, user]);
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case "high":
+        return "bg-red-100 text-red-800 border-red-200";
+      case "medium":
+        return "bg-yellow-100 text-yellow-800 border-yellow-200";
+      case "low":
+        return "bg-green-100 text-green-800 border-green-200";
+      default:
+        return "bg-gray-100 text-gray-800 border-gray-200";
     }
+  };
+
+  const getPriorityIcon = (priority: string) => {
+    switch (priority) {
+      case "high":
+        return <AlertCircle className="h-3 w-3" />;
+      case "medium":
+        return <Flag className="h-3 w-3" />;
+      case "low":
+        return <CheckCircle2 className="h-3 w-3" />;
+      default:
+        return <Flag className="h-3 w-3" />;
+    }
+  };
+
+  const isDueSoon = (dueDate: string) => {
+    if (!dueDate) return false;
+    const due = new Date(dueDate);
+    const now = new Date();
+    const diffTime = due.getTime() - now.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays <= 3 && diffDays >= 0;
+  };
+
+  const isOverdue = (dueDate: string) => {
+    if (!dueDate) return false;
+    const due = new Date(dueDate);
+    const now = new Date();
+    return due < now;
   };
 
   return (
     <Dialog open={openTaskDialog} onOpenChange={setOpenTaskDialog}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[800px]">
-        <DialogHeader className="pb-4">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <Controller
-                name="title"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => (
-                  <Input
-                    {...field}
-                    className="h-auto border-none p-0 text-lg font-semibold focus-visible:ring-0"
-                    placeholder="Task title..."
-                  />
-                )}
-              />
-              <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
-                <span>in list</span>
+      <DialogContent className="max-h-[95vh] overflow-y-auto sm:max-w-[900px] p-0 ">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
+          {/* Header */}
+          <div className="border-b bg-white px-6 py-4">
+            <div className="flex items-start justify-between">
+              <div className="flex-1 space-y-3">
                 <Controller
-                  name="column"
+                  name="title"
                   control={control}
                   rules={{ required: true }}
                   render={({ field }) => (
-                    <Select
-                      value={typeof field.value === "string" ? field.value : ""}
-                      onValueChange={field.onChange}
-                    >
-                      <SelectTrigger className="h-auto w-auto border-none bg-gray-100 p-1">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {columnData?.data?.map((column: ITaskColumnBase) => (
-                          <SelectItem key={column._id} value={column._id}>
-                            {column.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Input
+                      {...field}
+                      className="h-auto border-none p-0 text-xl font-bold focus-visible:ring-0 placeholder:text-gray-400"
+                      placeholder="Task title..."
+                    />
+                  )}
+                />
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2 text-gray-600">
+                    <span>in</span>
+                    <Controller
+                      name="column"
+                      control={control}
+                      rules={{ required: true }}
+                      render={({ field }) => (
+                        <Select
+                          value={typeof field.value === "string" ? field.value : ""}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="h-auto w-auto border-none bg-blue-50 px-2 py-1 text-green-800 hover:bg-blue-100">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {columnData?.data?.map((column: ITaskColumnBase) => (
+                              <SelectItem key={column._id} value={column._id}>
+                                {column.title}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                  </div>
+                  
+                  {/* Quick indicators */}
+                  <div className="flex items-center gap-2">
+                    <Controller
+                      name="priority"
+                      control={control}
+                      render={({ field }) => (
+                        <Badge className={`${getPriorityColor(field.value || "medium")} flex items-center gap-1`}>
+                          {getPriorityIcon(field.value || "medium")}
+                          {field.value || "medium"}
+                        </Badge>
+                      )}
+                    />
+                    {watch("dueDate") && (
+                      <Badge 
+                        variant={isOverdue(watch("dueDate") || "") ? "destructive" : isDueSoon(watch("dueDate") || "") ? "default" : "secondary"}
+                        className="flex items-center gap-1"
+                      >
+                        <Calendar className="h-3 w-3" />
+                        {new Date(watch("dueDate") || "").toLocaleDateString()}
+                      </Badge>
+                    )}
+                    {checklistProgress && (
+                      <Badge variant="outline" className="flex items-center gap-1">
+                        <CheckSquare className="h-3 w-3" />
+                        {checklistProgress.completed}/{checklistProgress.total}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => setOpenTaskDialog(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="flex flex-1 overflow-hidden">
+            {/* Main Content */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-8">
+              {/* Description */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                    <Edit3 className="h-4 w-4" />
+                    Description
+                  </h3>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsEditingDescription(!isEditingDescription)}
+                  >
+                    {isEditingDescription ? "Save" : "Edit"}
+                  </Button>
+                </div>
+                <Controller
+                  name="description"
+                  control={control}
+                  render={({ field }) => (
+                    isEditingDescription ? (
+                      <textarea
+                        {...field}
+                        className="min-h-[100px] w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm shadow-sm placeholder:text-gray-400 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20"
+                        placeholder="Add a detailed description..."
+                        onBlur={() => setIsEditingDescription(false)}
+                        autoFocus
+                      />
+                    ) : (
+                      <div
+                        className="min-h-[60px] w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 cursor-text hover:bg-gray-100 transition-colors"
+                        onClick={() => setIsEditingDescription(true)}
+                      >
+                        {field.value || "Click to add a description..."}
+                      </div>
+                    )
                   )}
                 />
               </div>
-            </div>
-          </div>
-        </DialogHeader>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="grid grid-cols-3 gap-6"
-        >
-          <div className="col-span-2 space-y-6">
-            <div>
-              <label className="mb-2 block text-sm font-semibold">
-                Description
-              </label>
-              <Controller
-                name="description"
-                control={control}
-                render={({ field }) => (
-                  <textarea
-                    {...field}
-                    className="min-h-[80px] w-full rounded border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    placeholder="Add a more detailed description..."
-                  />
-                )}
+              {/* Checklist */}
+              <ChecklistSection
+                checklist={checklist}
+                setChecklist={setChecklist}
+                newChecklistItem={newChecklistItem}
+                setNewChecklistItem={setNewChecklistItem}
+              />
+
+              {/* Comments */}
+              <CommentsSection
+                comments={comments}
+                setComments={setComments}
+                newComment={newComment}
+                setNewComment={setNewComment}
+                userData={userData}
+                formatDate={formatDate}
               />
             </div>
 
-            <ChecklistSection
-              checklist={checklist}
-              setChecklist={setChecklist}
-              newChecklistItem={newChecklistItem}
-              setNewChecklistItem={setNewChecklistItem}
-            />
-
-            <CommentsSection
-              comments={comments}
-              setComments={setComments}
-              newComment={newComment}
-              setNewComment={setNewComment}
-              userData={userData}
-              formatDate={formatDate}
-            />
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="mb-2 block text-xs font-semibold text-muted-foreground">
-                DETAILS
-              </label>
-              <div className="space-y-3">
-                <div>
-                  <label className="mb-1 block text-sm">Priority</label>
-                  <Controller
-                    name="priority"
-                    control={control}
-                    render={({ field }) => (
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className="h-8">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="low">Low</SelectItem>
-                          <SelectItem value="medium">Medium</SelectItem>
-                          <SelectItem value="high">High</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm">Due Date</label>
-                  <Input type="date" {...register("dueDate")} className="h-8" />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm">Invited Users</label>
-                  <Controller
-                    name="invitedUsers"
-                    control={control}
-                    render={({ field }) => {
-                      const selectedUsers: User[] = field.value || [];
-                      return (
-                        <div className="relative" ref={dropdownRef}>
-                          <button
-                            type="button"
-                            className={`flex min-h-[40px] w-full flex-wrap items-center gap-1 rounded border bg-white px-2 py-2 transition-shadow focus:outline-none focus:ring-2 focus:ring-primary/50 ${dropdownOpen ? "ring-2 ring-primary/50" : ""}`}
-                            onClick={() => setDropdownOpen((v) => !v)}
-                            tabIndex={0}
-                            aria-haspopup="listbox"
-                            aria-expanded={dropdownOpen}
-                          >
-                            {selectedUsers.length === 0 && (
-                              <span className="text-sm text-muted-foreground">
-                                Select users...
-                              </span>
-                            )}
-                            {selectedUsers.map((user) => (
-                              <span
-                                key={user._id}
-                                className="mr-1 flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary"
-                              >
-                                <UserAvatar user={user} size="sm" />
-                                {user.username}
-                                <button
-                                  type="button"
-                                  className="ml-1 text-xs text-gray-400 hover:text-red-500 focus:outline-none"
-                                  tabIndex={-1}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    field.onChange(
-                                      selectedUsers.filter(
-                                        (u) => u._id !== user._id,
-                                      ),
-                                    );
-                                  }}
-                                  aria-label={`Remove ${user.username}`}
-                                >
-                                  ×
-                                </button>
-                              </span>
-                            ))}
-                            <span
-                              className={`ml-auto transition-transform ${dropdownOpen ? "rotate-180" : ""}`}
-                            >
-                              <svg
-                                width="18"
-                                height="18"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M6 9l6 6 6-6"
-                                />
-                              </svg>
-                            </span>
-                          </button>
-                          {dropdownOpen && (
-                            <div className="animate-fade-in absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded border bg-white shadow">
-                              {allUsers?.data?.data.map((user: User) => (
-                                <div
-                                  key={user._id}
-                                  className={`flex cursor-pointer items-center gap-2 px-3 py-2 transition-colors ${selectedUsers.some((u) => u._id === user._id) ? "bg-primary/10 text-primary" : "hover:bg-gray-100"}`}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    toggleUser(
-                                      selectedUsers,
-                                      user,
-                                      field.onChange,
-                                    );
-                                    setDropdownOpen(false);
-                                  }}
-                                  role="option"
-                                  aria-selected={selectedUsers.some(
-                                    (u) => u._id === user._id,
-                                  )}
-                                >
-                                  <input
-                                    type="checkbox"
-                                    checked={selectedUsers.some(
-                                      (u) => u._id === user._id,
-                                    )}
-                                    readOnly
-                                    className="accent-primary"
-                                  />
-                                  <UserAvatar user={user} size="sm" />
-                                  <span className="text-sm">
-                                    {user.username}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* <Separator /> */}
-
-            <div>
-              <label className="mb-2 block text-xs font-semibold text-muted-foreground">
-                CREATED
-              </label>
-              <div className="space-y-2 text-sm">
-                {task?.createdBy && (
-                  <div className="flex items-center gap-2">
-                    <UserAvatar user={task.createdBy} size="sm" />
-                    <span>{task.createdBy.username}</span>
-                  </div>
-                )}
-                {task?.createdAt && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <Clock className="h-3 w-3" />
-                    <span>{formatDate(task.createdAt)}</span>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* <Separator /> */}
-
-            <div className="space-y-2">
-              <Button type="submit" className="w-full">
-                {task ? "Save Changes" : "Create Task"}
-              </Button>
-              {task && (
-                <Button
-                  variant="destructive"
-                  onClick={handleDelete}
-                  className="w-full"
+            {/* Sidebar */}
+            <div className="w-80 border-l bg-gray-50 p-6 space-y-6">
+              {/* Tabs */}
+              <div className="flex rounded-lg bg-white p-1">
+                <button
+                  type="button"
+                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    activeTab === 'details'
+                      ? 'bg-theme text-white'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                  onClick={() => setActiveTab('details')}
                 >
-                  <Archive className="mr-2 h-4 w-4" />
-                  Delete Task
-                </Button>
+                  Details
+                </button>
+                <button
+                  type="button"
+                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                    activeTab === 'activity'
+                      ? 'bg-theme text-white'
+                      : 'text-gray-600 hover:text-gray-900'
+                  }`}
+                  onClick={() => setActiveTab('activity')}
+                >
+                  Activity
+                </button>
+              </div>
+
+              {activeTab === 'details' ? (
+                <div className="space-y-6">
+                  {/* Priority */}
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <Flag className="h-4 w-4" />
+                      Priority
+                    </label>
+                    <Controller
+                      name="priority"
+                      control={control}
+                      render={({ field }) => (
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="h-10 bg-white">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="low">
+                              <div className="flex items-center gap-2">
+                                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                Low
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="medium">
+                              <div className="flex items-center gap-2">
+                                <Flag className="h-4 w-4 text-yellow-500" />
+                                Medium
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="high">
+                              <div className="flex items-center gap-2">
+                                <AlertCircle className="h-4 w-4 text-red-500" />
+                                High
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                  </div>
+
+                  {/* Due Date */}
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <Calendar className="h-4 w-4" />
+                      Due Date
+                    </label>
+                    <Input
+                      type="datetime-local"
+                      {...register("dueDate")}
+                      className="h-10 bg-white"
+                    />
+                  </div>
+
+                  {/* Invited Users */}
+                  <div className="space-y-2">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <Users className="h-4 w-4" />
+                      Assignees
+                    </label>
+                    <Controller
+                      name="invitedUsers"
+                      control={control}
+                      render={({ field }) => {
+                        const selectedUsers: User[] = field.value || [];
+                        return (
+                          <div className="relative" ref={dropdownRef}>
+                            <button
+                              type="button"
+                              className="flex min-h-[40px] w-full flex-wrap items-center gap-2 rounded-[24px] border bg-white px-2 py-2 text-left transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                              onClick={() => setDropdownOpen(!dropdownOpen)}
+                            >
+                              {selectedUsers.length === 0 ? (
+                                <span className="text-sm text-gray-500">
+                                  Select users...
+                                </span>
+                              ) : (
+                                <div className="flex flex-wrap gap-1">
+                                  {selectedUsers.map((user) => (
+                                    <div
+                                      key={user._id}
+                                      className="flex items-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800"
+                                    >
+                                      <UserAvatar user={user} size="sm" />
+                                      {user.username}
+                                      <button
+                                        type="button"
+                                        className="ml-1 text-theme hover:text-red-500"
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          field.onChange(
+                                            selectedUsers.filter(
+                                              (u) => u._id !== user._id,
+                                            ),
+                                          );
+                                        }}
+                                      >
+                                        <X className="h-3 w-3" />
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </button>
+                            {dropdownOpen && (
+                              <div className="absolute z-10 mt-1 max-h-48 w-full overflow-y-auto rounded-lg border bg-white shadow-lg">
+                                {allUsers?.data?.data.map((user: User) => (
+                                  <div
+                                    key={user._id}
+                                    className="flex cursor-pointer items-center gap-3 px-3 py-2 hover:bg-gray-50"
+                                    onClick={() => {
+                                      const isSelected = selectedUsers.some(
+                                        (u) => u._id === user._id,
+                                      );
+                                      if (isSelected) {
+                                        field.onChange(
+                                          selectedUsers.filter(
+                                            (u) => u._id !== user._id,
+                                          ),
+                                        );
+                                      } else {
+                                        field.onChange([...selectedUsers, user]);
+                                      }
+                                    }}
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={selectedUsers.some(
+                                        (u) => u._id === user._id,
+                                      )}
+                                      readOnly
+                                      className="rounded text-theme"
+                                    />
+                                    <UserAvatar user={user} size="sm" />
+                                    <span className="text-sm">{user.username}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }}
+                    />
+                  </div>
+
+                  {/* Creation Info */}
+                  <div className="space-y-3 pt-4 border-t">
+                    <h4 className="text-sm font-medium text-gray-700">Created</h4>
+                    {task?.createdBy && (
+                      <div className="flex items-center gap-2">
+                        <UserAvatar user={task.createdBy} size="sm" />
+                        <span className="text-sm text-gray-600">{task.createdBy.username}</span>
+                      </div>
+                    )}
+                    {task?.createdAt && (
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Clock className="h-3 w-3" />
+                        <span>{formatDate(task.createdAt)}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <h4 className="text-sm font-medium text-gray-700">Recent Activity</h4>
+                  <div className="space-y-3 text-sm text-gray-600">
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                      <span>Task created</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                      <span>Priority updated</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="h-2 w-2 rounded-full bg-yellow-500"></div>
+                      <span>Due date set</span>
+                    </div>
+                  </div>
+                </div>
               )}
+
+              {/* Actions */}
+              <div className="space-y-3 pt-4 border-t">
+                <Button
+                  type="submit"
+                  className="w-full bg-theme hover:bg-blue-700"
+                  disabled={isUpdatingTask}
+                >
+                  {isUpdatingTask ? "Saving..." : "Save Changes"}
+                </Button>
+                {task && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleDelete}
+                    className="w-full border-red-200 text-red-600 hover:bg-red-50"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Delete Task
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </form>
@@ -570,7 +728,7 @@ export function TaskDialog({
   );
 }
 
-// Checklist Section
+// Enhanced Checklist Section
 function ChecklistSection({
   checklist,
   setChecklist,
@@ -620,42 +778,57 @@ function ChecklistSection({
   };
 
   return (
-    <div>
-      <div className="mb-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-700">
           <CheckSquare className="h-4 w-4" />
-          <label className="text-sm font-semibold">Checklist</label>
+          Checklist
           {checklistProgress && (
-            <Badge variant="secondary" className="text-xs">
+            <Badge variant="secondary" className="ml-2">
               {checklistProgress.percentage}%
             </Badge>
           )}
-        </div>
+        </h3>
       </div>
+      
       {checklistProgress && (
-        <div className="mb-3">
+        <div className="space-y-2">
+          <div className="flex justify-between text-xs text-gray-600">
+            <span>{checklistProgress.completed} of {checklistProgress.total} complete</span>
+            <span>{checklistProgress.percentage}%</span>
+          </div>
           <div className="h-2 w-full rounded-full bg-gray-200">
             <div
-              className="h-2 rounded-full bg-green-500 transition-all"
+              className="h-2 rounded-full bg-gradient-to-r from-green-500 to-green-600 transition-all duration-300"
               style={{ width: `${checklistProgress.percentage}%` }}
             />
           </div>
         </div>
       )}
-      <div className="mb-3 space-y-2">
+
+      <div className="space-y-2">
         {checklist.map((item) => (
           <div
             key={item._id}
-            className="group flex items-center gap-2 rounded p-2 hover:bg-gray-50"
+            className="group flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 hover:bg-gray-50 transition-colors"
           >
-            <input
-              type="checkbox"
-              checked={item.completed}
-              onChange={() => toggleChecklistItem(item._id)}
-              className="rounded"
-            />
+            <button
+              type="button"
+              className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-colors ${
+                item.completed
+                  ? 'bg-green-500 border-green-500 text-white'
+                  : 'border-gray-300 hover:border-green-500'
+              }`}
+              onClick={() => toggleChecklistItem(item._id)}
+            >
+              {item.completed && <Check className="h-3 w-3" />}
+            </button>
             <span
-              className={`flex-1 ${item.completed ? "text-muted-foreground line-through" : ""}`}
+              className={`flex-1 text-sm transition-colors ${
+                item.completed
+                  ? "text-gray-500 line-through"
+                  : "text-gray-900"
+              }`}
             >
               {item.text}
             </span>
@@ -664,21 +837,37 @@ function ChecklistSection({
               variant="ghost"
               size="sm"
               onClick={() => removeChecklistItem(item._id)}
-              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100"
+              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500"
             >
               <X className="h-3 w-3" />
             </Button>
           </div>
         ))}
       </div>
+
       <div className="flex gap-2">
-        <Input
-          value={newChecklistItem}
-          onChange={(e) => setNewChecklistItem(e.target.value)}
-          placeholder="Add an item..."
-          onKeyDown={(e) => e.key === "Enter" && addChecklistItem()}
-        />
-        <Button type="button" onClick={addChecklistItem} size="sm">
+        <div className="flex-1">
+          <Input
+            value={newChecklistItem}
+            onChange={(e) => setNewChecklistItem(e.target.value)}
+            placeholder="Add an item..."
+            className="h-10 bg-white"
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addChecklistItem();
+              }
+            }}
+          />
+        </div>
+        <Button
+          type="button"
+          onClick={addChecklistItem}
+          size="sm"
+          className="px-4 bg-theme hover:bg-blue-700"
+          disabled={!newChecklistItem.trim()}
+        >
+          <Plus className="h-4 w-4 mr-1" />
           Add
         </Button>
       </div>
@@ -686,7 +875,7 @@ function ChecklistSection({
   );
 }
 
-// Comments Section
+// Enhanced Comments Section
 function CommentsSection({
   comments,
   setComments,
@@ -716,43 +905,83 @@ function CommentsSection({
   };
 
   return (
-    <div>
-      <div className="mb-3 flex items-center gap-2">
+    <div className="space-y-4">
+      <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-700">
         <MessageSquare className="h-4 w-4" />
-        <label className="text-sm font-semibold">Activity</label>
-      </div>
-      <div className="mb-4 space-y-3">
-        {comments.map((comment) => (
-          <div key={comment._id} className="flex gap-3">
-            {/* <UserAvatar user={comment.author} size="sm" /> */}
-            <div className="flex-1">
-              <div className="mb-1 flex items-center gap-2">
-                <span className="text-sm font-medium">
-                  {comment.author.username}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {formatDate(comment.createdAt)}
-                </span>
+        Activity
+        {comments.length > 0 && (
+          <Badge variant="secondary" className="ml-2">
+            {comments.length}
+          </Badge>
+        )}
+      </h3>
+
+      {/* Comments List */}
+      <div className="space-y-4 max-h-80 overflow-y-auto">
+        {comments.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <MessageSquare className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+            <p className="text-sm">No comments yet. Start the conversation!</p>
+          </div>
+        ) : (
+          comments.map((comment) => (
+            <div key={comment._id} className="flex gap-3 group">
+              <div className="flex-shrink-0">
+                <UserAvatar user={comment.author} size="sm" />
               </div>
-              <div className="rounded bg-gray-50 p-2 text-sm">
-                {comment.text}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-sm font-medium text-gray-900">
+                    {comment.author.username}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {formatDate(comment.createdAt)}
+                  </span>
+                </div>
+                <div className="rounded-lg bg-gray-50 border border-gray-200 px-3 py-2">
+                  <p className="text-sm text-gray-800 whitespace-pre-wrap">
+                    {comment.text}
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        )}
       </div>
-      <div className="flex gap-3">
-        <UserAvatar user={userData as User} size="sm" />
-        <div className="flex flex-1 gap-2">
-          <Input
+
+      {/* Add Comment */}
+      <div className="flex gap-3 pt-4 border-t">
+        <div className="flex-shrink-0">
+          <UserAvatar user={userData as User} size="sm" />
+        </div>
+        <div className="flex-1 space-y-2">
+          <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Write a comment..."
-            onKeyDown={(e) => e.key === "Enter" && addComment()}
+            className="w-full min-h-[80px] rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
+                e.preventDefault();
+                addComment();
+              }
+            }}
           />
-          <Button onClick={addComment} size="sm" disabled={!newComment.trim()}>
-            Send
-          </Button>
+          <div className="flex justify-between items-center">
+            <span className="text-xs text-gray-500">
+              Press Cmd/Ctrl + Enter to send
+            </span>
+            <Button
+              type="button"
+              onClick={addComment}
+              size="sm"
+              disabled={!newComment.trim()}
+              className="bg-theme hover:bg-blue-700"
+            >
+              <Send className="h-4 w-4 mr-1" />
+              Send
+            </Button>
+          </div>
         </div>
       </div>
     </div>

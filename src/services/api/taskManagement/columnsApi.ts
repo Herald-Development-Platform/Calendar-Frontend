@@ -11,10 +11,6 @@ export const useCreateColumn = () => {
 };
 
 export const useGetColumns = () => {
-
-  const queryClient = useQueryClient();
-
-  const cachedData = queryClient.getQueryData(["columns"]);
   return useQuery({
     queryKey: ["columns"],
     queryFn: async () => {
@@ -23,7 +19,7 @@ export const useGetColumns = () => {
     },
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-    enabled: !cachedData,
+    staleTime: 5 * 60 * 1000,
   });
 };
 
