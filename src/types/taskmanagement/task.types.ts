@@ -21,7 +21,7 @@ export interface ITask {
 export interface ChecklistItem {
   _id: string
   text: string
-  completed: boolean
+  isCompleted: boolean
 }
 
 export interface Comment {

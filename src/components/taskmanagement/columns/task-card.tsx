@@ -114,7 +114,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
 
   const checklistProgress = task?.checklist
     ? {
-        completed: task?.checklist.filter((item) => item.completed).length,
+        completed: task?.checklist.filter((item) => item.isCompleted).length,
         total: task?.checklist.length,
       }
     : null;

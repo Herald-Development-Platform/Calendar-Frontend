@@ -52,13 +52,13 @@ interface TaskDialogProps {
 }
 
 const formatDateTimeLocal = (date: string) => {
-  if (!date) return '';
+  if (!date) return "";
   const d = new Date(date);
   const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  const hours = String(d.getHours()).padStart(2, '0');
-  const minutes = String(d.getMinutes()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
@@ -105,7 +105,7 @@ export function TaskDialog({
   const [newComment, setNewComment] = useState("");
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isEditingDescription, setIsEditingDescription] = useState(false);
-  const [activeTab, setActiveTab] = useState<'details' | 'activity'>('details');
+  const [activeTab, setActiveTab] = useState<"details" | "activity">("details");
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -160,7 +160,7 @@ export function TaskDialog({
         {
           _id: Date.now().toString(),
           text: newChecklistItem.trim(),
-          completed: false,
+          isCompleted: false,
         },
       ]);
       setNewChecklistItem("");
@@ -170,7 +170,7 @@ export function TaskDialog({
   const toggleChecklistItem = (id: string) => {
     setChecklist(
       checklist.map((item) =>
-        item._id === id ? { ...item, completed: !item.completed } : item,
+        item._id === id ? { ...item, isCompleted: !item.isCompleted } : item,
       ),
     );
   };
@@ -213,6 +213,8 @@ export function TaskDialog({
       priority: data.priority || "medium",
       column: selectedColumnObj,
       invitedUsers: data.invitedUsers,
+      checklist: checklist,
+      comments: comments,
     };
 
     const oldQueryKey = ["tasks", oldColumnId];
@@ -283,10 +285,10 @@ export function TaskDialog({
 
   const checklistProgress = checklist.length
     ? {
-        completed: checklist.filter((i) => i.completed).length,
+        isCompleted: checklist.filter((i) => i.isCompleted).length,
         total: checklist.length,
         percentage: Math.round(
-          (checklist.filter((i) => i.completed).length / checklist.length) *
+          (checklist.filter((i) => i.isCompleted).length / checklist.length) *
             100,
         ),
       }
@@ -336,8 +338,11 @@ export function TaskDialog({
 
   return (
     <Dialog open={openTaskDialog} onOpenChange={setOpenTaskDialog}>
-      <DialogContent className="max-h-[95vh] overflow-y-auto sm:max-w-[900px] p-0 ">
-        <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
+      <DialogContent className="max-h-[95vh] overflow-y-auto p-0 sm:max-w-[900px] ">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="flex h-full flex-col"
+        >
           {/* Header */}
           <div className="border-b bg-white px-6 py-4">
             <div className="flex items-start justify-between">
@@ -349,7 +354,7 @@ export function TaskDialog({
                   render={({ field }) => (
                     <Input
                       {...field}
-                      className="h-auto border-none p-0 text-xl font-bold focus-visible:ring-0 placeholder:text-gray-400"
+                      className="h-auto border-none p-0 text-xl font-bold placeholder:text-gray-400 focus-visible:ring-0"
                       placeholder="Task title..."
                     />
                   )}
@@ -363,39 +368,51 @@ export function TaskDialog({
                       rules={{ required: true }}
                       render={({ field }) => (
                         <Select
-                          value={typeof field.value === "string" ? field.value : ""}
+                          value={
+                            typeof field.value === "string" ? field.value : ""
+                          }
                           onValueChange={field.onChange}
                         >
-                          <SelectTrigger className="h-auto w-auto border-none bg-blue-50 px-2 py-1 text-green-800 hover:bg-blue-100">
+                          <SelectTrigger className="h-auto w-auto border-none bg-green-50 px-2 py-1 text-green-800 hover:bg-green-100">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            {columnData?.data?.map((column: ITaskColumnBase) => (
-                              <SelectItem key={column._id} value={column._id}>
-                                {column.title}
-                              </SelectItem>
-                            ))}
+                            {columnData?.data?.map(
+                              (column: ITaskColumnBase) => (
+                                <SelectItem key={column._id} value={column._id}>
+                                  {column.title}
+                                </SelectItem>
+                              ),
+                            )}
                           </SelectContent>
                         </Select>
                       )}
                     />
                   </div>
-                  
+
                   {/* Quick indicators */}
                   <div className="flex items-center gap-2">
                     <Controller
                       name="priority"
                       control={control}
                       render={({ field }) => (
-                        <Badge className={`${getPriorityColor(field.value || "medium")} flex items-center gap-1`}>
+                        <Badge
+                          className={`${getPriorityColor(field.value || "medium")} flex items-center gap-1`}
+                        >
                           {getPriorityIcon(field.value || "medium")}
                           {field.value || "medium"}
                         </Badge>
                       )}
                     />
                     {watch("dueDate") && (
-                      <Badge 
-                        variant={isOverdue(watch("dueDate") || "") ? "destructive" : isDueSoon(watch("dueDate") || "") ? "default" : "secondary"}
+                      <Badge
+                        variant={
+                          isOverdue(watch("dueDate") || "")
+                            ? "destructive"
+                            : isDueSoon(watch("dueDate") || "")
+                              ? "default"
+                              : "secondary"
+                        }
                         className="flex items-center gap-1"
                       >
                         <Calendar className="h-3 w-3" />
@@ -403,9 +420,12 @@ export function TaskDialog({
                       </Badge>
                     )}
                     {checklistProgress && (
-                      <Badge variant="outline" className="flex items-center gap-1">
+                      <Badge
+                        variant="outline"
+                        className="flex items-center gap-1"
+                      >
                         <CheckSquare className="h-3 w-3" />
-                        {checklistProgress.completed}/{checklistProgress.total}
+                        {checklistProgress.isCompleted}/{checklistProgress.total}
                       </Badge>
                     )}
                   </div>
@@ -426,7 +446,7 @@ export function TaskDialog({
           {/* Content */}
           <div className="flex flex-1 overflow-hidden">
             {/* Main Content */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-8">
+            <div className="flex-1 space-y-8 overflow-y-auto p-6">
               {/* Description */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -438,7 +458,9 @@ export function TaskDialog({
                     type="button"
                     variant="ghost"
                     size="sm"
-                    onClick={() => setIsEditingDescription(!isEditingDescription)}
+                    onClick={() =>
+                      setIsEditingDescription(!isEditingDescription)
+                    }
                   >
                     {isEditingDescription ? "Save" : "Edit"}
                   </Button>
@@ -446,7 +468,7 @@ export function TaskDialog({
                 <Controller
                   name="description"
                   control={control}
-                  render={({ field }) => (
+                  render={({ field }) =>
                     isEditingDescription ? (
                       <textarea
                         {...field}
@@ -457,13 +479,13 @@ export function TaskDialog({
                       />
                     ) : (
                       <div
-                        className="min-h-[60px] w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 cursor-text hover:bg-gray-100 transition-colors"
+                        className="min-h-[60px] w-full cursor-text rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-100"
                         onClick={() => setIsEditingDescription(true)}
                       >
                         {field.value || "Click to add a description..."}
                       </div>
                     )
-                  )}
+                  }
                 />
               </div>
 
@@ -487,34 +509,34 @@ export function TaskDialog({
             </div>
 
             {/* Sidebar */}
-            <div className="w-80 border-l bg-gray-50 p-6 space-y-6">
+            <div className="w-80 space-y-6 border-l bg-gray-50 p-6">
               {/* Tabs */}
               <div className="flex rounded-lg bg-white p-1">
                 <button
                   type="button"
                   className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    activeTab === 'details'
-                      ? 'bg-theme text-white'
-                      : 'text-gray-600 hover:text-gray-900'
+                    activeTab === "details"
+                      ? "bg-theme text-white"
+                      : "text-gray-600 hover:text-gray-900"
                   }`}
-                  onClick={() => setActiveTab('details')}
+                  onClick={() => setActiveTab("details")}
                 >
                   Details
                 </button>
                 <button
                   type="button"
                   className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    activeTab === 'activity'
-                      ? 'bg-theme text-white'
-                      : 'text-gray-600 hover:text-gray-900'
+                    activeTab === "activity"
+                      ? "bg-theme text-white"
+                      : "text-gray-600 hover:text-gray-900"
                   }`}
-                  onClick={() => setActiveTab('activity')}
+                  onClick={() => setActiveTab("activity")}
                 >
                   Activity
                 </button>
               </div>
 
-              {activeTab === 'details' ? (
+              {activeTab === "details" ? (
                 <div className="space-y-6">
                   {/* Priority */}
                   <div className="space-y-2">
@@ -586,7 +608,7 @@ export function TaskDialog({
                           <div className="relative" ref={dropdownRef}>
                             <button
                               type="button"
-                              className="flex min-h-[40px] w-full flex-wrap items-center gap-2 rounded-[24px] border bg-white px-2 py-2 text-left transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                              className="flex min-h-[40px] w-full flex-wrap items-center gap-2 rounded-[24px] border bg-white px-2 py-2 text-left transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500/20"
                               onClick={() => setDropdownOpen(!dropdownOpen)}
                             >
                               {selectedUsers.length === 0 ? (
@@ -598,7 +620,7 @@ export function TaskDialog({
                                   {selectedUsers.map((user) => (
                                     <div
                                       key={user._id}
-                                      className="flex items-center gap-1 rounded-full bg-blue-100 px-2 py-1 text-xs text-blue-800"
+                                      className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-1 text-xs text-green-800"
                                     >
                                       <UserAvatar user={user} size="sm" />
                                       {user.username}
@@ -638,7 +660,10 @@ export function TaskDialog({
                                           ),
                                         );
                                       } else {
-                                        field.onChange([...selectedUsers, user]);
+                                        field.onChange([
+                                          ...selectedUsers,
+                                          user,
+                                        ]);
                                       }
                                     }}
                                   >
@@ -651,7 +676,9 @@ export function TaskDialog({
                                       className="rounded text-theme"
                                     />
                                     <UserAvatar user={user} size="sm" />
-                                    <span className="text-sm">{user.username}</span>
+                                    <span className="text-sm">
+                                      {user.username}
+                                    </span>
                                   </div>
                                 ))}
                               </div>
@@ -663,12 +690,16 @@ export function TaskDialog({
                   </div>
 
                   {/* Creation Info */}
-                  <div className="space-y-3 pt-4 border-t">
-                    <h4 className="text-sm font-medium text-gray-700">Created</h4>
+                  <div className="space-y-3 border-t pt-4">
+                    <h4 className="text-sm font-medium text-gray-700">
+                      Created
+                    </h4>
                     {task?.createdBy && (
                       <div className="flex items-center gap-2">
                         <UserAvatar user={task.createdBy} size="sm" />
-                        <span className="text-sm text-gray-600">{task.createdBy.username}</span>
+                        <span className="text-sm text-gray-600">
+                          {task.createdBy.username}
+                        </span>
                       </div>
                     )}
                     {task?.createdAt && (
@@ -681,10 +712,12 @@ export function TaskDialog({
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <h4 className="text-sm font-medium text-gray-700">Recent Activity</h4>
+                  <h4 className="text-sm font-medium text-gray-700">
+                    Recent Activity
+                  </h4>
                   <div className="space-y-3 text-sm text-gray-600">
                     <div className="flex items-center gap-2">
-                      <div className="h-2 w-2 rounded-full bg-blue-500"></div>
+                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
                       <span>Task created</span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -700,10 +733,10 @@ export function TaskDialog({
               )}
 
               {/* Actions */}
-              <div className="space-y-3 pt-4 border-t">
+              <div className="space-y-3 border-t pt-4">
                 <Button
                   type="submit"
-                  className="w-full bg-theme hover:bg-blue-700"
+                  className="w-full bg-theme hover:bg-green-600"
                   disabled={isUpdatingTask}
                 >
                   {isUpdatingTask ? "Saving..." : "Save Changes"}
@@ -742,10 +775,10 @@ function ChecklistSection({
 }) {
   const checklistProgress = checklist.length
     ? {
-        completed: checklist.filter((i) => i.completed).length,
+        isCompleted: checklist.filter((i) => i.isCompleted).length,
         total: checklist.length,
         percentage: Math.round(
-          (checklist.filter((i) => i.completed).length / checklist.length) *
+          (checklist.filter((i) => i.isCompleted).length / checklist.length) *
             100,
         ),
       }
@@ -758,7 +791,7 @@ function ChecklistSection({
         {
           _id: Date.now().toString(),
           text: newChecklistItem.trim(),
-          completed: false,
+          isCompleted: false,
         },
       ]);
       setNewChecklistItem("");
@@ -768,7 +801,7 @@ function ChecklistSection({
   const toggleChecklistItem = (id: string) => {
     setChecklist(
       checklist.map((item) =>
-        item._id === id ? { ...item, completed: !item.completed } : item,
+        item._id === id ? { ...item, isCompleted: !item.isCompleted } : item,
       ),
     );
   };
@@ -790,11 +823,14 @@ function ChecklistSection({
           )}
         </h3>
       </div>
-      
+
       {checklistProgress && (
         <div className="space-y-2">
           <div className="flex justify-between text-xs text-gray-600">
-            <span>{checklistProgress.completed} of {checklistProgress.total} complete</span>
+            <span>
+              {checklistProgress.isCompleted} of {checklistProgress.total}{" "}
+              complete
+            </span>
             <span>{checklistProgress.percentage}%</span>
           </div>
           <div className="h-2 w-full rounded-full bg-gray-200">
@@ -810,24 +846,22 @@ function ChecklistSection({
         {checklist.map((item) => (
           <div
             key={item._id}
-            className="group flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 hover:bg-gray-50 transition-colors"
+            className="group flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 transition-colors hover:bg-gray-50"
           >
             <button
               type="button"
               className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-colors ${
-                item.completed
-                  ? 'bg-green-500 border-green-500 text-white'
-                  : 'border-gray-300 hover:border-green-500'
+                item.isCompleted
+                  ? "border-green-500 bg-green-500 text-white"
+                  : "border-gray-300 hover:border-green-500"
               }`}
               onClick={() => toggleChecklistItem(item._id)}
             >
-              {item.completed && <Check className="h-3 w-3" />}
+              {item.isCompleted && <Check className="h-3 w-3" />}
             </button>
             <span
               className={`flex-1 text-sm transition-colors ${
-                item.completed
-                  ? "text-gray-500 line-through"
-                  : "text-gray-900"
+                item.isCompleted ? "text-gray-500 line-through" : "text-gray-900"
               }`}
             >
               {item.text}
@@ -837,7 +871,7 @@ function ChecklistSection({
               variant="ghost"
               size="sm"
               onClick={() => removeChecklistItem(item._id)}
-              className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 text-gray-400 hover:text-red-500"
+              className="h-6 w-6 p-0 text-gray-400 opacity-0 hover:text-red-500 group-hover:opacity-100"
             >
               <X className="h-3 w-3" />
             </Button>
@@ -864,10 +898,10 @@ function ChecklistSection({
           type="button"
           onClick={addChecklistItem}
           size="sm"
-          className="px-4 bg-theme hover:bg-blue-700"
+          className="bg-theme px-4 hover:bg-green-600"
           disabled={!newChecklistItem.trim()}
         >
-          <Plus className="h-4 w-4 mr-1" />
+          <Plus className="mr-1 h-4 w-4" />
           Add
         </Button>
       </div>
@@ -917,20 +951,20 @@ function CommentsSection({
       </h3>
 
       {/* Comments List */}
-      <div className="space-y-4 max-h-80 overflow-y-auto">
+      <div className="max-h-80 space-y-4 overflow-y-auto">
         {comments.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <MessageSquare className="h-8 w-8 mx-auto mb-2 text-gray-300" />
+          <div className="py-8 text-center text-gray-500">
+            <MessageSquare className="mx-auto mb-2 h-8 w-8 text-gray-300" />
             <p className="text-sm">No comments yet. Start the conversation!</p>
           </div>
         ) : (
           comments.map((comment) => (
-            <div key={comment._id} className="flex gap-3 group">
+            <div key={comment._id} className="group flex gap-3">
               <div className="flex-shrink-0">
                 <UserAvatar user={comment.author} size="sm" />
               </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
+              <div className="min-w-0 flex-1">
+                <div className="mb-1 flex items-center gap-2">
                   <span className="text-sm font-medium text-gray-900">
                     {comment.author.username}
                   </span>
@@ -938,8 +972,8 @@ function CommentsSection({
                     {formatDate(comment.createdAt)}
                   </span>
                 </div>
-                <div className="rounded-lg bg-gray-50 border border-gray-200 px-3 py-2">
-                  <p className="text-sm text-gray-800 whitespace-pre-wrap">
+                <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
+                  <p className="whitespace-pre-wrap text-sm text-gray-800">
                     {comment.text}
                   </p>
                 </div>
@@ -950,7 +984,7 @@ function CommentsSection({
       </div>
 
       {/* Add Comment */}
-      <div className="flex gap-3 pt-4 border-t">
+      <div className="flex gap-3 border-t pt-4">
         <div className="flex-shrink-0">
           <UserAvatar user={userData as User} size="sm" />
         </div>
@@ -959,7 +993,7 @@ function CommentsSection({
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Write a comment..."
-            className="w-full min-h-[80px] rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
+            className="min-h-[80px] w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20"
             onKeyDown={(e) => {
               if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
@@ -967,7 +1001,7 @@ function CommentsSection({
               }
             }}
           />
-          <div className="flex justify-between items-center">
+          <div className="flex items-center justify-between">
             <span className="text-xs text-gray-500">
               Press Cmd/Ctrl + Enter to send
             </span>
@@ -976,9 +1010,9 @@ function CommentsSection({
               onClick={addComment}
               size="sm"
               disabled={!newComment.trim()}
-              className="bg-theme hover:bg-blue-700"
+              className="bg-theme hover:bg-green-600"
             >
-              <Send className="h-4 w-4 mr-1" />
+              <Send className="mr-1 h-4 w-4" />
               Send
             </Button>
           </div>
