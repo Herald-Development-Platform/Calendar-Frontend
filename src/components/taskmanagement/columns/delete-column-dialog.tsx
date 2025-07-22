@@ -142,11 +142,14 @@ const DeleteColumnDialog = ({
         </div>
 
         <div className="flex justify-end gap-3 border-t pt-4">
-          <DialogClose asChild>
-            <Button variant="outline" size="sm" className="min-w-[80px]">
-              Cancel
-            </Button>
-          </DialogClose>
+          <Button
+            variant="outline"
+            size="sm"
+            className="min-w-[80px]"
+            onClick={() => setShowDialog(false)}
+          >
+            Cancel
+          </Button>
           <Button
             variant="destructive"
             size="sm"

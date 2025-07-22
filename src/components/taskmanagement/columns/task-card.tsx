@@ -289,9 +289,11 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
                     </span>
                   </div>
                 )}
-                {/* {task?.invitedUsers && (
-                  <UserAvatar user={task?.invitedUsers} size="sm" showPopover />
-                )} */}
+                {task?.createdBy && (
+                  <div className="flex items-center gap-1" title={`Invited by ${task.createdBy.username}`}>
+                    <UserAvatar user={task.createdBy} size="sm" showPopover />
+                  </div>
+                )}
               </div>
             </div>
 

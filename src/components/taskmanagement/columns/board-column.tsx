@@ -73,6 +73,7 @@ export function BoardColumn({ column, invitedTasks, disableEditDelete, disableDn
   const [showEditColumnDialogOpen, setShowEditColumnDialogOpen] = useState(false);
   const [showDeleteColumnDialogOpen, setShowDeleteColumnDialogOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Always call the hook, but ignore its result if invitedTasks is provided
   const { data: tasksData, isLoading: isTasksLoading } = useGetTaskByColumn(column._id);
@@ -209,7 +210,7 @@ export function BoardColumn({ column, invitedTasks, disableEditDelete, disableDn
                 {tasks.length}
               </span>
               {!disableEditDelete && (
-                <DropdownMenu>
+                <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
@@ -224,14 +225,20 @@ export function BoardColumn({ column, invitedTasks, disableEditDelete, disableDn
                     className="w-48 border border-gray-200 bg-white shadow-lg rounded-lg"
                   >
                     <DropdownMenuItem
-                      onClick={() => setShowEditColumnDialogOpen(true)}
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        setShowEditColumnDialogOpen(true);
+                      }}
                       className="flex cursor-pointer items-center gap-2 text-sm hover:bg-gray-50 rounded-md mx-1 my-1"
                     >
                       <Edit3 className="h-4 w-4 text-gray-500" />
                       Edit column
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      onClick={() => setShowDeleteColumnDialogOpen(true)}
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        setShowDeleteColumnDialogOpen(true);
+                      }}
                       className="flex cursor-pointer items-center gap-2 text-sm text-red-600 hover:bg-red-50 rounded-md mx-1 my-1"
                     >
                       <Trash2 className="h-4 w-4" />
