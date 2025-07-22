@@ -290,7 +290,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
                   </div>
                 )}
                 {task?.createdBy && (
-                  <div className="flex items-center gap-1" title={`Invited by ${task.createdBy.username}`}>
+                  <div className="flex items-center gap-1" title={`Created by ${task.createdBy.username}`}>
                     <UserAvatar user={task.createdBy} size="sm" showPopover />
                   </div>
                 )}
