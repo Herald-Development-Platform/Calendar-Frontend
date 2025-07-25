@@ -18,8 +18,8 @@ const useApplySemesterDot = ({
   return useEffect(() => {
     if (!calendarRef?.current || currentView !== "dayGridMonth") return;
 
-    // @ts-ignore
     const dayFrameElements =
+      // @ts-ignore
       calendarRef.current.elRef.current.querySelectorAll(".fc-daygrid-day-frame");
 
     const dayFrameEls = Array.from(dayFrameElements);
@@ -67,9 +67,9 @@ const useApplySemesterDot = ({
 
     return () => {
       if (!calendarRef.current) return;
-      // @ts-ignore
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       let allDotElements =
+        // @ts-ignore
+        // eslint-disable-next-line react-hooks/exhaustive-deps
         calendarRef.current.elRef.current.querySelectorAll(".fc-custom-semester-dot");
       allDotElements = Array.from(allDotElements);
 
@@ -92,8 +92,8 @@ const useApplySemesterDotYearly = ({
   return useEffect(() => {
     if (!calendarRef.current || currentView !== "multiMonthYear") return;
 
-    // @ts-ignore
     const titleNodeList =
+      // @ts-ignore
       calendarRef.current.elRef.current.querySelectorAll(".fc-multimonth-title");
     const titleEls = Array.from(titleNodeList);
     titleEls.forEach((titleEl: any, i: number) => {
@@ -207,8 +207,8 @@ const useApplyHighlightOrOngoing = ({
     if (typeof calendarRef === "string") return;
     if (!calendarRef?.current) return;
 
-    // @ts-ignore
     dayFrameRefs.current =
+      // @ts-ignore
       calendarRef.current.elRef.current.querySelectorAll(".fc-daygrid-day-frame");
     const dayFrameEls = Array.from(dayFrameRefs.current as ArrayLike<HTMLDivElement>);
 
