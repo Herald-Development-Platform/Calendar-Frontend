@@ -1,18 +1,18 @@
 ::-webkit-scrollbar {
-    width: 12px;  /* width of the scrollbar */
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: #f1f1f1;  /* color of the scrollbar track */
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: #90CC69;  /* color of the scrollbar thumb */
-    border-radius: 10px;  /* rounded corners for the scrollbar thumb */
-  }
-  
-  /* For Firefox */
-  html {
-    scrollbar-width: thin;  /* width of the scrollbar */
-    scrollbar-color: green #f1f1f1;  /* color of the thumb and track */
-  }
+  width: 12px; /* width of the scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* color of the scrollbar track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #90cc69; /* color of the scrollbar thumb */
+  border-radius: 10px; /* rounded corners for the scrollbar thumb */
+}
+
+/* For Firefox */
+html {
+  scrollbar-width: thin; /* width of the scrollbar */
+  scrollbar-color: green #f1f1f1; /* color of the thumb and track */
+}

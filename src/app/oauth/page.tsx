@@ -24,7 +24,7 @@ function Oauth() {
   useEffect(() => {
     if (typeof token === "string") {
       Cookies.set("token", token, {
-        expires: 60
+        expires: 60,
       });
       router.push(`/`);
     }
@@ -37,7 +37,7 @@ function Oauth() {
             {error}
           </p>
           <div>
-            <Link href="/login" className="font-bold text-primary-400 flex items-center gap-3">
+            <Link href="/login" className="flex items-center gap-3 font-bold text-primary-400">
               <MoveLeft />
               <span>Back to Login</span>
             </Link>
@@ -45,9 +45,7 @@ function Oauth() {
         </div>
       ) : (
         <div className="flex w-[50%] flex-col items-center justify-center gap-2">
-          <span className="text-2xl font-semibold text-neutral-700">
-            Logging In With Google
-          </span>
+          <span className="text-2xl font-semibold text-neutral-700">Logging In With Google</span>
           <LoadingBar className="h-2 w-[100%] bg-neutral-300" />
         </div>
       )}

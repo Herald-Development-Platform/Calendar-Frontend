@@ -6,8 +6,8 @@ export default function middleware(request: NextRequest) {
     return NextResponse.redirect(
       new URL(
         `${process.env.DOMAIN_PREFIX || ""}/login?from=${request.nextUrl.pathname}`,
-        request.url,
-      ),
+        request.url
+      )
     );
   }
   const data = decryptJwtPayload(request.cookies?.get("token")?.value || "");
@@ -24,7 +24,9 @@ export default function middleware(request: NextRequest) {
   }
   if (data.role && data.role !== "SUPER_ADMIN" && !data.department) {
     if (!request.nextUrl.pathname.includes("selectDepartment")) {
-      return NextResponse.redirect(new URL(`${process.env.DOMAIN_PREFIX || ""}/selectDepartment`, request.url));
+      return NextResponse.redirect(
+        new URL(`${process.env.DOMAIN_PREFIX || ""}/selectDepartment`, request.url)
+      );
     }
   }
 }

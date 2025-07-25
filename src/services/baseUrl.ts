@@ -13,10 +13,10 @@ export const Axios = axios.create({
 
 // add an interceptor in the axios that will handle the response and then continue to the next step
 Axios.interceptors.response.use(
-  (response) => {
+  response => {
     return response;
   },
-  (error) => {
+  error => {
     // if (error.response.status === 401) {
     //   Cookies.remove("token");
     //   window.location.href = "/login";
@@ -27,11 +27,11 @@ Axios.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  },
+  }
 );
 
 Axios.interceptors.request.use(
-  (config) => {
+  config => {
     const token = Cookies.get("token");
 
     if (token) {
@@ -40,7 +40,7 @@ Axios.interceptors.request.use(
 
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
-  },
+  }
 );

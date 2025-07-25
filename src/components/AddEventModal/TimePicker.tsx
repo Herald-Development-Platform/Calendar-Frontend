@@ -1,10 +1,6 @@
 import React, { useEffect } from "react";
 
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Button } from "../ui/button";
 import { set } from "date-fns";
@@ -97,11 +93,7 @@ const TimePicker = ({
   return (
     <Popover>
       <PopoverTrigger className="w-full">
-        <Button
-          type="button"
-          variant="outline"
-          className="flex w-full flex-grow justify-center"
-        >
+        <Button type="button" variant="outline" className="flex w-full flex-grow justify-center">
           {(() => {
             let hours12 = selectedTime.hours % 12 || 12;
             return `${hours12.toString().padStart(2, "0")}:${selectedTime.minutes.toString().padStart(2, "0")} ${selectedTime.ampm}`;
@@ -114,15 +106,13 @@ const TimePicker = ({
             <div className="flex p-2 sm:flex-col">
               {Array.from({ length: 12 }, (_, i) => i + 1)
                 .reverse()
-                .map((hour) => (
+                .map(hour => (
                   <Button
                     key={hour}
                     size="icon"
                     value={hour}
                     variant={
-                      selectedTime && selectedTime.hours % 12 === hour % 12
-                        ? "default"
-                        : "ghost"
+                      selectedTime && selectedTime.hours % 12 === hour % 12 ? "default" : "ghost"
                     }
                     className="aspect-square shrink-0 sm:w-full"
                     onClick={() => handleTime("hour", hour.toString())}
@@ -135,15 +125,11 @@ const TimePicker = ({
           </ScrollArea>
           <ScrollArea className="w-64 sm:w-auto">
             <div className="flex p-2 sm:flex-col">
-              {Array.from({ length: 12 }, (_, i) => i * 5).map((minute) => (
+              {Array.from({ length: 12 }, (_, i) => i * 5).map(minute => (
                 <Button
                   key={minute}
                   size="icon"
-                  variant={
-                    selectedTime && selectedTime.minutes === minute
-                      ? "default"
-                      : "ghost"
-                  }
+                  variant={selectedTime && selectedTime.minutes === minute ? "default" : "ghost"}
                   className="aspect-square shrink-0 sm:w-full"
                   onClick={() => handleTime("minute", minute.toString())}
                 >
@@ -155,7 +141,7 @@ const TimePicker = ({
           </ScrollArea>
           <ScrollArea className="">
             <div className="flex p-2 sm:flex-col">
-              {["AM", "PM"].map((ampm) => (
+              {["AM", "PM"].map(ampm => (
                 <Button
                   key={ampm}
                   size="icon"

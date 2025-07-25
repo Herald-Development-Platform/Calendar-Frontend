@@ -31,11 +31,7 @@ import {
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
-import {
-  ChecklistItem,
-  ITask,
-  Comment,
-} from "@/types/taskmanagement/task.types";
+import { ChecklistItem, ITask, Comment } from "@/types/taskmanagement/task.types";
 import { ITaskColumnBase } from "@/types/taskmanagement/column.types";
 import { UserAvatar } from "../user-avatar";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -62,11 +58,7 @@ const formatDateTimeLocal = (date: string) => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-export function TaskDialog({
-  task,
-  openTaskDialog,
-  setOpenTaskDialog,
-}: TaskDialogProps) {
+export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDialogProps) {
   const queryClient = useQueryClient();
   const { userData } = useContext(Context);
 
@@ -136,10 +128,7 @@ export function TaskDialog({
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
       }
     }
@@ -169,14 +158,12 @@ export function TaskDialog({
 
   const toggleChecklistItem = (id: string) => {
     setChecklist(
-      checklist.map((item) =>
-        item._id === id ? { ...item, isCompleted: !item.isCompleted } : item,
-      ),
+      checklist.map(item => (item._id === id ? { ...item, isCompleted: !item.isCompleted } : item))
     );
   };
 
   const removeChecklistItem = (id: string) => {
-    setChecklist(checklist.filter((item) => item._id !== id));
+    setChecklist(checklist.filter(item => item._id !== id));
   };
 
   const addComment = () => {
@@ -192,13 +179,11 @@ export function TaskDialog({
     }
   };
 
-  const onSubmit = (
-    data: Partial<Omit<ITask, "column"> & { column: string }>,
-  ) => {
+  const onSubmit = (data: Partial<Omit<ITask, "column"> & { column: string }>) => {
     if (!data.title?.trim()) return;
 
     const selectedColumnObj = columnData?.data?.find(
-      (col: ITaskColumnBase) => col._id === data.column,
+      (col: ITaskColumnBase) => col._id === data.column
     );
     if (!selectedColumnObj) return;
 
@@ -221,10 +206,8 @@ export function TaskDialog({
     const newQueryKey = ["tasks", newColumnId];
 
     // Get old and new column data
-    const oldColumnTasks: { data: ITask[] } | undefined =
-      queryClient.getQueryData(oldQueryKey);
-    const newColumnTasks: { data: ITask[] } | undefined =
-      queryClient.getQueryData(newQueryKey);
+    const oldColumnTasks: { data: ITask[] } | undefined = queryClient.getQueryData(oldQueryKey);
+    const newColumnTasks: { data: ITask[] } | undefined = queryClient.getQueryData(newQueryKey);
 
     const previousOldTasks = oldColumnTasks?.data || [];
     const previousNewTasks = newColumnTasks?.data || [];
@@ -232,15 +215,11 @@ export function TaskDialog({
     // Prepare optimistic update
     if (oldColumnId === newColumnId) {
       // Just update task in the same column
-      const updatedTasks = previousOldTasks.map((t) =>
-        t._id === task._id ? updatedTask : t,
-      );
+      const updatedTasks = previousOldTasks.map(t => (t._id === task._id ? updatedTask : t));
       queryClient.setQueryData(oldQueryKey, { data: updatedTasks });
     } else {
       // Remove from old column
-      const updatedOldTasks = previousOldTasks.filter(
-        (t) => t._id !== task._id,
-      );
+      const updatedOldTasks = previousOldTasks.filter(t => t._id !== task._id);
       queryClient.setQueryData(oldQueryKey, { data: updatedOldTasks });
 
       // Add to new column
@@ -254,7 +233,7 @@ export function TaskDialog({
       onSuccess: () => {
         toast.success("Task updated successfully");
       },
-      onError: (error) => {
+      onError: error => {
         toast.error("Failed to update task");
 
         // Rollback
@@ -285,11 +264,10 @@ export function TaskDialog({
 
   const checklistProgress = checklist.length
     ? {
-        isCompleted: checklist.filter((i) => i.isCompleted).length,
+        isCompleted: checklist.filter(i => i.isCompleted).length,
         total: checklist.length,
         percentage: Math.round(
-          (checklist.filter((i) => i.isCompleted).length / checklist.length) *
-            100,
+          (checklist.filter(i => i.isCompleted).length / checklist.length) * 100
         ),
       }
     : null;
@@ -339,10 +317,7 @@ export function TaskDialog({
   return (
     <Dialog open={openTaskDialog} onOpenChange={setOpenTaskDialog}>
       <DialogContent className="max-h-[95vh] overflow-y-auto p-0 sm:max-w-[900px] ">
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="flex h-full flex-col"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
           {/* Header */}
           <div className="border-b bg-white px-6 py-4">
             <div className="flex items-start justify-between">
@@ -368,22 +343,18 @@ export function TaskDialog({
                       rules={{ required: true }}
                       render={({ field }) => (
                         <Select
-                          value={
-                            typeof field.value === "string" ? field.value : ""
-                          }
+                          value={typeof field.value === "string" ? field.value : ""}
                           onValueChange={field.onChange}
                         >
                           <SelectTrigger className="h-auto w-auto border-none bg-green-50 px-2 py-1 text-green-800 hover:bg-green-100">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            {columnData?.data?.map(
-                              (column: ITaskColumnBase) => (
-                                <SelectItem key={column._id} value={column._id}>
-                                  {column.title}
-                                </SelectItem>
-                              ),
-                            )}
+                            {columnData?.data?.map((column: ITaskColumnBase) => (
+                              <SelectItem key={column._id} value={column._id}>
+                                {column.title}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       )}
@@ -420,10 +391,7 @@ export function TaskDialog({
                       </Badge>
                     )}
                     {checklistProgress && (
-                      <Badge
-                        variant="outline"
-                        className="flex items-center gap-1"
-                      >
+                      <Badge variant="outline" className="flex items-center gap-1">
                         <CheckSquare className="h-3 w-3" />
                         {checklistProgress.isCompleted}/{checklistProgress.total}
                       </Badge>
@@ -458,9 +426,7 @@ export function TaskDialog({
                     type="button"
                     variant="ghost"
                     size="sm"
-                    onClick={() =>
-                      setIsEditingDescription(!isEditingDescription)
-                    }
+                    onClick={() => setIsEditingDescription(!isEditingDescription)}
                   >
                     {isEditingDescription ? "Save" : "Edit"}
                   </Button>
@@ -548,10 +514,7 @@ export function TaskDialog({
                       name="priority"
                       control={control}
                       render={({ field }) => (
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
+                        <Select value={field.value} onValueChange={field.onChange}>
                           <SelectTrigger className="h-10 bg-white">
                             <SelectValue />
                           </SelectTrigger>
@@ -612,12 +575,10 @@ export function TaskDialog({
                               onClick={() => setDropdownOpen(!dropdownOpen)}
                             >
                               {selectedUsers.length === 0 ? (
-                                <span className="text-sm text-gray-500">
-                                  Select users...
-                                </span>
+                                <span className="text-sm text-gray-500">Select users...</span>
                               ) : (
                                 <div className="flex flex-wrap gap-1">
-                                  {selectedUsers.map((user) => (
+                                  {selectedUsers.map(user => (
                                     <div
                                       key={user._id}
                                       className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-1 text-xs text-green-800"
@@ -627,12 +588,10 @@ export function TaskDialog({
                                       <button
                                         type="button"
                                         className="ml-1 text-theme hover:text-red-500"
-                                        onClick={(e) => {
+                                        onClick={e => {
                                           e.stopPropagation();
                                           field.onChange(
-                                            selectedUsers.filter(
-                                              (u) => u._id !== user._id,
-                                            ),
+                                            selectedUsers.filter(u => u._id !== user._id)
                                           );
                                         }}
                                       >
@@ -651,34 +610,25 @@ export function TaskDialog({
                                     className="flex cursor-pointer items-center gap-3 px-3 py-2 hover:bg-gray-50"
                                     onClick={() => {
                                       const isSelected = selectedUsers.some(
-                                        (u) => u._id === user._id,
+                                        u => u._id === user._id
                                       );
                                       if (isSelected) {
                                         field.onChange(
-                                          selectedUsers.filter(
-                                            (u) => u._id !== user._id,
-                                          ),
+                                          selectedUsers.filter(u => u._id !== user._id)
                                         );
                                       } else {
-                                        field.onChange([
-                                          ...selectedUsers,
-                                          user,
-                                        ]);
+                                        field.onChange([...selectedUsers, user]);
                                       }
                                     }}
                                   >
                                     <input
                                       type="checkbox"
-                                      checked={selectedUsers.some(
-                                        (u) => u._id === user._id,
-                                      )}
+                                      checked={selectedUsers.some(u => u._id === user._id)}
                                       readOnly
                                       className="rounded text-theme"
                                     />
                                     <UserAvatar user={user} size="sm" />
-                                    <span className="text-sm">
-                                      {user.username}
-                                    </span>
+                                    <span className="text-sm">{user.username}</span>
                                   </div>
                                 ))}
                               </div>
@@ -691,15 +641,11 @@ export function TaskDialog({
 
                   {/* Creation Info */}
                   <div className="space-y-3 border-t pt-4">
-                    <h4 className="text-sm font-medium text-gray-700">
-                      Created
-                    </h4>
+                    <h4 className="text-sm font-medium text-gray-700">Created</h4>
                     {task?.createdBy && (
                       <div className="flex items-center gap-2">
                         <UserAvatar user={task.createdBy} size="sm" />
-                        <span className="text-sm text-gray-600">
-                          {task.createdBy.username}
-                        </span>
+                        <span className="text-sm text-gray-600">{task.createdBy.username}</span>
                       </div>
                     )}
                     {task?.createdAt && (
@@ -712,9 +658,7 @@ export function TaskDialog({
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <h4 className="text-sm font-medium text-gray-700">
-                    Recent Activity
-                  </h4>
+                  <h4 className="text-sm font-medium text-gray-700">Recent Activity</h4>
                   <div className="space-y-3 text-sm text-gray-600">
                     <div className="flex items-center gap-2">
                       <div className="h-2 w-2 rounded-full bg-green-500"></div>
@@ -775,11 +719,10 @@ function ChecklistSection({
 }) {
   const checklistProgress = checklist.length
     ? {
-        isCompleted: checklist.filter((i) => i.isCompleted).length,
+        isCompleted: checklist.filter(i => i.isCompleted).length,
         total: checklist.length,
         percentage: Math.round(
-          (checklist.filter((i) => i.isCompleted).length / checklist.length) *
-            100,
+          (checklist.filter(i => i.isCompleted).length / checklist.length) * 100
         ),
       }
     : null;
@@ -800,14 +743,12 @@ function ChecklistSection({
 
   const toggleChecklistItem = (id: string) => {
     setChecklist(
-      checklist.map((item) =>
-        item._id === id ? { ...item, isCompleted: !item.isCompleted } : item,
-      ),
+      checklist.map(item => (item._id === id ? { ...item, isCompleted: !item.isCompleted } : item))
     );
   };
 
   const removeChecklistItem = (id: string) => {
-    setChecklist(checklist.filter((item) => item._id !== id));
+    setChecklist(checklist.filter(item => item._id !== id));
   };
 
   return (
@@ -828,8 +769,7 @@ function ChecklistSection({
         <div className="space-y-2">
           <div className="flex justify-between text-xs text-gray-600">
             <span>
-              {checklistProgress.isCompleted} of {checklistProgress.total}{" "}
-              complete
+              {checklistProgress.isCompleted} of {checklistProgress.total} complete
             </span>
             <span>{checklistProgress.percentage}%</span>
           </div>
@@ -843,7 +783,7 @@ function ChecklistSection({
       )}
 
       <div className="space-y-2">
-        {checklist.map((item) => (
+        {checklist.map(item => (
           <div
             key={item._id}
             className="group flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 transition-colors hover:bg-gray-50"
@@ -883,10 +823,10 @@ function ChecklistSection({
         <div className="flex-1">
           <Input
             value={newChecklistItem}
-            onChange={(e) => setNewChecklistItem(e.target.value)}
+            onChange={e => setNewChecklistItem(e.target.value)}
             placeholder="Add an item..."
             className="h-10 bg-white"
-            onKeyDown={(e) => {
+            onKeyDown={e => {
               if (e.key === "Enter") {
                 e.preventDefault();
                 addChecklistItem();
@@ -958,7 +898,7 @@ function CommentsSection({
             <p className="text-sm">No comments yet. Start the conversation!</p>
           </div>
         ) : (
-          comments.map((comment) => (
+          comments.map(comment => (
             <div key={comment._id} className="group flex gap-3">
               <div className="flex-shrink-0">
                 <UserAvatar user={comment.author} size="sm" />
@@ -968,14 +908,10 @@ function CommentsSection({
                   <span className="text-sm font-medium text-gray-900">
                     {comment.author.username}
                   </span>
-                  <span className="text-xs text-gray-500">
-                    {formatDate(comment.createdAt)}
-                  </span>
+                  <span className="text-xs text-gray-500">{formatDate(comment.createdAt)}</span>
                 </div>
                 <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
-                  <p className="whitespace-pre-wrap text-sm text-gray-800">
-                    {comment.text}
-                  </p>
+                  <p className="whitespace-pre-wrap text-sm text-gray-800">{comment.text}</p>
                 </div>
               </div>
             </div>
@@ -991,10 +927,10 @@ function CommentsSection({
         <div className="flex-1 space-y-2">
           <textarea
             value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
+            onChange={e => setNewComment(e.target.value)}
             placeholder="Write a comment..."
             className="min-h-[80px] w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20"
-            onKeyDown={(e) => {
+            onKeyDown={e => {
               if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
                 addComment();
@@ -1002,9 +938,7 @@ function CommentsSection({
             }}
           />
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500">
-              Press Cmd/Ctrl + Enter to send
-            </span>
+            <span className="text-xs text-gray-500">Press Cmd/Ctrl + Enter to send</span>
             <Button
               type="button"
               onClick={addComment}

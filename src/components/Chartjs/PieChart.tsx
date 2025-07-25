@@ -5,7 +5,6 @@ import { Chart as ChartJS, registerables } from "chart.js";
 ChartJS.register(...registerables);
 
 const PieChart = ({ data }: { data: any }) => {
-
   const options = {
     scales: {},
     plugins: {

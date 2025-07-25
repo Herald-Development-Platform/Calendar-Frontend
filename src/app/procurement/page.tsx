@@ -11,8 +11,7 @@ const ProcurementPage = () => {
   const lastPushedPathRef = useRef(pathname);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  const iframePath =
-    pathname === "/procurement" ? "/" : pathname.replace(/^\/procurement/, "");
+  const iframePath = pathname === "/procurement" ? "/" : pathname.replace(/^\/procurement/, "");
   const fullIframeUrl = `${PROCUREMENT_URL}${iframePath}`;
 
   useEffect(() => {

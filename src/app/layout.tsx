@@ -11,15 +11,10 @@ const inter = Inter({ subsets: ["latin"], fallback: ["Arial"] });
 export const metadata: Metadata = {
   title: "Calendar Application",
   // manifest: "/manifest.json",
-  description:
-    "Intra college calender application of Herald College Kathmandu.",
+  description: "Intra college calender application of Herald College Kathmandu.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body className={`${inter.className} flex flex-col`}>

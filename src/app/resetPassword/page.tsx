@@ -19,10 +19,7 @@ export default function Page() {
 function ResetPassword() {
   const router = useRouter();
 
-  const {
-    register: changePasswordRegister,
-    handleSubmit: handleChangePasswordSubmit,
-  } = useForm();
+  const { register: changePasswordRegister, handleSubmit: handleChangePasswordSubmit } = useForm();
 
   const searchParams = useSearchParams();
 
@@ -44,8 +41,8 @@ function ResetPassword() {
       method: "POST",
       body: JSON.stringify({ email, OTP, password: payload.newPassword }),
     })
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         if (!data.success) {
           toast.error(data.message || "Something went wrong");
         }
@@ -54,7 +51,7 @@ function ResetPassword() {
           router.push("/login");
         }, 1000);
       })
-      .catch((err) => toast.error(err.message || "Something went wrong"));
+      .catch(err => toast.error(err.message || "Something went wrong"));
   };
 
   return (
@@ -84,20 +81,12 @@ function ResetPassword() {
         </div>
 
         {/* Form  */}
-        <form
-          onSubmit={handleChangePasswordSubmit(resetPassword)}
-          className="flex flex-col gap-4"
-        >
+        <form onSubmit={handleChangePasswordSubmit(resetPassword)} className="flex flex-col gap-4">
           <label htmlFor="password">
             New Password
             <br />
             <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4">
-              <Image
-                src={PasswordLogo}
-                width={"20"}
-                height={"20"}
-                alt="passwordLogo"
-              />
+              <Image src={PasswordLogo} width={"20"} height={"20"} alt="passwordLogo" />
               <input
                 type="password"
                 id="password"
@@ -113,12 +102,7 @@ function ResetPassword() {
             Confirm Password
             <br />
             <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4">
-              <Image
-                src={PasswordLogo}
-                width={"20"}
-                height={"20"}
-                alt="passwordLogo"
-              />
+              <Image src={PasswordLogo} width={"20"} height={"20"} alt="passwordLogo" />
               <input
                 type="password"
                 id="password"

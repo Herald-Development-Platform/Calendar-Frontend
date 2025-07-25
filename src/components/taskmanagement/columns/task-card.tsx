@@ -2,13 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Calendar,
-  Edit2,
-  Archive,
-  CheckSquare,
-  GripVertical,
-} from "lucide-react";
+import { Calendar, Edit2, Archive, CheckSquare, GripVertical } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
@@ -62,14 +56,9 @@ interface TaskCardProps {
 }
 
 export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: task?._id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: task?._id,
+  });
 
   const queryClient = useQueryClient();
 
@@ -114,7 +103,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
 
   const checklistProgress = task?.checklist
     ? {
-        completed: task?.checklist.filter((item) => item.isCompleted).length,
+        completed: task?.checklist.filter(item => item.isCompleted).length,
         total: task?.checklist.length,
       }
     : null;
@@ -130,8 +119,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
     const queryKey = ["tasks", columnId];
 
     // Get current cached tasks
-    const columnTasks: { data: ITask[] } | undefined =
-      queryClient.getQueryData(queryKey);
+    const columnTasks: { data: ITask[] } | undefined = queryClient.getQueryData(queryKey);
     const previousTasks = columnTasks?.data;
 
     // Create updated task
@@ -155,7 +143,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
       onSuccess: () => {
         // Optional: Refetch or leave as is if optimistic update matches server
       },
-      onError: (error) => {
+      onError: error => {
         console.error("Error updating task:", error);
 
         // Roll back to previous tasks
@@ -174,17 +162,15 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
     const updatedTask = { ...task, isArchived: !task?.isArchived };
 
     // Get previous tasks and archived-tasks from cache
-    const columnTasks: { data: ITask[] } | undefined =
-      queryClient.getQueryData(queryKey);
-    const archivedTasks: { data: ITask[] } | undefined =
-      queryClient.getQueryData(archivedKey);
+    const columnTasks: { data: ITask[] } | undefined = queryClient.getQueryData(queryKey);
+    const archivedTasks: { data: ITask[] } | undefined = queryClient.getQueryData(archivedKey);
 
     const previousColumnTasks = columnTasks?.data || [];
     const previousArchivedTasks = archivedTasks?.data || [];
 
     // Optimistically update "tasks" list
     const updatedColumnTasks = updatedTask.isArchived
-      ? previousColumnTasks.filter((t) => t._id !== taskId)
+      ? previousColumnTasks.filter(t => t._id !== taskId)
       : [...previousColumnTasks, updatedTask]; // In case of unarchive
 
     queryClient.setQueryData(queryKey, {
@@ -194,7 +180,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
     // Optimistically update "archived-tasks" list
     const updatedArchivedTasks = updatedTask.isArchived
       ? [...previousArchivedTasks, updatedTask]
-      : previousArchivedTasks.filter((t) => t._id !== taskId);
+      : previousArchivedTasks.filter(t => t._id !== taskId);
 
     queryClient.setQueryData(archivedKey, {
       data: updatedArchivedTasks,
@@ -205,7 +191,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
       onSuccess: () => {
         // Optional: refetch or assume cache is correct
       },
-      onError: (error) => {
+      onError: error => {
         console.error("Error updating task:", error);
 
         // Roll back both caches
@@ -237,7 +223,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
               {...attributes}
               {...listeners}
               className="mt-1 flex w-full  max-w-0 cursor-grab select-none items-center transition-all duration-300 active:cursor-grabbing group-hover:max-w-4"
-              onClick={(e) => e.stopPropagation()} // Prevent opening dialog when clicking handle
+              onClick={e => e.stopPropagation()} // Prevent opening dialog when clicking handle
             >
               <GripVertical className="h-4 w-4 text-gray-400" />
             </span>
@@ -269,8 +255,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
                     <CheckSquare className="h-3 w-3" />
                     <span
                       className={
-                        checklistProgress?.completed ===
-                        checklistProgress?.total
+                        checklistProgress?.completed === checklistProgress?.total
                           ? "text-green-600"
                           : ""
                       }
@@ -290,7 +275,10 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
                   </div>
                 )}
                 {task?.createdBy && (
-                  <div className="flex items-center gap-1" title={`Created by ${task.createdBy.username}`}>
+                  <div
+                    className="flex items-center gap-1"
+                    title={`Created by ${task.createdBy.username}`}
+                  >
                     <UserAvatar user={task.createdBy} size="sm" showPopover />
                   </div>
                 )}
@@ -301,39 +289,35 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
             {!disableEditDelete && (
               <div
                 className="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
-                onMouseDown={(e) => e.stopPropagation()} // Prevent drag when clicking buttons
+                onMouseDown={e => e.stopPropagation()} // Prevent drag when clicking buttons
               >
                 <Button
                   size="sm"
                   variant="ghost"
                   className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     onToggleComplete(task?._id);
                   }}
-                  onMouseDown={(e) => e.stopPropagation()}
+                  onMouseDown={e => e.stopPropagation()}
                 >
                   <div
                     className={`flex h-4 w-4 items-center justify-center rounded-full border-2 ${
-                      task?.isCompleted
-                        ? "border-green-500 bg-green-500"
-                        : "border-gray-400"
+                      task?.isCompleted ? "border-green-500 bg-green-500" : "border-gray-400"
                     }`}
                   >
-                    {task?.isCompleted && (
-                      <div className="text-xs leading-none text-white">✓</div>
-                    )}
+                    {task?.isCompleted && <div className="text-xs leading-none text-white">✓</div>}
                   </div>
                 </Button>
                 <Button
                   size="sm"
                   variant="ghost"
                   className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     setOpenTaskDialog(true);
                   }}
-                  onMouseDown={(e) => e.stopPropagation()}
+                  onMouseDown={e => e.stopPropagation()}
                 >
                   <Edit2 className="h-3 w-3" />
                 </Button>
@@ -341,11 +325,11 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
                   size="sm"
                   variant="ghost"
                   className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
-                  onClick={(e) => {
+                  onClick={e => {
                     e.stopPropagation();
                     onToggleArchive(task?._id);
                   }}
-                  onMouseDown={(e) => e.stopPropagation()}
+                  onMouseDown={e => e.stopPropagation()}
                 >
                   <Archive className="h-3 w-3" />
                 </Button>

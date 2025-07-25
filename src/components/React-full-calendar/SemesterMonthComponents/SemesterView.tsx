@@ -4,13 +4,7 @@ import SemesterMonth from "@/components/React-full-calendar/SemesterMonthCompone
 import { useGetEvents } from "@/services/api/eventsApi";
 import React, { useContext, useEffect, useRef } from "react";
 
-export default function SemesterView({
-  year,
-  events,
-}: {
-  year: number;
-  events: eventType[];
-}) {
+export default function SemesterView({ year, events }: { year: number; events: eventType[] }) {
   const eventsAccordingToMonth = getParsedDateForSemView({
     events,
   });
@@ -56,24 +50,18 @@ export default function SemesterView({
   );
 }
 
-function getParsedDateForSemView({
-  events,
-}: {
-  events: eventType[] | undefined;
-}) {
+function getParsedDateForSemView({ events }: { events: eventType[] | undefined }) {
   const dateObj: any = {};
   events?.forEach((event: eventType) => {
     if (!event?.start) return;
 
-    const monthIndex =
-      (event?.start && new Date(event?.start)?.getMonth()) || -1;
+    const monthIndex = (event?.start && new Date(event?.start)?.getMonth()) || -1;
 
     !Array.isArray(dateObj[monthIndex])
       ? (dateObj[monthIndex] = [event])
       : dateObj[monthIndex].push(event);
 
-    const monthEndIndex =
-      (event?.end && new Date(event?.end)?.getMonth()) || -1;
+    const monthEndIndex = (event?.end && new Date(event?.end)?.getMonth()) || -1;
 
     if (monthEndIndex !== monthIndex) {
       !Array.isArray(dateObj[monthEndIndex])

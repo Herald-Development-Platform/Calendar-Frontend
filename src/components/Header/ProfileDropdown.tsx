@@ -17,11 +17,7 @@ import { Bug } from "lucide-react";
 
 import defaultPfp from "@/imgs/DummyProfile.jpg";
 
-export default function ProfileDropdown({
-  userData,
-}: {
-  userData: User | undefined;
-}) {
+export default function ProfileDropdown({ userData }: { userData: User | undefined }) {
   const router = useRouter();
   return (
     <DropdownMenu>
@@ -36,8 +32,7 @@ export default function ProfileDropdown({
           />
           <p className="font-medium text-neutral-600 "></p>
         </div>
-        <span className="hidden md:inline-block">{userData?.username}</span>{" "}
-        <IoMdArrowDropdown />
+        <span className="hidden md:inline-block">{userData?.username}</span> <IoMdArrowDropdown />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem

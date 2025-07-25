@@ -88,11 +88,7 @@ export const Context = createContext<ContextType>({
 });
 // const calendarRef = createRef(undefined);
 
-export default function ContextProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ContextProvider({ children }: { children: React.ReactNode }) {
   const calendarRef = useRef<FullCalendar | null>(null);
   const [events, setEvents] = useState<eventType[] | undefined>();
   const [currentView, setCurrentView] = useState<string>("");
@@ -114,10 +110,7 @@ export default function ContextProvider({
         const response = await Axios.get(`/profile`);
         const user = response.data.data;
         if (user) {
-          if (
-            user.syncWithGoogle &&
-            (user.role === ROLES.SUPER_ADMIN || user.department)
-          ) {
+          if (user.syncWithGoogle && (user.role === ROLES.SUPER_ADMIN || user.department)) {
             syncWithGoogle();
           }
           const token = await generateNewToken();
@@ -162,31 +155,21 @@ export default function ContextProvider({
   const lastDay = totalDaysInMonth(date.getMonth() + 1, date.getFullYear());
   const dayDiff = lastDay - currentDay;
 
-  const [selectedDate, setSelectedDate] = useState<
-    SelectedDateType | undefined
-  >({
+  const [selectedDate, setSelectedDate] = useState<SelectedDateType | undefined>({
     start: new Date(),
-    end: new Date(
-      new Date().getTime() + 1000 * 60 * 60 * 24 * (lastDay - currentDay),
-    ),
+    end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * (lastDay - currentDay)),
     endStr: "",
     startStr: "",
   });
 
-  const [calenderDate, setCalenderDate] = useState<
-    SelectedDateType | undefined
-  >({
+  const [calenderDate, setCalenderDate] = useState<SelectedDateType | undefined>({
     start: new Date(),
-    end: new Date(
-      new Date().getTime() + 1000 * 60 * 60 * 24 * (dayDiff < 7 ? 7 : dayDiff),
-    ),
+    end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * (dayDiff < 7 ? 7 : dayDiff)),
     endStr: "",
     startStr: "",
   });
 
-  const [selectedEventData, setSelectedEventData] = useState<eventType | null>(
-    null,
-  );
+  const [selectedEventData, setSelectedEventData] = useState<eventType | null>(null);
 
   return (
     <Context.Provider

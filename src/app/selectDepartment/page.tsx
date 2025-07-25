@@ -10,7 +10,7 @@ import { useRouter } from "next/navigation";
 import { set } from "date-fns";
 import { LoaderCircle } from "lucide-react";
 import HeraldLogo from "@/imgs/images/heraldLogo.svg";
-import alreadySentRequest from "@/imgs/alreadySentRequest.svg"
+import alreadySentRequest from "@/imgs/alreadySentRequest.svg";
 
 interface Department {
   _id: string;
@@ -25,8 +25,7 @@ export default function Page() {
   const Router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const [selectedDepartment, setSelectedDepartment] =
-    useState<Department | null>(null);
+  const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
   useEffect(() => {
     fetchDepartments();
     fetchMyRequests();
@@ -112,9 +111,7 @@ export default function Page() {
       }
     } catch (error: any) {
       if (error?.response) {
-        toast.error(
-          error.response?.data?.message || "Error sending join request",
-        );
+        toast.error(error.response?.data?.message || "Error sending join request");
       }
       console.error("Error sending join request:", error);
       setIsLoading(false);
@@ -170,14 +167,12 @@ export default function Page() {
 
           {/* Title  */}
           <div className="mt-[29px] flex w-full flex-col items-center gap-[6px] px-4 pl-0">
-            <h1 className="w-full text-left text-[20px] font-bold">
-              Choose your department
-            </h1>
+            <h1 className="w-full text-left text-[20px] font-bold">Choose your department</h1>
           </div>
 
           <div className="flex h-[calc(100vh-300px)] w-full flex-col gap-[20px] overflow-y-scroll pr-[12px]">
             {departments &&
-              departments.map((department) => {
+              departments.map(department => {
                 return (
                   <>
                     <div
@@ -195,17 +190,13 @@ export default function Page() {
                             : "bg-[#FFFFFF] group-hover:bg-neutral-200"
                         }`}
                       >
-                        <HiOutlineUsers
-                          className={`text-md text-neutral-600`}
-                        />
+                        <HiOutlineUsers className={`text-md text-neutral-600`} />
                       </div>
                       <div className="flex flex-col gap-0">
                         <h2 className="text-[16px] font-bold text-neutral-700 group-hover:text-neutral-900">
                           {department.code}
                         </h2>
-                        <p className="text-[13px] text-neutral-400">
-                          {department.name}
-                        </p>
+                        <p className="text-[13px] text-neutral-400">{department.name}</p>
                       </div>
                     </div>
                   </>
@@ -216,8 +207,7 @@ export default function Page() {
             onClick={sendJoinRequest}
             className="btn w-full rounded-[4px] bg-primary-500 text-sm text-primary-50 hover:bg-primary-400"
           >
-            Send Join Request{" "}
-            {isLoading && <LoaderCircle className="animate-spin" />}
+            Send Join Request {isLoading && <LoaderCircle className="animate-spin" />}
           </button>
         </div>
       )}

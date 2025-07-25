@@ -1,11 +1,7 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import * as Headers from "@/components/Header";
-import {
-  useDeleteEvent,
-  useGetEventByQuery,
-  useUpdateEvents,
-} from "@/services/api/eventsApi";
+import { useDeleteEvent, useGetEventByQuery, useUpdateEvents } from "@/services/api/eventsApi";
 
 import { BsDot } from "react-icons/bs";
 import { format } from "date-fns";
@@ -30,11 +26,7 @@ export default function Page() {
   const widthOfEventDetail = filteredEventsRef.current
     ? filteredEventsRef.current?.offsetWidth / 1.3
     : null;
-  const {
-    data: eventsData,
-    refetch,
-    isFetching,
-  } = useGetEventByQuery(queryParams);
+  const { data: eventsData, refetch, isFetching } = useGetEventByQuery(queryParams);
 
   const { mutate: deleteEvent } = useDeleteEvent({});
   const { mutate: updateEvent } = useUpdateEvents();
@@ -50,23 +42,21 @@ export default function Page() {
     let startDate, endDate;
     switch (name) {
       case "query":
-        setQueryParams((prev) => ({ ...prev, q: value }));
+        setQueryParams(prev => ({ ...prev, q: value }));
         break;
 
       case "department":
         const departmentExists = queryParams?.departments?.includes(value);
 
         if (departmentExists)
-          setQueryParams((prev) => ({
+          setQueryParams(prev => ({
             ...prev,
             departments: [
-              ...queryParams?.departments?.filter(
-                (departmentCode) => departmentCode !== value,
-              ),
+              ...queryParams?.departments?.filter(departmentCode => departmentCode !== value),
             ],
           }));
         else
-          setQueryParams((prev) => ({
+          setQueryParams(prev => ({
             ...prev,
             departments: [...queryParams.departments, value],
           }));
@@ -74,13 +64,11 @@ export default function Page() {
 
       case "colors":
         queryParams.colors.includes(value)
-          ? setQueryParams((prev) => ({
+          ? setQueryParams(prev => ({
               ...prev,
-              colors: [
-                ...queryParams.colors.filter((color) => color !== value),
-              ],
+              colors: [...queryParams.colors.filter(color => color !== value)],
             }))
-          : setQueryParams((prev) => ({
+          : setQueryParams(prev => ({
               ...prev,
               colors: [...queryParams.colors, value],
             }));
@@ -92,7 +80,7 @@ export default function Page() {
           const endDate = new Date(startDate);
           endDate.setDate(endDate.getDate() + 1);
 
-          setQueryParams((prev) => ({
+          setQueryParams(prev => ({
             ...prev,
             eventFrom: startDate.getTime(),
             eventTo: endDate.getTime(),
@@ -104,7 +92,7 @@ export default function Page() {
         {
           const startDate = new Date(value);
 
-          setQueryParams((prev) => ({
+          setQueryParams(prev => ({
             ...prev,
             eventFrom: startDate.getTime(),
           }));
@@ -114,7 +102,7 @@ export default function Page() {
       case "multiEnd":
         {
           const endDate = new Date(value);
-          setQueryParams((prev) => ({
+          setQueryParams(prev => ({
             ...prev,
             eventTo: endDate.getTime(),
           }));
@@ -123,7 +111,7 @@ export default function Page() {
       case "reset":
         {
           const endDate = new Date(value);
-          setQueryParams((prev) => ({
+          setQueryParams(prev => ({
             ...prev,
             eventTo: "",
             eventFrom: "",
@@ -138,39 +126,29 @@ export default function Page() {
       const reg = new RegExp(queryParams.q, "ig");
 
       const isRegexValid =
-        reg.test(event.title) ||
-        (event.description && reg.test(event.description));
+        reg.test(event.title) || (event.description && reg.test(event.description));
 
       const departmentExist: boolean =
         queryParams.departments.length === 0 ||
         event.departments.some((department: any) =>
-          queryParams.departments.includes(department._id),
+          queryParams.departments.includes(department._id)
         );
 
       const isColor =
         queryParams.colors.length === 0 ||
         (event.color && queryParams.colors.includes(event.color));
 
-      const selectedStartTime = queryParams.eventFrom
-        ? queryParams.eventFrom
-        : 0;
+      const selectedStartTime = queryParams.eventFrom ? queryParams.eventFrom : 0;
       const selectedEndTime = queryParams.eventTo ? queryParams.eventTo : 0;
 
       const eventStart = event?.start ? new Date(event.start).getTime() : 0;
       const eventEnd = event?.end ? new Date(event.end).getTime() : 0;
-      const inFirstEdge =
-        eventStart <= selectedStartTime && eventEnd > selectedStartTime;
-      const inBetween =
-        eventStart > selectedStartTime && eventEnd < selectedEndTime;
-      const inLastEdge =
-        eventStart < selectedEndTime && eventEnd >= selectedEndTime;
+      const inFirstEdge = eventStart <= selectedStartTime && eventEnd > selectedStartTime;
+      const inBetween = eventStart > selectedStartTime && eventEnd < selectedEndTime;
+      const inLastEdge = eventStart < selectedEndTime && eventEnd >= selectedEndTime;
 
       const isDateValid =
-        selectedStartTime === 0 ||
-        selectedEndTime === 0 ||
-        inFirstEdge ||
-        inBetween ||
-        inLastEdge;
+        selectedStartTime === 0 || selectedEndTime === 0 || inFirstEdge || inBetween || inLastEdge;
 
       return isRegexValid && departmentExist && isColor && isDateValid;
 
@@ -189,7 +167,7 @@ export default function Page() {
   useEffect(() => {
     if (selectedEvent && eventsData?.length && eventsData?.length > 0) {
       let newlyFetchedSelectedEvent = eventsData.find(
-        (event: eventType) => event._id === selectedEvent._id,
+        (event: eventType) => event._id === selectedEvent._id
       );
       if (newlyFetchedSelectedEvent) {
         setSelectedEvent(newlyFetchedSelectedEvent);
@@ -199,16 +177,10 @@ export default function Page() {
 
   return (
     <div className="flex h-full flex-col gap-9 overflow-hidden pl-4 pt-10 md:pl-8 ">
-      <Headers.SearchHeader
-        queryParams={queryParams}
-        handleQueryParams={handleQueryParams}
-      />
+      <Headers.SearchHeader queryParams={queryParams} handleQueryParams={handleQueryParams} />
 
       <div className="relative flex h-full w-full flex-grow flex-col">
-        <div
-          ref={filteredEventsRef}
-          className="flex h-full flex-col gap-2 pb-20 md:w-1/2"
-        >
+        <div ref={filteredEventsRef} className="flex h-full flex-col gap-2 pb-20 md:w-1/2">
           <p className="text-base text-neutral-500">Recent Searches</p>
           <div className="green-scrollbar flex flex-grow flex-col overflow-hidden overflow-y-auto">
             {Boolean(filteredEvents) &&
@@ -227,16 +199,11 @@ export default function Page() {
                       {event?.title}
                     </header>
                     <p className="flex items-center  text-xs font-normal text-neutral-500">
-                      <span className="text-sm font-medium text-neutral-600 ">
-                        Event
-                      </span>
+                      <span className="text-sm font-medium text-neutral-600 ">Event</span>
                       <span className="text-xl ">
                         <BsDot />
                       </span>
-                      <span>
-                        {event?.start &&
-                          format(new Date(event.start), "yyyy/MM/dd")}
-                      </span>
+                      <span>{event?.start && format(new Date(event.start), "yyyy/MM/dd")}</span>
                     </p>
                   </div>
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white text-sm opacity-0 group-hover:opacity-100">

@@ -18,13 +18,7 @@ import { useMutation } from "@tanstack/react-query";
 import * as Headers from "@/components/Header";
 import { IoMdArrowBack } from "react-icons/io";
 import { useRouter } from "next/navigation";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "@/components/ui/table";
 import { RxCross2 } from "react-icons/rx";
 import { PERMISSIONS } from "@/constants/permissions";
 
@@ -72,7 +66,7 @@ export default function ImportExport() {
     const file = e.target.files[0];
 
     setSelectedFile(file);
-    reader.onload = (e) => {
+    reader.onload = e => {
       const data = e.target?.result;
       setImportFileData(data);
       setEventDialogOpen(true);
@@ -86,7 +80,7 @@ export default function ImportExport() {
     const file = e.target.files[0];
 
     setSelectedFile(file);
-    reader.onload = (e) => {
+    reader.onload = e => {
       const data = e.target?.result;
       setImportFileData(data);
       setEventDialogOpen(true);
@@ -138,10 +132,7 @@ export default function ImportExport() {
       a.click();
     } catch (error: any) {
       if (error?.response) {
-        toast.error(
-          error?.response?.data?.message ||
-            "Error exporting events to ics file",
-        );
+        toast.error(error?.response?.data?.message || "Error exporting events to ics file");
       }
     }
     setEventDialogOpen(false);
@@ -159,14 +150,14 @@ export default function ImportExport() {
       });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast.success(data?.message || "Success");
       setMemberDialogOpen(false);
       if (data.data.uploadReportFilename) {
         // download the file data, set it to form and download
         Axios.get(`/userUploadReport/${data.data.uploadReportFilename}`, {
           responseType: "blob",
-        }).then((response) => {
+        }).then(response => {
           const url = window.URL.createObjectURL(new Blob([response.data]));
           const link = document.createElement("a");
           link.href = url;
@@ -196,7 +187,7 @@ export default function ImportExport() {
       });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast.success(data?.message || "Success");
       setLocationDialogOpen(false);
     },
@@ -220,7 +211,7 @@ export default function ImportExport() {
       });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast.success(data?.message || "Success");
       setDepartmentDialogOpen(false);
     },
@@ -244,7 +235,7 @@ export default function ImportExport() {
       });
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: data => {
       toast.success(data?.message || "Success");
       setSemesterDialogOpen(false);
     },
@@ -285,7 +276,7 @@ export default function ImportExport() {
         <Toaster />
         <Dialog
           open={uploadErrorDialogOpen}
-          onOpenChange={(open) => {
+          onOpenChange={open => {
             if (!open) {
               setUploadErrors([]);
             }
@@ -293,7 +284,7 @@ export default function ImportExport() {
           }}
         >
           <DialogContent
-            onPointerDownOutside={(e) => {
+            onPointerDownOutside={e => {
               e.preventDefault();
             }}
             className=" max-h-[80vh] min-w-[80vw] overflow-y-scroll"
@@ -330,7 +321,7 @@ export default function ImportExport() {
                     <Table className="bg-neutral-50">
                       <TableHeader>
                         <TableRow>
-                          {Object.keys(errObject.originalRow).map((key) => (
+                          {Object.keys(errObject.originalRow).map(key => (
                             <TableCell className="font-600" key={key}>
                               {key}
                             </TableCell>
@@ -339,10 +330,8 @@ export default function ImportExport() {
                       </TableHeader>
                       <TableBody>
                         <TableRow>
-                          {Object.keys(errObject.originalRow).map((key) => (
-                            <TableCell key={key}>
-                              {errObject.originalRow[key]}
-                            </TableCell>
+                          {Object.keys(errObject.originalRow).map(key => (
+                            <TableCell key={key}>{errObject.originalRow[key]}</TableCell>
                           ))}
                         </TableRow>
                       </TableBody>
@@ -354,7 +343,7 @@ export default function ImportExport() {
         </Dialog>
         <Dialog
           open={eventsDialogOpen}
-          onOpenChange={(open) => {
+          onOpenChange={open => {
             if (!open) {
               setSelectedFile(undefined);
             }
@@ -362,7 +351,7 @@ export default function ImportExport() {
           }}
         >
           <DialogContent
-            onPointerDownOutside={(e) => {
+            onPointerDownOutside={e => {
               e.preventDefault();
             }}
           >
@@ -379,9 +368,7 @@ export default function ImportExport() {
                   </span>
                   <div className="flex flex-col items-start justify-center gap-[3px]">
                     <span className="text-[13px]">{selectedFile?.name}</span>
-                    <span className="text-[9px]">
-                      {formatFileSize(selectedFile?.size || 0)}
-                    </span>
+                    <span className="text-[9px]">{formatFileSize(selectedFile?.size || 0)}</span>
                   </div>
                 </div>
               ) : (
@@ -393,7 +380,7 @@ export default function ImportExport() {
                     <input
                       type="text"
                       value={exportFilename}
-                      onChange={(e) => {
+                      onChange={e => {
                         setExportFilename(e.target.value);
                       }}
                       placeholder="Enter Filename"
@@ -414,10 +401,7 @@ export default function ImportExport() {
                       key={department._id}
                       selectedCross={false}
                       onClick={() => {
-                        if (
-                          currentTab === "import" ||
-                          userData?.role === "SUPER_ADMIN"
-                        ) {
+                        if (currentTab === "import" || userData?.role === "SUPER_ADMIN") {
                           let newSelectedDepartments = [...selectedDepartments];
                           if (
                             userData?.department?.code === department.code &&
@@ -425,22 +409,17 @@ export default function ImportExport() {
                           ) {
                             return;
                           }
-                          if (
-                            newSelectedDepartments.includes(department.code)
-                          ) {
-                            newSelectedDepartments =
-                              newSelectedDepartments.filter(
-                                (code) => code !== department.code,
-                              );
+                          if (newSelectedDepartments.includes(department.code)) {
+                            newSelectedDepartments = newSelectedDepartments.filter(
+                              code => code !== department.code
+                            );
                           } else {
                             newSelectedDepartments.push(department.code);
                           }
                           setSelectedDepartments(newSelectedDepartments);
                         } else if (currentTab === "export") {
                           if (userData?.department?.code) {
-                            setSelectedDepartments([
-                              userData?.department?.code,
-                            ]);
+                            setSelectedDepartments([userData?.department?.code]);
                           }
                         }
                       }}
@@ -478,7 +457,7 @@ export default function ImportExport() {
         </Dialog>
         <Dialog
           open={memberDialogOpen}
-          onOpenChange={(open) => {
+          onOpenChange={open => {
             if (!open) {
               setSelectedFile(undefined);
             }
@@ -486,14 +465,12 @@ export default function ImportExport() {
           }}
         >
           <DialogContent
-            onPointerDownOutside={(e) => {
+            onPointerDownOutside={e => {
               e.preventDefault();
             }}
           >
             <DialogHeader>
-              <DialogTitle className=" text-[19px] font-semibold ">
-                Import Member
-              </DialogTitle>
+              <DialogTitle className=" text-[19px] font-semibold ">Import Member</DialogTitle>
             </DialogHeader>
             <div className="flex flex-col gap-8">
               <div className=" flex w-full flex-row items-center justify-center gap-2.5 rounded-md bg-neutral-100 px-3 py-4 text-neutral-500">
@@ -502,9 +479,7 @@ export default function ImportExport() {
                 </span>
                 <div className="flex flex-col items-start justify-center gap-[3px]">
                   <span className="text-[13px]">{selectedFile?.name}</span>
-                  <span className="text-[9px]">
-                    {formatFileSize(selectedFile?.size || 0)}
-                  </span>
+                  <span className="text-[9px]">{formatFileSize(selectedFile?.size || 0)}</span>
                 </div>
               </div>
             </div>
@@ -533,7 +508,7 @@ export default function ImportExport() {
         </Dialog>
         <Dialog
           open={locationDialogOpen}
-          onOpenChange={(open) => {
+          onOpenChange={open => {
             if (!open) {
               setSelectedFile(undefined);
             }
@@ -541,14 +516,12 @@ export default function ImportExport() {
           }}
         >
           <DialogContent
-            onPointerDownOutside={(e) => {
+            onPointerDownOutside={e => {
               e.preventDefault();
             }}
           >
             <DialogHeader>
-              <DialogTitle className=" text-[19px] font-semibold ">
-                Import Location
-              </DialogTitle>
+              <DialogTitle className=" text-[19px] font-semibold ">Import Location</DialogTitle>
             </DialogHeader>
             <div className="flex flex-col gap-8">
               <div className=" flex w-full flex-row items-center justify-center gap-2.5 rounded-md bg-neutral-100 px-3 py-4 text-neutral-500">
@@ -557,9 +530,7 @@ export default function ImportExport() {
                 </span>
                 <div className="flex flex-col items-start justify-center gap-[3px]">
                   <span className="text-[13px]">{selectedFile?.name}</span>
-                  <span className="text-[9px]">
-                    {formatFileSize(selectedFile?.size || 0)}
-                  </span>
+                  <span className="text-[9px]">{formatFileSize(selectedFile?.size || 0)}</span>
                 </div>
               </div>
             </div>
@@ -588,7 +559,7 @@ export default function ImportExport() {
         </Dialog>
         <Dialog
           open={departmentDialogOpen}
-          onOpenChange={(open) => {
+          onOpenChange={open => {
             if (!open) {
               setSelectedFile(undefined);
             }
@@ -596,14 +567,12 @@ export default function ImportExport() {
           }}
         >
           <DialogContent
-            onPointerDownOutside={(e) => {
+            onPointerDownOutside={e => {
               e.preventDefault();
             }}
           >
             <DialogHeader>
-              <DialogTitle className=" text-[19px] font-semibold ">
-                Import Departments
-              </DialogTitle>
+              <DialogTitle className=" text-[19px] font-semibold ">Import Departments</DialogTitle>
             </DialogHeader>
             <div className="flex flex-col gap-8">
               <div className=" flex w-full flex-row items-center justify-center gap-2.5 rounded-md bg-neutral-100 px-3 py-4 text-neutral-500">
@@ -612,9 +581,7 @@ export default function ImportExport() {
                 </span>
                 <div className="flex flex-col items-start justify-center gap-[3px]">
                   <span className="text-[13px]">{selectedFile?.name}</span>
-                  <span className="text-[9px]">
-                    {formatFileSize(selectedFile?.size || 0)}
-                  </span>
+                  <span className="text-[9px]">{formatFileSize(selectedFile?.size || 0)}</span>
                 </div>
               </div>
             </div>
@@ -643,7 +610,7 @@ export default function ImportExport() {
         </Dialog>
         <Dialog
           open={semesterDialogOpen}
-          onOpenChange={(open) => {
+          onOpenChange={open => {
             if (!open) {
               setSelectedFile(undefined);
             }
@@ -651,14 +618,12 @@ export default function ImportExport() {
           }}
         >
           <DialogContent
-            onPointerDownOutside={(e) => {
+            onPointerDownOutside={e => {
               e.preventDefault();
             }}
           >
             <DialogHeader>
-              <DialogTitle className=" text-[19px] font-semibold ">
-                Import Semesters
-              </DialogTitle>
+              <DialogTitle className=" text-[19px] font-semibold ">Import Semesters</DialogTitle>
             </DialogHeader>
             <div className="flex flex-col gap-8">
               <div className=" flex w-full flex-row items-center justify-center gap-2.5 rounded-md bg-neutral-100 px-3 py-4 text-neutral-500">
@@ -667,9 +632,7 @@ export default function ImportExport() {
                 </span>
                 <div className="flex flex-col items-start justify-center gap-[3px]">
                   <span className="text-[13px]">{selectedFile?.name}</span>
-                  <span className="text-[9px]">
-                    {formatFileSize(selectedFile?.size || 0)}
-                  </span>
+                  <span className="text-[9px]">{formatFileSize(selectedFile?.size || 0)}</span>
                 </div>
               </div>
             </div>
@@ -707,9 +670,7 @@ export default function ImportExport() {
             >
               <IoMdArrowBack />
             </span>
-            <h1 className=" text-[28px] font-[700] text-neutral-700">
-              Import/ Export
-            </h1>
+            <h1 className=" text-[28px] font-[700] text-neutral-700">Import/ Export</h1>
           </div>
           <div className="flex w-full flex-row items-center justify-start gap-4 text-neutral-500">
             <span
@@ -717,9 +678,7 @@ export default function ImportExport() {
                 setCurrentTab("import");
               }}
               className={`${
-                currentTab === "import"
-                  ? "text-primary-700 underline underline-offset-4"
-                  : ""
+                currentTab === "import" ? "text-primary-700 underline underline-offset-4" : ""
               } cursor-pointer `}
             >
               Import
@@ -729,9 +688,7 @@ export default function ImportExport() {
                 setCurrentTab("export");
               }}
               className={`${
-                currentTab === "export"
-                  ? "text-primary-700 underline underline-offset-4"
-                  : ""
+                currentTab === "export" ? "text-primary-700 underline underline-offset-4" : ""
               } cursor-pointer `}
             >
               Export
@@ -751,7 +708,7 @@ export default function ImportExport() {
                   }}
                 >
                   <input
-                    onClick={(e) => {
+                    onClick={e => {
                       //@ts-ignore
                       e.target.file = [];
                       //@ts-ignore
@@ -763,26 +720,21 @@ export default function ImportExport() {
                     multiple={false}
                   />
                   <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
-                    <span
-                      className={`h-[24px] w-[24px] text-xl text-primary-600`}
-                    >
+                    <span className={`h-[24px] w-[24px] text-xl text-primary-600`}>
                       <TbCloudDownload></TbCloudDownload>
                     </span>
                     <p className="text-center text-[13px] font-normal text-neutral-500">
-                      Browse and choose the file you want to import from your
-                      device
+                      Browse and choose the file you want to import from your device
                     </p>
                   </div>
                 </div>
               </div>
-              {userData?.permissions?.includes(
-                PERMISSIONS.CREATE_DEPARTMENT,
-              ) && (
+              {userData?.permissions?.includes(PERMISSIONS.CREATE_DEPARTMENT) && (
                 <div className="space-y-2">
                   <h1>Import Departments</h1>
                   <div className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50">
                     <input
-                      onClick={(e) => {
+                      onClick={e => {
                         //@ts-ignore
                         e.target.file = [];
                         //@ts-ignore
@@ -799,14 +751,11 @@ export default function ImportExport() {
                       multiple={false}
                     />
                     <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
-                      <span
-                        className={`h-[24px] w-[24px] text-xl text-primary-600`}
-                      >
+                      <span className={`h-[24px] w-[24px] text-xl text-primary-600`}>
                         <TbCloudDownload />
                       </span>
                       <p className="text-center text-[13px] font-normal text-neutral-500">
-                        Browse and choose the file you want to import from your
-                        device
+                        Browse and choose the file you want to import from your device
                       </p>
                     </div>
                   </div>
@@ -821,7 +770,7 @@ export default function ImportExport() {
                     // }}
                   >
                     <input
-                      onClick={(e) => {
+                      onClick={e => {
                         //@ts-ignore
                         e.target.file = [];
                         //@ts-ignore
@@ -838,14 +787,11 @@ export default function ImportExport() {
                       multiple={false}
                     />
                     <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
-                      <span
-                        className={`h-[24px] w-[24px] text-xl text-primary-600`}
-                      >
+                      <span className={`h-[24px] w-[24px] text-xl text-primary-600`}>
                         <TbCloudDownload></TbCloudDownload>
                       </span>
                       <p className="text-center text-[13px] font-normal text-neutral-500">
-                        Browse and choose the file you want to import from your
-                        device
+                        Browse and choose the file you want to import from your device
                       </p>
                     </div>
                   </div>
@@ -856,7 +802,7 @@ export default function ImportExport() {
                   <h1>Import Locations</h1>
                   <div className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50">
                     <input
-                      onClick={(e) => {
+                      onClick={e => {
                         //@ts-ignore
                         e.target.file = [];
                         //@ts-ignore
@@ -873,14 +819,11 @@ export default function ImportExport() {
                       multiple={false}
                     />
                     <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
-                      <span
-                        className={`h-[24px] w-[24px] text-xl text-primary-600`}
-                      >
+                      <span className={`h-[24px] w-[24px] text-xl text-primary-600`}>
                         <TbCloudDownload />
                       </span>
                       <p className="text-center text-[13px] font-normal text-neutral-500">
-                        Browse and choose the file you want to import from your
-                        device
+                        Browse and choose the file you want to import from your device
                       </p>
                     </div>
                   </div>
@@ -891,7 +834,7 @@ export default function ImportExport() {
                   <h1>Import Semesters</h1>
                   <div className="relative flex h-[105px] w-full items-center justify-center rounded-[4px] border border-dashed border-[#D0D5DD] bg-primary-50">
                     <input
-                      onClick={(e) => {
+                      onClick={e => {
                         //@ts-ignore
                         e.target.file = [];
                         //@ts-ignore
@@ -908,14 +851,11 @@ export default function ImportExport() {
                       multiple={false}
                     />
                     <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
-                      <span
-                        className={`h-[24px] w-[24px] text-xl text-primary-600`}
-                      >
+                      <span className={`h-[24px] w-[24px] text-xl text-primary-600`}>
                         <TbCloudDownload />
                       </span>
                       <p className="text-center text-[13px] font-normal text-neutral-500">
-                        Browse and choose the file you want to import from your
-                        device
+                        Browse and choose the file you want to import from your device
                       </p>
                     </div>
                   </div>
@@ -934,14 +874,11 @@ export default function ImportExport() {
                 }}
               >
                 <div className=" flex w-[240px] cursor-pointer flex-col items-center gap-[10px]">
-                  <span
-                    className={`h-[24px] w-[24px] text-xl text-primary-600`}
-                  >
+                  <span className={`h-[24px] w-[24px] text-xl text-primary-600`}>
                     <TbCloudUpload></TbCloudUpload>
                   </span>
                   <p className="text-center text-[13px] font-normal text-neutral-500">
-                    Browse and choose the file you want to export from your
-                    device
+                    Browse and choose the file you want to export from your device
                   </p>
                 </div>
               </div>

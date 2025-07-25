@@ -1,11 +1,5 @@
 import { CiLogout } from "react-icons/ci";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 import { TbCalendarEvent } from "react-icons/tb";
 import format from "date-fns/format";
@@ -18,12 +12,7 @@ import { MdOutlineSettings } from "react-icons/md";
 import { IoMdLogOut } from "react-icons/io";
 import { MdListAlt } from "react-icons/md";
 import { Toggle } from "@/components/ui/toggle";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 import {
   DropdownMenu,
@@ -46,12 +35,7 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Endpoints from "@/services/API_ENDPOINTS";
-import {
-  checkListView,
-  decryptJwtPayload,
-  findListView,
-  findNormalView,
-} from "@/lib/utils";
+import { checkListView, decryptJwtPayload, findListView, findNormalView } from "@/lib/utils";
 import { useGetCookieByName } from "@/hooks/CookieHooks";
 import { CalendarViews, ListViews } from "@/constants/CalendarViews";
 import { CgList } from "react-icons/cg";
@@ -89,9 +73,7 @@ export function HomeHeader() {
 
   let newNotifications = false;
   if (notifications) {
-    newNotifications = notifications.some(
-      (notification: any) => !notification.isRead,
-    );
+    newNotifications = notifications.some((notification: any) => !notification.isRead);
   }
 
   const token = useGetCookieByName("token");
@@ -119,9 +101,7 @@ export function HomeHeader() {
 
     switch (currentView) {
       case "dayGridMonth":
-        start = new Date(calenderDate.start).setMonth(
-          calenderDate.start.getMonth() + 1,
-        );
+        start = new Date(calenderDate.start).setMonth(calenderDate.start.getMonth() + 1);
 
         let todaysDate = new Date();
         let todaysMonth = todaysDate.getMonth();
@@ -137,38 +117,28 @@ export function HomeHeader() {
         lastDate = totalDaysInMonth(date.getMonth() + 1, date.getFullYear());
         end = new Date(
           new Date(start).getTime() +
-            1000 *
-              60 *
-              60 *
-              24 *
-              (lastDate - date.getDate() < 7 ? 7 : lastDate - date.getDate()),
+            1000 * 60 * 60 * 24 * (lastDate - date.getDate() < 7 ? 7 : lastDate - date.getDate())
         );
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
         break;
 
       case "timeGridWeek":
-        start = new Date(calenderDate.start).setDate(
-          calenderDate.start.getDate() + 7,
-        );
+        start = new Date(calenderDate.start).setDate(calenderDate.start.getDate() + 7);
         end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
         break;
 
       case "timeGridDay":
-        start = new Date(calenderDate.start).setDate(
-          calenderDate.start.getDate() + 1,
-        );
+        start = new Date(calenderDate.start).setDate(calenderDate.start.getDate() + 1);
         end = new Date(start).setDate(new Date(start).getDate() + 1);
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
         break;
 
       case "multiMonthYear":
-        start = new Date(calenderDate.start).setFullYear(
-          calenderDate.start.getFullYear() + 1,
-        );
+        start = new Date(calenderDate.start).setFullYear(calenderDate.start.getFullYear() + 1);
         end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
@@ -211,9 +181,7 @@ export function HomeHeader() {
     let lastDay = null;
     switch (currentView) {
       case "dayGridMonth":
-        start = new Date(calenderDate.start).setMonth(
-          calenderDate.start.getMonth() - 1,
-        );
+        start = new Date(calenderDate.start).setMonth(calenderDate.start.getMonth() - 1);
         let todaysDate = new Date();
         let todaysMonth = todaysDate.getMonth();
         let startDate = new Date(start);
@@ -228,35 +196,25 @@ export function HomeHeader() {
         lastDay = totalDaysInMonth(date.getMonth() + 1, date.getFullYear());
         end = new Date(
           new Date(start).getTime() +
-            1000 *
-              60 *
-              60 *
-              24 *
-              (lastDay - date.getDate() < 7 ? 7 : lastDay - date.getDate()),
+            1000 * 60 * 60 * 24 * (lastDay - date.getDate() < 7 ? 7 : lastDay - date.getDate())
         );
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
         break;
       case "timeGridWeek":
-        start = new Date(calenderDate.start).setDate(
-          calenderDate.start.getDate() - 7,
-        );
+        start = new Date(calenderDate.start).setDate(calenderDate.start.getDate() - 7);
         end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
         break;
       case "timeGridDay":
-        start = new Date(calenderDate.start).setDate(
-          calenderDate.start.getDate() - 1,
-        );
+        start = new Date(calenderDate.start).setDate(calenderDate.start.getDate() - 1);
         end = new Date(start).setDate(new Date(start).getDate() + 1);
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
         break;
       case "multiMonthYear":
-        start = new Date(calenderDate.start).setFullYear(
-          calenderDate.start.getFullYear() - 1,
-        );
+        start = new Date(calenderDate.start).setFullYear(calenderDate.start.getFullYear() - 1);
         end = new Date(new Date(start).getTime() + 1000 * 60 * 60 * 24 * 7);
         startStr = format(start, "yyyy-MM-dd");
         endStr = format(end, "yyyy-MM-dd");
@@ -279,10 +237,7 @@ export function HomeHeader() {
     const dayDiff = lastDay - currentDay;
     setCalenderDate({
       start: new Date(),
-      end: new Date(
-        new Date().getTime() +
-          1000 * 60 * 60 * 24 * (dayDiff < 7 ? 7 : dayDiff),
-      ),
+      end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * (dayDiff < 7 ? 7 : dayDiff)),
       endStr: "",
       startStr: "",
     });
@@ -299,30 +254,19 @@ export function HomeHeader() {
           </ToggleSidebar>
 
           <Link href={"/"} className="h-fit w-fit">
-            <Image
-              src={HeraldLogo}
-              width={32}
-              height={32}
-              alt="Herald Logo"
-            />
+            <Image src={HeraldLogo} width={32} height={32} alt="Herald Logo" />
           </Link>
         </div>
         <div className="flex w-9/12 justify-between">
           {/* Navigation btns and Date */}
           <div className="flex w-auto items-center gap-3 text-neutral-900">
             <div className="flex w-16 justify-between">
-              <div
-                className="tooltip tooltip-bottom h-6 w-6"
-                data-tip="Previous Month"
-              >
+              <div className="tooltip tooltip-bottom h-6 w-6" data-tip="Previous Month">
                 <button onClick={handlePrevious} className="">
                   <IoIosArrowBack className="h-6 w-6 text-neutral-500" />
                 </button>
               </div>
-              <div
-                className="tooltip tooltip-bottom h-6 w-6"
-                data-tip="Next Month"
-              >
+              <div className="tooltip tooltip-bottom h-6 w-6" data-tip="Next Month">
                 <button onClick={handleNext} className="">
                   <IoIosArrowForward className="h-6 w-6 text-neutral-500" />
                 </button>
@@ -337,11 +281,8 @@ export function HomeHeader() {
             {/* Selected date display */}
             <div className="">
               <h6 className="text-2xl font-bold">
-                {calenderDate?.start &&
-                  format(calenderDate.start, "MMMM d', '")}
-                <span className="text-lg font-medium">
-                  {calenderDate?.start?.getFullYear()}
-                </span>
+                {calenderDate?.start && format(calenderDate.start, "MMMM d', '")}
+                <span className="text-lg font-medium">{calenderDate?.start?.getFullYear()}</span>
               </h6>
             </div>
           </div>
@@ -354,12 +295,10 @@ export function HomeHeader() {
                   {/* <Button variant="outline">Hover</Button> */}
                   <button
                     className={`${
-                      listView
-                        ? "bg-primary-500 text-white"
-                        : "text-neutral-500"
+                      listView ? "bg-primary-500 text-white" : "text-neutral-500"
                     } h-full max-w-32 rounded-sm border border-neutral-300 px-3 text-2xl font-semibold transition duration-200`}
-                    onClick={(e) => {
-                      setListView((prev) => !prev);
+                    onClick={e => {
+                      setListView(prev => !prev);
                     }}
                   >
                     <MdListAlt />
@@ -371,7 +310,7 @@ export function HomeHeader() {
               </Tooltip>
             </TooltipProvider>
             <Select
-              onValueChange={(calView) => {
+              onValueChange={calView => {
                 if (listView && calendarApi)
                   return findListView(calView, calendarApi, setCurrentView);
                 setCurrentView(calView);
@@ -446,7 +385,7 @@ export function HomeHeader() {
 const useHandleListViewToggle = (
   listView: boolean,
   calendarApi: CalendarApi | undefined,
-  setCurrentView: Dispatch<SetStateAction<string>>,
+  setCurrentView: Dispatch<SetStateAction<string>>
 ) => {
   useEffect(() => {
     if (!calendarApi) return;

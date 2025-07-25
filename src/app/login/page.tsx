@@ -37,8 +37,8 @@ export default function Page() {
         "Content-Type": "application/json",
       },
     })
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         toast.remove();
         if (!data.success) {
           toast.error(data.message || "Something went wrong.");
@@ -54,7 +54,7 @@ export default function Page() {
         router.push("/");
         setIsLoading(false);
       })
-      .catch((err) => {
+      .catch(err => {
         toast.remove();
         toast.error(err.message || "Something went wrong");
         setIsLoading(false);
@@ -89,10 +89,7 @@ export default function Page() {
         </div>
 
         {/* Form  */}
-        <form
-          onSubmit={handleSubmit(loginUser)}
-          className="flex flex-col gap-8"
-        >
+        <form onSubmit={handleSubmit(loginUser)} className="flex flex-col gap-8">
           <label htmlFor="email">
             Email
             <br />
@@ -113,9 +110,7 @@ export default function Page() {
               />
             </div>
             {errors.email && (
-              <p className="text-sm text-red-500">
-                {errors.email.message as string}
-              </p>
+              <p className="text-sm text-red-500">{errors.email.message as string}</p>
             )}
           </label>
 
@@ -123,12 +118,7 @@ export default function Page() {
             Password
             <br />
             <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4">
-              <Image
-                src={lockSymbol}
-                width={"20"}
-                height={"20"}
-                alt="passwordLogo"
-              />
+              <Image src={lockSymbol} width={"20"} height={"20"} alt="passwordLogo" />
               <input
                 type={showPassword ? "text" : "password"}
                 id="password"
@@ -146,9 +136,7 @@ export default function Page() {
               </span>
             </div>
             {errors.password && (
-              <p className="text-sm text-red-500">
-                {errors.password.message as string}
-              </p>
+              <p className="text-sm text-red-500">{errors.password.message as string}</p>
             )}
           </label>
           <div className="relative  flex w-auto flex-row items-center justify-end gap-3">
@@ -173,7 +161,7 @@ export default function Page() {
             </Link>
 
             <button
-              onClick={(e) => {
+              onClick={e => {
                 e.preventDefault();
                 router.push("/signup");
               }}

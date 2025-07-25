@@ -29,17 +29,17 @@ export default function SummaryCard({
                 : "00"}
             </span>
             <div className="flex flex-col gap-4">
-              <span className=" text-[23px] font-bold text-neutral-500">
-                {title}
-              </span>
+              <span className=" text-[23px] font-bold text-neutral-500">{title}</span>
               <div className="flex flex-col">
-                {events && events.length>0 && events.slice(0, 2)?.map((event: eventType, index:number) => (
-                  <div
-                    key={index}
-                    style={{ borderColor: event.color }}
-                    className={`flex flex-col items-start justify-start border border-b-0 border-l-4 border-r-0 border-t-0 pl-1`}
-                  >
-                    {/* <div className="flex w-full flex-wrap gap-1">
+                {events &&
+                  events.length > 0 &&
+                  events.slice(0, 2)?.map((event: eventType, index: number) => (
+                    <div
+                      key={index}
+                      style={{ borderColor: event.color }}
+                      className={`flex flex-col items-start justify-start border border-b-0 border-l-4 border-r-0 border-t-0 pl-1`}
+                    >
+                      {/* <div className="flex w-full flex-wrap gap-1">
                       {event?.departments?.map((department: any, i: number) => {
                         return (
                           <div
@@ -57,11 +57,13 @@ export default function SummaryCard({
                       })}
                     </div> */}
 
-                    <span className="truncate py-0 text-[11px] font-semibold leading-[14px] text-neutral-600">
-                      {event && event?.title?.length > 20 ? event?.title.slice(0, 20) + "..." : event?.title ?? "" }
-                    </span>
-                  </div>
-                ))}
+                      <span className="truncate py-0 text-[11px] font-semibold leading-[14px] text-neutral-600">
+                        {event && event?.title?.length > 20
+                          ? event?.title.slice(0, 20) + "..."
+                          : (event?.title ?? "")}
+                      </span>
+                    </div>
+                  ))}
                 {events && events.length > 2 && (
                   <span className="text-[11px] font-semibold text-info-600">
                     + {events.length - 2} more

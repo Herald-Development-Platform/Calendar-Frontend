@@ -15,9 +15,7 @@ export function GeneralHeader({ className }: { className?: string }) {
 
   let newNotifications = false;
   if (notifications) {
-    newNotifications = notifications.some(
-      (notification: any) => !notification.isRead,
-    );
+    newNotifications = notifications.some((notification: any) => !notification.isRead);
   }
 
   return (

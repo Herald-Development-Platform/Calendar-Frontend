@@ -39,8 +39,7 @@ export default function SummaryPage() {
   }>({ labels: [], datasets: [] });
 
   const { data: events, isLoading: eventsLoading } = useGetEvents();
-  const { data: departments, isLoading: departmentsLoading } =
-    useGetDepartments();
+  const { data: departments, isLoading: departmentsLoading } = useGetDepartments();
   const [filteredEvents, setFilteredEvents] = useState<any[]>([]);
   const [selDepartments, setSelDepartments] = useState<string[]>(["All"]);
   const [customDateOpen, setCustomDateOpen] = useState<boolean>(false);
@@ -86,16 +85,14 @@ export default function SummaryPage() {
     });
 
     setPieChartData({
-      labels: Object.keys(priorityMap).map((color) => {
-        return colors.find((c) => c.color === color)?.priority;
+      labels: Object.keys(priorityMap).map(color => {
+        return colors.find(c => c.color === color)?.priority;
       }),
       datasets: [
         {
           data: Object.values(priorityMap),
           backgroundColor: Object.keys(priorityMap).map((color: any) => color),
-          hoverBackgroundColor: Object.keys(priorityMap).map(
-            (color: any) => color,
-          ),
+          hoverBackgroundColor: Object.keys(priorityMap).map((color: any) => color),
         },
       ],
     });
@@ -106,8 +103,8 @@ export default function SummaryPage() {
         {
           label: "Events",
           data: Object.values(departmentMap),
-          backgroundColor: colors.map((c) => c.color),
-          hoverBackgroundColor: colors.map((c) => c.color),
+          backgroundColor: colors.map(c => c.color),
+          hoverBackgroundColor: colors.map(c => c.color),
         },
       ],
     });
@@ -116,17 +113,15 @@ export default function SummaryPage() {
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="flex max-h-[100vh] flex-col gap-9 overflow-y-scroll md:px-[70px] px-4 pb-6 md:pb-0 md:pl-9">
+      <div className="flex max-h-[100vh] flex-col gap-9 overflow-y-scroll px-4 pb-6 md:px-[70px] md:pb-0 md:pl-9">
         <Toaster />
         <div className=" mt-[40px] flex flex-col gap-[18px]">
           <div className="flex flex-row items-center justify-between">
-            <h1 className=" text-[20px] sm:text-[28px] font-[700] text-neutral-700">
-              Summary
-            </h1>
+            <h1 className=" text-[20px] font-[700] text-neutral-700 sm:text-[28px]">Summary</h1>
             <span className="ml-auto w-40 text-neutral-500">
               <Select
                 value={filter}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   if (value === "custom-date") {
                     setCustomDateOpen(true);
                     return;
@@ -140,41 +135,31 @@ export default function SummaryPage() {
                 <SelectContent>
                   <SelectItem
                     value="7"
-                    className={`${
-                      filter.toLowerCase() === "7" && "text-primary-600"
-                    }`}
+                    className={`${filter.toLowerCase() === "7" && "text-primary-600"}`}
                   >
                     7 Days
                   </SelectItem>
                   <SelectItem
                     value="30"
-                    className={`${
-                      filter.toLowerCase() === "30" && "text-primary-600"
-                    }`}
+                    className={`${filter.toLowerCase() === "30" && "text-primary-600"}`}
                   >
                     30 Days
                   </SelectItem>
                   <SelectItem
                     value="90"
-                    className={`${
-                      filter.toLowerCase() === "90" && "text-primary-600"
-                    }`}
+                    className={`${filter.toLowerCase() === "90" && "text-primary-600"}`}
                   >
                     3 months
                   </SelectItem>
                   <SelectItem
                     value="180"
-                    className={`${
-                      filter.toLowerCase() === "180" && "text-primary-600"
-                    }`}
+                    className={`${filter.toLowerCase() === "180" && "text-primary-600"}`}
                   >
                     6 months
                   </SelectItem>
                   <SelectItem
                     value="365"
-                    className={`${
-                      filter.toLowerCase() === "365" && "text-primary-600"
-                    }`}
+                    className={`${filter.toLowerCase() === "365" && "text-primary-600"}`}
                   >
                     1 year
                   </SelectItem>
@@ -188,9 +173,7 @@ export default function SummaryPage() {
                   </SelectItem> */}
                   <SelectItem
                     value="15000000"
-                    className={`${
-                      filter.toLowerCase() === "15000000" && "text-primary-600"
-                    }`}
+                    className={`${filter.toLowerCase() === "15000000" && "text-primary-600"}`}
                   >
                     All time
                   </SelectItem>
@@ -198,7 +181,7 @@ export default function SummaryPage() {
               </Select>
             </span>
           </div>
-          <div className=" flex gap-2 overflow-x-scroll md:max-w-[75vw] hide-scrollbar ">
+          <div className=" hide-scrollbar flex gap-2 overflow-x-scroll md:max-w-[75vw] ">
             <DepartmentButton
               selectedCross={false}
               value={"All"}
@@ -222,19 +205,14 @@ export default function SummaryPage() {
                   onClick={() => {
                     let newSelectedDepartments = [...selDepartments];
                     if (newSelectedDepartments.includes("All")) {
-                      newSelectedDepartments = newSelectedDepartments.filter(
-                        (dep) => dep !== "All",
-                      );
+                      newSelectedDepartments = newSelectedDepartments.filter(dep => dep !== "All");
                     }
                     if (newSelectedDepartments.includes(department.code)) {
                       newSelectedDepartments = newSelectedDepartments.filter(
-                        (dep) => dep !== department.code,
+                        dep => dep !== department.code
                       );
                     } else {
-                      newSelectedDepartments = [
-                        ...newSelectedDepartments,
-                        department.code,
-                      ];
+                      newSelectedDepartments = [...newSelectedDepartments, department.code];
                     }
                     if (newSelectedDepartments.length === 0) {
                       newSelectedDepartments = ["All"];
@@ -247,52 +225,43 @@ export default function SummaryPage() {
                 />
               ))}
           </div>
-          <div className={`flex flex-col md:flex-row justify-between gap-y-8 md:gap-14`}>
+          <div className={`flex flex-col justify-between gap-y-8 md:flex-row md:gap-14`}>
             <SummaryCard
               title="Upcoming Events"
               loading={eventsLoading}
-              events={filteredEvents?.filter(
-                (e: any) => new Date(e.start) > new Date(),
-              )}
+              events={filteredEvents?.filter((e: any) => new Date(e.start) > new Date())}
             />
             <SummaryCard
               title="Ongoing Events"
               loading={eventsLoading}
               events={filteredEvents?.filter(
-                (e: any) =>
-                  new Date(e.start).getDate() === new Date().getDate(),
+                (e: any) => new Date(e.start).getDate() === new Date().getDate()
               )}
             />
             <SummaryCard
               title="Closed Events"
               loading={eventsLoading}
-              events={filteredEvents?.filter(
-                (e: any) => new Date(e.start) < new Date(),
-              )}
+              events={filteredEvents?.filter((e: any) => new Date(e.start) < new Date())}
             />
           </div>
           <div className="mt-4 flex w-full flex-row flex-wrap items-start gap-4 ">
             {/** Card */}
-            <div className="flex h-auto w-full md:w-fit   flex-col">
+            <div className="flex h-auto w-full flex-col   md:w-fit">
               <div className="flex w-full flex-row  items-center justify-start gap-3.5 rounded-md border-[0.6px] bg-neutral-100 px-5 py-1 text-neutral-700">
                 <span className="text-[16px]">Events by Priority</span>
               </div>
               <div className="bg-neutral-50">
-                <div className="flex flex-row items-center justify-between md:gap-16 p-5 px-7">
-                  <div className="md:w-full max-h-[150px] md:max-h-[200px]">
+                <div className="flex flex-row items-center justify-between p-5 px-7 md:gap-16">
+                  <div className="max-h-[150px] md:max-h-[200px] md:w-full">
                     <PieChart data={pieChartData}></PieChart>
                   </div>
                   <div className="flex flex-col items-start justify-center gap-3">
                     {pieChartData.labels.map((label, index) => (
-                      <div
-                        className="flex flex-row items-center justify-start"
-                        key={index}
-                      >
+                      <div className="flex flex-row items-center justify-start" key={index}>
                         <span
                           className={`h-6 w-6 rounded-md`}
                           style={{
-                            backgroundColor:
-                              pieChartData.datasets[0].backgroundColor[index],
+                            backgroundColor: pieChartData.datasets[0].backgroundColor[index],
                           }}
                         />
                         <span className="ml-3 text-[16px]">{label}</span>
@@ -303,13 +272,13 @@ export default function SummaryPage() {
               </div>
             </div>
 
-            <div className="flex h-auto w-full md:w-fit flex-col">
+            <div className="flex h-auto w-full flex-col md:w-fit">
               <div className="flex h-full w-full flex-row  items-center justify-start gap-3.5 rounded-md border-[0.6px] bg-neutral-100 px-5 py-1 text-neutral-700">
                 <span className="text-[16px]">Events by Department</span>
               </div>
               <div className=" bg-neutral-50 px-7 py-5">
                 <div
-                  className="w-full max-h-[200px] md:min-w-[400px] flex items-center justify-center"
+                  className="flex max-h-[200px] w-full items-center justify-center md:min-w-[400px]"
                   // style={{
                   //   width: "100%",
                   //   height: 200,
@@ -333,17 +302,9 @@ export default function SummaryPage() {
             <DialogDescription>
               <span className="text-neutral-600">Date</span>
               <div className="mt-2 flex w-full flex-row items-center gap-2">
-                <DatePicker
-                  value={new Date()}
-                  handleValueChange={() => {}}
-                  name={"start"}
-                />
+                <DatePicker value={new Date()} handleValueChange={() => {}} name={"start"} />
                 <span className="text-neutral-600">To</span>
-                <DatePicker
-                  value={new Date()}
-                  name={"end"}
-                  handleValueChange={() => {}}
-                />
+                <DatePicker value={new Date()} name={"end"} handleValueChange={() => {}} />
               </div>
             </DialogDescription>
           </DialogHeader>

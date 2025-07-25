@@ -37,13 +37,12 @@ export default function DatePicker({
 
   return (
     <>
-      <div className="relative w-full ">
+      <div className="relative w-full " onClick={() => setDisplayCal(true)}>
         <input
           type="text"
           className="mb-2 h-10 w-full rounded border-[1px] border-neutral-300 pl-12 pr-4 text-base text-neutral-900 focus:border-primary-600"
           name={name || ""}
           value={value ? format(new Date(value), "EEEE, dd MMMM") : ""}
-          onClick={() => setDisplayCal(true)}
           readOnly
         ></input>
         <span className="absolute left-3 top-0 flex h-10 items-center justify-center text-3xl">
@@ -55,7 +54,12 @@ export default function DatePicker({
           } absolute ${alignmentStyle} z-20 w-fit rounded-md border bg-white`}
           mode="single"
           selected={value || new Date()}
-          onSelect={(val) => {
+          onSelect={val => {
+            console.log(val);
+            if (!val || val == value) {
+              setDisplayCal(false);
+              return;
+            }
             handleValueChange({ target: { name, value: val } });
           }}
         />

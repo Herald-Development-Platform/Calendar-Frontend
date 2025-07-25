@@ -20,13 +20,11 @@ export default function page() {
     ? // @ts-ignore
       calendarRef?.current?.elRef?.current?.offsetHeight
     : 0;
-  const DepFilHeight = depFilterRef.current?.offsetHeight
-    ? depFilterRef.current?.offsetHeight
-    : 0;
+  const DepFilHeight = depFilterRef.current?.offsetHeight ? depFilterRef.current?.offsetHeight : 0;
   const DepFilMarginY = depFilterRef.current
     ? parseInt(
         getComputedStyle(depFilterRef.current).marginTop +
-          getComputedStyle(depFilterRef.current).marginTop,
+          getComputedStyle(depFilterRef.current).marginTop
       )
     : 0;
 
@@ -51,9 +49,7 @@ export default function page() {
             <ReactFullCalendar />
           </div>
         </div>
-        <UpcommingEvents
-          elHeight={calendarHeight + DepFilHeight + DepFilMarginY - 90}
-        />
+        <UpcommingEvents elHeight={calendarHeight + DepFilHeight + DepFilMarginY - 90} />
       </div>
     </div>
   );

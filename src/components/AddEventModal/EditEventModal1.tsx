@@ -16,11 +16,7 @@ import ContextProvider, { Context } from "@/app/clientWrappers/ContextProvider";
 import { Axios, baseUrl } from "@/services/baseUrl";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import {
-  postEvents,
-  useEditEventMutation,
-  usePostEventMutation,
-} from "@/services/api/eventsApi";
+import { postEvents, useEditEventMutation, usePostEventMutation } from "@/services/api/eventsApi";
 import { watch } from "fs";
 import { getDepartments, useGetDepartments } from "@/services/api/departments";
 import colors from "@/constants/Colors";
@@ -36,11 +32,7 @@ import DatePicker from "./DatePicker";
 import { ROLES } from "@/constants/role";
 import { LocationSelect } from "./LocationSelect";
 
-export default function EditEventModal1({
-  defaultData,
-}: {
-  defaultData: eventType | null;
-}) {
+export default function EditEventModal1({ defaultData }: { defaultData: eventType | null }) {
   const [dateType, setDateType] = useState<"single" | "multi">("single");
   const [defaultValuesArr, setDefaultValuesArr] = useState<any[]>([]);
   const { userData } = useContext(Context);
@@ -112,9 +104,7 @@ export default function EditEventModal1({
     if (!defaultData) return;
     let currentDepartments: string[] = [];
     if (userData?.department) {
-      currentDepartments = [userData?.department?.code].concat(
-        newEvent?.departments ?? [],
-      );
+      currentDepartments = [userData?.department?.code].concat(newEvent?.departments ?? []);
       currentDepartments = Array.from(new Set(currentDepartments));
       // setNewEvent((prev) => ({ ...prev, departments: currentDepartments }));
     }
@@ -125,16 +115,15 @@ export default function EditEventModal1({
       end: defaultData.end ? new Date(defaultData.end) : new Date(),
     };
 
-    setDefaultValuesArr((defaultValues) => [...defaultValues, modifiedData]);
+    setDefaultValuesArr(defaultValues => [...defaultValues, modifiedData]);
 
     const correctDefault = defaultValuesArr[defaultValuesArr.length - 2];
 
     setDateType(
       correctDefault?.start &&
-        new Date(correctDefault.start).getDate() !==
-          new Date(correctDefault.end ?? "").getDate()
+        new Date(correctDefault.start).getDate() !== new Date(correctDefault.end ?? "").getDate()
         ? "multi"
-        : "single",
+        : "single"
     );
 
     setNewEvent(correctDefault);
@@ -144,7 +133,7 @@ export default function EditEventModal1({
     if (!validateAndFocus()) return;
 
     postNewEvent(newEvent, {
-      onSuccess: (res) => {
+      onSuccess: res => {
         queryClient.invalidateQueries({ queryKey: ["Events"] });
 
         // toast.success(`${res?.data?.message}`);
@@ -165,9 +154,7 @@ export default function EditEventModal1({
             recurrenceEnd: null,
             notifyUpdate: false,
           });
-        const modal_5 = document.getElementById(
-          "my_modal_5",
-        ) as HTMLDialogElement;
+        const modal_5 = document.getElementById("my_modal_5") as HTMLDialogElement;
         modal_5.close();
       },
       onError: (err: any) => {
@@ -186,14 +173,12 @@ export default function EditEventModal1({
     switch (name) {
       case "department":
         if (newEvent.departments.includes(value)) {
-          setNewEvent((prev) => ({
+          setNewEvent(prev => ({
             ...prev,
-            departments: [
-              ...newEvent.departments.filter((item) => item !== value),
-            ],
+            departments: [...newEvent.departments.filter(item => item !== value)],
           }));
         } else {
-          setNewEvent((prev) => ({
+          setNewEvent(prev => ({
             ...prev,
             departments: [...newEvent.departments, value],
           }));
@@ -212,19 +197,15 @@ export default function EditEventModal1({
       case "removeMember": {
         const userId = value;
 
-        setNewEvent((prev) => ({
+        setNewEvent(prev => ({
           ...prev,
-          involvedUsers: [
-            ...newEvent?.involvedUsers.filter(
-              (memberId) => memberId !== userId,
-            ),
-          ],
+          involvedUsers: [...newEvent?.involvedUsers.filter(memberId => memberId !== userId)],
         }));
         break;
       }
 
       default:
-        setNewEvent((prev) => ({ ...prev, [name]: value }));
+        setNewEvent(prev => ({ ...prev, [name]: value }));
     }
   };
 
@@ -276,9 +257,7 @@ export default function EditEventModal1({
           className="scale btn btn-sm
            relative  hidden h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
           onClick={() => {
-            const modal_5 = document.getElementById(
-              "my_modal_5",
-            ) as HTMLDialogElement;
+            const modal_5 = document.getElementById("my_modal_5") as HTMLDialogElement;
             modal_5.showModal();
           }}
           key={"my_modal_5"}
@@ -350,7 +329,7 @@ export default function EditEventModal1({
                   <button
                     tabIndex={0}
                     name="end"
-                    onClick={(e) => {
+                    onClick={e => {
                       setDateType("single");
                       handleValueChange({
                         target: { name: "end", value: newEvent?.start },
@@ -385,9 +364,7 @@ export default function EditEventModal1({
                       if (newEvent?.start) {
                         let oldHours = new Date(newEvent?.start).getHours();
                         let oldMinutes = new Date(newEvent?.start).getMinutes();
-                        newStart = new Date(
-                          new Date(value).setHours(oldHours, oldMinutes),
-                        );
+                        newStart = new Date(new Date(value).setHours(oldHours, oldMinutes));
                       } else {
                         newStart = new Date(value);
                       }
@@ -395,15 +372,9 @@ export default function EditEventModal1({
                       if (newEvent?.end) {
                         let oldHours = new Date(newEvent?.end).getHours();
                         let oldMinutes = new Date(newEvent?.end).getMinutes();
-                        newEnd = new Date(
-                          new Date(value).setHours(oldHours, oldMinutes),
-                        );
+                        newEnd = new Date(new Date(value).setHours(oldHours, oldMinutes));
                       } else {
-                        newEnd = new Date(
-                          new Date(value).setHours(
-                            new Date(value).getHours() + 1,
-                          ),
-                        );
+                        newEnd = new Date(new Date(value).setHours(new Date(value).getHours() + 1));
                       }
 
                       handleValueChange({
@@ -430,8 +401,7 @@ export default function EditEventModal1({
                     />
                   </div>
                 )}
-                {(formErrors?.name === "start" ||
-                  formErrors?.name === "end") && (
+                {(formErrors?.name === "start" || formErrors?.name === "end") && (
                   <span className="form-validation-msg text-sm text-danger-700">
                     {formErrors?.message}
                   </span>
@@ -439,9 +409,7 @@ export default function EditEventModal1({
                 {/* Recurrence  */}
                 <div className="flex gap-[14px]">
                   {(
-                    Object.keys(RecurringEventTypes) as Array<
-                      keyof typeof RecurringEventTypes
-                    >
+                    Object.keys(RecurringEventTypes) as Array<keyof typeof RecurringEventTypes>
                   ).map((eventKey, i) => {
                     return (
                       <label
@@ -450,10 +418,7 @@ export default function EditEventModal1({
                         key={i}
                       >
                         <input
-                          checked={
-                            RecurringEventTypes[eventKey] ===
-                            newEvent?.recurringType
-                          }
+                          checked={RecurringEventTypes[eventKey] === newEvent?.recurringType}
                           id={eventKey}
                           type="checkbox"
                           name={"recurringType"}
@@ -530,9 +495,7 @@ export default function EditEventModal1({
                         onClick={handleValueChange}
                         value={Color.color}
                       >
-                        {Color.color === newEvent?.color && (
-                          <FaCheck className="text-white" />
-                        )}
+                        {Color.color === newEvent?.color && <FaCheck className="text-white" />}
                       </button>
                     </>
                   ))}
@@ -563,9 +526,7 @@ export default function EditEventModal1({
                 <div className="my-2 flex flex-wrap items-center gap-1">
                   {Array.isArray(departmentsRes) &&
                     departmentsRes?.map((department: Department) => {
-                      const departmentExists = newEvent?.departments.includes(
-                        department.code,
-                      );
+                      const departmentExists = newEvent?.departments.includes(department.code);
                       return (
                         <DepartmentButton
                           key={department._id}

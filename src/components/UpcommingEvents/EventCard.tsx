@@ -10,9 +10,7 @@ export default function EventCard({
   event: eventType;
   handleCardClick?: (eventData: eventType) => void;
 }) {
-  const startTime = event?.start
-    ? format(new Date(event.start), "h:mm aa")
-    : "NA";
+  const startTime = event?.start ? format(new Date(event.start), "h:mm aa") : "NA";
   const endTime = event?.end ? format(new Date(event?.end), "h:mm aa") : "NA";
 
   const { setSelectedEventData } = useContext(Context);
@@ -56,8 +54,7 @@ export default function EventCard({
             })}
           </div>
           {event?.start &&
-            new Date(event.start).getDate() !==
-              new Date(event.end || "").getDate() && (
+            new Date(event.start).getDate() !== new Date(event.end || "").getDate() && (
               <span
                 className="ml-auto text-[12px]"
                 style={{

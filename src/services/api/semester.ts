@@ -11,12 +11,9 @@ export const useGetSemester = () => {
         const res = await Axios.get(Endpoints.semester);
         return res?.data?.data;
       } catch (err: any) {
-        toast.error(
-          err?.response?.data?.message || "Cannot fetch semesterdata.",
-          {
-            duration: 10 * 1000,
-          },
-        );
+        toast.error(err?.response?.data?.message || "Cannot fetch semesterdata.", {
+          duration: 10 * 1000,
+        });
       }
     },
   });

@@ -32,16 +32,14 @@ export function AddColumnDialog() {
     const trimmedTitle = title.trim();
 
     createColumn(trimmedTitle, {
-      onSuccess: (response) => {
+      onSuccess: response => {
         const newColumn = response?.data;
         toast.success("Column added successfully!");
         setTitle("");
         setShowAddColumnDialog(false);
 
         const queryKey = ["columns"];
-        const existing = queryClient.getQueryData<{ data: ITaskColumnBase[] }>(
-          queryKey,
-        );
+        const existing = queryClient.getQueryData<{ data: ITaskColumnBase[] }>(queryKey);
         const previousColumns = existing?.data || [];
 
         // Update cache manually
@@ -49,10 +47,8 @@ export function AddColumnDialog() {
           data: [...previousColumns, newColumn],
         });
       },
-      onError: (error) => {
-        toast.error(
-          (error as any)?.response?.data?.message || "Failed to add column",
-        );
+      onError: error => {
+        toast.error((error as any)?.response?.data?.message || "Failed to add column");
       },
     });
   };
@@ -75,9 +71,7 @@ export function AddColumnDialog() {
               <DialogTitle className="text-lg font-semibold text-gray-900">
                 Add New Column
               </DialogTitle>
-              <p className="mt-1 text-sm text-gray-500">
-                Create a new column for organizing tasks
-              </p>
+              <p className="mt-1 text-sm text-gray-500">Create a new column for organizing tasks</p>
             </div>
           </div>
         </DialogHeader>
@@ -94,10 +88,10 @@ export function AddColumnDialog() {
             <Input
               id="columnTitle"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={e => setTitle(e.target.value)}
               placeholder="e.g., To Do, In Progress, Done..."
               className="h-10"
-              onKeyDown={(e) => e.key === "Enter" && handleAdd()}
+              onKeyDown={e => e.key === "Enter" && handleAdd()}
               autoFocus
             />
             <p className="text-xs text-gray-500">
@@ -112,12 +106,7 @@ export function AddColumnDialog() {
               Cancel
             </Button>
           </DialogClose>
-          <Button
-            size="sm"
-            onClick={handleAdd}
-            disabled={!title.trim()}
-            className="min-w-[100px] "
-          >
+          <Button size="sm" onClick={handleAdd} disabled={!title.trim()} className="min-w-[100px] ">
             <Plus className="mr-2 h-4 w-4" />
             Add Column
           </Button>

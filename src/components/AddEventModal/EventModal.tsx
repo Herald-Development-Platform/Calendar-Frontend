@@ -63,7 +63,7 @@ export default function EventModal({
     title: "",
     start: new Date(),
     end: null,
-    color: colors.find((color) => color?.priority === "Informational")?.color,
+    color: colors.find(color => color?.priority === "Informational")?.color,
     duration: 0,
     location: "",
     description: undefined,
@@ -81,7 +81,7 @@ export default function EventModal({
       ...defaultData,
       departments: defaultData.departments.map(
         //@ts-ignore
-        (department) => department?.code,
+        department => department?.code
       ),
       start: defaultData.start ? new Date(defaultData.start) : new Date(),
       end: defaultData.end ? new Date(defaultData.end) : new Date(),
@@ -102,9 +102,7 @@ export default function EventModal({
     if (!validateAndFocus()) return;
     postNewEvent(newEvent, {
       onSuccess: () => {
-        const modal_3 = document.getElementById(
-          "my_modal_3",
-        ) as HTMLDialogElement;
+        const modal_3 = document.getElementById("my_modal_3") as HTMLDialogElement;
         modal_3.close();
       },
     });
@@ -120,14 +118,12 @@ export default function EventModal({
     switch (name) {
       case "department":
         if (newEvent.departments.includes(value)) {
-          setNewEvent((prev) => ({
+          setNewEvent(prev => ({
             ...prev,
-            departments: [
-              ...newEvent.departments.filter((item) => item !== value),
-            ],
+            departments: [...newEvent.departments.filter(item => item !== value)],
           }));
         } else {
-          setNewEvent((prev) => ({
+          setNewEvent(prev => ({
             ...prev,
             departments: [...newEvent.departments, value],
           }));
@@ -146,19 +142,15 @@ export default function EventModal({
       case "removeMember": {
         const userId = value;
 
-        setNewEvent((prev) => ({
+        setNewEvent(prev => ({
           ...prev,
-          involvedUsers: [
-            ...newEvent?.involvedUsers.filter(
-              (memberId) => memberId !== userId,
-            ),
-          ],
+          involvedUsers: [...newEvent?.involvedUsers.filter(memberId => memberId !== userId)],
         }));
         break;
       }
 
       default:
-        setNewEvent((prev) => ({ ...prev, [name]: value }));
+        setNewEvent(prev => ({ ...prev, [name]: value }));
     }
   };
 
@@ -172,11 +164,9 @@ export default function EventModal({
 
   useEffect(() => {
     if (userData?.department) {
-      let currentDepartments = [userData?.department?._id].concat(
-        newEvent?.departments ?? [],
-      );
+      let currentDepartments = [userData?.department?._id].concat(newEvent?.departments ?? []);
       currentDepartments = Array.from(new Set(currentDepartments));
-      setNewEvent((prev) => ({ ...prev, departments: currentDepartments }));
+      setNewEvent(prev => ({ ...prev, departments: currentDepartments }));
     }
   }, [userData]);
 
@@ -226,9 +216,7 @@ export default function EventModal({
           className=" btn btn-sm
            relative  h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
           onClick={() => {
-            const modal_3 = document.getElementById(
-              "my_modal_3",
-            ) as HTMLDialogElement;
+            const modal_3 = document.getElementById("my_modal_3") as HTMLDialogElement;
             modal_3.showModal();
           }}
           key={"my_modal_3"}
@@ -301,7 +289,7 @@ export default function EventModal({
                   <button
                     tabIndex={0}
                     name="end"
-                    onClick={(e) => {
+                    onClick={e => {
                       setDateType("single");
                       handleValueChange({
                         target: { name: "end", value: newEvent.start },
@@ -334,9 +322,7 @@ export default function EventModal({
                       if (newEvent.start) {
                         let oldHours = new Date(newEvent.start).getHours();
                         let oldMinutes = new Date(newEvent.start).getMinutes();
-                        newStart = new Date(
-                          new Date(value).setHours(oldHours, oldMinutes),
-                        );
+                        newStart = new Date(new Date(value).setHours(oldHours, oldMinutes));
                       } else {
                         newStart = new Date(value);
                       }
@@ -344,15 +330,9 @@ export default function EventModal({
                       if (newEvent.end) {
                         let oldHours = new Date(newEvent.end).getHours();
                         let oldMinutes = new Date(newEvent.end).getMinutes();
-                        newEnd = new Date(
-                          new Date(value).setHours(oldHours, oldMinutes),
-                        );
+                        newEnd = new Date(new Date(value).setHours(oldHours, oldMinutes));
                       } else {
-                        newEnd = new Date(
-                          new Date(value).setHours(
-                            new Date(value).getHours() + 1,
-                          ),
-                        );
+                        newEnd = new Date(new Date(value).setHours(new Date(value).getHours() + 1));
                       }
 
                       handleValueChange({
@@ -373,17 +353,11 @@ export default function EventModal({
 
                         if (newEvent.start) {
                           let oldHours = new Date(newEvent.start).getHours();
-                          let oldMinutes = new Date(
-                            newEvent.start,
-                          ).getMinutes();
-                          newStart = new Date(
-                            new Date(value).setHours(oldHours, oldMinutes),
-                          );
+                          let oldMinutes = new Date(newEvent.start).getMinutes();
+                          newStart = new Date(new Date(value).setHours(oldHours, oldMinutes));
                         } else {
                           newStart = new Date(
-                            new Date(value).setHours(
-                              new Date(value).getHours() + 1,
-                            ),
+                            new Date(value).setHours(new Date(value).getHours() + 1)
                           );
                         }
 
@@ -403,9 +377,7 @@ export default function EventModal({
                         if (newEvent.end) {
                           let oldHours = new Date(newEvent.end).getHours();
                           let oldMinutes = new Date(newEvent.end).getMinutes();
-                          newEnd = new Date(
-                            new Date(value).setHours(oldHours, oldMinutes),
-                          );
+                          newEnd = new Date(new Date(value).setHours(oldHours, oldMinutes));
                         } else {
                           newEnd = new Date(value);
                         }
@@ -421,9 +393,7 @@ export default function EventModal({
                 {/* Recurrence  */}
                 <div className="flex gap-[14px]">
                   {(
-                    Object.keys(RecurringEventTypes) as Array<
-                      keyof typeof RecurringEventTypes
-                    >
+                    Object.keys(RecurringEventTypes) as Array<keyof typeof RecurringEventTypes>
                   ).map((eventKey, i) => {
                     return (
                       <label
@@ -432,10 +402,7 @@ export default function EventModal({
                         key={i}
                       >
                         <input
-                          checked={
-                            RecurringEventTypes[eventKey] ===
-                            newEvent.recurringType
-                          }
+                          checked={RecurringEventTypes[eventKey] === newEvent.recurringType}
                           id={eventKey}
                           type="checkbox"
                           name={"recurringType"}
@@ -550,9 +517,7 @@ export default function EventModal({
                 <div className="my-2 flex flex-wrap items-center gap-1">
                   {Array.isArray(departmentsRes) &&
                     departmentsRes?.map((department: Department) => {
-                      const departmentExists = newEvent.departments.includes(
-                        department._id,
-                      );
+                      const departmentExists = newEvent.departments.includes(department._id);
                       return (
                         <DepartmentButton
                           key={department._id}

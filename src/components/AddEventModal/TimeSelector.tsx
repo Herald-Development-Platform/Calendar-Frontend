@@ -30,7 +30,7 @@ export function TimeSelector({
             <select
               name="hours"
               className="appearance-none bg-transparent text-xl outline-none"
-              onChange={(e) => {
+              onChange={e => {
                 const hours = +e.target.value;
                 setHours(hours);
               }}
@@ -49,7 +49,7 @@ export function TimeSelector({
             <select
               name="minutes"
               className="mr-4 appearance-none bg-transparent text-xl outline-none"
-              onChange={(e) => {
+              onChange={e => {
                 const minutes = +e.target.value;
                 setMinutes(minutes);
               }}

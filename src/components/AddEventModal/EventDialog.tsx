@@ -17,31 +17,37 @@ export interface EventDialogRef {
   closeDialog: () => void;
 }
 
-const EventDialog = ({ type, className }:{ type: string,  className?:string }) => {
-
+const EventDialog = ({ type, className }: { type: string; className?: string }) => {
   // const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const {openDialog, setOpenDialog, setSelectedDate, setSelectedEventData} = useContext(Context)
+  const { openDialog, setOpenDialog, setSelectedDate, setSelectedEventData } = useContext(Context);
 
-  const {  selectedEventData } = useContext(Context);
+  const { selectedEventData } = useContext(Context);
 
   const isEdit = selectedEventData ? true : false;
-  
+
   return (
-    <Dialog open={openDialog} onOpenChange={() => {
-      setSelectedDate({start: undefined, end: undefined, startStr: undefined, endStr: undefined})
-      if(!openDialog) {
-        
-      }
-      
-      setOpenDialog((prev) => !prev)
-      // setSelectedEventData(null)
-      }}>
+    <Dialog
+      open={openDialog}
+      onOpenChange={() => {
+        setSelectedDate({
+          start: undefined,
+          end: undefined,
+          startStr: undefined,
+          endStr: undefined,
+        });
+        if (!openDialog) {
+        }
+
+        setOpenDialog(prev => !prev);
+        // setSelectedEventData(null)
+      }}
+    >
       <DialogTrigger asChild className={className}>
         <button
-        onClick={() => {
-          setSelectedEventData(null)
-        }}
+          onClick={() => {
+            setSelectedEventData(null);
+          }}
           className=" btn btn-sm
            relative flex h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
         >
@@ -49,7 +55,7 @@ const EventDialog = ({ type, className }:{ type: string,  className?:string }) =
           {type} Event
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-[700px] h-[600px] overflow-y-scroll hide-scrollbar">
+      <DialogContent className="hide-scrollbar h-[600px] max-w-[700px] overflow-y-scroll">
         <DialogHeader>
           <DialogTitle className="text-center">
             {" "}

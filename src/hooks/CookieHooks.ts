@@ -32,8 +32,7 @@ export function useSetCookie(cookieName: string, value: string, days: number) {
 export function setCookie(cookieName: string, value: string, days: number) {
   const expires = new Date(Date.now() + days * 864e5).toUTCString();
 
-  document.cookie =
-    cookieName + "=" + encodeURIComponent(value) + "; expires=" + expires;
+  document.cookie = cookieName + "=" + encodeURIComponent(value) + "; expires=" + expires;
 }
 export function useDeleteAllCookies() {
   useEffect(() => {
@@ -54,7 +53,6 @@ export function deleteAllCookies() {
   cookies.forEach(function (cookie) {
     let cookieParts = cookie.split("=");
     let cookieName = cookieParts[0].trim();
-    document.cookie =
-      cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = cookieName + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
   });
 }

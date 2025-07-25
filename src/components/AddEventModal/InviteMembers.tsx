@@ -1,28 +1,13 @@
 import { FiPlus } from "react-icons/fi";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useDebounce } from "@/hooks/useDebounce";
 import Endpoints from "@/services/API_ENDPOINTS";
 import { Axios } from "@/services/baseUrl";
 import { RefObject } from "@fullcalendar/core/preact.js";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import Image from "next/image";
-import React, {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { FaPlus } from "react-icons/fa6";
 import { IoIosSearch } from "react-icons/io";
 import { Span } from "next/dist/trace";
@@ -49,9 +34,7 @@ export default function InviteMembers({
 }) {
   const [showPopover, setShowPopover] = useState<boolean>(false);
   const [filterQuery, setFilterQuery] = useState("");
-  const [filteredUserData, setFilteredUserData] = useState<
-    User[] | null | undefined
-  >(null);
+  const [filteredUserData, setFilteredUserData] = useState<User[] | null | undefined>(null);
   // const inviteRef = useRef<HTMLDivElement>(null);
 
   const handleHidePopover = () => {
@@ -96,7 +79,7 @@ export default function InviteMembers({
               type="button"
               className="flex h-8 w-8 items-center justify-center rounded-full border border-neutral-300 bg-primary-500 text-base text-white"
               onClick={() => {
-                setShowPopover((prev) => !prev);
+                setShowPopover(prev => !prev);
               }}
             >
               <FiPlus />
@@ -175,34 +158,20 @@ export default function InviteMembers({
                       key={i}
                       className="group flex items-center gap-2 overflow-hidden overflow-y-auto py-[7.5px] pl-[10px] pr-[17px] transition-colors duration-0 hover:bg-neutral-100"
                     >
-                      {userData?.photo ? (
-                        <>
-                          <Image
-                            src={userData.photo}
-                            height={33}
-                            width={33}
-                            alt={"user image"}
-                            className="rounded-full"
-                          />
-                        </>
-                      ) : (
-                        <>
-                          <Image
-                            src={DummyProfile}
-                            height={33}
-                            width={33}
-                            alt={"user image"}
-                            className="rounded-full"
-                          />
-                        </>
-                      )}
+                      <div className="relative h-[33px] w-[33px] overflow-hidden rounded-full">
+                        <Image
+                          src={userData?.photo || DummyProfile}
+                          alt="user image"
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+
                       <div className="flex flex-grow flex-col justify-start">
                         <p className="text-left text-sm font-semibold text-neutral-900">
                           {userData?.username}
                         </p>
-                        <p className="text-left text-xs text-neutral-600">
-                          {userData?.role}
-                        </p>
+                        <p className="text-left text-xs text-neutral-600">{userData?.role}</p>
                       </div>
                       <button
                         type="button"
@@ -227,7 +196,7 @@ export default function InviteMembers({
                     className="group w-full bg-neutral-100 text-sm font-medium text-neutral-500 outline-none"
                     placeholder="Search events, dates, participants..."
                     id="date-search"
-                    onChange={(e) => setFilterQuery(e.target.value)}
+                    onChange={e => setFilterQuery(e.target.value)}
                   />
                 </div>
               </label>
@@ -250,28 +219,19 @@ export default function InviteMembers({
 const useHidePopOver = (
   inviteRef: RefObject<HTMLDivElement>,
   showPopover: boolean,
-  handleHidePopover: () => void,
+  handleHidePopover: () => void
 ) => {
   useEffect(() => {
     if (showPopover) {
-      inviteRef.current?.parentNode?.addEventListener(
-        "click",
-        handleHidePopover,
-      );
-      inviteRef.current?.addEventListener("click", (e) => {
+      inviteRef.current?.parentNode?.addEventListener("click", handleHidePopover);
+      inviteRef.current?.addEventListener("click", e => {
         e.stopPropagation();
       });
     }
 
     return () => {
-      inviteRef.current?.parentNode?.removeEventListener(
-        "click",
-        handleHidePopover,
-      );
-      inviteRef.current?.removeEventListener("click", (e) =>
-        e.stopPropagation(),
-      );
+      inviteRef.current?.parentNode?.removeEventListener("click", handleHidePopover);
+      inviteRef.current?.removeEventListener("click", e => e.stopPropagation());
     };
   }, [showPopover]);
 };
-

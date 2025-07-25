@@ -18,7 +18,7 @@ export function decryptJwtPayload(token: string) {
 export function findListView(
   calView: string,
   calendarApi: CalendarApi,
-  setCurrentView: Dispatch<SetStateAction<string>>,
+  setCurrentView: Dispatch<SetStateAction<string>>
 ) {
   switch (calView) {
     case CalendarViews.multiMonthView:
@@ -37,7 +37,7 @@ export function findListView(
 export function findNormalView(
   calView: string,
   calendarApi: CalendarApi,
-  setCurrentView: Dispatch<SetStateAction<string>>,
+  setCurrentView: Dispatch<SetStateAction<string>>
 ) {
   switch (calView) {
     case ListViews.listViewYear:
@@ -64,11 +64,10 @@ export function checkListView(currentView: string | undefined): boolean {
 
 export function makePascalCase(original_string: string) {
   let final_str = "";
-  original_string.split(" ").forEach((str) => {
+  original_string.split(" ").forEach(str => {
     final_str +=
-      (str.length > 1
-        ? str[0].toUpperCase() + str.toLowerCase().substr(1)
-        : str.toUpperCase()) + " ";
+      (str.length > 1 ? str[0].toUpperCase() + str.toLowerCase().substr(1) : str.toUpperCase()) +
+      " ";
   });
 
   return final_str.trim();
@@ -87,19 +86,18 @@ export const generateNewToken = async () => {
 };
 
 export function delay(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 const linkRegex = new RegExp(
-  /(?<!<a\s[^>]*?href=["'][^"'>]*)\b((https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}(:\d+)?(\/\S*)?)\b(?![^<]*<\/a>)/gi,
+  /(?<!<a\s[^>]*?href=["'][^"'>]*)\b((https?:\/\/)?[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}(:\d+)?(\/\S*)?)\b(?![^<]*<\/a>)/gi
 );
 
 function addDescriptionLinkClass(htmlString: string): string {
   const tempDiv: HTMLDivElement = document.createElement("div");
   tempDiv.innerHTML = htmlString;
 
-  const anchors: HTMLCollectionOf<HTMLAnchorElement> =
-    tempDiv.getElementsByTagName("a");
+  const anchors: HTMLCollectionOf<HTMLAnchorElement> = tempDiv.getElementsByTagName("a");
 
   Array.from(anchors).forEach((anchor: HTMLAnchorElement) => {
     anchor.style.color = "#4b6cc8";
@@ -119,8 +117,7 @@ export function convertToLink(string: string) {
 }
 
 function generateRandomId(length: number) {
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   let result = "";
   for (let i = 0; i < length; i++) {
     const randomIndex = Math.floor(Math.random() * characters.length);

@@ -51,7 +51,7 @@ const EventForm = ({ type }: { type: string }) => {
       end: selectedDate?.end
         ? new Date(selectedDate?.end.getTime() - 1000 * 60 * 60 * 24)
         : new Date(),
-      color: colors.find((color) => color?.priority === "Informational")?.color,
+      color: colors.find(color => color?.priority === "Informational")?.color,
       duration: 0,
       location: "",
       description: undefined,
@@ -112,9 +112,7 @@ const EventForm = ({ type }: { type: string }) => {
         if (userData?.department?._id === value) return;
         let departments = watch("departments");
         if (departments?.includes(value)) {
-          setValue("departments", [
-            ...departments?.filter((item) => item !== value),
-          ]);
+          setValue("departments", [...departments?.filter(item => item !== value)]);
         } else {
           let updatedDepartments = [...departments, value];
           let departmentSet = new Set(updatedDepartments);
@@ -135,7 +133,7 @@ const EventForm = ({ type }: { type: string }) => {
         const userId = value;
 
         setValue("involvedUsers", [
-          ...watch("involvedUsers").filter((memberId) => memberId !== userId),
+          ...watch("involvedUsers").filter(memberId => memberId !== userId),
         ]);
         break;
       }
@@ -151,7 +149,7 @@ const EventForm = ({ type }: { type: string }) => {
     let currentDepartments: string[] = watch("departments") ?? [];
     if (userData?.department) {
       currentDepartments = [userData?.department?._id].concat(
-        watch("departments") ?? [watch("departments")],
+        watch("departments") ?? [watch("departments")]
       );
       currentDepartments = Array.from(new Set(currentDepartments));
       // setNewEvent((prev) => ({ ...prev, departments: currentDepartments }));
@@ -165,9 +163,7 @@ const EventForm = ({ type }: { type: string }) => {
     const end = watch("end");
 
     setDateType(
-      start && new Date(start).getDate() !== new Date(end ?? "").getDate()
-        ? "multi"
-        : "single",
+      start && new Date(start).getDate() !== new Date(end ?? "").getDate() ? "multi" : "single"
     );
   }, [selectedDate]);
 
@@ -178,9 +174,7 @@ const EventForm = ({ type }: { type: string }) => {
     }
 
     if (data.recurrenceEnd) {
-      if (
-        new Date(data.recurrenceEnd).getTime() < new Date(data.start).getTime()
-      ) {
+      if (new Date(data.recurrenceEnd).getTime() < new Date(data.start).getTime()) {
         toast.error("Recurrence end date cannot be earlier than start date");
         return;
       }
@@ -201,7 +195,7 @@ const EventForm = ({ type }: { type: string }) => {
           reset();
           setOpenDialog(false);
         },
-        onError: (error) => {
+        onError: error => {
           toast.error("Error creating event");
         },
       });
@@ -218,7 +212,7 @@ const EventForm = ({ type }: { type: string }) => {
           // reset();
           setOpenDialog(false);
         },
-        onError: (error) => {
+        onError: error => {
           toast.error("Error updating event");
         },
       });
@@ -273,7 +267,7 @@ const EventForm = ({ type }: { type: string }) => {
               type="button"
               tabIndex={0}
               name="end"
-              onClick={(e) => {
+              onClick={e => {
                 setDateType("single");
                 handleValueChange({
                   target: { name: "end", value: watch("start") },
@@ -310,9 +304,7 @@ const EventForm = ({ type }: { type: string }) => {
                 if (startValue) {
                   let oldHours = new Date(startValue).getHours();
                   let oldMinutes = new Date(startValue).getMinutes();
-                  newStart = new Date(
-                    new Date(value).setHours(oldHours, oldMinutes),
-                  );
+                  newStart = new Date(new Date(value).setHours(oldHours, oldMinutes));
                 } else {
                   newStart = new Date(value);
                 }
@@ -320,13 +312,9 @@ const EventForm = ({ type }: { type: string }) => {
                 if (endValue) {
                   let oldHours = new Date(endValue).getHours();
                   let oldMinutes = new Date(endValue).getMinutes();
-                  newEnd = new Date(
-                    new Date(value).setHours(oldHours, oldMinutes),
-                  );
+                  newEnd = new Date(new Date(value).setHours(oldHours, oldMinutes));
                 } else {
-                  newEnd = new Date(
-                    new Date(value).setHours(new Date(value).getHours() + 1),
-                  );
+                  newEnd = new Date(new Date(value).setHours(new Date(value).getHours() + 1));
                 }
 
                 handleValueChange({
@@ -349,13 +337,9 @@ const EventForm = ({ type }: { type: string }) => {
                   if (newStart) {
                     let oldHours = new Date(newStart).getHours();
                     let oldMinutes = new Date(newStart).getMinutes();
-                    newStart = new Date(
-                      new Date(value).setHours(oldHours, oldMinutes),
-                    );
+                    newStart = new Date(new Date(value).setHours(oldHours, oldMinutes));
                   } else {
-                    newStart = new Date(
-                      new Date(value).setHours(new Date(value).getHours() + 1),
-                    );
+                    newStart = new Date(new Date(value).setHours(new Date(value).getHours() + 1));
                   }
 
                   handleValueChange({
@@ -375,9 +359,7 @@ const EventForm = ({ type }: { type: string }) => {
                   if (newEnd) {
                     let oldHours = new Date(newEnd).getHours();
                     let oldMinutes = new Date(newEnd).getMinutes();
-                    newEnd = new Date(
-                      new Date(value).setHours(oldHours, oldMinutes),
-                    );
+                    newEnd = new Date(new Date(value).setHours(oldHours, oldMinutes));
                   } else {
                     newEnd = new Date(value);
                   }
@@ -392,31 +374,28 @@ const EventForm = ({ type }: { type: string }) => {
 
           {/* Recurrence  */}
           <div className="flex gap-[14px]">
-            {(
-              Object.keys(RecurringEventTypes) as Array<
-                keyof typeof RecurringEventTypes
-              >
-            ).map((eventKey, i) => {
-              return (
-                <label
-                  className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"
-                  // htmlFor={t}
-                  key={i}
-                >
-                  <input
-                    checked={
-                      RecurringEventTypes[eventKey] === watch("recurringType")
-                    }
-                    // id={eventKey}
-                    type="checkbox"
-                    name={"recurringType"}
-                    value={RecurringEventTypes[eventKey]}
-                    onClick={handleValueChange}
-                  />
-                  <span>{makePascalCase(eventKey)}</span>
-                </label>
-              );
-            })}
+            {(Object.keys(RecurringEventTypes) as Array<keyof typeof RecurringEventTypes>).map(
+              (eventKey, i) => {
+                return (
+                  <label
+                    className="flex cursor-pointer items-center gap-[7px] text-sm font-medium text-neutral-500"
+                    // htmlFor={t}
+                    key={i}
+                  >
+                    <input
+                      checked={RecurringEventTypes[eventKey] === watch("recurringType")}
+                      // id={eventKey}
+                      type="checkbox"
+                      name={"recurringType"}
+                      value={RecurringEventTypes[eventKey]}
+                      onClick={handleValueChange}
+                      readOnly
+                    />
+                    <span>{makePascalCase(eventKey)}</span>
+                  </label>
+                );
+              }
+            )}
           </div>
         </label>
 
@@ -437,11 +416,7 @@ const EventForm = ({ type }: { type: string }) => {
             value={watch("start")}
             handleTimeChange={handleValueChange}
           />
-          <CustomTimePicker
-            type="end"
-            value={watch("end")}
-            handleTimeChange={handleValueChange}
-          />
+          <CustomTimePicker type="end" value={watch("end")} handleTimeChange={handleValueChange} />
         </div>
 
         {/* Color input section  */}
@@ -521,25 +496,19 @@ const EventForm = ({ type }: { type: string }) => {
                   } else {
                     setValue(
                       "departments",
-                      departmentsRes?.map(
-                        (department: Department) => department._id,
-                      ),
+                      departmentsRes?.map((department: Department) => department._id)
                     );
                   }
                 }}
                 id={"All"}
                 value={"All"}
-                selected={
-                  watch("departments")?.length === departmentsRes.length
-                }
+                selected={watch("departments")?.length === departmentsRes.length}
               />
             )}
 
             {Array.isArray(departmentsRes) &&
               departmentsRes?.map((department: Department) => {
-                const departmentExists = watch("departments")?.includes(
-                  department._id,
-                );
+                const departmentExists = watch("departments")?.includes(department._id);
                 return (
                   <DepartmentButton
                     selectedCross={false}
@@ -584,9 +553,7 @@ const EventForm = ({ type }: { type: string }) => {
           <div className="flex w-full items-center justify-end gap-5">
             <button className="flex gap-2 rounded-md border-none bg-primary-600 px-4 py-2 text-base font-medium text-primary-50 hover:bg-primary-700">
               {!isEdit ? "Create" : "Edit"}
-              {(Posting || Updating) && (
-                <LoaderCircle className="animate-spin" />
-              )}
+              {(Posting || Updating) && <LoaderCircle className="animate-spin" />}
             </button>
           </div>
         </div>

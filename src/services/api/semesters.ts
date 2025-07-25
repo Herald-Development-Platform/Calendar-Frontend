@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 export const useCreateSemesters = (
   onSuccess: () => void = () => {
     toast.success("Semester created successfully");
-  },
+  }
 ) =>
   useMutation({
     mutationKey: ["semesters"],

@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import Sidebar from "./Sidebar";
 import { Menu } from "lucide-react";
-export default function ToggleSidebar({
-  children,
-}: {
-  children?: React.ReactNode;
-}) {
+export default function ToggleSidebar({ children }: { children?: React.ReactNode }) {
   const [toggleSidebar, setToggleSidebar] = useState<boolean>(false);
 
   return (

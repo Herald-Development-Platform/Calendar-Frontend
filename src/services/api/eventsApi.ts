@@ -18,16 +18,14 @@ export const getEventsByParams = (payload: eventByParamsType) =>
       colors: payload.colors,
       eventFrom: "",
       eventTo: "",
-    }),
+    })
   );
-export const postEvents = (payload: any) =>
-  Axios.post(Endpoints.event, payload);
+export const postEvents = (payload: any) => Axios.post(Endpoints.event, payload);
 
 export const updateEvents = (payload: any) => {
   return Axios.put(Endpoints.eventById(payload.id), payload.newEvent);
 };
-export const updateUser = (payload: any) =>
-  Axios.put(Endpoints.updateUser(payload), payload);
+export const updateUser = (payload: any) => Axios.put(Endpoints.updateUser(payload), payload);
 
 export const useGetEvents = () =>
   useQuery<eventType[]>({
@@ -43,18 +41,14 @@ export const useGetEvents = () =>
     },
   });
 
-export const useDeleteEvent = ({
-  onSuccessFn,
-}: {
-  onSuccessFn?: () => void;
-}) => {
+export const useDeleteEvent = ({ onSuccessFn }: { onSuccessFn?: () => void }) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (payload: { id: string }) => {
       const axiosRes = await Axios.delete(Endpoints.eventById(payload.id));
       return axiosRes.data;
     },
-    onSuccess: (res) => {
+    onSuccess: res => {
       toast.success(res.data.message || "Successfuly Deleted Event");
       queryClient.invalidateQueries({ queryKey: ["Events"] });
       // onSuccessFn && onSuccessFn();
@@ -67,7 +61,7 @@ export const useCreateEventMutation = () => {
 
   return useMutation({
     mutationFn: postEvents,
-    onSuccess: (res) => {
+    onSuccess: res => {
       queryClient.invalidateQueries({ queryKey: ["Events"] });
       toast.success(res?.data.message);
     },
@@ -86,7 +80,7 @@ export const usePostEventMutation = ({
 
   return useMutation({
     mutationFn: postEvents,
-    onSuccess: (res) => {
+    onSuccess: res => {
       queryClient.invalidateQueries({ queryKey: ["Events"] });
 
       toast.success(`${res?.data?.message}`);
@@ -134,7 +128,7 @@ export const useUpdateEvents = () => {
     onSuccess: async () => {
       queryClient.invalidateQueries({ queryKey: ["Events"] });
     },
-    onError: (err) => {
+    onError: err => {
       toast.error("Something went wrong.");
     },
   });
@@ -152,7 +146,7 @@ export const useGetEventByQuery = (queryParams: eventByParamsType) =>
             colors: queryParams.colors,
             eventTo: queryParams.eventTo,
             eventFrom: queryParams.eventFrom,
-          }),
+          })
         );
         if (!(res.status >= 200 && res.status < 300)) {
           toast.error(res.data.message);

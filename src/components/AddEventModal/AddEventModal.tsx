@@ -41,11 +41,7 @@ interface PickedDateType {
   endDate: Date | undefined;
 }
 
-export default function AddEventModal({
-  defaultData,
-}: {
-  defaultData: eventType | null;
-}) {
+export default function AddEventModal({ defaultData }: { defaultData: eventType | null }) {
   // const [pickedDate, setPickedDate] = useState<any>();
   const [dateType, setDateType] = useState<"single" | "multi">("single");
   const [newEvent, setNewEvent] = useState<eventType>({
@@ -63,13 +59,15 @@ export default function AddEventModal({
     recurrenceEnd: null,
   });
 
+  console.log("newEvent", newEvent);
+
   useEffect(() => {
     if (!defaultData) return;
     const modifiedData = {
       ...defaultData,
       departments: defaultData.departments.map(
         //@ts-ignore
-        (department) => department?.code,
+        department => department?.code
       ),
       start: defaultData.start ? new Date(defaultData.start) : new Date(),
       end: defaultData.end ? new Date(defaultData.end) : new Date(),
@@ -97,14 +95,12 @@ export default function AddEventModal({
     switch (name) {
       case "department":
         if (newEvent.departments.includes(value)) {
-          setNewEvent((prev) => ({
+          setNewEvent(prev => ({
             ...prev,
-            departments: [
-              ...newEvent.departments.filter((item) => item !== value),
-            ],
+            departments: [...newEvent.departments.filter(item => item !== value)],
           }));
         } else {
-          setNewEvent((prev) => ({
+          setNewEvent(prev => ({
             ...prev,
             departments: [...newEvent.departments, value],
           }));
@@ -123,19 +119,15 @@ export default function AddEventModal({
       case "removeMember": {
         const userId = value;
 
-        setNewEvent((prev) => ({
+        setNewEvent(prev => ({
           ...prev,
-          involvedUsers: [
-            ...newEvent?.involvedUsers.filter(
-              (memberId) => memberId !== userId,
-            ),
-          ],
+          involvedUsers: [...newEvent?.involvedUsers.filter(memberId => memberId !== userId)],
         }));
         break;
       }
 
       default:
-        setNewEvent((prev) => ({ ...prev, [name]: value }));
+        setNewEvent(prev => ({ ...prev, [name]: value }));
     }
   };
 
@@ -146,9 +138,7 @@ export default function AddEventModal({
           className="scale btn btn-sm
            relative flex h-8 w-32 rounded border-none bg-primary-600 px-3 py-2 text-xs font-semibold text-primary-50 outline-none hover:bg-primary-400"
           onClick={() => {
-            const modal_3 = document.getElementById(
-              "my_modal_3",
-            ) as HTMLDialogElement;
+            const modal_3 = document.getElementById("my_modal_3") as HTMLDialogElement;
             modal_3.showModal();
           }}
           key={"my_modal_3"}
@@ -218,7 +208,7 @@ export default function AddEventModal({
                   <button
                     tabIndex={0}
                     name="end"
-                    onClick={(e) => {
+                    onClick={e => {
                       setDateType("single");
                       handleValueChange({
                         target: { name: "end", value: newEvent.start },
@@ -244,12 +234,13 @@ export default function AddEventModal({
                 {dateType === "single" && (
                   <Datepicker
                     className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
-                    onChange={(datePicked) => {
+                    onChange={datePicked => {
                       if (!datePicked) return;
 
                       handleValueChange({
                         target: { name: "start", value: new Date(datePicked) },
                       });
+
                       handleValueChange({
                         target: { name: "end", value: new Date(datePicked) },
                       });
@@ -271,7 +262,7 @@ export default function AddEventModal({
                     {/* <span className="w-full border border-blue-500"> */}
                     <Datepicker
                       className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
-                      onChange={(datePicked) => {
+                      onChange={datePicked => {
                         if (!datePicked) return;
 
                         handleValueChange({
@@ -294,7 +285,7 @@ export default function AddEventModal({
                     <span className="text-neutral-600">-</span>
                     <Datepicker
                       className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
-                      onChange={(datePicked) => {
+                      onChange={datePicked => {
                         if (!datePicked) return;
                         handleValueChange({
                           target: { name: "end", value: new Date(datePicked) },
@@ -316,9 +307,7 @@ export default function AddEventModal({
                 {/* Recurrence  */}
                 <div className="flex gap-[14px]">
                   {(
-                    Object.keys(RecurringEventTypes) as Array<
-                      keyof typeof RecurringEventTypes
-                    >
+                    Object.keys(RecurringEventTypes) as Array<keyof typeof RecurringEventTypes>
                   ).map((eventKey, i) => {
                     return (
                       <label
@@ -327,10 +316,7 @@ export default function AddEventModal({
                         key={i}
                       >
                         <input
-                          checked={
-                            RecurringEventTypes[eventKey] ===
-                            newEvent.recurringType
-                          }
+                          checked={RecurringEventTypes[eventKey] === newEvent.recurringType}
                           id={eventKey}
                           type="checkbox"
                           name={"recurringType"}
@@ -471,10 +457,7 @@ export default function AddEventModal({
             </div>
 
             {/* create btn  */}
-            <form
-              method="dialog"
-              className=" flex h-16 w-full items-center justify-end "
-            >
+            <form method="dialog" className=" flex h-16 w-full items-center justify-end ">
               <button
                 className="btn btn-md  h-5 border-none bg-primary-600 text-base font-medium text-primary-50"
                 onClick={handleAddEvent}

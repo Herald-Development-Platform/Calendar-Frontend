@@ -31,26 +31,26 @@ export default function CustomTimePicker({
             type="text"
             onFocus={() => setShowTimePicker(true)}
             value={value ? format(new Date(value), "hh : mm  a") : "00 : 00 "}
+            readOnly
           />
         </label>
 
-<div className={`${showTimePicker ? "inline-block": "hidden"}`}>
-<StaticTimePicker
-          className={`${showTimePicker ? "inline-block" : "hidden"} ${
-            type === "start" ? "left-0" : "right-0"
-          } absolute top-12 z-20 rounded-sm `}
-          value={value}
-          onChange={(value) => {
-            if (!value) return;
+        <div className={`${showTimePicker ? "inline-block" : "hidden"}`}>
+          <StaticTimePicker
+            className={`${showTimePicker ? "inline-block" : "hidden"} ${
+              type === "start" ? "left-0" : "right-0"
+            } absolute top-12 z-20 rounded-sm `}
+            value={value}
+            onChange={value => {
+              if (!value) return;
 
-            handleTimeChange({
-              target: { name: type, value: new Date(value) },
-            });
-          }}
-          onAccept={() => setShowTimePicker(false)}
-        />
-</div>
-        
+              handleTimeChange({
+                target: { name: type, value: new Date(value) },
+              });
+            }}
+            onAccept={() => setShowTimePicker(false)}
+          />
+        </div>
       </div>
       <div
         onClick={() => {

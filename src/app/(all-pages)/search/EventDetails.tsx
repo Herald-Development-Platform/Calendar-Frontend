@@ -25,14 +25,7 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { MdOutlineModeEditOutline } from "react-icons/md";
 
 import colors from "@/constants/Colors";
-import {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
 import EditEventModal from "@/components/AddEventModal/EditEventModal";
 import { useQueryClient } from "@tanstack/react-query";
 import { format, set } from "date-fns";
@@ -64,17 +57,13 @@ export default function EventDetails({
   width: number | null;
   handleDelete: (e: any) => void;
 }) {
-  const [selectedColor, setSelectedColor] = useState<string | undefined>(
-    selectedEvent?.color,
-  );
+  const [selectedColor, setSelectedColor] = useState<string | undefined>(selectedEvent?.color);
   const [dropDown, setDropDown] = useState<boolean>(false);
   const [dropDown2, setDropDown2] = useState<boolean>(false);
   const [expandDetails, setExpandDetails] = useState<boolean>(false);
-  const [recurringDialogOpen, setRecurringDialogOpen] =
-    useState<boolean>(false);
+  const [recurringDialogOpen, setRecurringDialogOpen] = useState<boolean>(false);
   const [deleteType, setDeleteType] = useState<string>("all");
-  const { setSelectedEventData, openDialog, setOpenDialog } =
-    useContext(Context);
+  const { setSelectedEventData, openDialog, setOpenDialog } = useContext(Context);
 
   const queryClient = useQueryClient();
 
@@ -100,7 +89,7 @@ export default function EventDetails({
           </DialogHeader>
           <RadioGroup
             defaultValue={deleteType}
-            onValueChange={(value) => {
+            onValueChange={value => {
               setDeleteType(value);
             }}
           >
@@ -144,26 +133,26 @@ export default function EventDetails({
                     new Date(selectedEvent?.start ?? "").getTime() -
                       60000 -
                       5 * 60 * 60 * 1000 -
-                      45 * 60 * 1000,
+                      45 * 60 * 1000
                   );
                   exceptionEnd = new Date(
                     new Date(selectedEvent?.end ?? "").getTime() +
                       60000 -
                       5 * 60 * 60 * 1000 -
-                      45 * 60 * 1000,
+                      45 * 60 * 1000
                   );
                 } else if (deleteType === "following") {
                   exceptionStart = new Date(
                     new Date(selectedEvent?.start ?? "").getTime() -
                       60000 -
                       5 * 60 * 60 * 1000 -
-                      45 * 60 * 1000,
+                      45 * 60 * 1000
                   );
                   exceptionEnd = new Date(
                     new Date(selectedEvent?.recurrenceEnd ?? "").getTime() +
                       60000 -
                       5 * 60 * 60 * 1000 -
-                      45 * 60 * 1000,
+                      45 * 60 * 1000
                   );
                 }
                 let newEvent = {
@@ -206,16 +195,12 @@ export default function EventDetails({
         <div className="font flex items-center transition">
           <span className="text-base font-semibold">Event Details</span>
           <span className="ml-auto flex items-center gap-[6px] text-black">
-            <button
-              ref={btnRef}
-              className="text-base"
-              onClick={() => setExpandDetails(true)}
-            >
+            <button ref={btnRef} className="text-base" onClick={() => setExpandDetails(true)}>
               <CgArrowsExpandRight />
             </button>
 
             <DropdownMenu open={dropDown} onOpenChange={setDropDown}>
-              <DropdownMenuTrigger>
+              <DropdownMenuTrigger asChild>
                 <button className="cursor-pointer text-base">
                   <BsThreeDotsVertical />
                 </button>
@@ -237,11 +222,7 @@ export default function EventDetails({
                   </span>
                   Edit Event
                   <span>
-                    {selectedEvent && (
-                      <EditEventModal
-                        defaultData={selectedEvent}
-                      ></EditEventModal>
-                    )}
+                    {selectedEvent && <EditEventModal defaultData={selectedEvent}></EditEventModal>}
                   </span>
                 </button>
                 <DropdownMenuSeparator />
@@ -249,9 +230,7 @@ export default function EventDetails({
                   onClick={(e: any) => {
                     setDropDown(false);
 
-                    if (
-                      selectedEvent?.recurringType === RecurringEventTypes.ONCE
-                    ) {
+                    if (selectedEvent?.recurringType === RecurringEventTypes.ONCE) {
                       setTimeout(() => {
                         handleDelete(e);
                         setSelectedEvent(null);
@@ -290,7 +269,7 @@ export default function EventDetails({
                 new Date(selectedEvent.end ?? "").getDate()
                   ? `${format(
                       new Date(selectedEvent?.start),
-                      "MMM d",
+                      "MMM d"
                     )} - ${format(new Date(selectedEvent?.end ?? ""), "MMM d")}`
                   : format(new Date(selectedEvent?.start), "MMMM d"))}
             </h1>
@@ -302,13 +281,13 @@ export default function EventDetails({
           <p>Priority</p>
           <Select
             defaultValue={selectedEvent?.color}
-            onValueChange={(value) => {
+            onValueChange={value => {
               updateEvent(
                 {
                   id: selectedEvent?._id,
                   newEvent: { ...selectedEvent, color: value },
                 },
-                { onSuccess: () => {} },
+                { onSuccess: () => {} }
               );
               setSelectedColor(value);
             }}
@@ -319,10 +298,7 @@ export default function EventDetails({
               }}
               className="h-fit w-fit gap-2 border-none p-0 px-4 py-1.5 text-sm leading-none text-white focus:ring-0"
             >
-              {
-                colors.find((color) => color.color === selectedEvent?.color)
-                  ?.priority
-              }
+              {colors.find(color => color.color === selectedEvent?.color)?.priority}
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -351,9 +327,9 @@ export default function EventDetails({
                 ? new DOMParser().parseFromString(
                     convertToLink(selectedEvent?.description ?? "").replaceAll(
                       /<\s*script\s*>/gi,
-                      "<p>",
+                      "<p>"
                     ),
-                    "text/html",
+                    "text/html"
                   ).body.innerHTML
                 : selectedEvent?.description || "",
             }}
@@ -363,16 +339,12 @@ export default function EventDetails({
 
         <div>
           <h3>Notes</h3>
-          <p className="text-base font-normal text-neutral-500 ">
-            {selectedEvent?.notes}
-          </p>
+          <p className="text-base font-normal text-neutral-500 ">{selectedEvent?.notes}</p>
         </div>
 
         <div>
           <h3>Location</h3>
-          <p className="text-base font-normal text-neutral-500 ">
-            {selectedEvent?.location}
-          </p>
+          <p className="text-base font-normal text-neutral-500 ">{selectedEvent?.location}</p>
         </div>
         {selectedEvent?.createdBy && (
           <div className="flex flex-col gap-2">
@@ -407,12 +379,10 @@ export default function EventDetails({
         {/* <DialogTrigger asChild></DialogTrigger> */}
         <DialogContent className="min-w-[60%]">
           <DialogHeader className="flex w-full flex-row justify-between ">
-            <DialogTitle className="flex w-fit  text-lg font-medium">
-              Event Details
-            </DialogTitle>
+            <DialogTitle className="flex w-fit  text-lg font-medium">Event Details</DialogTitle>
             <span className="flex w-fit text-lg">
               <DropdownMenu open={dropDown2} onOpenChange={setDropDown2}>
-                <DropdownMenuTrigger>
+                <DropdownMenuTrigger asChild>
                   <button className="cursor-pointer text-base">
                     <BsThreeDotsVertical />
                   </button>
@@ -449,10 +419,7 @@ export default function EventDetails({
                     onClick={(e: any) => {
                       setDropDown(false);
 
-                      if (
-                        selectedEvent?.recurringType ===
-                        RecurringEventTypes.ONCE
-                      ) {
+                      if (selectedEvent?.recurringType === RecurringEventTypes.ONCE) {
                         setTimeout(() => {
                           handleDelete(e);
                           setSelectedEvent(null);
@@ -486,12 +453,9 @@ export default function EventDetails({
                   {selectedEvent?.start &&
                     (new Date(selectedEvent.start).getDate() !==
                     new Date(selectedEvent.end ?? "").getDate()
-                      ? `${format(
-                          new Date(selectedEvent?.start),
-                          "MMMM d",
-                        )} - ${format(
+                      ? `${format(new Date(selectedEvent?.start), "MMMM d")} - ${format(
                           new Date(selectedEvent?.end ?? ""),
-                          "MMMM d",
+                          "MMMM d"
                         )}`
                       : format(new Date(selectedEvent?.start), "MMMM d"))}
                 </h1>
@@ -502,13 +466,13 @@ export default function EventDetails({
               <p>Priority</p>
               <Select
                 defaultValue={selectedEvent?.color}
-                onValueChange={(value) => {
+                onValueChange={value => {
                   updateEvent(
                     {
                       id: selectedEvent?._id,
                       newEvent: { ...selectedEvent, color: value },
                     },
-                    { onSuccess: () => {} },
+                    { onSuccess: () => {} }
                   );
                   setSelectedColor(value);
                 }}
@@ -519,10 +483,7 @@ export default function EventDetails({
                   }}
                   className="h-fit w-fit gap-2 border-none p-0 px-4 py-1.5 text-sm leading-none text-white focus:ring-0"
                 >
-                  {
-                    colors.find((color) => color.color === selectedEvent?.color)
-                      ?.priority
-                  }
+                  {colors.find(color => color.color === selectedEvent?.color)?.priority}
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
@@ -548,11 +509,8 @@ export default function EventDetails({
                 dangerouslySetInnerHTML={{
                   __html: selectedEvent?.description
                     ? new DOMParser().parseFromString(
-                        selectedEvent?.description.replaceAll(
-                          /<\s*script\s*>/gi,
-                          "<p>",
-                        ),
-                        "text/html",
+                        selectedEvent?.description.replaceAll(/<\s*script\s*>/gi, "<p>"),
+                        "text/html"
                       ).body.innerHTML
                     : selectedEvent?.description || "",
                 }}
@@ -562,16 +520,12 @@ export default function EventDetails({
 
             <div>
               <h3>Notes</h3>
-              <p className="text-base font-normal text-neutral-500 ">
-                {selectedEvent?.notes}
-              </p>
+              <p className="text-base font-normal text-neutral-500 ">{selectedEvent?.notes}</p>
             </div>
 
             <div>
               <h3>Location</h3>
-              <p className="text-base font-normal text-neutral-500 ">
-                {selectedEvent?.location}
-              </p>
+              <p className="text-base font-normal text-neutral-500 ">{selectedEvent?.location}</p>
             </div>
           </div>
         </DialogContent>

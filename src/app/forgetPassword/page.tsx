@@ -18,7 +18,7 @@ export default function Page() {
       return Axios.post(`/forgetPassword`, payload);
     },
     mutationKey: ["forgetPassword"],
-    onSuccess: (response) => {
+    onSuccess: response => {
       if (!response.data.success) {
         toast.error(response.data.message || "Something went wrong.");
         return;
@@ -54,10 +54,7 @@ export default function Page() {
         </div>
 
         <h1 className="text-2xl font-bold">Send OTP</h1>
-        <form
-          onSubmit={handleSubmit(forgetPassword)}
-          className="flex flex-col gap-8"
-        >
+        <form onSubmit={handleSubmit(forgetPassword)} className="flex flex-col gap-8">
           <label htmlFor="email">
             <br />
             <div className="flex h-[52px] w-full items-center gap-2 rounded-[4px] bg-neutral-100 px-4 ">
@@ -79,7 +76,7 @@ export default function Page() {
           </label>
           <div className="space-y-4">
             <button
-              onClick={(e) => {}}
+              onClick={e => {}}
               className="btn w-full rounded-[4px] bg-primary-500 text-sm text-white hover:bg-primary-700"
             >
               Send OTP

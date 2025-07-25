@@ -26,6 +26,7 @@ import { BiPencil } from "react-icons/bi";
 import { useForm } from "react-hook-form";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import { PERMISSIONS } from "@/constants/permissions";
+import { DialogDescription } from "@radix-ui/react-dialog";
 
 export default function DepartmentDetails({
   department,
@@ -39,39 +40,31 @@ export default function DepartmentDetails({
   invalidationFunction?: () => void;
 }) {
   const [editDepartmentModalOpen, setEditDepartmentModalOpen] = useState(false);
-  const [deleteDepartmentModalOpen, setDeleteDepartmentModalOpen] =
-    useState(false);
+  const [deleteDepartmentModalOpen, setDeleteDepartmentModalOpen] = useState(false);
   const [mutateDepartment, setMutateDepartment] = useState<Department>();
 
   const { mutate: deleteDepartment, isPending: isDeleting } = useMutation({
-    mutationFn: async (id: string) =>
-      Axios.delete(Endpoints.departmentById(id)),
+    mutationFn: async (id: string) => Axios.delete(Endpoints.departmentById(id)),
     onSuccess: () => {
       invalidationFunction && invalidationFunction();
     },
   });
 
-  const { mutate: updateDepartment, isPending: isUpdatingDepartment } =
-    useMutation({
-      mutationFn: async (data: Department) =>
-        Axios.put(Endpoints.departmentById(data._id), data),
-      onSuccess: (response) => {
-        if (response.status >= 400 && response.status < 500) {
-          toast.error(
-            response?.data?.message ||
-              response?.data?.error ||
-              "Error process request!",
-          );
-          return;
-        } else {
-          toast.success("Department updated successfully");
-          resetDepartmentForm();
-        }
-        setEditDepartmentModalOpen(false);
-        setMutateDepartment(undefined);
-        invalidationFunction && invalidationFunction();
-      },
-    });
+  const { mutate: updateDepartment, isPending: isUpdatingDepartment } = useMutation({
+    mutationFn: async (data: Department) => Axios.put(Endpoints.departmentById(data._id), data),
+    onSuccess: response => {
+      if (response.status >= 400 && response.status < 500) {
+        toast.error(response?.data?.message || response?.data?.error || "Error process request!");
+        return;
+      } else {
+        toast.success("Department updated successfully");
+        resetDepartmentForm();
+      }
+      setEditDepartmentModalOpen(false);
+      setMutateDepartment(undefined);
+      invalidationFunction && invalidationFunction();
+    },
+  });
 
   const { userData } = useContext(Context);
 
@@ -104,12 +97,12 @@ export default function DepartmentDetails({
 
   return (
     <section
-      className={`hide-scrollbar bg-white absolute right-0 top-[15%] flex h-auto max-h-[80vh] w-[360px] flex-col  gap-6 overflow-y-scroll p-6 font-medium text-neutral-600 transition-all duration-150`}
+      className={`hide-scrollbar absolute right-0 top-[15%] flex h-auto max-h-[80vh] w-[360px] flex-col gap-6  overflow-y-scroll bg-white p-6 font-medium text-neutral-600 transition-all duration-150`}
     >
       {/* Update department dialog */}
       <Dialog
         open={editDepartmentModalOpen}
-        onOpenChange={(open) => {
+        onOpenChange={open => {
           setEditDepartmentModalOpen(open);
           setMutateDepartment(undefined);
         }}
@@ -120,10 +113,7 @@ export default function DepartmentDetails({
               Edit department details
             </DialogTitle>
           </DialogHeader>
-          <form
-            className="py-2"
-            onSubmit={handleDepartmentSubmit(onDepartmentSubmit)}
-          >
+          <form className="py-2" onSubmit={handleDepartmentSubmit(onDepartmentSubmit)}>
             <label htmlFor="add-title">
               <div className="group flex h-11 w-full items-center gap-2  border-b-[1px] border-neutral-300 px-4 focus-within:border-primary-600">
                 <span className="text-xl">
@@ -179,26 +169,20 @@ export default function DepartmentDetails({
       {/* Delete department dialog */}
       <Dialog
         open={deleteDepartmentModalOpen}
-        onOpenChange={(open) => {
+        onOpenChange={open => {
           setDeleteDepartmentModalOpen(open);
           setMutateDepartment(undefined);
         }}
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className=" text-[19px] font-semibold ">
-              Delete Department?
-            </DialogTitle>
+            <DialogTitle className=" text-[19px] font-semibold ">Delete Department?</DialogTitle>
           </DialogHeader>
           <div>
             <p>
-              You sure to delete the department{" "}
-              <strong>{mutateDepartment?.name}</strong>
+              You sure to delete the department <strong>{mutateDepartment?.name}</strong>
             </p>
-            <p>
-              All the department members will be updated to choose their
-              department
-            </p>
+            <p>All the department members will be updated to choose their department</p>
           </div>
           <DialogFooter className=" flex flex-row items-center justify-end py-4">
             <button
@@ -220,12 +204,8 @@ export default function DepartmentDetails({
 
       <div className="font flex items-center transition">
         <div className="flex flex-col items-start justify-start">
-          <span className=" text-[16px] font-semibold text-neutral-600">
-            {department?.name}
-          </span>
-          <span className=" text-[13px] text-neutral-400">
-            {department?.code}
-          </span>
+          <span className=" text-[16px] font-semibold text-neutral-600">{department?.name}</span>
+          <span className=" text-[13px] text-neutral-400">{department?.code}</span>
         </div>
         <span className="ml-auto flex items-center gap-[6px] text-black">
           <span className="ml-auto flex items-center gap-[6px] text-black">
@@ -239,44 +219,38 @@ export default function DepartmentDetails({
                 align="end"
                 className="w-[300px] px-5 py-4 text-sm font-semibold"
               >
-                {userData &&
-                  userData?.permissions?.includes(
-                    PERMISSIONS.UPDATE_DEPARTMENT,
-                  ) && (
+                {userData && userData?.permissions?.includes(PERMISSIONS.UPDATE_DEPARTMENT) && (
+                  <button
+                    onClick={(e: any) => {
+                      setMutateDepartment(department);
+                      setEditDepartmentModalOpen(true);
+                    }}
+                    className="flex w-full items-center justify-start gap-2 px-2 py-1 text-neutral-700 transition-colors duration-150 hover:bg-neutral-100  hover:text-neutral-800"
+                  >
+                    <span className="text-2xl">
+                      <MdOutlineModeEditOutline />
+                    </span>
+                    Edit Department
+                  </button>
+                )}
+
+                {userData && userData?.permissions?.includes(PERMISSIONS.DELETE_DEPARTMENT) && (
+                  <>
+                    <DropdownMenuSeparator />
                     <button
-                      onClick={(e: any) => {
+                      onClick={() => {
                         setMutateDepartment(department);
-                        setEditDepartmentModalOpen(true);
+                        setDeleteDepartmentModalOpen(true);
                       }}
-                      className="flex w-full items-center justify-start gap-2 px-2 py-1 text-neutral-700 transition-colors duration-150 hover:bg-neutral-100  hover:text-neutral-800"
+                      className="flex w-full items-center justify-start gap-2 px-2 py-1 text-danger-400 transition-colors duration-150 hover:bg-neutral-100  hover:text-danger-500"
                     >
                       <span className="text-2xl">
-                        <MdOutlineModeEditOutline />
+                        <RiDeleteBin6Line />
                       </span>
-                      Edit Department
+                      Delete Department
                     </button>
-                  )}
-
-                {userData &&
-                  userData?.permissions?.includes(
-                    PERMISSIONS.DELETE_DEPARTMENT,
-                  ) && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <button
-                        onClick={() => {
-                          setMutateDepartment(department);
-                          setDeleteDepartmentModalOpen(true);
-                        }}
-                        className="flex w-full items-center justify-start gap-2 px-2 py-1 text-danger-400 transition-colors duration-150 hover:bg-neutral-100  hover:text-danger-500"
-                      >
-                        <span className="text-2xl">
-                          <RiDeleteBin6Line />
-                        </span>
-                        Delete Department
-                      </button>
-                    </>
-                  )}
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </span>
@@ -288,20 +262,14 @@ export default function DepartmentDetails({
 
       <div className="flex flex-col gap-2">
         <p className=" font-500 text-[16px] text-neutral-600">Description</p>
-        <p className=" text-[16px] text-neutral-500">
-          {department.description}
-        </p>
+        <p className=" text-[16px] text-neutral-500">{department.description}</p>
       </div>
       <div className=" flex flex-col gap-2 ">
         <p className=" text-[16px] font-semibold text-neutral-600 ">Events</p>
         <div className=" flex flex-col ">
           {events &&
-            events.map((event) => {
-              if (
-                !event.departments
-                  .map((d: any) => d?._id)
-                  .includes(department._id)
-              ) {
+            events.map(event => {
+              if (!event.departments.map((d: any) => d?._id).includes(department._id)) {
                 return null;
               }
               return (

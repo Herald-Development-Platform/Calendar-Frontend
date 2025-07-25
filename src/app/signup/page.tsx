@@ -41,8 +41,8 @@ export default function Page() {
         "Content-Type": "application/json",
       },
     })
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         if (!data.success) {
           setIsLoading(false);
           throw Error(data.message || "Something went wrong");
@@ -53,7 +53,7 @@ export default function Page() {
           router.push(`/otp?email=${payload.email}`);
         }, 1000);
       })
-      .catch((err) => {
+      .catch(err => {
         setIsLoading(false);
         toast.error(err.message || "Something went wrong");
       });
@@ -88,10 +88,7 @@ export default function Page() {
         </div>
 
         {/* Form  */}
-        <form
-          onSubmit={handleSubmit(registerUser)}
-          className="flex flex-col gap-8"
-        >
+        <form onSubmit={handleSubmit(registerUser)} className="flex flex-col gap-8">
           <label htmlFor="username">
             Name
             <br />
@@ -110,9 +107,7 @@ export default function Page() {
               />
             </div>
             {errors.username && (
-              <p className="text-sm text-red-500">
-                {errors.username.message as string}
-              </p>
+              <p className="text-sm text-red-500">{errors.username.message as string}</p>
             )}
           </label>
           <label htmlFor="email">
@@ -135,9 +130,7 @@ export default function Page() {
               />
             </div>
             {errors.email && (
-              <p className="text-sm text-red-500">
-                {errors.email.message as string}
-              </p>
+              <p className="text-sm text-red-500">{errors.email.message as string}</p>
             )}
           </label>
           <label htmlFor="password">
@@ -170,9 +163,7 @@ export default function Page() {
               </span>
             </div>
             {errors.password && (
-              <p className="text-sm text-red-500">
-                {errors.password.message as string}
-              </p>
+              <p className="text-sm text-red-500">{errors.password.message as string}</p>
             )}
           </label>
 

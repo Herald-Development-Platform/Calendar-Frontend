@@ -109,12 +109,12 @@ const ArchieveSheet = () => {
 
     updateTask(updatedTask, {
       onSuccess: () => {
-        const updatedTasks = archivedTasks?.data?.filter(
-          (t: ITask) => t._id !== task._id,
-        );
+        const updatedTasks = archivedTasks?.data?.filter((t: ITask) => t._id !== task._id);
         queryClient.setQueryData(["archived-tasks"], { data: updatedTasks });
-        const columnTasks: { data: ITask[] } | undefined =
-          queryClient.getQueryData(["tasks", task.column._id]);
+        const columnTasks: { data: ITask[] } | undefined = queryClient.getQueryData([
+          "tasks",
+          task.column._id,
+        ]);
         const updatedColumnTasks = [...(columnTasks?.data ?? []), updatedTask];
 
         queryClient.setQueryData(["tasks", task.column._id], {
@@ -144,7 +144,7 @@ const ArchieveSheet = () => {
         //   };
         // });
       },
-      onError: (error) => {
+      onError: error => {
         console.error("Failed to delete task:", error);
       },
     });
@@ -163,10 +163,7 @@ const ArchieveSheet = () => {
             <Archive className="mr-2 h-4 w-4" />
             Archived
             {archivedTasks?.data?.length > 0 && (
-              <Badge
-                variant="secondary"
-                className="ml-2 h-5 min-w-[20px] px-1 text-xs"
-              >
+              <Badge variant="secondary" className="ml-2 h-5 min-w-[20px] px-1 text-xs">
                 {archivedTasks.data.length}
               </Badge>
             )}
@@ -194,7 +191,7 @@ const ArchieveSheet = () => {
               <Input
                 placeholder="Search tasks..."
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={e => setSearchTerm(e.target.value)}
                 className="h-8 pl-8 text-sm"
               />
             </div>
@@ -206,10 +203,7 @@ const ArchieveSheet = () => {
                     <Filter className="mr-1.5 h-3 w-3" />
                     Priority
                     {filterPriority && (
-                      <Badge
-                        variant="secondary"
-                        className="ml-1.5 h-3 px-1 text-xs"
-                      >
+                      <Badge variant="secondary" className="ml-1.5 h-3 px-1 text-xs">
                         {filterPriority}
                       </Badge>
                     )}
@@ -232,12 +226,7 @@ const ArchieveSheet = () => {
               </DropdownMenu>
 
               {(searchTerm || filterPriority) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={clearFilters}
-                  className="h-7 text-xs"
-                >
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="h-7 text-xs">
                   Clear
                 </Button>
               )}
@@ -253,9 +242,7 @@ const ArchieveSheet = () => {
                     <Archive className="h-6 w-6 text-slate-400" />
                   </div>
                   <h3 className="text-sm font-medium text-slate-900">
-                    {searchTerm || filterPriority
-                      ? "No matching tasks"
-                      : "No archived tasks"}
+                    {searchTerm || filterPriority ? "No matching tasks" : "No archived tasks"}
                   </h3>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {searchTerm || filterPriority
@@ -274,9 +261,7 @@ const ArchieveSheet = () => {
                         <div className="min-w-0 flex-1">
                           <h3
                             className={`mb-1 text-sm font-medium leading-5 ${
-                              task.isCompleted
-                                ? "text-slate-500 line-through"
-                                : "text-slate-900"
+                              task.isCompleted ? "text-slate-500 line-through" : "text-slate-900"
                             }`}
                           >
                             {task.title}
@@ -305,9 +290,7 @@ const ArchieveSheet = () => {
                               className="text-blue-600"
                             >
                               <RotateCcw className="mr-2 h-3 w-3" />
-                              {isRestoring === task._id
-                                ? "Restoring..."
-                                : "Restore"}
+                              {isRestoring === task._id ? "Restoring..." : "Restore"}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => setTaskToDelete(task._id)}
@@ -365,10 +348,7 @@ const ArchieveSheet = () => {
       </Sheet>
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog
-        open={!!taskToDelete}
-        onOpenChange={() => setTaskToDelete(null)}
-      >
+      <AlertDialog open={!!taskToDelete} onOpenChange={() => setTaskToDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
@@ -376,8 +356,7 @@ const ArchieveSheet = () => {
               Delete Task Permanently
             </AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. The task will be permanently deleted
-              from your archive.
+              This action cannot be undone. The task will be permanently deleted from your archive.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

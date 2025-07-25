@@ -9,7 +9,6 @@ import { set } from "date-fns";
 import { LoaderCircle } from "lucide-react";
 import HeraldLogo from "@/imgs/images/heraldLogo.svg";
 
-
 export default function _Suspense() {
   return (
     <Suspense fallback={<div>Loding...</div>}>
@@ -43,8 +42,8 @@ function OTP() {
           "Content-Type": "application/json",
         },
       })
-        .then((res) => res.json())
-        .then((data) => {
+        .then(res => res.json())
+        .then(data => {
           if (!data.success) {
             toast.error(data.message || "Something went wrong");
             setIsLoading(false);
@@ -60,8 +59,8 @@ function OTP() {
     }
     setIsLoading(true);
     fetch(`${baseUrl}/verifyOtp?email=${email}&OTP=${otp}`)
-      .then((res) => res.json())
-      .then((data) => {
+      .then(res => res.json())
+      .then(data => {
         if (!data.success) {
           setIsLoading(false);
           toast.error(data.message || "Something went wrong");
@@ -73,7 +72,7 @@ function OTP() {
           router.push("/login");
         }, 1000);
       })
-      .catch((err) => {});
+      .catch(err => {});
   };
 
   const handleOTPChange = (e: any) => {
@@ -94,7 +93,7 @@ function OTP() {
     if (!navigator.clipboard) {
       return toast.error("Cannot access clipboard");
     }
-    navigator.clipboard.readText().then((text) => {
+    navigator.clipboard.readText().then(text => {
       text = text.trim();
       if (text.length > 6) {
         for (let i = 1; i <= 6; i++) {
@@ -135,16 +134,11 @@ function OTP() {
           style={{ marginTop: 100.3 }}
         >
           <h1 className="text-2xl font-bold">OTP Verification</h1>
-          <h4 className=" text-neutral-500">
-            We&apos;ve sent a 6 digit OTP in your gmail
-          </h4>
+          <h4 className=" text-neutral-500">We&apos;ve sent a 6 digit OTP in your gmail</h4>
         </div>
 
         {/* Form  */}
-        <form
-          onSubmit={handleSubmit(verifyOtp)}
-          className="flex flex-col gap-4"
-        >
+        <form onSubmit={handleSubmit(verifyOtp)} className="flex flex-col gap-4">
           <div
             style={{
               display: "flex",

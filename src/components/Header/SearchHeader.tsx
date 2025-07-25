@@ -1,22 +1,11 @@
-import React, {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { Dispatch, SetStateAction, useContext, useEffect, useRef, useState } from "react";
 import { HiOutlineBell } from "react-icons/hi";
 import Image from "next/image";
 import US_LocaleData from "date-fns/locale/en-US";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import { IoIosSearch, IoMdArrowDropdown, IoMdLogOut } from "react-icons/io";
 import { VscSettings } from "react-icons/vsc";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useQuery } from "@tanstack/react-query";
 import { Axios } from "@/services/baseUrl";
 import Endpoints from "@/services/API_ENDPOINTS";
@@ -65,9 +54,7 @@ export function SearchHeader({
 
   let newNotifications = false;
   if (notifications) {
-    newNotifications = notifications.some(
-      (notification: any) => !notification.isRead,
-    );
+    newNotifications = notifications.some((notification: any) => !notification.isRead);
   }
 
   return (
@@ -99,28 +86,20 @@ export function SearchHeader({
               <PopoverTrigger className="text-md text-primary-600">
                 <VscSettings />
               </PopoverTrigger>
-              <PopoverContent
-                align="start"
-                className="h-auto w-[550px] space-y-10 p-6"
-              >
-                <h3 className="text-xl font-semibold text-neutral-900">
-                  Filters
-                </h3>
+              <PopoverContent align="start" className="h-auto w-[550px] space-y-10 p-6">
+                <h3 className="text-xl font-semibold text-neutral-900">Filters</h3>
                 <div className="flex w-full flex-col text-sm text-neutral-600">
                   <span>Department</span>
                   <div className="hide-scrollbar flex gap-1 overflow-x-scroll">
                     {departments?.data?.data?.map((department: Department) => {
-                      const departmentExists =
-                        queryParams?.departments?.includes(department?._id);
+                      const departmentExists = queryParams?.departments?.includes(department?._id);
                       return (
                         <DepartmentButton
                           key={department._id}
                           id={department._id}
                           onClick={handleQueryParams}
                           value={department.code}
-                          selected={queryParams?.departments?.includes(
-                            department?._id,
-                          )}
+                          selected={queryParams?.departments?.includes(department?._id)}
                         />
                       );
                     })}
@@ -163,20 +142,16 @@ export function SearchHeader({
                     <ReactDatePicker
                       className="h-10 w-full rounded border-[1px] border-neutral-300 px-2 text-base text-neutral-900 outline-none focus:border-primary-600"
                       name="single"
-                      onChange={(date) =>
+                      onChange={date =>
                         handleQueryParams({
                           target: { name: "single", value: date },
                         })
                       }
                       value={
                         queryParams?.eventFrom
-                          ? format(
-                              new Date(queryParams.eventFrom),
-                              "EEEE, dd MMMM",
-                              {
-                                locale: US_LocaleData,
-                              },
-                            )
+                          ? format(new Date(queryParams.eventFrom), "EEEE, dd MMMM", {
+                              locale: US_LocaleData,
+                            })
                           : undefined
                       }
                       placeholderText="Please select a date."
@@ -188,20 +163,16 @@ export function SearchHeader({
                     <div className="flex w-full flex-row items-center gap-2 ">
                       <ReactDatePicker
                         className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
-                        onChange={(date) =>
+                        onChange={date =>
                           handleQueryParams({
                             target: { name: "multiStart", value: date },
                           })
                         }
                         value={
                           queryParams?.eventFrom
-                            ? format(
-                                new Date(queryParams.eventFrom),
-                                "EEEE, dd MMMM",
-                                {
-                                  locale: US_LocaleData,
-                                },
-                              )
+                            ? format(new Date(queryParams.eventFrom), "EEEE, dd MMMM", {
+                                locale: US_LocaleData,
+                              })
                             : undefined
                         }
                         placeholderText="Start Date."
@@ -210,20 +181,16 @@ export function SearchHeader({
                       <span className="text-neutral-600">-</span>
                       <ReactDatePicker
                         className="h-10 w-full flex-grow rounded border-[1px] border-neutral-300 pl-2 pr-20 text-base text-neutral-900 outline-none focus:border-primary-600"
-                        onChange={(date) =>
+                        onChange={date =>
                           handleQueryParams({
                             target: { name: "multiEnd", value: date },
                           })
                         }
                         value={
                           queryParams?.eventTo
-                            ? format(
-                                new Date(queryParams.eventTo),
-                                "EEEE, dd MMMM",
-                                {
-                                  locale: US_LocaleData,
-                                },
-                              )
+                            ? format(new Date(queryParams.eventTo), "EEEE, dd MMMM", {
+                                locale: US_LocaleData,
+                              })
                             : undefined
                         }
                         placeholderText="End Date."

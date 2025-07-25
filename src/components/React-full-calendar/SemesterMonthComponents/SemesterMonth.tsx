@@ -58,9 +58,7 @@ export default function SemesterMonth({
   const firstDaysOfWeeks = getFirstDaysOfWeeks({ year: year, month: month });
   const lastMonthDate = getLastDayOfMonth({ year: year, month: month });
   const finalSectionLength =
-    lastMonthDate -
-    new Date(firstDaysOfWeeks[firstDaysOfWeeks.length - 1]).getDate() +
-    1;
+    lastMonthDate - new Date(firstDaysOfWeeks[firstDaysOfWeeks.length - 1]).getDate() + 1;
 
   useEffect(() => {
     if (!calRef.current) return;
@@ -74,20 +72,13 @@ export default function SemesterMonth({
     const departments = info?.event?._def?.extendedProps?.departments;
 
     const displayStart =
-      info.event._instance?.range?.start?.toISOString() ??
-      new Date().toISOString();
-    const displayEnd =
-      info.event._instance?.range?.end?.toISOString() ??
-      new Date().toISOString();
+      info.event._instance?.range?.start?.toISOString() ?? new Date().toISOString();
+    const displayEnd = info.event._instance?.range?.end?.toISOString() ?? new Date().toISOString();
 
     // const startTime = displayStart ? format(displayStart, "h:mm a") : "00: 00 am";
     // const endTime = displayEnd ? format(displayEnd, "h:mm a") : "00: 00 am";
 
-    const startTime = displayStart
-      .split("T")[1]
-      .split(":")
-      .slice(0, 2)
-      .join(":");
+    const startTime = displayStart.split("T")[1].split(":").slice(0, 2).join(":");
     const endTime = displayEnd.split("T")[1].split(":").slice(0, 2).join(":");
     // const startTime = info.event._instance?.range?.start
     //   ? format(info.event._instance?.range.start, "h:mm a")
@@ -125,10 +116,8 @@ export default function SemesterMonth({
       departmentsWrapper.appendChild(departmentElement);
     });
 
-    const titleContainer =
-      mainFrameEl && mainFrameEl.querySelector(".fc-event-title-container");
-    titleContainer &&
-      mainFrameEl?.insertBefore(departmentsWrapper, titleContainer);
+    const titleContainer = mainFrameEl && mainFrameEl.querySelector(".fc-event-title-container");
+    titleContainer && mainFrameEl?.insertBefore(departmentsWrapper, titleContainer);
     mainFrameEl?.appendChild(timeEl);
 
     const mainEventEl = info.el.querySelector(".fc-event-main") as HTMLElement;
@@ -167,10 +156,7 @@ export default function SemesterMonth({
 
   return (
     <>
-      <div
-        id={`month-${monthIndex}`}
-        className="flex flex-col items-center gap-[9px]"
-      >
+      <div id={`month-${monthIndex}`} className="flex flex-col items-center gap-[9px]">
         <h3 className="text-[18px] font-bold leading-[20px]">
           {format(new Date(year, month - 1), "MMMM")}
         </h3>
@@ -203,21 +189,17 @@ export default function SemesterMonth({
               const date = new Date(checkpointDays);
               const day = date.getDay();
               const gridSpanValue =
-                i !== firstDaysOfWeeks.length - 1
-                  ? 7 - day
-                  : finalSectionLength;
+                i !== firstDaysOfWeeks.length - 1 ? 7 - day : finalSectionLength;
 
               // cosnt;
               let totalEvents = 0;
 
-              events?.filter((event) => {
+              events?.filter(event => {
                 let inFirstEdge = null;
                 let inBetween = null;
                 let inLastEdge = null;
 
-                const eventStart = event?.start
-                  ? new Date(event.start).getTime()
-                  : 0;
+                const eventStart = event?.start ? new Date(event.start).getTime() : 0;
 
                 const eventEnd = event?.end ? new Date(event.end).getTime() : 0;
 
@@ -232,13 +214,9 @@ export default function SemesterMonth({
                       ? new Date(firstDaysOfWeeks[i + 1]).getTime()
                       : 0;
 
-                inFirstEdge =
-                  eventStart <= selectedStartTime &&
-                  eventEnd > selectedStartTime;
-                inBetween =
-                  eventStart > selectedStartTime && eventEnd < selectedEndTime;
-                inLastEdge =
-                  eventStart < selectedEndTime && eventEnd >= selectedEndTime;
+                inFirstEdge = eventStart <= selectedStartTime && eventEnd > selectedStartTime;
+                inBetween = eventStart > selectedStartTime && eventEnd < selectedEndTime;
+                inLastEdge = eventStart < selectedEndTime && eventEnd >= selectedEndTime;
 
                 if (!inFirstEdge && !inBetween && !inLastEdge) return;
                 totalEvents++;
@@ -247,10 +225,7 @@ export default function SemesterMonth({
               let weekActive = false;
               for (let i = 0; i < semTimeFrame.length; i++) {
                 const sem = semTimeFrame[i];
-                if (
-                  sem.start.getTime() <= date.getTime() &&
-                  sem.end.getTime() >= date.getTime()
-                ) {
+                if (sem.start.getTime() <= date.getTime() && sem.end.getTime() >= date.getTime()) {
                   weekActive = true;
                   break;
                 }
@@ -260,7 +235,7 @@ export default function SemesterMonth({
                 <>
                   {i === 0 &&
                     day !== 0 &&
-                    [...Array(day)].map((_) => {
+                    [...Array(day)].map(_ => {
                       return (
                         <>
                           <div className="border-[0.5px] border-[#DDDDDD] bg-[#F1F1F1]"></div>
@@ -272,9 +247,7 @@ export default function SemesterMonth({
                     className="flex flex-nowrap items-center overflow-hidden truncate border-[0.5px] border-[#DDDDDD] bg-[#ffffff] pl-5 text-xl text-neutral-600 focus:border-primary-600"
                     style={{
                       gridColumn: `span ${gridSpanValue}`,
-                      backgroundColor: weekActive
-                        ? "rgba(227, 242, 218, 0.4)"
-                        : "#ffffff",
+                      backgroundColor: weekActive ? "rgba(227, 242, 218, 0.4)" : "#ffffff",
                     }}
                     tabIndex={0}
                     onClick={(e: any) => {
@@ -312,9 +285,7 @@ export default function SemesterMonth({
                         <BsDot />
                         <span className="flex text-sm text-neutral-400">
                           {new Date(checkpointDays).getDate()}th -
-                          {new Date(checkpointDays).getDate() +
-                            gridSpanValue -
-                            1}
+                          {new Date(checkpointDays).getDate() + gridSpanValue - 1}
                           th
                         </span>
                       </>

@@ -13,12 +13,12 @@ export const useCreateTask = () => {
 
 export const useUpdateTask = () => {
   return useMutation({
-    mutationFn: async  ( data: ITask) =>{
+    mutationFn: async (data: ITask) => {
       const response = await Axios.put(`/task-management/tasks/${data._id}`, data);
       return response.data;
-    }
-  })
-}
+    },
+  });
+};
 
 export const useGetAllTasks = () => {
   return useQuery({
@@ -30,15 +30,13 @@ export const useGetAllTasks = () => {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
-}
+};
 
 export const useGetTaskByColumn = (columnId: string) => {
   return useQuery({
     queryKey: ["tasks", columnId],
     queryFn: async () => {
-      const response = await Axios.get(
-        `/task-management/tasks/column/${columnId}`,
-      );
+      const response = await Axios.get(`/task-management/tasks/column/${columnId}`);
       return response.data;
     },
     enabled: !!columnId, // Only run if columnId is defined
@@ -46,7 +44,6 @@ export const useGetTaskByColumn = (columnId: string) => {
     refetchOnReconnect: false,
   });
 };
-
 
 export const useGetArchivedTasks = () => {
   return useQuery({
@@ -58,7 +55,7 @@ export const useGetArchivedTasks = () => {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
   });
-}
+};
 
 export const useDeleteTask = () => {
   return useMutation({
@@ -67,7 +64,7 @@ export const useDeleteTask = () => {
       return response.data;
     },
   });
-}
+};
 
 export const useBulkUpdateTaskPositions = () => {
   return useMutation({

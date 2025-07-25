@@ -1,12 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ITaskColumnBase } from "@/types/taskmanagement/column.types";
@@ -19,12 +14,7 @@ interface EditColumnDialogProps {
   onSave: (columnId: string, title: string) => void;
 }
 
-export function EditColumnDialog({
-  column,
-  isOpen,
-  onClose,
-  onSave,
-}: EditColumnDialogProps) {
+export function EditColumnDialog({ column, isOpen, onClose, onSave }: EditColumnDialogProps) {
   const [title, setTitle] = useState("");
 
   useEffect(() => {
@@ -48,12 +38,8 @@ export function EditColumnDialog({
               <Edit3 className="h-5 w-5 text-theme" />
             </div>
             <div>
-              <DialogTitle className="text-lg font-semibold text-gray-900">
-                Edit Column
-              </DialogTitle>
-              <p className="mt-1 text-sm text-gray-500">
-                Update the column title and settings
-              </p>
+              <DialogTitle className="text-lg font-semibold text-gray-900">Edit Column</DialogTitle>
+              <p className="mt-1 text-sm text-gray-500">Update the column title and settings</p>
             </div>
           </div>
         </DialogHeader>
@@ -70,10 +56,10 @@ export function EditColumnDialog({
             <Input
               id="columnTitle"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={e => setTitle(e.target.value)}
               placeholder="e.g., To Do, In Progress, Done..."
               className="h-10"
-              onKeyDown={(e) => e.key === "Enter" && handleSave()}
+              onKeyDown={e => e.key === "Enter" && handleSave()}
               autoFocus
             />
             <p className="text-xs text-gray-500">
@@ -83,18 +69,13 @@ export function EditColumnDialog({
         </div>
 
         <div className="flex justify-end gap-3 border-t pt-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={onClose}
-            className="min-w-[80px]"
-          >
+          <Button variant="outline" size="sm" onClick={onClose} className="min-w-[80px]">
             Cancel
           </Button>
           <Button
             size="sm"
             onClick={handleSave}
-            disabled={!title.trim() || (title === column?.title)}
+            disabled={!title.trim() || title === column?.title}
             className="min-w-[120px] "
           >
             <Save className="mr-2 h-4 w-4" />

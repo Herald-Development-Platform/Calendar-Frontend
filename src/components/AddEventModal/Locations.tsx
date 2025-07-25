@@ -22,15 +22,13 @@ export default function Locations({
   const { data: locations, isLoading } = useGetLocation();
   useEffect(() => setFilteredLocations(locations), [isLoading]);
 
-  const [filteredLocations, setFilteredLocations] = useState<
-    Location[] | undefined
-  >(
+  const [filteredLocations, setFilteredLocations] = useState<Location[] | undefined>(
     Array.isArray(locations)
       ? [
           // @ts-ignore
           ...locations,
         ]
-      : [],
+      : []
   );
 
   const applyFilters = (filterQuery: string) => {
@@ -48,7 +46,6 @@ export default function Locations({
     debounceFn: () => applyFilters(filterQuery),
     time: 150,
   });
-
 
   return (
     <>
@@ -121,7 +118,7 @@ export default function Locations({
               className="group w-full bg-neutral-100 text-sm font-medium text-neutral-500 outline-none"
               placeholder="Search Locations"
               id="date-search"
-              onChange={(e) => {
+              onChange={e => {
                 setFilterQuery(e.target.value);
               }}
             />

@@ -30,7 +30,7 @@ export const useUpdateColumn = () => {
       return response.data;
     },
   });
-}
+};
 
 export const useDeleteColumn = () => {
   return useMutation({

@@ -21,14 +21,11 @@ export const getDepartments = () => Axios.get(Endpoints.department);
 //     }),
 //   );
 
-export const postEvents = (payload: any) =>
-  Axios.post(Endpoints.event, payload);
+export const postEvents = (payload: any) => Axios.post(Endpoints.event, payload);
 
-export const postDepartment = (payload: any) =>
-  Axios.post(Endpoints.department, payload);
+export const postDepartment = (payload: any) => Axios.post(Endpoints.department, payload);
 
-export const updateUser = (payload: any) =>
-  Axios.put(Endpoints.updateUser(payload), payload);
+export const updateUser = (payload: any) => Axios.put(Endpoints.updateUser(payload), payload);
 
 export const useGetDepartments = () =>
   useQuery({

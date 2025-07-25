@@ -30,31 +30,24 @@ const DeleteColumnDialog = ({
   setShowDialog: (open: boolean) => void;
 }) => {
   const queryClient = useQueryClient();
-  const { mutate: deleteColumn, isPending: isDeletingColumn } =
-    useDeleteColumn();
+  const { mutate: deleteColumn, isPending: isDeletingColumn } = useDeleteColumn();
 
   const handleDeleteColumn = () => {
     if (isDeletingColumn) return;
 
     const queryKey = ["columns"];
-    const existing = queryClient.getQueryData<{ data: ITaskColumnBase[] }>(
-      queryKey,
-    );
+    const existing = queryClient.getQueryData<{ data: ITaskColumnBase[] }>(queryKey);
     const previousColumns = existing?.data || [];
 
     // Optimistically update columns cache
-    const updatedColumns = previousColumns.filter(
-      (col) => col._id !== columnId,
-    );
+    const updatedColumns = previousColumns.filter(col => col._id !== columnId);
     queryClient.setQueryData(queryKey, {
       data: updatedColumns,
     });
 
     // Get all tasks in this column to archive later
     const tasksKey = ["tasks", columnId];
-    const columnTasksData = queryClient.getQueryData<{ data: ITask[] }>(
-      tasksKey,
-    );
+    const columnTasksData = queryClient.getQueryData<{ data: ITask[] }>(tasksKey);
     const columnTasks = columnTasksData?.data || [];
 
     deleteColumn(columnId, {
@@ -68,9 +61,7 @@ const DeleteColumnDialog = ({
 
         // Update archived tasks cache by adding tasks from deleted column
         const archivedKey = ["archived-tasks"];
-        const archivedData = queryClient.getQueryData<{ data: ITask[] }>(
-          archivedKey,
-        );
+        const archivedData = queryClient.getQueryData<{ data: ITask[] }>(archivedKey);
         const archivedTasks = archivedData?.data || [];
 
         queryClient.setQueryData(archivedKey, {
@@ -82,10 +73,8 @@ const DeleteColumnDialog = ({
           queryKey: tasksKey,
         });
       },
-      onError: (error) => {
-        toast.error(
-          (error as any)?.response?.data?.message || "Failed to delete column",
-        );
+      onError: error => {
+        toast.error((error as any)?.response?.data?.message || "Failed to delete column");
 
         // Revert columns cache on error
         queryClient.setQueryData(queryKey, {
@@ -107,9 +96,7 @@ const DeleteColumnDialog = ({
               <DialogTitle className="text-lg font-semibold text-gray-900">
                 Delete Column
               </DialogTitle>
-              <p className="mt-1 text-sm text-gray-500">
-                This action cannot be undone
-              </p>
+              <p className="mt-1 text-sm text-gray-500">This action cannot be undone</p>
             </div>
           </div>
         </DialogHeader>
@@ -118,16 +105,12 @@ const DeleteColumnDialog = ({
           <div className="rounded-lg border-l-4 border-red-400 bg-gray-50 p-4">
             <p className="text-sm text-gray-700">
               You&apos;re about to delete the column{" "}
-              <span className="font-semibold text-gray-900">
-                &quot;{columnTitle}&quot;
-              </span>
+              <span className="font-semibold text-gray-900">&quot;{columnTitle}&quot;</span>
             </p>
           </div>
 
           <div className="space-y-2">
-            <h4 className="text-sm font-medium text-gray-900">
-              What happens next:
-            </h4>
+            <h4 className="text-sm font-medium text-gray-900">What happens next:</h4>
             <ul className="space-y-1 text-sm text-gray-600">
               <li className="flex items-start gap-2">
                 <Archive className="mt-0.5 h-4 w-4 flex-shrink-0 text-gray-400" />

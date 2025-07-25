@@ -1,11 +1,7 @@
 //tsoding daily
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { format } from "date-fns";
-import {
-  useDeleteEvent,
-  useGetEvents,
-  useUpdateEvents,
-} from "@/services/api/eventsApi";
+import { useDeleteEvent, useGetEvents, useUpdateEvents } from "@/services/api/eventsApi";
 import EventCard from "./EventCard";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 import EventDetails from "@/app/(all-pages)/search/EventDetails";
@@ -17,9 +13,7 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
   let lastDate: string;
 
   const { calenderDate, timeout, currentView } = useContext(Context);
-  const selectedStartTime = calenderDate?.start
-    ? calenderDate?.start.getTime()
-    : 0;
+  const selectedStartTime = calenderDate?.start ? calenderDate?.start.getTime() : 0;
   const selectedEndTime = calenderDate?.end ? calenderDate.end.getTime() : 0;
 
   const upcommingEventRef = useRef<HTMLDivElement>(null);
@@ -29,14 +23,14 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
   const searchParams = useSearchParams();
   const paramsID = searchParams.get("id");
 
-  const paramsEvent = eventsData?.find((event) => event._id === paramsID);
+  const paramsEvent = eventsData?.find(event => event._id === paramsID);
 
   const btnRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (selectedEvent && eventsData?.length && eventsData?.length > 0) {
       let newlyFetchedSelectedEvent = eventsData.find(
-        (event: eventType) => event._id === selectedEvent._id,
+        (event: eventType) => event._id === selectedEvent._id
       );
       if (newlyFetchedSelectedEvent) {
         setSelectedEvent(newlyFetchedSelectedEvent);
@@ -82,7 +76,7 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
         `${
           selectedEvent ? "" : ""
         } hide-scrollbar relative flex h-auto flex-col gap-10 overflow-hidden px-6 md:w-1/3`,
-        currentView !== "multiMonthYear" ? `md:h-[${elHeight}px]` : `h-full`,
+        currentView !== "multiMonthYear" ? `md:h-[${elHeight}px]` : `h-full`
       )}
       // style={{
       //   height: currentView !== "multiMonthYear" ? `${elHeight}px` : `100%`,
@@ -105,17 +99,12 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
             let inBetween = null;
             let inLastEdge = null;
 
-            const eventStart = event?.start
-              ? new Date(event.start).getTime()
-              : 0;
+            const eventStart = event?.start ? new Date(event.start).getTime() : 0;
             const eventEnd = event?.end ? new Date(event.end).getTime() : 0;
 
-            inFirstEdge =
-              eventStart <= selectedStartTime && eventEnd > selectedStartTime;
-            inBetween =
-              eventStart > selectedStartTime && eventEnd < selectedEndTime;
-            inLastEdge =
-              eventStart < selectedEndTime && eventEnd >= selectedEndTime;
+            inFirstEdge = eventStart <= selectedStartTime && eventEnd > selectedStartTime;
+            inBetween = eventStart > selectedStartTime && eventEnd < selectedEndTime;
+            inLastEdge = eventStart < selectedEndTime && eventEnd >= selectedEndTime;
 
             if (!inFirstEdge && !inBetween && !inLastEdge) return;
 
@@ -136,11 +125,7 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
                     </h1>
                   </div>
                 )}
-                <EventCard
-                  key={event._id}
-                  event={event}
-                  handleCardClick={handleCardClick}
-                />
+                <EventCard key={event._id} event={event} handleCardClick={handleCardClick} />
               </React.Fragment>
             );
           })
@@ -155,11 +140,7 @@ export default function UpcommingEvents({ elHeight }: { elHeight: number }) {
         setSelectedEvent={setSelectedEvent}
         updateEvent={updateEvent}
         handleDelete={handleDelete}
-        width={
-          upcommingEventRef.current
-            ? upcommingEventRef.current.offsetWidth
-            : null
-        }
+        width={upcommingEventRef.current ? upcommingEventRef.current.offsetWidth : null}
       ></EventDetails>
     </div>
   );

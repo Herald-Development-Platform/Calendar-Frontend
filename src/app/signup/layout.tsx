@@ -6,14 +6,9 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Calendar Application",
-  description:
-    "Intra college calender application of Herald College Kathmandu.",
+  description: "Intra college calender application of Herald College Kathmandu.",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return <div>{children}</div>;
 }

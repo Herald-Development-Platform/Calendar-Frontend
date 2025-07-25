@@ -13,11 +13,7 @@ export interface ContextType {
 
 export const WebSocketContext = createContext<{ connection?: Socket }>({});
 
-export default function WebSocketProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function WebSocketProvider({ children }: { children: React.ReactNode }) {
   const notifyMe = (data: any) => {
     if (!("Notification" in window)) {
       alert("This browser does not support desktop notification");
@@ -27,7 +23,7 @@ export default function WebSocketProvider({
         data,
       });
     } else if (Notification.permission !== "denied") {
-      Notification.requestPermission().then((permission) => {
+      Notification.requestPermission().then(permission => {
         if (permission === "granted") {
           const notification = new Notification(`This is good`, {
             body: `Output: ${data}`,
@@ -40,27 +36,36 @@ export default function WebSocketProvider({
   const [connection, setConnection] = useState<Socket>();
   const { userData } = useContext(Context);
   const queryClient = useQueryClient();
+
   useEffect(() => {
-    const connection = io(webSocketUrl ?? "");
+    const connection = io(webSocketUrl ?? "", {
+      transports: ["websocket"],
+    });
+
     connection.on("connect", () => {
       connection.emit("authenticate", getCookie("token"));
       setConnection(connection);
     });
-    connection.on("notification", (notification) => {
+
+    connection.on("notification", notification => {
       new Notification(`New Notification`, {
         body: notification.message,
         data: new Date(notification.date).toLocaleString(),
       });
+
       queryClient.invalidateQueries({
         queryKey: ["Notification"],
       });
+
       if (notification.context === "NEW_EVENT") {
         queryClient.invalidateQueries({
           queryKey: ["Events"],
         });
       }
     });
+
     connection.on("disconnect", () => {});
+
     return () => {
       connection.disconnect();
     };

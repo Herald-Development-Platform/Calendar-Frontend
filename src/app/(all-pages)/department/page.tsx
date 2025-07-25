@@ -62,12 +62,12 @@ export default function ManageDepartment() {
     let eventsCountMap: any = {};
     let today = new Date();
     today = new Date(today.setHours(0, 0, 0));
-    departments.forEach((department) => {
+    departments.forEach(department => {
       let eventsForDepartment = idOnlyEvents.filter(
         (e: any) =>
           e?.departments?.includes(department._id) &&
           new Date(e.start) > today &&
-          new Date(e.end) < new Date(Date.now() + 30 * 86400000),
+          new Date(e.end) < new Date(Date.now() + 30 * 86400000)
       );
       eventsCountMap[department._id] = eventsForDepartment.length;
     });
@@ -90,11 +90,7 @@ export default function ManageDepartment() {
   const onDepartmentSubmit = async (data: any) => {
     const response = await postDepartment(data);
     if (response.status >= 400 && response.status < 500) {
-      toast.error(
-        response?.data?.message ||
-          response?.data?.error ||
-          "Error process request!",
-      );
+      toast.error(response?.data?.message || response?.data?.error || "Error process request!");
       return;
     } else {
       toast.success("Department created successfully");
@@ -106,17 +102,17 @@ export default function ManageDepartment() {
   return (
     <>
       <Headers.GeneralHeader />
-      <div className="md:ml-10 mx-4 mt-10 flex md:max-w-[40vw] flex-col gap-6">
+      <div className="mx-4 mt-10 flex flex-col gap-6 md:ml-10 md:max-w-[40vw]">
         <div className="flex flex-row items-center justify-start gap-2">
           <span
             onClick={() => {
               router.back();
             }}
-            className="cursor-pointer text-xl sm:text-4xl font-bold text-neutral-600"
+            className="cursor-pointer text-xl font-bold text-neutral-600 sm:text-4xl"
           >
             <IoMdArrowBack />
           </span>
-          <p className="text-[20px] md:text-[28px] font-semibold text-neutral-700">
+          <p className="text-[20px] font-semibold text-neutral-700 md:text-[28px]">
             Manage Department
           </p>
           {userData?.permissions.includes(PERMISSIONS.CREATE_DEPARTMENT) && (
@@ -155,10 +151,8 @@ export default function ManageDepartment() {
                       </h2>
                       <p className="flex flex-row items-center gap-1 text-[13px] text-neutral-400">
                         <span className="font-semibold text-neutral-600">
-                          {departmentEventsCount
-                            ? departmentEventsCount[department._id]
-                            : 0}{" "}
-                          Events •{" "}
+                          {departmentEventsCount ? departmentEventsCount[department._id] : 0} Events
+                          •{" "}
                         </span>
                         <span className=" text-[11px] font-normal text-neutral-500">
                           {department.membersCount} members
@@ -188,20 +182,12 @@ export default function ManageDepartment() {
             ></DepartmentDetails>
           )}
         </div>
-        <Dialog
-          open={departmentDialogOpen}
-          onOpenChange={setDepartmentDialogOpen}
-        >
+        <Dialog open={departmentDialogOpen} onOpenChange={setDepartmentDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle className="text-[19px] font-semibold ">
-                Add Department
-              </DialogTitle>
+              <DialogTitle className="text-[19px] font-semibold ">Add Department</DialogTitle>
             </DialogHeader>
-            <form
-              className="py-2"
-              onSubmit={handleDepartmentSubmit(onDepartmentSubmit)}
-            >
+            <form className="py-2" onSubmit={handleDepartmentSubmit(onDepartmentSubmit)}>
               <label htmlFor="add-title">
                 <div className="group flex h-11 w-full items-center gap-2  border-b-[1px] border-neutral-300 px-4 focus-within:border-primary-600">
                   <span className="text-xl">

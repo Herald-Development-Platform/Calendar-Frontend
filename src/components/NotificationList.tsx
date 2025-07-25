@@ -5,13 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import HeraldLogo from "@/imgs/images/heraldLogo.svg";
 import { useContext } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import toast from "react-hot-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -83,9 +77,7 @@ export const NotificationList = (props: any) => {
   return (
     <div className="flex flex-col">
       <div className="flex flex-row items-center justify-between">
-        <h1 className="text-xl font-semibold text-neutral-900">
-          Notifications
-        </h1>
+        <h1 className="text-xl font-semibold text-neutral-900">Notifications</h1>
         <span
           onClick={() => {
             markAsRead();
@@ -115,8 +107,7 @@ export const NotificationList = (props: any) => {
                 if (i === 0) {
                   showDate = true;
                 } else if (
-                  notificationDate.getDate() !==
-                  new Date(notifications[i - 1].date).getDate()
+                  notificationDate.getDate() !== new Date(notifications[i - 1].date).getDate()
                 ) {
                   showDate = true;
                 }
@@ -133,10 +124,7 @@ export const NotificationList = (props: any) => {
                   >
                     {showDate && (
                       <div className="mb-3 text-[13px] text-sm font-semibold text-neutral-600 ">
-                        {Math.abs(
-                          new Date().getTime() - notificationDate.getTime(),
-                        ) <
-                        86400000 / 2
+                        {Math.abs(new Date().getTime() - notificationDate.getTime()) < 86400000 / 2
                           ? "Today"
                           : notificationDate.toDateString()}
                       </div>
@@ -187,19 +175,18 @@ export const NotificationList = (props: any) => {
           <div className="mt-[20px] flex h-[400px] flex-col  gap-3 overflow-y-scroll">
             {notificationsLoading ? (
               <div className="menu-title">Loading...</div>
-            ) : notifications?.filter((not) => !not.isRead)?.length === 0 ? (
+            ) : notifications?.filter(not => !not.isRead)?.length === 0 ? (
               <div>No Unread Notifications to View</div>
             ) : (
               notifications
-                ?.filter((not) => !not.isRead)
+                ?.filter(not => !not.isRead)
                 .map((notification: any, i: any) => {
                   let notificationDate = new Date(notification.date);
                   let showDate = false;
                   if (i === 0) {
                     showDate = true;
                   } else if (
-                    notificationDate.getDate() !==
-                    new Date(notifications[i - 1].date).getDate()
+                    notificationDate.getDate() !== new Date(notifications[i - 1].date).getDate()
                   ) {
                     showDate = true;
                   }
@@ -216,9 +203,7 @@ export const NotificationList = (props: any) => {
                     >
                       {showDate && (
                         <div className="mb-3 text-[13px] text-sm font-semibold text-neutral-600 ">
-                          {Math.abs(
-                            new Date().getTime() - notificationDate.getTime(),
-                          ) <
+                          {Math.abs(new Date().getTime() - notificationDate.getTime()) <
                           86400000 / 2
                             ? "Today"
                             : notificationDate.toDateString()}
@@ -270,19 +255,18 @@ export const NotificationList = (props: any) => {
           <div className="mt-[20px] flex h-[400px] flex-col  gap-3 overflow-y-scroll">
             {notificationsLoading ? (
               <div className="menu-title">Loading...</div>
-            ) : notifications?.filter((not) => not.isRead)?.length === 0 ? (
+            ) : notifications?.filter(not => not.isRead)?.length === 0 ? (
               <div>No Already Read Notifications to View</div>
             ) : (
               notifications
-                ?.filter((not) => not.isRead)
+                ?.filter(not => not.isRead)
                 .map((notification: any, i: any) => {
                   let notificationDate = new Date(notification.date);
                   let showDate = false;
                   if (i === 0) {
                     showDate = true;
                   } else if (
-                    notificationDate.getDate() !==
-                    new Date(notifications[i - 1].date).getDate()
+                    notificationDate.getDate() !== new Date(notifications[i - 1].date).getDate()
                   ) {
                     showDate = true;
                   }
@@ -299,9 +283,7 @@ export const NotificationList = (props: any) => {
                     >
                       {showDate && (
                         <div className="mb-3 text-[13px] text-sm font-semibold text-neutral-600 ">
-                          {Math.abs(
-                            new Date().getTime() - notificationDate.getTime(),
-                          ) <
+                          {Math.abs(new Date().getTime() - notificationDate.getTime()) <
                           86400000 / 2
                             ? "Today"
                             : notificationDate.toDateString()}
@@ -352,12 +334,10 @@ export const NotificationList = (props: any) => {
       </Tabs>
 
       <div className="flex items-center justify-end gap-2 py-2">
-        <span className="text-[14px] font-semibold text-neutral-700">
-          Don&apos;t disturb for
-        </span>
+        <span className="text-[14px] font-semibold text-neutral-700">Don&apos;t disturb for</span>
         <div className="w-fit text-[11px] font-normal text-black">
           <Select
-            onValueChange={(value) => {
+            onValueChange={value => {
               let plusHour = 0;
               switch (value) {
                 case DONOT_DISTURB_STATE.DEFAULT:
@@ -382,9 +362,7 @@ export const NotificationList = (props: any) => {
                   plusHour = 8766; // 1 year
                   break;
               }
-              let expiryDate = new Date(
-                new Date().getTime() + 1000 * 60 * 60 * plusHour,
-              );
+              let expiryDate = new Date(new Date().getTime() + 1000 * 60 * 60 * plusHour);
               updateProfile(
                 {
                   ...profile,
@@ -398,7 +376,7 @@ export const NotificationList = (props: any) => {
                       queryKey: ["profile"],
                     });
                   },
-                },
+                }
               );
             }}
             value={profile?.donotDisturbState ?? DONOT_DISTURB_STATE.DEFAULT}
@@ -407,27 +385,13 @@ export const NotificationList = (props: any) => {
               <SelectValue placeholder="" />
             </SelectTrigger>
             <SelectContent className="h-fit border-none py-0  pr-2 outline-none ring-0 ">
-              <SelectItem value={DONOT_DISTURB_STATE.DEFAULT}>
-                Not set
-              </SelectItem>
-              <SelectItem value={DONOT_DISTURB_STATE.ONE_HOUR}>
-                1 hrs
-              </SelectItem>
-              <SelectItem value={DONOT_DISTURB_STATE.THREE_HOUR}>
-                3 hrs
-              </SelectItem>
-              <SelectItem value={DONOT_DISTURB_STATE.SIX_HOUR}>
-                6 hrs
-              </SelectItem>
-              <SelectItem value={DONOT_DISTURB_STATE.TWELVE_HOUR}>
-                12 hrs
-              </SelectItem>
-              <SelectItem value={DONOT_DISTURB_STATE.TWENTYFOUR_FOUR}>
-                24 hrs
-              </SelectItem>
-              <SelectItem value={DONOT_DISTURB_STATE.UNTIL}>
-                Until reset
-              </SelectItem>
+              <SelectItem value={DONOT_DISTURB_STATE.DEFAULT}>Not set</SelectItem>
+              <SelectItem value={DONOT_DISTURB_STATE.ONE_HOUR}>1 hrs</SelectItem>
+              <SelectItem value={DONOT_DISTURB_STATE.THREE_HOUR}>3 hrs</SelectItem>
+              <SelectItem value={DONOT_DISTURB_STATE.SIX_HOUR}>6 hrs</SelectItem>
+              <SelectItem value={DONOT_DISTURB_STATE.TWELVE_HOUR}>12 hrs</SelectItem>
+              <SelectItem value={DONOT_DISTURB_STATE.TWENTYFOUR_FOUR}>24 hrs</SelectItem>
+              <SelectItem value={DONOT_DISTURB_STATE.UNTIL}>Until reset</SelectItem>
             </SelectContent>
           </Select>
         </div>

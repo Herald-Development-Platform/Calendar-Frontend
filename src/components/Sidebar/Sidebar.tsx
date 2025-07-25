@@ -7,11 +7,7 @@ import { AiOutlineHome } from "react-icons/ai";
 import { HiOutlineDocumentReport, HiOutlineUserGroup } from "react-icons/hi";
 import { useGetSemesters } from "@/services/api/semesters";
 import { useContext, useEffect, useState } from "react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import "./SideBarCss.css";
 
 import { Context } from "@/app/clientWrappers/ContextProvider";
@@ -66,7 +62,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
     },
     {
       name: "Summary",
-      icon: <IoNewspaperOutline  />,
+      icon: <IoNewspaperOutline />,
       navigation: "/summary",
     },
     {
@@ -74,16 +70,14 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       icon: <FaTasks size={18} />,
       navigation: "/task",
     },
-    profile?.permissions?.some((permission) =>
-      PROCUREMENT_PERMISSIONS.includes(permission),
-    ) && {
+    profile?.permissions?.some(permission => PROCUREMENT_PERMISSIONS.includes(permission)) && {
       name: "Requisition",
       icon: <CiBoxes strokeWidth={1} size={22} />,
       navigation: "/procurement",
     },
     profile?.permissions?.includes(PERMISSIONS.GENERATE_CERTIFICATE) && {
       name: "Certificate",
-      icon: <PiCertificateBold   />,
+      icon: <PiCertificateBold />,
       navigation: "/certificate_",
     },
   ].filter(Boolean) as ISidebar[];
@@ -95,10 +89,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   const [ongoingSemestersGrouped, setOngoingSemestersGrouped] = useState<any>({});
 
   const matchTwoStringArray = (arr1: string[], arr2: string[]) => {
-    return (
-      arr1.length === arr2.length &&
-      arr1.every((v, i) => arr2.find((v2) => v2 === v))
-    );
+    return arr1.length === arr2.length && arr1.every((v, i) => arr2.find(v2 => v2 === v));
   };
 
   useEffect(() => {
@@ -115,12 +106,8 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
 
       let uniqueOngoings: Semester[] = [];
       for (let i = 0; i < tempOngoing.length; i++) {
-        if (
-          uniqueOngoings.find(
-            (semester) => semester.semester == tempOngoing[i].semester,
-          )
-        ) {
-          uniqueOngoings = uniqueOngoings.map((semester) => {
+        if (uniqueOngoings.find(semester => semester.semester == tempOngoing[i].semester)) {
+          uniqueOngoings = uniqueOngoings.map(semester => {
             if (semester.semester == tempOngoing[i].semester) {
               return {
                 ...semester,
@@ -136,7 +123,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       }
       setOngoingSemesters(uniqueOngoings);
       let grouped: any = {};
-      tempOngoing.forEach((sem) => {
+      tempOngoing.forEach(sem => {
         if (grouped[sem.course]) {
           grouped[sem.course].push(sem);
         } else {
@@ -170,19 +157,17 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   return (
     <>
       <div
-        className={`${
-          hasBreakpoint ? "custom-hidden relative xl:block " : "block"
-        } h-screen ${
+        className={`${hasBreakpoint ? "custom-hidden relative xl:block " : "block"} h-screen ${
           open ? "w-[290px]" : "w-[80px]"
-        } duration-300 bg-gradient-to-b from-slate-50 to-white border-r border-slate-200 shadow-xl transition-all ease-in-out`}
+        } border-r border-slate-200 bg-gradient-to-b from-slate-50 to-white shadow-xl transition-all duration-300 ease-in-out`}
         style={{
-          background: 'linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)',
+          background: "linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)",
         }}
       >
         <div
           className={`flex h-full w-full flex-col items-center ${
             open ? "gap-8" : "gap-4"
-          } font-medium relative`}
+          } relative font-medium`}
         >
           {/* Beta Badge
           <div className="absolute -top-1 left-[-20px] z-10">
@@ -192,7 +177,9 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
           </div> */}
 
           {/* Header */}
-          <div className={`flex ${open ? "flex-row" : "flex-col"} w-full items-center gap-3 text-lg font-medium text-slate-700 pt-8 px-4`}>
+          <div
+            className={`flex ${open ? "flex-row" : "flex-col"} w-full items-center gap-3 px-4 pt-8 text-lg font-medium text-slate-700`}
+          >
             <div className="relative">
               <Image
                 width={40}
@@ -202,35 +189,35 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                 className="drop-shadow-sm"
               />
             </div>
-            
+
             {open && (
-              <div className="flex items-center justify-between w-full">
-                <span className="text-[16px] font-semibold bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-transparent">
+              <div className="flex w-full items-center justify-between">
+                <span className="bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-[16px] font-semibold text-transparent">
                   Events Calendar
                 </span>
                 <button
-                title="Collapse Sidebar"
+                  title="Collapse Sidebar"
                   onClick={() => setOpen(false)}
-                  className="p-2 hover:bg-slate-100 rounded-lg transition-colors duration-200 group"
+                  className="group rounded-lg p-2 transition-colors duration-200 hover:bg-slate-100"
                 >
-                  <TbLayoutSidebarLeftCollapse  className="w-5 h-5 text-slate-500 group-hover:text-slate-700" />
+                  <TbLayoutSidebarLeftCollapse className="h-5 w-5 text-slate-500 group-hover:text-slate-700" />
                 </button>
               </div>
             )}
           </div>
 
           {/* Navigation Items */}
-          <div className={cn("flex w-full flex-col gap-2 px-4 flex-1 ", open ? "mt-10" : "mt-0")}>
+          <div className={cn("flex w-full flex-1 flex-col gap-2 px-4 ", open ? "mt-10" : "mt-0")}>
             {!open && (
               <button
-              title="Expand Sidebar"
+                title="Expand Sidebar"
                 onClick={() => setOpen(true)}
-                className="flex h-12 w-full items-center justify-center rounded-xl hover:bg-slate-100 text-slate-500 hover:text-slate-700 transition-all duration-200"
+                className="flex h-12 w-full items-center justify-center rounded-xl text-slate-500 transition-all duration-200 hover:bg-slate-100 hover:text-slate-700"
               >
-                <TbLayoutSidebarLeftExpand  className="w-5 h-5" />
+                <TbLayoutSidebarLeftExpand className="h-5 w-5" />
               </button>
             )}
-            
+
             {sidebarItems.map((item, i) => (
               <Link
                 href={item.navigation}
@@ -243,18 +230,22 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                 onMouseEnter={() => setHovered(item.navigation)}
                 onMouseLeave={() => setHovered(null)}
               >
-                <span className={`text-xl transition-transform duration-200 ${
-                  hovered === item.navigation && currentRoute !== item.navigation ? "scale-110" : ""
-                }`}>
+                <span
+                  className={`text-xl transition-transform duration-200 ${
+                    hovered === item.navigation && currentRoute !== item.navigation
+                      ? "scale-110"
+                      : ""
+                  }`}
+                >
                   {item.icon}
                 </span>
-                
+
                 {open && (
-                  <span className="font-medium text-[15px] transition-all duration-200">
+                  <span className="text-[15px] font-medium transition-all duration-200">
                     {item.name}
                   </span>
                 )}
-                
+
                 {/* Active indicator */}
                 {/* {currentRoute === item.navigation && (
                   <div className="absolute right-2 w-2 h-2 bg-white rounded-full opacity-80" />
@@ -264,17 +255,17 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
           </div>
 
           {/* Bottom Section */}
-          <div className="mt-auto space-y-4 px-4 pb-6 w-full">
+          <div className="mt-auto w-full space-y-4 px-4 pb-6">
             {/* Bug Report Button */}
             <div className="flex justify-center">
               <button
                 onClick={() =>
                   window.open(
                     "https://docs.google.com/spreadsheets/d/16DQW5IOkN3DrfI3bVFugeRvA88uCafq7A6O4g1BCmWg/edit?usp=sharing",
-                    "_blank",
+                    "_blank"
                   )
                 }
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 hover:text-slate-900 transition-all duration-200 shadow-sm hover:shadow-md ${
+                className={`flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-600 shadow-sm transition-all duration-200 hover:bg-slate-50 hover:text-slate-900 hover:shadow-md ${
                   open ? "w-full justify-center" : "w-fit"
                 }`}
               >
@@ -289,11 +280,11 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                 <div
                   className={`flex ${
                     open ? "w-full" : "w-fit"
-                  } items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer hover:bg-slate-50`}
+                  } cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all duration-200 hover:bg-slate-50 hover:shadow-md`}
                 >
                   {semestersLoading ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin"></div>
+                      <div className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-600"></div>
                       {open && <span className="text-sm text-slate-500">Loading...</span>}
                     </div>
                   ) : (
@@ -307,7 +298,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                             <span className="text-xs text-slate-500">
                               {Object.keys(ongoingSemestersGrouped).reduce(
                                 (acc, val) => acc + ongoingSemestersGrouped[val].length,
-                                0,
+                                0
                               )}{" "}
                               courses
                             </span>
@@ -315,12 +306,12 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                               {ongoingSemesters?.slice(0, 3).map((semester: any, i: number) => (
                                 <div
                                   key={i}
-                                  className="w-3 h-3 rounded-full border-2 border-white shadow-sm"
+                                  className="h-3 w-3 rounded-full border-2 border-white shadow-sm"
                                   style={{ backgroundColor: semester.color }}
                                 />
                               ))}
                               {ongoingSemesters?.length > 3 && (
-                                <span className="text-xs text-slate-500 ml-1">
+                                <span className="ml-1 text-xs text-slate-500">
                                   +{ongoingSemesters.length - 3}
                                 </span>
                               )}
@@ -328,69 +319,69 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                           </div>
                         </div>
                       )}
-                      
-                      <ChevronRight className="w-4 h-4 text-slate-500 transition-transform duration-200 hover:text-slate-700" />
+
+                      <ChevronRight className="h-4 w-4 text-slate-500 transition-transform duration-200 hover:text-slate-700" />
                     </>
                   )}
                 </div>
               </PopoverTrigger>
-              
+
               <PopoverContent
                 align="start"
-                className="w-[500px] p-6 bg-white border border-slate-200 shadow-xl rounded-xl"
+                className="w-[500px] rounded-xl border border-slate-200 bg-white p-6 shadow-xl"
                 style={{ transform: open ? "translateX(240px)" : "translateX(30px)" }}
               >
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-slate-900">
-                    Manage Active Semesters
-                  </h3>
-                  <PopoverClose className="p-1 hover:bg-slate-100 rounded-lg transition-colors">
-                    <RxCross2 className="w-4 h-4 text-slate-500" />
+                <div className="mb-6 flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-slate-900">Manage Active Semesters</h3>
+                  <PopoverClose className="rounded-lg p-1 transition-colors hover:bg-slate-100">
+                    <RxCross2 className="h-4 w-4 text-slate-500" />
                   </PopoverClose>
                 </div>
 
                 <div className="grid grid-cols-2 gap-6">
                   {Object.keys(ongoingSemestersGrouped).map((course, i: number) => (
                     <div key={i} className="space-y-3">
-                      <h4 className="text-sm font-semibold text-slate-700 border-b border-slate-200 pb-2">
+                      <h4 className="border-b border-slate-200 pb-2 text-sm font-semibold text-slate-700">
                         {course}
                       </h4>
                       <div className="space-y-2">
                         {ongoingSemestersGrouped[course].map((semester: any, j: number) => (
                           <div
                             key={j}
-                            className={`flex items-center gap-3 p-3 rounded-lg cursor-pointer transition-all duration-200 ${
+                            className={`flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-all duration-200 ${
                               selectedActiveSemesters?.includes(semester._id)
-                                ? "bg-blue-50 border border-blue-200"
+                                ? "border border-blue-200 bg-blue-50"
                                 : "bg-slate-50 hover:bg-slate-100"
                             }`}
                             onClick={() => {
-                              setSelectedActiveSemesters((prev) => {
+                              setSelectedActiveSemesters(prev => {
                                 if (prev.includes(semester._id)) {
-                                  return prev.filter((id) => id !== semester._id);
+                                  return prev.filter(id => id !== semester._id);
                                 } else {
                                   return [...prev, semester._id];
                                 }
                               });
                             }}
                           >
-                            <div className={`text-lg ${
-                              selectedActiveSemesters.includes(semester._id)
-                                ? "text-blue-600"
-                                : "text-slate-400"
-                            }`}>
+                            <div
+                              className={`text-lg ${
+                                selectedActiveSemesters.includes(semester._id)
+                                  ? "text-blue-600"
+                                  : "text-slate-400"
+                              }`}
+                            >
                               {selectedActiveSemesters.includes(semester._id) ? (
                                 <MdCheckBox />
                               ) : (
                                 <MdCheckBoxOutlineBlank />
                               )}
                             </div>
-                            
+
                             <div
-                              className="w-6 h-6 rounded-md shadow-sm"
+                              className="h-6 w-6 rounded-md shadow-sm"
                               style={{ backgroundColor: semester.color }}
                             />
-                            
+
                             <div className="flex-1">
                               <div className="text-sm font-medium text-slate-900">
                                 {semester.semester}
@@ -414,7 +405,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                   ))}
                 </div>
 
-                <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-200">
+                <div className="mt-6 flex items-center justify-between border-t border-slate-200 pt-4">
                   <button
                     onClick={() => {
                       if (selectedActiveSemesters.length === tempOngoing.length) {
@@ -424,13 +415,13 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                           setSelectedActiveSemesters([...(profile?.activeSemester ?? [])]);
                         }
                       } else {
-                        let ongoingSemestersIds = tempOngoing.map((semester) => semester?._id ?? "");
+                        let ongoingSemestersIds = tempOngoing.map(semester => semester?._id ?? "");
                         setSelectedActiveSemesters(ongoingSemestersIds);
                       }
                     }}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 ${
+                    className={`flex items-center gap-2 rounded-lg px-3 py-2 transition-all duration-200 ${
                       selectedActiveSemesters.length === tempOngoing.length
-                        ? "text-[#75bf43] bg-green-50"
+                        ? "bg-green-50 text-[#75bf43]"
                         : "text-slate-600 hover:bg-slate-100"
                     }`}
                   >
@@ -444,29 +435,26 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                     <span className="text-sm font-medium">Select All</span>
                   </button>
 
-                  {!matchTwoStringArray(
-                    profile?.activeSemester ?? [],
-                    selectedActiveSemesters,
-                  ) && (
+                  {!matchTwoStringArray(profile?.activeSemester ?? [], selectedActiveSemesters) && (
                     <div className="flex gap-2">
                       <PopoverClose asChild>
                         <button
                           onClick={() => {
                             setSelectedActiveSemesters([...(profile?.activeSemester ?? [])]);
                           }}
-                          className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all duration-200"
+                          className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:text-slate-900"
                         >
                           Cancel
                         </button>
                       </PopoverClose>
-                      
+
                       <button
                         onClick={() => {
                           updateProfileMutation.mutate({
                             activeSemester: selectedActiveSemesters,
                           });
                         }}
-                        className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-medium rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg"
+                        className="rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 px-4 py-2 text-sm font-medium text-white shadow-md transition-all duration-200 hover:from-blue-600 hover:to-blue-700 hover:shadow-lg"
                       >
                         Save Changes
                       </button>

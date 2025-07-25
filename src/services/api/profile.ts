@@ -5,7 +5,6 @@ import { ROLES } from "@/constants/role";
 import { generateNewToken } from "@/lib/utils";
 import { setCookie } from "@/hooks/CookieHooks";
 
-
 export const useGetProfile = () => {
   return useQuery({
     queryKey: ["profile"],
@@ -14,10 +13,7 @@ export const useGetProfile = () => {
         const response = await Axios.get(`/profile`);
         const user = response.data.data;
         if (user) {
-          if (
-            user.syncWithGoogle &&
-            (user.role === ROLES.SUPER_ADMIN || user.department)
-          ) {
+          if (user.syncWithGoogle && (user.role === ROLES.SUPER_ADMIN || user.department)) {
             syncWithGoogle();
           }
           const token = await generateNewToken();
@@ -32,7 +28,7 @@ export const useGetProfile = () => {
       }
     },
   });
-}
+};
 
 export const useUpdateProfileMutation = () => {
   return useMutation({
@@ -45,4 +41,3 @@ export const useUpdateProfileMutation = () => {
 function syncWithGoogle() {
   throw new Error("Function not implemented.");
 }
-

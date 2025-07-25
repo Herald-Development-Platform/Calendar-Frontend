@@ -41,7 +41,7 @@ const TaskPage = () => {
         columnsData.data.map((col: any) => ({
           ...col,
           tasks: col.tasks ? [...col.tasks] : [],
-        })),
+        }))
       );
     }
   }, [columnsData]);
@@ -51,7 +51,7 @@ const TaskPage = () => {
       activationConstraint: {
         distance: 8,
       },
-    }),
+    })
   );
 
   // DnD Handlers
@@ -62,9 +62,7 @@ const TaskPage = () => {
     const overId = over.id as string;
 
     // Find the column containing the task
-    const colIdx = columns.findIndex((col) =>
-      col.tasks.some((t: any) => t._id === taskId),
-    );
+    const colIdx = columns.findIndex(col => col.tasks.some((t: any) => t._id === taskId));
     if (colIdx === -1) return;
     const column = columns[colIdx];
     const oldIndex = column.tasks.findIndex((t: any) => t._id === taskId);
@@ -84,7 +82,7 @@ const TaskPage = () => {
     newColumns[colIdx] = { ...column, tasks: reordered };
     setColumns(newColumns);
     // Persist changes
-    reordered.forEach((task) => updateTask(task));
+    reordered.forEach(task => updateTask(task));
   };
 
   return (

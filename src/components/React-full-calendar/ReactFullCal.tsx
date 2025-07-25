@@ -45,13 +45,11 @@ export default function ReactFullCal() {
   } = useContext(Context);
 
   const { data: tasksData } = useGetAllTasks();
-  console.log(tasksData?.data)
 
   const calWrapper = useRef<HTMLDivElement>(null);
   const dayFrameRefs = useRef<HTMLDivElement[]>([]);
 
-  const monthValue =
-    selectedDate?.start && new Date(selectedDate?.start).getMonth();
+  const monthValue = selectedDate?.start && new Date(selectedDate?.start).getMonth();
   const [selectedEvent, setSelectedEvent] = useState<eventType | null>(null);
   const [eventDetailWidth, setEventDetailWidth] = useState<number | null>(null);
   const [selectable, setSelectable] = useState<boolean>(true);
@@ -95,7 +93,10 @@ export default function ReactFullCal() {
     .map((task: ITask) => {
       const dueDate = new Date(task.dueDate!);
       const isCompleted = !!task.isCompleted;
-      const isDueSoon = !isCompleted && dueDate.getTime() - now.getTime() <= soonThreshold && dueDate.getTime() - now.getTime() > 0;
+      const isDueSoon =
+        !isCompleted &&
+        dueDate.getTime() - now.getTime() <= soonThreshold &&
+        dueDate.getTime() - now.getTime() > 0;
       return {
         id: task._id,
         title: task.title,
@@ -111,25 +112,16 @@ export default function ReactFullCal() {
     });
 
   // Merge events and tasks for the calendar
-  const mergedEvents = [
-    ...(events || []),
-    ...taskEvents,
-  ];
+  const mergedEvents = [...(events || []), ...taskEvents];
 
-  const handleSelect = async ({
-    start,
-    end,
-    startStr,
-    endStr,
-  }: DateSelectArg) => {
+  const handleSelect = async ({ start, end, startStr, endStr }: DateSelectArg) => {
     setSelectedDate({ start, end, startStr, endStr });
     clearTimeout(timeout.current);
 
     // const endDecrement = new Date(end).setDate(new Date(end).getDate() - 1);
 
     // @ts-ignore
-    if (!calendarRef?.current?.elRef?.current || currentView !== "dayGridMonth")
-      return;
+    if (!calendarRef?.current?.elRef?.current || currentView !== "dayGridMonth") return;
 
     setSelectable(false);
     // @ts-ignore
@@ -141,27 +133,21 @@ export default function ReactFullCal() {
     });
     const lastSelCell = selectedCells[selectedCells.length - 1];
     const isElsHighlight = selectedCells.every((cell: any) =>
-      userData?.importantDates.includes(
-        new Date(cell.getAttribute("data-date")).toISOString(),
-      ),
+      userData?.importantDates.includes(new Date(cell.getAttribute("data-date")).toISOString())
     );
 
     const selectContextEl = document.createElement("div");
     selectContextEl.classList.add("fc-custom-select-context-wrapper");
     if (
       lastSelCell.parentElement.lastChild === lastSelCell &&
-      lastSelCell.parentElement.parentElement.lastChild ===
-        lastSelCell.parentElement
+      lastSelCell.parentElement.parentElement.lastChild === lastSelCell.parentElement
     ) {
       selectContextEl.style.bottom = "80%";
       selectContextEl.style.right = "100%";
     } else if (lastSelCell.parentElement.lastChild === lastSelCell) {
       selectContextEl.style.top = "80%";
       selectContextEl.style.right = "100%";
-    } else if (
-      lastSelCell.parentElement.parentElement.lastChild ===
-      lastSelCell.parentElement
-    ) {
+    } else if (lastSelCell.parentElement.parentElement.lastChild === lastSelCell.parentElement) {
       selectContextEl.style.bottom = "80%";
       selectContextEl.style.left = "100%";
     } else {
@@ -170,15 +156,13 @@ export default function ReactFullCal() {
     }
     const highlightBtnEl = document.createElement("div");
     highlightBtnEl.classList.add("fc-select-item", "fc-select-highlight");
-    highlightBtnEl.textContent = isElsHighlight
-      ? "Remove Highlight"
-      : "Highlight";
+    highlightBtnEl.textContent = isElsHighlight ? "Remove Highlight" : "Highlight";
     const addEventBtnEl = document.createElement("div");
     addEventBtnEl.classList.add("fc-select-item", "fc-select-add-event");
     addEventBtnEl.innerHTML = `<span class="fc-select-plus">+</span> Add Event`;
     selectContextEl.appendChild(highlightBtnEl);
     selectContextEl.appendChild(addEventBtnEl);
-    highlightBtnEl.addEventListener("click", (e) => {
+    highlightBtnEl.addEventListener("click", e => {
       e.stopPropagation();
       e.stopImmediatePropagation();
       e.preventDefault();
@@ -186,16 +170,14 @@ export default function ReactFullCal() {
         const selectedDates: string[] = []; //string of dates
         selectedCells.forEach((cell: any) => {
           cell.firstChild.style.backgroundColor = "#FFFFFF";
-          const cellDate = new Date(
-            cell.getAttribute("data-date"),
-          ).toISOString();
+          const cellDate = new Date(cell.getAttribute("data-date")).toISOString();
           selectedDates.push(cellDate);
         });
         updateHighLightedEvents(
           {
             importantDates: [
               ...userData.importantDates.filter(
-                (impDate: string) => !selectedDates.includes(impDate),
+                (impDate: string) => !selectedDates.includes(impDate)
               ),
             ],
           },
@@ -203,15 +185,13 @@ export default function ReactFullCal() {
             onSuccess: () => {
               queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
             },
-          },
+          }
         );
       } else {
         const selectedDates: string[] = []; //string of dates
         selectedCells.forEach((cell: any) => {
           cell.firstChild.style.backgroundColor = "#FFFDC3";
-          const cellDate = new Date(
-            cell.getAttribute("data-date"),
-          ).toISOString();
+          const cellDate = new Date(cell.getAttribute("data-date")).toISOString();
           selectedDates.push(cellDate);
         });
         updateHighLightedEvents(
@@ -222,11 +202,11 @@ export default function ReactFullCal() {
             onSuccess: () => {
               queryClient.invalidateQueries({ queryKey: ["ProfileData"] });
             },
-          },
+          }
         );
       }
     });
-    addEventBtnEl.addEventListener("click", (e) => {
+    addEventBtnEl.addEventListener("click", e => {
       e.stopPropagation();
       e.stopImmediatePropagation();
       e.preventDefault();
@@ -250,6 +230,7 @@ export default function ReactFullCal() {
       // toast.error("error")
     });
     lastSelCell?.firstChild?.appendChild(selectContextEl);
+    console.log("Parent innerHTML:", lastSelCell?.firstChild?.innerHTML);
 
     return;
   };
@@ -262,21 +243,16 @@ export default function ReactFullCal() {
     timeout.current = setTimeout(function () {
       setSelectedDate({
         start: new Date(),
-        end: new Date(
-          new Date().getTime() + 1000 * 60 * 60 * 24 * (lastDay - currentDay),
-        ),
+        end: new Date(new Date().getTime() + 1000 * 60 * 60 * 24 * (lastDay - currentDay)),
         startStr: undefined,
         endStr: undefined,
       });
     }, 250);
 
     // @ts-ignore
-    if (!calendarRef?.current?.elRef?.current || currentView !== "dayGridMonth")
-      return;
+    if (!calendarRef?.current?.elRef?.current || currentView !== "dayGridMonth") return;
 
-    const selectContextEl = document.querySelector(
-      ".fc-custom-select-context-wrapper",
-    );
+    const selectContextEl = document.querySelector(".fc-custom-select-context-wrapper");
     if (!selectContextEl) return;
     // @ts-ignore
     selectContextEl.style.opacity = "0";
@@ -316,10 +292,9 @@ export default function ReactFullCal() {
     if (typeof calendarRef === "string") return;
     if (!calendarRef?.current) return;
 
-    // @ts-ignore
-    dayFrameRefs.current = calendarRef.current.elRef.current.querySelectorAll(
-      ".fc-daygrid-day-frame",
-    );
+    dayFrameRefs.current =
+      // @ts-ignore
+      calendarRef.current.elRef.current.querySelectorAll(".fc-daygrid-day-frame");
     const dayFrameEls = Array.from(dayFrameRefs.current);
 
     dayFrameEls.forEach((dayFrameEl: HTMLDivElement) => {
@@ -331,9 +306,7 @@ export default function ReactFullCal() {
       const parsedDate = parse(ariaLabelValue, "MMMM d, yyyy", new Date());
       const isoDate = format(parsedDate, "yyyy-MM-dd");
 
-      const isHighLight = userData?.importantDates.includes(
-        new Date(isoDate).toISOString(),
-      );
+      const isHighLight = userData?.importantDates.includes(new Date(isoDate).toISOString());
 
       const isOngoing: boolean = semTimeFrame?.some((sem: any) => {
         if (!sem) return undefined;
@@ -343,8 +316,7 @@ export default function ReactFullCal() {
         );
       });
 
-      const today =
-        dayFrameEl?.parentElement?.classList.contains("fc-day-today");
+      const today = dayFrameEl?.parentElement?.classList.contains("fc-day-today");
 
       if (isOngoing) {
         dayFrameEl.style.backgroundColor = "rgba(227, 242, 218, 0.4)";
@@ -371,11 +343,7 @@ export default function ReactFullCal() {
     const displayStart = start?.toISOString() ?? new Date().toISOString();
     const displayEnd = end?.toISOString() ?? new Date().toISOString();
 
-    const startTime = displayStart
-      .split("T")[1]
-      .split(":")
-      .slice(0, 2)
-      .join(":");
+    const startTime = displayStart.split("T")[1].split(":").slice(0, 2).join(":");
     const endTime = displayEnd.split("T")[1].split(":").slice(0, 2).join(":");
 
     const eventEl = info.el;
@@ -413,18 +381,14 @@ export default function ReactFullCal() {
         departmentsWrapper.appendChild(departmentElement);
       });
 
-      const titleContainer =
-        mainFrameEl && mainFrameEl.querySelector(".fc-event-title-container");
-      titleContainer &&
-        mainFrameEl?.insertBefore(departmentsWrapper, titleContainer);
+      const titleContainer = mainFrameEl && mainFrameEl.querySelector(".fc-event-title-container");
+      titleContainer && mainFrameEl?.insertBefore(departmentsWrapper, titleContainer);
 
       if (duration > twoHours) {
         mainFrameEl?.appendChild(timeEl);
       }
 
-      const mainEventEl = info.el.querySelector(
-        ".fc-event-main",
-      ) as HTMLElement;
+      const mainEventEl = info.el.querySelector(".fc-event-main") as HTMLElement;
 
       info.el.style.borderLeft = `3px solid ${info.backgroundColor}`;
       info.el.style.borderLeft = `3px solid ${info.backgroundColor}`;
@@ -511,7 +475,7 @@ export default function ReactFullCal() {
         onError: (error: any) => {
           toast.error(error.response.data.message);
         },
-      },
+      }
     );
   };
 
@@ -539,7 +503,7 @@ export default function ReactFullCal() {
   useEffect(() => {
     if (events && selectedEvent) {
       let newlyFetchedSelectedEvent = events.find(
-        (event: eventType) => event._id === selectedEvent._id,
+        (event: eventType) => event._id === selectedEvent._id
       );
       if (newlyFetchedSelectedEvent) {
         setSelectedEvent(newlyFetchedSelectedEvent);
@@ -555,11 +519,11 @@ export default function ReactFullCal() {
           <FullCalendar
             ref={calendarRef}
             plugins={allPlugins}
-            datesSet={(info) => {
+            datesSet={info => {
               if (currentView === info.view.type) return;
               setCurrentView(info.view.type);
             }}
-            eventClick={(info) => {
+            eventClick={info => {
               // If it's a task, open TaskDialog
               if (info.event.extendedProps.type === "task") {
                 setSelectedTask(info.event.extendedProps.originalTask);
@@ -572,9 +536,7 @@ export default function ReactFullCal() {
                 start: info?.event?.start,
                 end: info?.event?.end,
                 title: info?.event?._def?.title,
-                color:
-                  info?.event?._def?.ui?.backgroundColor ||
-                  info?.event?._def?.ui?.borderColor,
+                color: info?.event?._def?.ui?.backgroundColor || info?.event?._def?.ui?.borderColor,
               };
               const upcommingEventWidth =
                 // @ts-ignore
@@ -584,7 +546,7 @@ export default function ReactFullCal() {
             }}
             initialView={`dayGridMonth`}
             events={mergedEvents as EventSourceInput}
-            eventDidMount={(info) => {
+            eventDidMount={info => {
               // Add a custom class for tasks
               if (info.event.extendedProps.type === "task") {
                 info.el.classList.add("fc-task-event");
@@ -610,20 +572,15 @@ export default function ReactFullCal() {
             select={handleSelect}
             viewDidMount={async (info: any) => {
               await delay(200);
-              if (calendarRef?.current?.getApi()?.view?.type !== "dayGridMonth")
-                return;
-              const scrollerEl = info.el.querySelector(
-                ".fc-scroller-liquid-absolute",
-              );
+              if (calendarRef?.current?.getApi()?.view?.type !== "dayGridMonth") return;
+              const scrollerEl = info.el.querySelector(".fc-scroller-liquid-absolute");
               if (!scrollerEl) return;
               scrollerEl.style.overflow = "visible";
             }}
-            windowResize={async (arg) => {
+            windowResize={async arg => {
               await delay(200);
               const scrollerEl = // @ts-ignore
-                calendarRef?.current?.elRef?.current.querySelector(
-                  ".fc-scroller-liquid-absolute",
-                );
+                calendarRef?.current?.elRef?.current.querySelector(".fc-scroller-liquid-absolute");
               scrollerEl.style.overflow = "visible";
             }}
             unselect={handleUnselect}
@@ -644,8 +601,7 @@ export default function ReactFullCal() {
               ></SemesterView>
             ) : (
               <p>
-                Error: <br /> events: {Boolean(mergedEvents).toString()} <br />{" "}
-                selDate:
+                Error: <br /> events: {Boolean(mergedEvents).toString()} <br /> selDate:
                 {Boolean(selectedDate?.start).toString()}
               </p>
             )}

@@ -19,26 +19,18 @@ const useApplySemesterDot = ({
     if (!calendarRef?.current || currentView !== "dayGridMonth") return;
 
     // @ts-ignore
-    const dayFrameElements = calendarRef.current.elRef.current.querySelectorAll(
-      ".fc-daygrid-day-frame",
-    );
+    const dayFrameElements =
+      calendarRef.current.elRef.current.querySelectorAll(".fc-daygrid-day-frame");
 
     const dayFrameEls = Array.from(dayFrameElements);
 
     dayFrameEls.forEach((dayFrameEl: any, elIndex: number) => {
       const dayGridTopEl = dayFrameEl.querySelector(".fc-daygrid-day-top");
-      const semesterDotExists = Boolean(
-        dayFrameEl.querySelector(".fc-custom-semester-dot"),
-      );
+      const semesterDotExists = Boolean(dayFrameEl.querySelector(".fc-custom-semester-dot"));
       // @ts-ignore
       const dayFrameDate = dayFrameEl.parentElement.getAttribute("data-date");
 
-      if (
-        !semesterData ||
-        !dayFrameDate ||
-        !Array.isArray(semesterData) ||
-        semesterDotExists
-      )
+      if (!semesterData || !dayFrameDate || !Array.isArray(semesterData) || semesterDotExists)
         return;
 
       semesterData?.forEach((semester: SemesterType) => {
@@ -77,13 +69,11 @@ const useApplySemesterDot = ({
       if (!calendarRef.current) return;
       // @ts-ignore
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      let allDotElements = calendarRef.current.elRef.current.querySelectorAll(
-        ".fc-custom-semester-dot",
-      );
+      let allDotElements =
+        calendarRef.current.elRef.current.querySelectorAll(".fc-custom-semester-dot");
       allDotElements = Array.from(allDotElements);
 
-      Array.isArray(allDotElements) &&
-        allDotElements?.forEach((dotEl: any) => dotEl.remove());
+      Array.isArray(allDotElements) && allDotElements?.forEach((dotEl: any) => dotEl.remove());
     };
   }, [calendarRef, semesterData, monthValue, currentView]);
 };
@@ -103,9 +93,8 @@ const useApplySemesterDotYearly = ({
     if (!calendarRef.current || currentView !== "multiMonthYear") return;
 
     // @ts-ignore
-    const titleNodeList = calendarRef.current.elRef.current.querySelectorAll(
-      ".fc-multimonth-title",
-    );
+    const titleNodeList =
+      calendarRef.current.elRef.current.querySelectorAll(".fc-multimonth-title");
     const titleEls = Array.from(titleNodeList);
     titleEls.forEach((titleEl: any, i: number) => {
       const semesterWrapper = document.createElement("div");
@@ -113,10 +102,7 @@ const useApplySemesterDotYearly = ({
 
       semesterData?.forEach((semester: SemesterType) => {
         if (
-          !(
-            new Date(semester?.start)?.getMonth() >= i &&
-            new Date(semester?.end)?.getMonth() <= i
-          )
+          !(new Date(semester?.start)?.getMonth() >= i && new Date(semester?.end)?.getMonth() <= i)
         )
           return;
         const semesterDot = document.createElement("div");
@@ -158,14 +144,12 @@ const useApplyYearlySemesterView = ({
   return useEffect(() => {
     if (!Boolean(multiMonthEls)) return;
     const multiMonthElsArr = Array.from(multiMonthEls);
-    const tbody = multiMonthElsArr[0]
-      ?.querySelector("tbody")
-      ?.querySelectorAll("tr");
+    const tbody = multiMonthElsArr[0]?.querySelector("tbody")?.querySelectorAll("tr");
     const trEls = tbody && Array.from(tbody);
     if (!trEls) return;
 
     const dayCells = trEls[0].querySelectorAll(".fc-daygrid-day");
-    dayCells.forEach((cell) => {
+    dayCells.forEach(cell => {
       // trEls[0].removeChild(cell);
       if (cell.classList.contains("fc-day-disabled")) return;
       cell.remove();
@@ -224,12 +208,9 @@ const useApplyHighlightOrOngoing = ({
     if (!calendarRef?.current) return;
 
     // @ts-ignore
-    dayFrameRefs.current = calendarRef.current.elRef.current.querySelectorAll(
-      ".fc-daygrid-day-frame",
-    );
-    const dayFrameEls = Array.from(
-      dayFrameRefs.current as ArrayLike<HTMLDivElement>,
-    );
+    dayFrameRefs.current =
+      calendarRef.current.elRef.current.querySelectorAll(".fc-daygrid-day-frame");
+    const dayFrameEls = Array.from(dayFrameRefs.current as ArrayLike<HTMLDivElement>);
 
     dayFrameEls.forEach((dayFrameEl: HTMLDivElement) => {
       const dayGridNumber = dayFrameEl.querySelector(".fc-daygrid-day-number");
@@ -237,11 +218,7 @@ const useApplyHighlightOrOngoing = ({
 
       if (!ariaLabelValue) return;
 
-      const parsedDate: Date = parse(
-        ariaLabelValue,
-        "MMMM d, yyyy",
-        new Date(),
-      );
+      const parsedDate: Date = parse(ariaLabelValue, "MMMM d, yyyy", new Date());
       const isoDate = format(parsedDate, "yyyy-MM-dd");
 
       // const isHighLight = userData?.importantDates?.includes(
@@ -250,7 +227,7 @@ const useApplyHighlightOrOngoing = ({
       // );
       const isHighLight = userData?.importantDates?.includes(
         // @ts-ignore
-        parsedDate.toISOString(),
+        parsedDate.toISOString()
       );
 
       const isOngoing = semTimeFrame?.some((sem: any) => {
@@ -260,8 +237,7 @@ const useApplyHighlightOrOngoing = ({
         );
       });
 
-      const today =
-        dayFrameEl?.parentElement?.classList.contains("fc-day-today");
+      const today = dayFrameEl?.parentElement?.classList.contains("fc-day-today");
 
       if (isOngoing) {
         dayFrameEl.style.backgroundColor = "rgba(227, 242, 218, 0.4)";
