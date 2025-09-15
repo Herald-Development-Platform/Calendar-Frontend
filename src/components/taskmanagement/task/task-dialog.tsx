@@ -48,8 +48,10 @@ interface TaskDialogProps {
 }
 
 const formatDateTimeLocal = (date: string) => {
-  if (!date) return "";
+  if (!date || date.trim() === "") return "";
   const d = new Date(date);
+  // Check if date is valid
+  if (isNaN(d.getTime())) return "";
   const year = d.getFullYear();
   const month = String(d.getMonth() + 1).padStart(2, "0");
   const day = String(d.getDate()).padStart(2, "0");
@@ -106,7 +108,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
         title: task.title,
         description: task.description || "",
         priority: task.priority || "medium",
-        dueDate: formatDateTimeLocal(task.dueDate || "  ") || "",
+        dueDate: formatDateTimeLocal(task.dueDate || ""),
         invitedUsers: task.invitedUsers || [],
         column: task.column._id,
       });
@@ -180,21 +182,35 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
   };
 
   const onSubmit = (data: Partial<Omit<ITask, "column"> & { column: string }>) => {
-    if (!data.title?.trim()) return;
+    console.log("Form submission data:", data);
+    
+    if (!data.title?.trim()) {
+      toast.error("Task title is required");
+      return;
+    }
 
     const selectedColumnObj = columnData?.data?.find(
       (col: ITaskColumnBase) => col._id === data.column
     );
-    if (!selectedColumnObj) return;
+    if (!selectedColumnObj) {
+      toast.error("Please select a valid column");
+      return;
+    }
 
     const oldColumnId = task?.column?._id;
     const newColumnId = data.column;
+
+    // Clean up the due date - ensure it's either a valid date string or undefined
+    let cleanDueDate = data.dueDate;
+    if (cleanDueDate && cleanDueDate.trim() === "") {
+      cleanDueDate = undefined;
+    }
 
     const updatedTask: ITask = {
       ...task,
       title: data.title,
       description: data.description,
-      dueDate: data.dueDate,
+      dueDate: cleanDueDate,
       priority: data.priority || "medium",
       column: selectedColumnObj,
       invitedUsers: data.invitedUsers,
@@ -314,12 +330,18 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
     return due < now;
   };
 
+  const priorityColors = {
+    low: "bg-green-500",
+    medium: "bg-[#ed9200]", 
+    high: "bg-[#ae2e24]",
+  };
+
   return (
     <Dialog open={openTaskDialog} onOpenChange={setOpenTaskDialog}>
-      <DialogContent className="max-h-[95vh] overflow-y-auto p-0 sm:max-w-[900px] ">
+      <DialogContent className="max-h-[95vh] overflow-y-auto p-0 sm:max-w-[900px] bg-[#fcfcfd]">
         <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
           {/* Header */}
-          <div className="border-b bg-white px-6 py-4">
+          <div className="border-b bg-[#fcfcfd] px-6 py-4 rounded-t-lg">
             <div className="flex items-start justify-between">
               <div className="flex-1 space-y-3">
                 <Controller
@@ -329,14 +351,14 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                   render={({ field }) => (
                     <Input
                       {...field}
-                      className="h-auto border-none p-0 text-xl font-bold placeholder:text-gray-400 focus-visible:ring-0"
+                      className="h-auto border-none p-0 text-lg font-medium text-black/70 placeholder:text-gray-400 focus-visible:ring-0 bg-transparent"
                       placeholder="Task title..."
                     />
                   )}
                 />
-                <div className="flex items-center gap-4 text-sm">
+                <div className="flex items-center justify-between gap-2 text-sm">
                   <div className="flex items-center gap-2 text-gray-600">
-                    <span>in</span>
+                    <span className="text-xs">in</span>
                     <Controller
                       name="column"
                       control={control}
@@ -346,7 +368,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                           value={typeof field.value === "string" ? field.value : ""}
                           onValueChange={field.onChange}
                         >
-                          <SelectTrigger className="h-auto w-auto border-none bg-green-50 px-2 py-1 text-green-800 hover:bg-green-100">
+                          <SelectTrigger className="h-auto w-auto border-none bg-theme px-2 py-0.5 text-[11px] font-light text-white hover:bg-theme/80 rounded-sm">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -359,43 +381,74 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                         </Select>
                       )}
                     />
+                     <Controller
+                      name="priority"
+                      control={control}
+                      render={({ field }) => {
+                        const priority = field.value || "medium";
+                        if (priority !== "low") {
+                          return (
+                            <Badge
+                              variant="secondary"
+                              className={`rounded-sm px-1 py-0 text-[10px] font-light capitalize text-white hover:${priorityColors[priority as keyof typeof priorityColors]} ${
+                                priorityColors[priority as keyof typeof priorityColors]
+                              }`}
+                            >
+                              {priority} Priority
+                            </Badge>
+                          );
+                        }
+                        return <span></span>;
+                      }}
+                    />
+                    {watch("dueDate") && (
+                      <div className="flex items-center gap-1 rounded-sm bg-theme px-1 py-0.5 text-[11px] font-light text-white">
+                        <Calendar className="h-3 w-3" />
+                        <span>
+                          {new Date(watch("dueDate") || "").toLocaleDateString("en-US", {
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                      </div>
+                    )}
+                    {checklistProgress && checklistProgress.total > 0 && (
+                      <div className="flex items-center gap-1 rounded-sm bg-theme px-1 py-0.5 text-[11px] font-light text-white">
+                        <CheckSquare className="h-3 w-3" />
+                        <span>
+                          {checklistProgress.isCompleted}/{checklistProgress.total}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Quick indicators */}
-                  <div className="flex items-center gap-2">
-                    <Controller
-                      name="priority"
-                      control={control}
-                      render={({ field }) => (
-                        <Badge
-                          className={`${getPriorityColor(field.value || "medium")} flex items-center gap-1`}
-                        >
-                          {getPriorityIcon(field.value || "medium")}
-                          {field.value || "medium"}
-                        </Badge>
-                      )}
-                    />
-                    {watch("dueDate") && (
-                      <Badge
-                        variant={
-                          isOverdue(watch("dueDate") || "")
-                            ? "destructive"
-                            : isDueSoon(watch("dueDate") || "")
-                              ? "default"
-                              : "secondary"
-                        }
-                        className="flex items-center gap-1"
+                  <div className="flex items-center gap-1">
+                   
+                    
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-1 ml-auto">
+                      <Button
+                        type="submit"
+                        size="sm"
+                        className="bg-theme hover:bg-theme/80 text-white font-light text-[11px] h-6 px-2"
+                        disabled={isUpdatingTask}
                       >
-                        <Calendar className="h-3 w-3" />
-                        {new Date(watch("dueDate") || "").toLocaleDateString()}
-                      </Badge>
-                    )}
-                    {checklistProgress && (
-                      <Badge variant="outline" className="flex items-center gap-1">
-                        <CheckSquare className="h-3 w-3" />
-                        {checklistProgress.isCompleted}/{checklistProgress.total}
-                      </Badge>
-                    )}
+                        {isUpdatingTask ? "Saving..." : "Save Changes"}
+                      </Button>
+                      {task && (
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={handleDelete}
+                          className="h-6 w-6 p-0 border-red-200 text-red-600 hover:bg-red-50"
+                          title="Delete Task"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -404,7 +457,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                 variant="ghost"
                 size="sm"
                 onClick={() => setOpenTaskDialog(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 h-6 w-6 p-0"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -412,13 +465,13 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
           </div>
 
           {/* Content */}
-          <div className="flex flex-1 overflow-hidden">
+          <div className="flex flex-1 overflow-hidden bg-[#fcfcfd]">
             {/* Main Content */}
-            <div className="flex-1 space-y-8 overflow-y-auto p-6">
+            <div className="flex-1 space-y-4 overflow-y-auto p-6">
               {/* Description */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+              <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="flex items-center gap-2 text-sm font-medium text-black/70">
                     <Edit3 className="h-4 w-4" />
                     Description
                   </h3>
@@ -427,6 +480,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                     variant="ghost"
                     size="sm"
                     onClick={() => setIsEditingDescription(!isEditingDescription)}
+                    className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600"
                   >
                     {isEditingDescription ? "Save" : "Edit"}
                   </Button>
@@ -438,14 +492,14 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                     isEditingDescription ? (
                       <textarea
                         {...field}
-                        className="min-h-[100px] w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm shadow-sm placeholder:text-gray-400 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20"
+                        className="min-h-[100px] w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-theme focus:outline-none focus:ring-2 focus:ring-theme/20"
                         placeholder="Add a detailed description..."
                         onBlur={() => setIsEditingDescription(false)}
                         autoFocus
                       />
                     ) : (
                       <div
-                        className="min-h-[60px] w-full cursor-text rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                        className="min-h-[60px] w-full cursor-text rounded-lg border border-gray-100 bg-[#fcfcfd] px-3 py-2 text-sm text-black/70 transition-colors hover:bg-gray-50"
                         onClick={() => setIsEditingDescription(true)}
                       >
                         {field.value || "Click to add a description..."}
@@ -456,28 +510,32 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
               </div>
 
               {/* Checklist */}
-              <ChecklistSection
-                checklist={checklist}
-                setChecklist={setChecklist}
-                newChecklistItem={newChecklistItem}
-                setNewChecklistItem={setNewChecklistItem}
-              />
+              <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
+                <ChecklistSection
+                  checklist={checklist}
+                  setChecklist={setChecklist}
+                  newChecklistItem={newChecklistItem}
+                  setNewChecklistItem={setNewChecklistItem}
+                />
+              </div>
 
               {/* Comments */}
-              <CommentsSection
-                comments={comments}
-                setComments={setComments}
-                newComment={newComment}
-                setNewComment={setNewComment}
-                userData={userData}
-                formatDate={formatDate}
-              />
+              <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
+                <CommentsSection
+                  comments={comments}
+                  setComments={setComments}
+                  newComment={newComment}
+                  setNewComment={setNewComment}
+                  userData={userData}
+                  formatDate={formatDate}
+                />
+              </div>
             </div>
 
             {/* Sidebar */}
-            <div className="w-80 space-y-6 border-l bg-gray-50 p-6">
+            <div className="w-80 space-y-4 border-l bg-[#fcfcfd] p-6">
               {/* Tabs */}
-              <div className="flex rounded-lg bg-white p-1">
+              <div className="flex rounded-lg bg-white p-1 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
                 <button
                   type="button"
                   className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
@@ -503,10 +561,10 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
               </div>
 
               {activeTab === "details" ? (
-                <div className="space-y-6">
+                <div className="space-y-4">
                   {/* Priority */}
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
+                    <label className="flex items-center gap-2 text-sm font-medium text-black/70 mb-2">
                       <Flag className="h-4 w-4" />
                       Priority
                     </label>
@@ -515,7 +573,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                       control={control}
                       render={({ field }) => (
                         <Select value={field.value} onValueChange={field.onChange}>
-                          <SelectTrigger className="h-10 bg-white">
+                          <SelectTrigger className="h-10 bg-[#fcfcfd] border-gray-200">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -544,21 +602,21 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                   </div>
 
                   {/* Due Date */}
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
+                    <label className="flex items-center gap-2 text-sm font-medium text-black/70 mb-2">
                       <Calendar className="h-4 w-4" />
                       Due Date
                     </label>
                     <Input
                       type="datetime-local"
                       {...register("dueDate")}
-                      className="h-10 bg-white"
+                      className="h-10 bg-[#fcfcfd] border-gray-200"
                     />
                   </div>
 
                   {/* Invited Users */}
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
+                    <label className="flex items-center gap-2 text-sm font-medium text-black/70 mb-2">
                       <Users className="h-4 w-4" />
                       Assignees
                     </label>
@@ -571,7 +629,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                           <div className="relative" ref={dropdownRef}>
                             <button
                               type="button"
-                              className="flex min-h-[40px] w-full flex-wrap items-center gap-2 rounded-[24px] border bg-white px-2 py-2 text-left transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-green-500/20"
+                              className="flex min-h-[40px] w-full flex-wrap items-center gap-2 rounded-lg border border-gray-200 bg-[#fcfcfd] px-3 py-2 text-left transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-theme/20"
                               onClick={() => setDropdownOpen(!dropdownOpen)}
                             >
                               {selectedUsers.length === 0 ? (
@@ -581,13 +639,13 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                                   {selectedUsers.map(user => (
                                     <div
                                       key={user._id}
-                                      className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-1 text-xs text-green-800"
+                                      className="flex items-center gap-1 rounded-sm bg-theme px-1 py-0.5 text-[11px] font-light text-white"
                                     >
                                       <UserAvatar user={user} size="sm" />
                                       {user.username}
                                       <button
                                         type="button"
-                                        className="ml-1 text-theme hover:text-red-500"
+                                        className="ml-1 text-white hover:text-red-200"
                                         onClick={e => {
                                           e.stopPropagation();
                                           field.onChange(
@@ -640,10 +698,10 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                   </div>
 
                   {/* Creation Info */}
-                  <div className="space-y-3 border-t pt-4">
-                    <h4 className="text-sm font-medium text-gray-700">Created</h4>
+                  <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
+                    <h4 className="text-sm font-medium text-black/70 mb-3">Created</h4>
                     {task?.createdBy && (
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 mb-2">
                         <UserAvatar user={task.createdBy} size="sm" />
                         <span className="text-sm text-gray-600">{task.createdBy.username}</span>
                       </div>
@@ -657,15 +715,15 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                   </div>
                 </div>
               ) : (
-                <div className="space-y-4">
-                  <h4 className="text-sm font-medium text-gray-700">Recent Activity</h4>
+                <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
+                  <h4 className="text-sm font-medium text-black/70 mb-4">Recent Activity</h4>
                   <div className="space-y-3 text-sm text-gray-600">
                     <div className="flex items-center gap-2">
-                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                      <div className="h-2 w-2 rounded-full bg-theme"></div>
                       <span>Task created</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
+                      <div className="h-2 w-2 rounded-full bg-theme"></div>
                       <span>Priority updated</span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -675,28 +733,6 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                   </div>
                 </div>
               )}
-
-              {/* Actions */}
-              <div className="space-y-3 border-t pt-4">
-                <Button
-                  type="submit"
-                  className="w-full bg-theme hover:bg-green-600"
-                  disabled={isUpdatingTask}
-                >
-                  {isUpdatingTask ? "Saving..." : "Save Changes"}
-                </Button>
-                {task && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleDelete}
-                    className="w-full border-red-200 text-red-600 hover:bg-red-50"
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    Delete Task
-                  </Button>
-                )}
-              </div>
             </div>
           </div>
         </form>
@@ -754,13 +790,13 @@ function ChecklistSection({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+        <h3 className="flex items-center gap-2 text-sm font-medium text-black/70">
           <CheckSquare className="h-4 w-4" />
           Checklist
           {checklistProgress && (
-            <Badge variant="secondary" className="ml-2">
+            <div className="ml-2 flex items-center gap-1 rounded-sm bg-theme px-1 py-0.5 text-[11px] font-light text-white">
               {checklistProgress.percentage}%
-            </Badge>
+            </div>
           )}
         </h3>
       </div>
@@ -775,7 +811,7 @@ function ChecklistSection({
           </div>
           <div className="h-2 w-full rounded-full bg-gray-200">
             <div
-              className="h-2 rounded-full bg-gradient-to-r from-green-500 to-green-600 transition-all duration-300"
+              className="h-2 rounded-full bg-theme transition-all duration-300"
               style={{ width: `${checklistProgress.percentage}%` }}
             />
           </div>
@@ -786,14 +822,14 @@ function ChecklistSection({
         {checklist.map(item => (
           <div
             key={item._id}
-            className="group flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-2 transition-colors hover:bg-gray-50"
+            className="group flex items-center gap-3 rounded-lg border border-gray-100 bg-[#fcfcfd] px-3 py-2 transition-colors hover:bg-gray-50"
           >
             <button
               type="button"
-              className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-colors ${
+              className={`flex h-4 w-4 items-center justify-center rounded border transition-colors ${
                 item.isCompleted
-                  ? "border-green-500 bg-green-500 text-white"
-                  : "border-gray-300 hover:border-green-500"
+                  ? "border-theme bg-theme text-white"
+                  : "border-gray-300 hover:border-theme"
               }`}
               onClick={() => toggleChecklistItem(item._id)}
             >
@@ -801,7 +837,7 @@ function ChecklistSection({
             </button>
             <span
               className={`flex-1 text-sm transition-colors ${
-                item.isCompleted ? "text-gray-500 line-through" : "text-gray-900"
+                item.isCompleted ? "text-gray-500 line-through" : "text-black/70"
               }`}
             >
               {item.text}
@@ -825,7 +861,7 @@ function ChecklistSection({
             value={newChecklistItem}
             onChange={e => setNewChecklistItem(e.target.value)}
             placeholder="Add an item..."
-            className="h-10 bg-white"
+            className="h-10 bg-[#fcfcfd] border-gray-200"
             onKeyDown={e => {
               if (e.key === "Enter") {
                 e.preventDefault();
@@ -838,7 +874,7 @@ function ChecklistSection({
           type="button"
           onClick={addChecklistItem}
           size="sm"
-          className="bg-theme px-4 hover:bg-green-600"
+          className="bg-theme px-4 hover:bg-theme/80 text-white font-light"
           disabled={!newChecklistItem.trim()}
         >
           <Plus className="mr-1 h-4 w-4" />
@@ -880,13 +916,13 @@ function CommentsSection({
 
   return (
     <div className="space-y-4">
-      <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+      <h3 className="flex items-center gap-2 text-sm font-medium text-black/70">
         <MessageSquare className="h-4 w-4" />
         Activity
         {comments.length > 0 && (
-          <Badge variant="secondary" className="ml-2">
+          <div className="ml-2 flex items-center gap-1 rounded-sm bg-theme px-1 py-0.5 text-[11px] font-light text-white">
             {comments.length}
-          </Badge>
+          </div>
         )}
       </h3>
 
@@ -905,13 +941,13 @@ function CommentsSection({
               </div>
               <div className="min-w-0 flex-1">
                 <div className="mb-1 flex items-center gap-2">
-                  <span className="text-sm font-medium text-gray-900">
+                  <span className="text-sm font-medium text-black/70">
                     {comment.author.username}
                   </span>
                   <span className="text-xs text-gray-500">{formatDate(comment.createdAt)}</span>
                 </div>
-                <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2">
-                  <p className="whitespace-pre-wrap text-sm text-gray-800">{comment.text}</p>
+                <div className="rounded-lg border border-gray-100 bg-[#fcfcfd] px-3 py-2">
+                  <p className="whitespace-pre-wrap text-sm text-black/70">{comment.text}</p>
                 </div>
               </div>
             </div>
@@ -929,7 +965,7 @@ function CommentsSection({
             value={newComment}
             onChange={e => setNewComment(e.target.value)}
             placeholder="Write a comment..."
-            className="min-h-[80px] w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/20"
+            className="min-h-[80px] w-full resize-none rounded-lg border border-gray-200 bg-[#fcfcfd] px-3 py-2 text-sm placeholder:text-gray-400 focus:border-theme focus:outline-none focus:ring-2 focus:ring-theme/20"
             onKeyDown={e => {
               if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
@@ -944,7 +980,7 @@ function CommentsSection({
               onClick={addComment}
               size="sm"
               disabled={!newComment.trim()}
-              className="bg-theme hover:bg-green-600"
+              className="bg-theme hover:bg-theme/80 text-white font-light"
             >
               <Send className="mr-1 h-4 w-4" />
               Send
