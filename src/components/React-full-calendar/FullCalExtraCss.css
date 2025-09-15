@@ -375,6 +375,14 @@
   align-items: center;
   justify-content: center;
 }
+
+.fc-custom-select-context-wrapper > .fc-select-add-task {
+  background-color: #2D9CDB;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .fc-custom-select-context-wrapper .fc-select-plus {
   font-size: 20px;
   margin-right: 5px;

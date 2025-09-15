@@ -243,11 +243,11 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
             {task?.priority !== "low" && task?.priority && (
               <Badge
                 variant="secondary"
-                className={`rounded-md px-1 py-0 text-[10px] font-light capitalize text-white hover:${priorityColors[task.priority]} ${
+                className={`rounded-sm px-1 py-0 text-[10px] font-light capitalize text-white hover:${priorityColors[task.priority]} ${
                   priorityColors[task.priority]
                 }`}
               >
-                {task.priority}
+                {task.priority} Priority
               </Badge>
             )}
             <div className="flex items-center gap-1">

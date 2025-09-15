@@ -29,6 +29,7 @@ import { totalDaysInMonth } from "./lastDay";
 import { AiOutlineConsoleSql } from "react-icons/ai";
 import { useGetAllTasks } from "@/services/api/taskManagement/taskApi";
 import { TaskDialog } from "@/components/taskmanagement/task/task-dialog";
+import { AddTaskDialog } from "@/components/taskmanagement/task/add-task-dialog";
 import { ITask } from "@/types/taskmanagement/task.types";
 
 export default function ReactFullCal() {
@@ -85,6 +86,11 @@ export default function ReactFullCal() {
   const [openTaskDialog, setOpenTaskDialog] = useState(false);
   const [selectedTask, setSelectedTask] = useState<ITask | null>(null);
 
+  // State for AddTaskDialog
+  const [openAddTaskDialog, setOpenAddTaskDialog] = useState(false);
+  const [taskCreationDate, setTaskCreationDate] = useState<Date | undefined>(undefined);
+  const lastSelectedDateRef = useRef<{start: Date, end: Date} | null>(null);
+
   // Prepare tasks as calendar items
   const now = new Date();
   const soonThreshold = 1000 * 60 * 60 * 24 * 2; // 2 days in ms
@@ -92,6 +98,12 @@ export default function ReactFullCal() {
     .filter((task: ITask) => !!task.dueDate)
     .map((task: ITask) => {
       const dueDate = new Date(task.dueDate!);
+      // Ensure the task is displayed as a single-day event by setting start and end to the same day
+      const startOfDay = new Date(dueDate);
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date(dueDate);
+      endOfDay.setHours(23, 59, 59, 999);
+      
       const isCompleted = !!task.isCompleted;
       const isDueSoon =
         !isCompleted &&
@@ -100,8 +112,9 @@ export default function ReactFullCal() {
       return {
         id: task._id,
         title: task.title,
-        start: dueDate,
-        end: dueDate,
+        start: startOfDay,
+        end: endOfDay,
+        allDay: true, // Make it an all-day event to prevent spanning issues
         type: "task",
         originalTask: task,
         color: isCompleted ? "#43A047" : isDueSoon ? "#FFA726" : "#2D9CDB",
@@ -115,6 +128,8 @@ export default function ReactFullCal() {
   const mergedEvents = [...(events || []), ...taskEvents];
 
   const handleSelect = async ({ start, end, startStr, endStr }: DateSelectArg) => {
+    // Store the last selected date separately in ref
+    lastSelectedDateRef.current = { start, end };
     setSelectedDate({ start, end, startStr, endStr });
     clearTimeout(timeout.current);
 
@@ -138,6 +153,12 @@ export default function ReactFullCal() {
 
     const selectContextEl = document.createElement("div");
     selectContextEl.classList.add("fc-custom-select-context-wrapper");
+    
+    // Prevent unselect when clicking inside the context menu
+    selectContextEl.addEventListener("click", (e) => {
+      e.stopPropagation();
+    });
+    
     if (
       lastSelCell.parentElement.lastChild === lastSelCell &&
       lastSelCell.parentElement.parentElement.lastChild === lastSelCell.parentElement
@@ -160,8 +181,12 @@ export default function ReactFullCal() {
     const addEventBtnEl = document.createElement("div");
     addEventBtnEl.classList.add("fc-select-item", "fc-select-add-event");
     addEventBtnEl.innerHTML = `<span class="fc-select-plus">+</span> Add Event`;
+    const addTaskBtnEl = document.createElement("div");
+    addTaskBtnEl.classList.add("fc-select-item", "fc-select-add-task");
+    addTaskBtnEl.innerHTML = `<span class="fc-select-plus">+</span> Add Task`;
     selectContextEl.appendChild(highlightBtnEl);
     selectContextEl.appendChild(addEventBtnEl);
+    selectContextEl.appendChild(addTaskBtnEl);
     highlightBtnEl.addEventListener("click", e => {
       e.stopPropagation();
       e.stopImmediatePropagation();
@@ -229,6 +254,23 @@ export default function ReactFullCal() {
       // }
       // toast.error("error")
     });
+    addTaskBtnEl.addEventListener("click", e => {
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      e.preventDefault();
+      
+      // Use lastSelectedDate first, then fall back to selectedDate
+      const dateToUse = lastSelectedDateRef.current?.start || selectedDate?.start;
+      
+      if (dateToUse) {
+        const capturedDate = new Date(dateToUse);
+        setTaskCreationDate(capturedDate);
+      } else {
+        setTaskCreationDate(new Date());
+      }
+      // Open the Add Task dialog
+      setOpenAddTaskDialog(true);
+    });
     lastSelCell?.firstChild?.appendChild(selectContextEl);
     console.log("Parent innerHTML:", lastSelCell?.firstChild?.innerHTML);
 
@@ -247,6 +289,7 @@ export default function ReactFullCal() {
         startStr: undefined,
         endStr: undefined,
       });
+      // Don't reset lastSelectedDateRef - keep it for task creation
     }, 250);
 
     // @ts-ignore
@@ -623,6 +666,19 @@ export default function ReactFullCal() {
           task={selectedTask}
         />
       )}
+      {/* Add Task Dialog for creating new tasks */}
+      <AddTaskDialog
+        open={openAddTaskDialog}
+        onOpenChange={(open) => {
+          setOpenAddTaskDialog(open);
+          if (!open) {
+            // Clear the task creation date and last selected date when dialog closes
+            setTaskCreationDate(undefined);
+            lastSelectedDateRef.current = null;
+          }
+        }}
+        selectedDate={taskCreationDate}
+      />
       {/* <EditEventModal1
       // ref={modalRef}
         // type="Add"
