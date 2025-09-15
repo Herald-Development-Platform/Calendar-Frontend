@@ -87,17 +87,16 @@ const TaskPage = () => {
 
   return (
     <>
-      <Headers.GeneralHeader />
-      <main className="p-4 xl:max-w-[calc(100vw-260px)]">
-        <h1 className="text-2xl font-semibold">Task Boards</h1>
+      <Headers.TaskHeader />
+      <main className="pl-8 pr-0 xl:max-w-[calc(100vw-248px)]">
 
-        <div className="flex items-center  justify-end gap-2">
+        <div className="flex items-center pr-8  justify-end gap-2">
           <ArchieveSheet />
           <AddColumnDialog />
         </div>
 
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-          <div className="mt-6 flex gap-6 overflow-x-auto pb-1">
+          <div className="mt-6 flex gap-3 min-h-[calc(100vh-170px)] overflow-x-auto pb-1">
             {columns.map((column: ITaskColumnBase) => (
               <BoardColumn
                 key={column._id}

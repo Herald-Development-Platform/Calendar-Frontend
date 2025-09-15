@@ -77,14 +77,12 @@ export function BoardColumn({
   const [isHovered, setIsHovered] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // Always call the hook, but ignore its result if invitedTasks is provided
   const { data: tasksData, isLoading: isTasksLoading } = useGetTaskByColumn(column._id);
   const { mutate: createTask, isPending: isCreatingTask } = useCreateTask();
   const { mutate: updateColumn, isPending: isUpdatingColumn } = useUpdateColumn();
   const { mutate: updateTask } = useUpdateTask();
   const { mutate: bulkUpdateTaskPositions } = useBulkUpdateTaskPositions();
 
-  // Local state for task order
   const [tasks, setTasks] = useState<any[]>([]);
 
   const getColumnColor = () => {
@@ -95,18 +93,14 @@ export function BoardColumn({
 
   const columnColor = getColumnColor();
 
-  // Simple minimalist design without colors
-
   useEffect(() => {
     if (invitedTasks) {
       setTasks(invitedTasks);
     } else if (tasksData?.data) {
-      // Sort by position field if present
       setTasks([...tasksData.data].sort((a, b) => (a.position ?? 0) - (b.position ?? 0)));
     }
   }, [invitedTasks, tasksData]);
 
-  // Drag and drop handler for within-column reordering
   const handleDragEnd = (event: DragEndEvent) => {
     if (disableDnD) return;
     const { active, over } = event;
@@ -115,12 +109,10 @@ export function BoardColumn({
     const newIndex = tasks.findIndex(t => t._id === over.id);
     if (oldIndex === -1 || newIndex === -1) return;
     const newTasks = arrayMove(tasks, oldIndex, newIndex);
-    // Update positions
     newTasks.forEach((task, idx) => {
       task.position = idx;
     });
     setTasks(newTasks);
-    // Persist changes in bulk
     bulkUpdateTaskPositions(newTasks.map(task => ({ _id: task._id, position: task.position })));
   };
 
@@ -176,26 +168,22 @@ export function BoardColumn({
     <>
       <Card
         className={cn(
-          "h-fit w-80 flex-shrink-0 gap-0 rounded-xl border border-gray-200 bg-white p-0 px-0 shadow-sm transition-all duration-200 hover:shadow-md",
+          "h-fit w-[280px] flex-shrink-0 gap-0 rounded-xl border border-gray-200 bg-white p-0 px-0 shadow-sm transition-all duration-200 hover:shadow-md",
           isOver && "scale-[1.01] ring-2 ring-gray-300 ring-opacity-50",
           isHovered && "border-gray-300 shadow-md"
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <CardHeader className="rounded-t-xl border-b border-gray-100 bg-gray-50/50 p-4 px-5 pb-3">
+        <CardHeader className="rounded-t-xl border-gray-100  p-2 px-3 pb-1">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              {/* {!disableDnD && (
-                <GripVertical className="h-4 w-4 text-gray-400 cursor-grab hover:text-gray-600 transition-colors" />
-              )} */}
-              <div className={cn("h-3 w-3 rounded-full shadow-sm", columnColor.dot)}></div>
               <CardTitle className="max-w-[140px] truncate text-sm font-semibold text-gray-800">
                 {column.title}
               </CardTitle>
             </div>
             <div className="flex items-center gap-2">
-              <span className="rounded-full border border-gray-200 bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700 shadow-sm transition-all duration-200">
+              <span className="rounded-sm border-[1.5px] border-[#ddddde] w-5 h-5 flex items-center justify-center text-xs font-medium text-[#b1b1b2] transition-all duration-200">
                 {tasks.length}
               </span>
               {!disableEditDelete && (
@@ -204,9 +192,9 @@ export function BoardColumn({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 rounded-full p-0 transition-all duration-200 hover:bg-gray-100 hover:shadow-sm"
+                      className="w-fit  rounded-full p-0 transition-all duration-200 hover:bg-white hover:shadow-sm"
                     >
-                      <MoreHorizontal className="h-4 w-4 text-gray-500" />
+                      <MoreHorizontal className="h-5 w-5 text-gray-500" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent
@@ -242,7 +230,7 @@ export function BoardColumn({
 
         <CardContent
           className={cn(
-            "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 max-h-[calc(100vh-340px)] overflow-y-auto bg-white px-4 pb-1 pr-3 pt-3",
+            "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 max-h-[calc(100vh-340px)] overflow-y-auto bg-white px-2 pb-1 pr-3 pt-0",
             disableDnD && "pb-4",
             isEmpty && "flex items-center justify-center py-8"
           )}

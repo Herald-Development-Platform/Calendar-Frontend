@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Edit2, Archive, CheckSquare, GripVertical } from "lucide-react";
+import { Calendar, Edit2, Archive, CheckSquare, GripVertical, SquarePen } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
@@ -73,9 +73,9 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
   };
 
   const priorityColors = {
-    low: "bg-green-100 text-green-800",
-    medium: "bg-yellow-100 text-yellow-800",
-    high: "bg-red-100 text-red-800",
+    low: "bg-green-500",
+    medium: "bg-[#ed9200]",
+    high: "bg-[#ae2e24]",
   };
 
   const formatDate = (dateString: string) => {
@@ -211,26 +211,37 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
       <Card
         ref={setNodeRef}
         style={style}
-        className={`group cursor-pointer  rounded-lg py-0 shadow-sm transition-shadow hover:border-black/40 hover:shadow-sm ${
+        className={`group cursor-pointer  rounded-lg bg-[#fcfcfd] py-1 shadow-sm transition-shadow hover:border-black/40 hover:shadow-sm ${
           isDragging ? "opacity-50 " : ""
         } ${task?.isCompleted ? "bg-gray-50 opacity-60" : ""}`}
         onClick={() => setOpenTaskDialog(true)}
       >
-        <CardContent className="relative flex flex-row items-start gap-2 p-3">
+        <CardContent className="relative flex flex-row items-start gap-2 p-0">
           {/* Drag Handle */}
           {!disableDnD && (
             <span
               {...attributes}
               {...listeners}
-              className="mt-1 flex w-full  max-w-0 cursor-grab select-none items-center transition-all duration-300 active:cursor-grabbing group-hover:max-w-4"
+              className="ml-0.5 mt-1  flex w-full  max-w-0 cursor-grab select-none items-center transition-all duration-300 active:cursor-grabbing group-hover:max-w-4"
               onClick={e => e.stopPropagation()} // Prevent opening dialog when clicking handle
             >
               <GripVertical className="h-4 w-4 text-gray-400" />
             </span>
           )}
           <div className="flex-1">
+            {task?.priority !== "low" && task?.priority && (
+              <Badge
+                variant="secondary"
+                className={`rounded-md px-1 py-0 text-[10px] font-light capitalize text-white hover:${priorityColors[task.priority]} ${
+                  priorityColors[task.priority]
+                }`}
+              >
+                {task.priority}
+              </Badge>
+            )}
+
             <h3
-              className={`mb-2 text-sm font-medium ${task?.isCompleted ? "text-gray-500 line-through" : ""}`}
+              className={` text-[13px] font-medium text-black/70 ${task?.isCompleted ? "text-gray-500 line-through" : ""}`}
             >
               {task?.title}
             </h3>
@@ -240,40 +251,28 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
               </p>
             )}
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                {task?.priority && (
-                  <Badge
-                    variant="secondary"
-                    className={`text-xs ${priorityColors[task?.priority]}`}
-                  >
-                    {task?.priority}
-                  </Badge>
-                )}
+            <div className="flex items-center justify-between pr-1.5">
+              <div className="flex items-center gap-1">
                 {checklistProgress && checklistProgress.total > 0 && (
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1 rounded-sm bg-theme px-1 py-0.5 text-[11px] font-light  text-white">
                     <CheckSquare className="h-3 w-3" />
                     <span
                       className={
-                        checklistProgress?.completed === checklistProgress?.total
-                          ? "text-green-600"
-                          : ""
+                        checklistProgress?.completed === checklistProgress?.total ? "" : ""
                       }
                     >
                       {checklistProgress?.completed}/{checklistProgress?.total}
                     </span>
                   </div>
                 )}
-              </div>
-              <div className="flex items-center gap-2 text-xs">
                 {task?.dueDate && (
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 rounded-sm bg-theme px-1 py-0.5 text-[11px] font-light  text-white">
                     <Calendar className="h-3 w-3" />
-                    <span className={formatDate(task?.dueDate).colorClass}>
-                      {formatDate(task?.dueDate).formatted}
-                    </span>
+                    <span className="">{formatDate(task?.dueDate).formatted}</span>
                   </div>
                 )}
+              </div>
+              <div className="flex items-center gap-2 text-xs">
                 {task?.createdBy && (
                   <div
                     className="flex items-center gap-1"
@@ -288,10 +287,10 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
             {/* Hover Actions */}
             {!disableEditDelete && (
               <div
-                className="absolute right-2 top-2 flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
+                className="absolute right-2 top-0 flex gap-0 opacity-0 transition-opacity group-hover:opacity-100"
                 onMouseDown={e => e.stopPropagation()} // Prevent drag when clicking buttons
               >
-                <Button
+                {/* <Button
                   size="sm"
                   variant="ghost"
                   className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
@@ -308,23 +307,23 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
                   >
                     {task?.isCompleted && <div className="text-xs leading-none text-white">✓</div>}
                   </div>
-                </Button>
+                </Button> */}
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
+                  className="h-6 w-6 cursor-pointer bg-white p-0"
                   onClick={e => {
                     e.stopPropagation();
                     setOpenTaskDialog(true);
                   }}
                   onMouseDown={e => e.stopPropagation()}
                 >
-                  <Edit2 className="h-3 w-3" />
+                  <SquarePen className="h-3 w-3" />
                 </Button>
                 <Button
                   size="sm"
                   variant="ghost"
-                  className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
+                  className="h-6 w-6 cursor-pointer bg-white p-0"
                   onClick={e => {
                     e.stopPropagation();
                     onToggleArchive(task?._id);
