@@ -1,31 +1,27 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import * as Headers from "@/components/Header";
 import ArchieveSheet from "@/components/taskmanagement/ArchieveSheet";
-import { Button } from "@/components/ui/button";
-import { Archive } from "lucide-react";
 import { AddColumnDialog } from "@/components/taskmanagement/columns/add-column-dialog";
+import { Context } from "@/app/clientWrappers/ContextProvider";
 
 import {
   DndContext,
   type DragEndEvent,
-  type DragOverEvent,
-  DragOverlay,
-  type DragStartEvent,
   PointerSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
 import { useGetColumns } from "@/services/api/taskManagement/columnsApi";
 import { ITaskColumnBase } from "@/types/taskmanagement/column.types";
 import { BoardColumn } from "@/components/taskmanagement/columns/board-column";
 import { useUpdateTask } from "@/services/api/taskManagement/taskApi";
 import { useGetInvitedTasks } from "@/services/api/taskManagement/taskApi";
-import { ITask } from "@/types/taskmanagement/task.types";
 
 const TaskPage = () => {
+  const { sidebarOpen } = useContext(Context);
+
   // API CALLS
   const { data: columnsData, isLoading: isColumnsLoading } = useGetColumns();
   const { data: invitedTasksData, isLoading: isInvitedLoading } = useGetInvitedTasks();
@@ -88,7 +84,7 @@ const TaskPage = () => {
   return (
     <>
       <Headers.TaskHeader />
-      <main className="pl-8 pr-0 xl:max-w-[calc(100vw-248px)]">
+      <main className={`pl-0 pr-0 transition-all ${sidebarOpen ? 'xl:max-w-[calc(100vw-248px)]' : 'xl:max-w-[calc(100vw-82px)]'}`}>
 
         <div className="flex items-center pr-8  justify-end gap-2">
           <ArchieveSheet />

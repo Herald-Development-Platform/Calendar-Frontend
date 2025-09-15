@@ -51,15 +51,15 @@ export function AddCardInput({ onAdd, onCancel }: AddCardInputProps) {
             value={title}
             onChange={e => setTitle(e.target.value)}
             placeholder="Enter a title for this card..."
-            className="mb-2 h-10 rounded py-0 text-sm"
+            className="mb-2 h-9 rounded-md py-0 text-sm"
             autoFocus
           />
-          <div className="flex gap-2">
-            <Button type="submit" size="sm" disabled={!title.trim()}>
+          <div className="flex gap-0.5">
+            <Button type="submit" size="sm" className="font-light" disabled={!title.trim()}>
               Add card
             </Button>
             <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
-              <X className="h-4 w-4" />
+              <X className="h-5 w-5" />
             </Button>
           </div>
         </form>

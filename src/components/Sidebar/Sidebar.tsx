@@ -39,9 +39,8 @@ interface ISidebar {
 
 export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   const currentRoute = usePathname();
-  const { userData: profile } = useContext(Context);
+  const { userData: profile, sidebarOpen, setSidebarOpen } = useContext(Context);
 
-  const [open, setOpen] = useState(true);
   const [hovered, setHovered] = useState<string | null>(null);
 
   const sidebarItems = [
@@ -158,7 +157,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
     <>
       <div
         className={`${hasBreakpoint ? "custom-hidden relative xl:block " : "block"} h-screen ${
-          open ? "w-[290px]" : "w-[80px]"
+          sidebarOpen ? "w-[290px]" : "w-[80px]"
         } border-r border-slate-200 bg-gradient-to-b from-slate-50 to-white shadow-xl transition-all duration-300 ease-in-out`}
         style={{
           background: "linear-gradient(180deg, #f8fafc 0%, #ffffff 100%)",
@@ -166,7 +165,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
       >
         <div
           className={`flex h-full w-full flex-col items-center ${
-            open ? "gap-8" : "gap-4"
+            sidebarOpen ? "gap-8" : "gap-4"
           } relative font-medium`}
         >
           {/* Beta Badge
@@ -178,7 +177,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
 
           {/* Header */}
           <div
-            className={`flex ${open ? "flex-row" : "flex-col"} w-full items-center gap-3 px-4 pt-8 text-lg font-medium text-slate-700`}
+            className={`flex ${sidebarOpen ? "flex-row" : "flex-col"} w-full items-center gap-3 px-4 pt-8 text-lg font-medium text-slate-700`}
           >
             <div className="relative">
               <Image
@@ -190,14 +189,14 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
               />
             </div>
 
-            {open && (
+            {sidebarOpen && (
               <div className="flex w-full items-center justify-between">
                 <span className="bg-gradient-to-r from-slate-700 to-slate-900 bg-clip-text text-[16px] font-semibold text-transparent">
                   Events Calendar
                 </span>
                 <button
                   title="Collapse Sidebar"
-                  onClick={() => setOpen(false)}
+                  onClick={() => setSidebarOpen(false)}
                   className="group rounded-lg p-2 transition-colors duration-200 hover:bg-slate-100"
                 >
                   <TbLayoutSidebarLeftCollapse className="h-5 w-5 text-slate-500 group-hover:text-slate-700" />
@@ -207,11 +206,11 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
           </div>
 
           {/* Navigation Items */}
-          <div className={cn("flex w-full flex-1 flex-col gap-2 px-4 ", open ? "mt-10" : "mt-0")}>
-            {!open && (
+          <div className={cn("flex w-full flex-1 flex-col gap-2 px-4 ", sidebarOpen ? "mt-10" : "mt-0")}>
+            {!sidebarOpen && (
               <button
                 title="Expand Sidebar"
-                onClick={() => setOpen(true)}
+                onClick={() => setSidebarOpen(true)}
                 className="flex h-12 w-full items-center justify-center rounded-xl text-slate-500 transition-all duration-200 hover:bg-slate-100 hover:text-slate-700"
               >
                 <TbLayoutSidebarLeftExpand className="h-5 w-5" />
@@ -240,7 +239,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                   {item.icon}
                 </span>
 
-                {open && (
+                {sidebarOpen && (
                   <span className="text-[15px] font-medium transition-all duration-200">
                     {item.name}
                   </span>
@@ -266,11 +265,11 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
                   )
                 }
                 className={`flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-slate-600 shadow-sm transition-all duration-200 hover:bg-slate-50 hover:text-slate-900 hover:shadow-md ${
-                  open ? "w-full justify-center" : "w-fit"
+                  sidebarOpen ? "w-full justify-center" : "w-fit"
                 }`}
               >
                 <Bug size={16} />
-                {open && <span className="text-sm font-medium">Report Bug</span>}
+                {sidebarOpen && <span className="text-sm font-medium">Report Bug</span>}
               </button>
             </div>
 
@@ -279,17 +278,17 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
               <PopoverTrigger asChild>
                 <div
                   className={`flex ${
-                    open ? "w-full" : "w-fit"
+                    sidebarOpen ? "w-full" : "w-fit"
                   } cursor-pointer items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all duration-200 hover:bg-slate-50 hover:shadow-md`}
                 >
                   {semestersLoading ? (
                     <div className="flex items-center gap-2">
                       <div className="h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-slate-600"></div>
-                      {open && <span className="text-sm text-slate-500">Loading...</span>}
+                      {sidebarOpen && <span className="text-sm text-slate-500">Loading...</span>}
                     </div>
                   ) : (
                     <>
-                      {open && (
+                      {sidebarOpen && (
                         <div className="flex flex-col gap-1">
                           <span className="text-sm font-semibold text-slate-700">
                             Active Semesters
@@ -329,7 +328,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
               <PopoverContent
                 align="start"
                 className="w-[500px] rounded-xl border border-slate-200 bg-white p-6 shadow-xl"
-                style={{ transform: open ? "translateX(240px)" : "translateX(30px)" }}
+                style={{ transform: sidebarOpen ? "translateX(240px)" : "translateX(30px)" }}
               >
                 <div className="mb-6 flex items-center justify-between">
                   <h3 className="text-lg font-semibold text-slate-900">Manage Active Semesters</h3>

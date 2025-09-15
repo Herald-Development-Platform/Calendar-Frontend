@@ -2,16 +2,26 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Edit2, Archive, CheckSquare, GripVertical, SquarePen } from "lucide-react";
+import {
+  Calendar,
+  Edit2,
+  Archive,
+  CheckSquare,
+  GripVertical,
+  SquarePen,
+  Check,
+} from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
 import { UserAvatar } from "../user-avatar";
 import { ITask } from "@/types/taskmanagement/task.types";
 import { TaskDialog } from "../task/task-dialog";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useUpdateTask } from "@/services/api/taskManagement/taskApi";
+import { Context } from "@/app/clientWrappers/ContextProvider";
+import { cn } from "@/lib/utils";
 
 export interface User {
   id: string;
@@ -61,6 +71,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
   });
 
   const queryClient = useQueryClient();
+  const { userData } = useContext(Context);
 
   // API CALLS
   const { mutate: updateTask, isPending } = useUpdateTask();
@@ -211,9 +222,9 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
       <Card
         ref={setNodeRef}
         style={style}
-        className={`group cursor-pointer  rounded-lg bg-[#fcfcfd] py-1 shadow-sm transition-shadow hover:border-black/40 hover:shadow-sm ${
+        className={cn(`group cursor-pointer  rounded-lg bg-[#fcfcfd] py-1 pb-1.5 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] transition-shadow hover:border-black/40 hover:shadow-sm ${
           isDragging ? "opacity-50 " : ""
-        } ${task?.isCompleted ? "bg-gray-50 opacity-60" : ""}`}
+        } `)}
         onClick={() => setOpenTaskDialog(true)}
       >
         <CardContent className="relative flex flex-row items-start gap-2 p-0">
@@ -228,7 +239,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
               <GripVertical className="h-4 w-4 text-gray-400" />
             </span>
           )}
-          <div className="flex-1">
+          <div className="flex-1 space-y-1">
             {task?.priority !== "low" && task?.priority && (
               <Badge
                 variant="secondary"
@@ -239,12 +250,27 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
                 {task.priority}
               </Badge>
             )}
+            <div className="flex items-center gap-1">
+              <button
+                className={cn(
+                  "flex h-4 w-4 cursor-pointer items-center justify-center rounded bg-white p-0.5 text-white",
+                  task?.isCompleted ? "bg-theme" : "border border-[#7e7e7f]"
+                )}
+                onClick={e => {
+                  e.stopPropagation();
+                  onToggleComplete(task?._id);
+                }}
+                onMouseDown={e => e.stopPropagation()}
+              >
+                {task?.isCompleted && <Check />}
+              </button>
+              <h3
+                className={` text-[13px] font-medium text-black/70 ${task?.isCompleted ? "text-gray-500 line-through" : ""}`}
+              >
+                {task?.title}
+              </h3>
+            </div>
 
-            <h3
-              className={` text-[13px] font-medium text-black/70 ${task?.isCompleted ? "text-gray-500 line-through" : ""}`}
-            >
-              {task?.title}
-            </h3>
             {task?.description && (
               <p className="mb-2 line-clamp-2 text-xs text-muted-foreground">
                 {stripHtml(task?.description)}
@@ -273,7 +299,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
                 )}
               </div>
               <div className="flex items-center gap-2 text-xs">
-                {task?.createdBy && (
+                {task?.createdBy && task?.createdBy?._id !== userData?._id && (
                   <div
                     className="flex items-center gap-1"
                     title={`Created by ${task.createdBy.username}`}
@@ -290,24 +316,6 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
                 className="absolute right-2 top-0 flex gap-0 opacity-0 transition-opacity group-hover:opacity-100"
                 onMouseDown={e => e.stopPropagation()} // Prevent drag when clicking buttons
               >
-                {/* <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-6 w-6 cursor-pointer bg-white p-0 shadow-sm hover:bg-gray-50"
-                  onClick={e => {
-                    e.stopPropagation();
-                    onToggleComplete(task?._id);
-                  }}
-                  onMouseDown={e => e.stopPropagation()}
-                >
-                  <div
-                    className={`flex h-4 w-4 items-center justify-center rounded-full border-2 ${
-                      task?.isCompleted ? "border-green-500 bg-green-500" : "border-gray-400"
-                    }`}
-                  >
-                    {task?.isCompleted && <div className="text-xs leading-none text-white">✓</div>}
-                  </div>
-                </Button> */}
                 <Button
                   size="sm"
                   variant="ghost"

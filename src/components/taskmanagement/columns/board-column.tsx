@@ -168,14 +168,14 @@ export function BoardColumn({
     <>
       <Card
         className={cn(
-          "h-fit w-[280px] flex-shrink-0 gap-0 rounded-xl border border-gray-200 bg-white p-0 px-0 shadow-sm transition-all duration-200 hover:shadow-md",
+          "h-fit w-[280px] flex-shrink-0 gap-0 rounded-xl first:ml-8 border border-gray-200 bg-white p-0 px-0 shadow-sm transition-all duration-200 hover:shadow-md",
           isOver && "scale-[1.01] ring-2 ring-gray-300 ring-opacity-50",
           isHovered && "border-gray-300 shadow-md"
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <CardHeader className="rounded-t-xl border-gray-100  p-2 px-3 pb-1">
+        <CardHeader className="rounded-t-xl border-gray-100   p-3 px-3 pb-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <CardTitle className="max-w-[140px] truncate text-sm font-semibold text-gray-800">
@@ -192,7 +192,7 @@ export function BoardColumn({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="w-fit  rounded-full p-0 transition-all duration-200 hover:bg-white hover:shadow-sm"
+                      className="w-fit h-5  rounded-full p-0 transition-all duration-200 hover:bg-white hover:shadow-sm"
                     >
                       <MoreHorizontal className="h-5 w-5 text-gray-500" />
                     </Button>
@@ -230,7 +230,7 @@ export function BoardColumn({
 
         <CardContent
           className={cn(
-            "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 max-h-[calc(100vh-340px)] overflow-y-auto bg-white px-2 pb-1 pr-3 pt-0",
+            "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 max-h-[calc(100vh-340px)] overflow-y-auto bg-white px-2 pb-0 pr-3 pt-0",
             disableDnD && "pb-4",
             isEmpty && "flex items-center justify-center py-8"
           )}
@@ -296,7 +296,7 @@ export function BoardColumn({
         </CardContent>
 
         {!disableEditDelete && (
-          <CardFooter className="px-4 pb-3">
+          <CardFooter className="px-2 pb-2">
             {showAddCard ? (
               <div className="w-full duration-200 animate-in slide-in-from-top-2">
                 <AddCardInput onAdd={handleAddTask} onCancel={() => setShowAddCard(false)} />
@@ -306,7 +306,7 @@ export function BoardColumn({
                 variant="ghost"
                 disabled={isCreatingTask}
                 className={cn(
-                  "group mt-2 w-full  justify-start rounded-lg border-2 border-dashed px-4 py-3 text-gray-600 transition-all duration-200 hover:border-gray-400 hover:bg-white/60 hover:text-gray-700 hover:shadow-sm",
+                  "group mt-2 w-full  justify-start rounded-lg border-2 border-white border-dashed px-2 py-1 h-9 text-gray-600 transition-all duration-200 hover:border-gray-400 hover:bg-white/60 hover:text-gray-700 hover:shadow-sm",
                   // columnColor.border,
                   isCreatingTask && "cursor-not-allowed opacity-50"
                 )}

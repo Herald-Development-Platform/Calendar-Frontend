@@ -54,6 +54,8 @@ export interface ContextType {
   setSelectedEventData: Dispatch<SetStateAction<eventType | null>>;
   calenderDate: SelectedDateType | undefined;
   setCalenderDate: Dispatch<SetStateAction<SelectedDateType | undefined>>;
+  sidebarOpen: boolean;
+  setSidebarOpen: Dispatch<SetStateAction<boolean>>;
 }
 
 export const Context = createContext<ContextType>({
@@ -85,6 +87,8 @@ export const Context = createContext<ContextType>({
     endStr: undefined,
   },
   setCalenderDate: () => {},
+  sidebarOpen: true,
+  setSidebarOpen: () => {},
 });
 // const calendarRef = createRef(undefined);
 
@@ -92,6 +96,7 @@ export default function ContextProvider({ children }: { children: React.ReactNod
   const calendarRef = useRef<FullCalendar | null>(null);
   const [events, setEvents] = useState<eventType[] | undefined>();
   const [currentView, setCurrentView] = useState<string>("");
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(true);
 
   const calendarApi = calendarRef?.current?.getApi();
   const timeout = useRef<any>();
@@ -192,6 +197,8 @@ export default function ContextProvider({ children }: { children: React.ReactNod
         setSelectedEventData,
         calenderDate,
         setCalenderDate,
+        sidebarOpen,
+        setSidebarOpen,
       }}
     >
       {children}
