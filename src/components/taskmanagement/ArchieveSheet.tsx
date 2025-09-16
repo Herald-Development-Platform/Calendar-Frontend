@@ -159,8 +159,8 @@ const ArchieveSheet = () => {
     <>
       <Sheet>
         <SheetTrigger asChild>
-          <Button variant="outline" size="sm" className="relative">
-            <Archive className="mr-2 h-4 w-4" />
+          <Button variant="outline" size="sm" className="relative font-normal">
+            <Archive className="mr-2 h-5 w-5" />
             Archived
             {archivedTasks?.data?.length > 0 && (
               <Badge variant="secondary" className="ml-2 h-5 min-w-[20px] px-1 text-xs">

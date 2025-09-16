@@ -6,21 +6,20 @@ import ArchieveSheet from "@/components/taskmanagement/ArchieveSheet";
 import { AddColumnDialog } from "@/components/taskmanagement/columns/add-column-dialog";
 import { Context } from "@/app/clientWrappers/ContextProvider";
 
-import {
-  DndContext,
-  type DragEndEvent,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from "@dnd-kit/core";
+import { DndContext, type DragEndEvent, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { useGetColumns } from "@/services/api/taskManagement/columnsApi";
 import { ITaskColumnBase } from "@/types/taskmanagement/column.types";
 import { BoardColumn } from "@/components/taskmanagement/columns/board-column";
 import { useUpdateTask } from "@/services/api/taskManagement/taskApi";
 import { useGetInvitedTasks } from "@/services/api/taskManagement/taskApi";
+import { Button } from "@/components/ui/button";
+import { UserPlus } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const TaskPage = () => {
   const { sidebarOpen } = useContext(Context);
+
+  const [showInvitedColumn, setShowInvitedColumn] = useState(false);
 
   // API CALLS
   const { data: columnsData, isLoading: isColumnsLoading } = useGetColumns();
@@ -84,15 +83,45 @@ const TaskPage = () => {
   return (
     <>
       <Headers.TaskHeader />
-      <main className={`pl-0 pr-0 transition-all ${sidebarOpen ? 'xl:max-w-[calc(100vw-248px)]' : 'xl:max-w-[calc(100vw-82px)]'}`}>
-
-        <div className="flex items-center pr-8  justify-end gap-2">
+      <main
+        className={`pl-0 pr-0 transition-all ${sidebarOpen ? "xl:max-w-[calc(100vw-248px)]" : "xl:max-w-[calc(100vw-95px)]"}`}
+      >
+        <div className="flex items-center justify-end  gap-2 pr-8">
           <ArchieveSheet />
+          <Button
+            onClick={() => setShowInvitedColumn(prev => !prev)}
+            variant="outline"
+            size="sm"
+            className={cn("relative font-normal",
+              showInvitedColumn ? "border-theme text-theme bg-[#f4faf0] hover:text-theme hover:bg-[#f4faf0]" : ""
+            )}
+          >
+            <UserPlus className="mr-2 h-5 w-5" />
+            View Invited List
+          </Button>
           <AddColumnDialog />
         </div>
 
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-          <div className="mt-6 flex gap-3 min-h-[calc(100vh-170px)] overflow-x-auto pb-1">
+          <div className="mt-6 flex min-h-[calc(100vh-240px)] h-full gap-3 overflow-x-auto pb-1">
+            {/* Invited Tasks */}
+            {showInvitedColumn && (
+              <div className="sticky left-0 z-[5] flex-shrink-0 border-r border-gray-200 bg-white px-3 pt-2">
+                <BoardColumn
+                  key="invited"
+                  column={{
+                    _id: "invited",
+                    title: "Invited Column",
+                    position: 9999,
+                    isArchived: false,
+                    createdAt: new Date().toISOString(),
+                  }}
+                  invitedTasks={invitedTasksData?.data || []}
+                  disableEditDelete
+                  disableDnD
+                />
+              </div>
+            )}
             {columns.map((column: ITaskColumnBase) => (
               <BoardColumn
                 key={column._id}
@@ -100,21 +129,6 @@ const TaskPage = () => {
                 // tasks={column.tasks ? [...column.tasks].sort((a, b) => a.position - b.position) : []}
               />
             ))}
-
-            {/* Invited Tasks */}
-            <BoardColumn
-              key="invited"
-              column={{
-                _id: "invited",
-                title: "Invited Column",
-                position: 9999,
-                isArchived: false,
-                createdAt: new Date().toISOString(),
-              }}
-              invitedTasks={invitedTasksData?.data || []}
-              disableEditDelete
-              disableDnD
-            />
           </div>
         </DndContext>
       </main>

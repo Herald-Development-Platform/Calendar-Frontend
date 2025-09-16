@@ -170,12 +170,12 @@ export function BoardColumn({
         className={cn(
           "h-fit w-[280px] flex-shrink-0 gap-0 rounded-xl first:ml-8 border border-gray-200 bg-white p-0 px-0 shadow-sm transition-all duration-200 hover:shadow-md",
           isOver && "scale-[1.01] ring-2 ring-gray-300 ring-opacity-50",
-          isHovered && "border-gray-300 shadow-md"
+          isHovered && "border-gray-300 shadow-md",
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <CardHeader className="rounded-t-xl border-gray-100   p-3 px-3 pb-2">
+        <CardHeader className="rounded-t-xl border-gray-100   p-3 px-3 pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <CardTitle className="max-w-[140px] truncate text-sm font-semibold text-gray-800">
@@ -254,7 +254,7 @@ export function BoardColumn({
                     <div
                       ref={setNodeRef}
                       className={cn(
-                        "min-h-[1px] space-y-3 transition-all duration-200",
+                        "min-h-[1px] space-y-2 transition-all duration-200",
                         isOver && "-m-2 rounded-lg bg-blue-50/50 p-2"
                       )}
                     >
@@ -275,7 +275,7 @@ export function BoardColumn({
                   </SortableContext>
                 </DndContext>
               ) : (
-                <div className="min-h-[1px] space-y-3">
+                <div className="min-h-[1px] space-y-2">
                   {activeTasks.map((task, index) => (
                     <div
                       key={task?._id}

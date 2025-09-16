@@ -56,7 +56,7 @@ export function AddColumnDialog() {
   return (
     <Dialog open={showAddColumnDialog} onOpenChange={setShowAddColumnDialog}>
       <DialogTrigger asChild>
-        <Button size="sm" className="gap-2">
+        <Button size="sm" className="gap-2 font-normal">
           <Plus className="h-4 w-4" />
           Add Column
         </Button>

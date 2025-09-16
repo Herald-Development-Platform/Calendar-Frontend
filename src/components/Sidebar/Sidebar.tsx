@@ -156,7 +156,7 @@ export default function Sidebar({ hasBreakpoint }: { hasBreakpoint: boolean }) {
   return (
     <>
       <div
-        className={`${hasBreakpoint ? "custom-hidden relative xl:block " : "block"} h-screen ${
+        className={`${hasBreakpoint ? "custom-hidden relative xl:block " : "block"} z-20 h-screen ${
           sidebarOpen ? "w-[290px]" : "w-[80px]"
         } border-r border-slate-200 bg-gradient-to-b from-slate-50 to-white shadow-xl transition-all duration-300 ease-in-out`}
         style={{

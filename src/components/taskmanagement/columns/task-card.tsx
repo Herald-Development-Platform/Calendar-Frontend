@@ -239,7 +239,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
               <GripVertical className="h-4 w-4 text-gray-400" />
             </span>
           )}
-          <div className="flex-1 space-y-1">
+          <div className="flex-1 space-y-1.5">
             {task?.priority !== "low" && task?.priority && (
               <Badge
                 variant="secondary"
