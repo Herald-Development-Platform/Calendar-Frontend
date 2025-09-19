@@ -140,3 +140,22 @@
   scrollbar-width: thin;
   scrollbar-color: rgba(100, 100, 100, 0.3) transparent;
 }
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;               /* Thin scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #fafafa;      /* Light background */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #fafafa;      /* Light gray thumb */
+  border-radius: 4px;
+}
+
+/* Firefox scrollbar */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #c0c0c0 #f0f0f0;
+}

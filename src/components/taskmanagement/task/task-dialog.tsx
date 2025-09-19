@@ -45,6 +45,7 @@ interface TaskDialogProps {
   openTaskDialog: boolean;
   setOpenTaskDialog: (open: boolean) => void;
   task: ITask;
+  disableEditDelete?: boolean;
 }
 
 const formatDateTimeLocal = (date: string) => {
@@ -60,7 +61,12 @@ const formatDateTimeLocal = (date: string) => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDialogProps) {
+export function TaskDialog({
+  task,
+  openTaskDialog,
+  setOpenTaskDialog,
+  disableEditDelete,
+}: TaskDialogProps) {
   const queryClient = useQueryClient();
   const { userData } = useContext(Context);
 
@@ -183,7 +189,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
 
   const onSubmit = (data: Partial<Omit<ITask, "column"> & { column: string }>) => {
     console.log("Form submission data:", data);
-    
+
     if (!data.title?.trim()) {
       toast.error("Task title is required");
       return;
@@ -192,7 +198,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
     const selectedColumnObj = columnData?.data?.find(
       (col: ITaskColumnBase) => col._id === data.column
     );
-    if (!selectedColumnObj) {
+    if (!selectedColumnObj && !disableEditDelete) {
       toast.error("Please select a valid column");
       return;
     }
@@ -206,59 +212,92 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
       cleanDueDate = undefined;
     }
 
-    const updatedTask: ITask = {
-      ...task,
-      title: data.title,
-      description: data.description,
-      dueDate: cleanDueDate,
-      priority: data.priority || "medium",
-      column: selectedColumnObj,
-      invitedUsers: data.invitedUsers,
-      checklist: checklist,
-      comments: comments,
-    };
+    // Create updated task - conditionally include only necessary fields for invited tasks
+    const updatedTask = disableEditDelete
+      ? {
+          _id: task._id,
+          isCompleted: task.isCompleted,
+          checklist: checklist,
+        }
+      : {
+          ...task,
+          title: data.title,
+          description: data.description,
+          dueDate: cleanDueDate,
+          priority: data.priority || "medium",
+          column: selectedColumnObj,
+          invitedUsers: data.invitedUsers,
+          checklist: checklist,
+          comments: comments,
+        };
 
+    const queryKey = disableEditDelete ? ["invited-tasks"] : ["tasks", oldColumnId];
     const oldQueryKey = ["tasks", oldColumnId];
     const newQueryKey = ["tasks", newColumnId];
 
-    // Get old and new column data
-    const oldColumnTasks: { data: ITask[] } | undefined = queryClient.getQueryData(oldQueryKey);
-    const newColumnTasks: { data: ITask[] } | undefined = queryClient.getQueryData(newQueryKey);
+    if (disableEditDelete) {
+      // For invited tasks, just update the cache and call API
+      const invitedTasks: { data: ITask[] } | undefined = queryClient.getQueryData(queryKey);
+      const previousTasks = invitedTasks?.data || [];
 
-    const previousOldTasks = oldColumnTasks?.data || [];
-    const previousNewTasks = newColumnTasks?.data || [];
+      // Optimistic update for invited tasks
+      const updatedTasks = previousTasks.map(t =>
+        t._id === task._id ? { ...t, isCompleted: task.isCompleted, checklist: checklist } : t
+      );
+      queryClient.setQueryData(queryKey, { data: updatedTasks });
 
-    // Prepare optimistic update
-    if (oldColumnId === newColumnId) {
-      // Just update task in the same column
-      const updatedTasks = previousOldTasks.map(t => (t._id === task._id ? updatedTask : t));
-      queryClient.setQueryData(oldQueryKey, { data: updatedTasks });
+      // Call API
+      updateTask(updatedTask, {
+        onSuccess: () => {
+          toast.success("Task updated successfully");
+        },
+        onError: error => {
+          toast.error("Failed to update task");
+          // Rollback
+          queryClient.setQueryData(queryKey, { data: previousTasks });
+        },
+      });
     } else {
-      // Remove from old column
-      const updatedOldTasks = previousOldTasks.filter(t => t._id !== task._id);
-      queryClient.setQueryData(oldQueryKey, { data: updatedOldTasks });
+      // Original logic for regular tasks
+      // Get old and new column data
+      const oldColumnTasks: { data: ITask[] } | undefined = queryClient.getQueryData(oldQueryKey);
+      const newColumnTasks: { data: ITask[] } | undefined = queryClient.getQueryData(newQueryKey);
 
-      // Add to new column
-      queryClient.setQueryData(newQueryKey, {
-        data: [...previousNewTasks, updatedTask],
+      const previousOldTasks = oldColumnTasks?.data || [];
+      const previousNewTasks = newColumnTasks?.data || [];
+
+      // Prepare optimistic update
+      if (oldColumnId === newColumnId) {
+        // Just update task in the same column
+        const updatedTasks = previousOldTasks.map(t => (t._id === task._id ? updatedTask : t));
+        queryClient.setQueryData(oldQueryKey, { data: updatedTasks });
+      } else {
+        // Remove from old column
+        const updatedOldTasks = previousOldTasks.filter(t => t._id !== task._id);
+        queryClient.setQueryData(oldQueryKey, { data: updatedOldTasks });
+
+        // Add to new column
+        queryClient.setQueryData(newQueryKey, {
+          data: [...previousNewTasks, updatedTask],
+        });
+      }
+
+      // Call API
+      updateTask(updatedTask, {
+        onSuccess: () => {
+          toast.success("Task updated successfully");
+        },
+        onError: error => {
+          toast.error("Failed to update task");
+
+          // Rollback
+          queryClient.setQueryData(oldQueryKey, { data: previousOldTasks });
+          if (oldColumnId !== newColumnId) {
+            queryClient.setQueryData(newQueryKey, { data: previousNewTasks });
+          }
+        },
       });
     }
-
-    // Call API
-    updateTask(updatedTask, {
-      onSuccess: () => {
-        toast.success("Task updated successfully");
-      },
-      onError: error => {
-        toast.error("Failed to update task");
-
-        // Rollback
-        queryClient.setQueryData(oldQueryKey, { data: previousOldTasks });
-        if (oldColumnId !== newColumnId) {
-          queryClient.setQueryData(newQueryKey, { data: previousNewTasks });
-        }
-      },
-    });
   };
 
   const handleDelete = () => {
@@ -332,16 +371,16 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
 
   const priorityColors = {
     low: "bg-green-500",
-    medium: "bg-[#ed9200]", 
+    medium: "bg-[#ed9200]",
     high: "bg-[#ae2e24]",
   };
 
   return (
     <Dialog open={openTaskDialog} onOpenChange={setOpenTaskDialog}>
-      <DialogContent className="max-h-[95vh] overflow-y-auto p-0 sm:max-w-[900px] bg-[#fcfcfd]">
+      <DialogContent className="max-h-[95vh] overflow-y-auto bg-[#fcfcfd] p-0 sm:max-w-[900px]">
         <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
           {/* Header */}
-          <div className="border-b bg-[#fcfcfd] px-6 py-4 rounded-t-lg">
+          <div className="rounded-t-lg border-b bg-[#fcfcfd] px-6 py-4">
             <div className="flex items-start justify-between">
               <div className="flex-1 space-y-3">
                 <Controller
@@ -351,37 +390,42 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                   render={({ field }) => (
                     <Input
                       {...field}
-                      className="h-auto border-none p-0 text-lg font-medium text-black/70 placeholder:text-gray-400 focus-visible:ring-0 bg-transparent"
+                      readOnly={disableEditDelete}
+                      className="h-auto border-none bg-transparent p-0 text-lg font-medium text-black/70 placeholder:text-gray-400 focus-visible:ring-0"
                       placeholder="Task title..."
                     />
                   )}
                 />
                 <div className="flex items-center justify-between gap-2 text-sm">
                   <div className="flex items-center gap-2 text-gray-600">
-                    <span className="text-xs">in</span>
+                    {!disableEditDelete && (
+                      <>
+                        <span className="text-xs">in</span>
+                        <Controller
+                          name="column"
+                          control={control}
+                          rules={{ required: true }}
+                          render={({ field }) => (
+                            <Select
+                              value={typeof field.value === "string" ? field.value : ""}
+                              onValueChange={field.onChange}
+                            >
+                              <SelectTrigger className="hover:bg-theme/80 h-auto w-auto rounded-sm border-none bg-theme px-2 py-0.5 text-[11px] font-light text-white">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {columnData?.data?.map((column: ITaskColumnBase) => (
+                                  <SelectItem key={column._id} value={column._id}>
+                                    {column.title}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                      </>
+                    )}
                     <Controller
-                      name="column"
-                      control={control}
-                      rules={{ required: true }}
-                      render={({ field }) => (
-                        <Select
-                          value={typeof field.value === "string" ? field.value : ""}
-                          onValueChange={field.onChange}
-                        >
-                          <SelectTrigger className="h-auto w-auto border-none bg-theme px-2 py-0.5 text-[11px] font-light text-white hover:bg-theme/80 rounded-sm">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {columnData?.data?.map((column: ITaskColumnBase) => (
-                              <SelectItem key={column._id} value={column._id}>
-                                {column.title}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                     <Controller
                       name="priority"
                       control={control}
                       render={({ field }) => {
@@ -424,14 +468,12 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
 
                   {/* Quick indicators */}
                   <div className="flex items-center gap-1">
-                   
-                    
                     {/* Action Buttons */}
-                    <div className="flex items-center gap-1 ml-auto">
+                    <div className="ml-auto flex items-center gap-1">
                       <Button
                         type="submit"
                         size="sm"
-                        className="bg-theme hover:bg-theme/80 text-white font-light text-[11px] h-6 px-2"
+                        className="hover:bg-theme/80 h-6 bg-theme px-2 text-[11px] font-light text-white"
                         disabled={isUpdatingTask}
                       >
                         {isUpdatingTask ? "Saving..." : "Save Changes"}
@@ -442,7 +484,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                           variant="outline"
                           size="sm"
                           onClick={handleDelete}
-                          className="h-6 w-6 p-0 border-red-200 text-red-600 hover:bg-red-50"
+                          className="h-6 w-6 border-red-200 p-0 text-red-600 hover:bg-red-50"
                           title="Delete Task"
                         >
                           <Trash2 className="h-3 w-3" />
@@ -457,7 +499,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                 variant="ghost"
                 size="sm"
                 onClick={() => setOpenTaskDialog(false)}
-                className="text-gray-400 hover:text-gray-600 h-6 w-6 p-0"
+                className="h-6 w-6 p-0 text-gray-400 hover:text-gray-600"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -469,8 +511,8 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
             {/* Main Content */}
             <div className="flex-1 space-y-4 overflow-y-auto p-6">
               {/* Description */}
-              <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
-                <div className="flex items-center justify-between mb-3">
+              <div className="rounded-lg border border-gray-100 bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)]">
+                <div className="mb-3 flex items-center justify-between">
                   <h3 className="flex items-center gap-2 text-sm font-medium text-black/70">
                     <Edit3 className="h-4 w-4" />
                     Description
@@ -492,7 +534,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                     isEditingDescription ? (
                       <textarea
                         {...field}
-                        className="min-h-[100px] w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-theme focus:outline-none focus:ring-2 focus:ring-theme/20"
+                        className="focus:ring-theme/20 min-h-[100px] w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-theme focus:outline-none focus:ring-2"
                         placeholder="Add a detailed description..."
                         onBlur={() => setIsEditingDescription(false)}
                         autoFocus
@@ -510,7 +552,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
               </div>
 
               {/* Checklist */}
-              <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
+              <div className="rounded-lg border border-gray-100 bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)]">
                 <ChecklistSection
                   checklist={checklist}
                   setChecklist={setChecklist}
@@ -520,7 +562,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
               </div>
 
               {/* Comments */}
-              <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
+              <div className="rounded-lg border border-gray-100 bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)]">
                 <CommentsSection
                   comments={comments}
                   setComments={setComments}
@@ -535,7 +577,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
             {/* Sidebar */}
             <div className="w-80 space-y-4 border-l bg-[#fcfcfd] p-6">
               {/* Tabs */}
-              <div className="flex rounded-lg bg-white p-1 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
+              <div className="flex rounded-lg border border-gray-100 bg-white p-1 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)]">
                 <button
                   type="button"
                   className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
@@ -563,8 +605,8 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
               {activeTab === "details" ? (
                 <div className="space-y-4">
                   {/* Priority */}
-                  <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
-                    <label className="flex items-center gap-2 text-sm font-medium text-black/70 mb-2">
+                  <div className="rounded-lg border border-gray-100 bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)]">
+                    <label className="mb-2 flex items-center gap-2 text-sm font-medium text-black/70">
                       <Flag className="h-4 w-4" />
                       Priority
                     </label>
@@ -573,7 +615,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                       control={control}
                       render={({ field }) => (
                         <Select value={field.value} onValueChange={field.onChange}>
-                          <SelectTrigger className="h-10 bg-[#fcfcfd] border-gray-200">
+                          <SelectTrigger className="h-10 border-gray-200 bg-[#fcfcfd]">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -602,21 +644,21 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                   </div>
 
                   {/* Due Date */}
-                  <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
-                    <label className="flex items-center gap-2 text-sm font-medium text-black/70 mb-2">
+                  <div className="rounded-lg border border-gray-100 bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)]">
+                    <label className="mb-2 flex items-center gap-2 text-sm font-medium text-black/70">
                       <Calendar className="h-4 w-4" />
                       Due Date
                     </label>
                     <Input
                       type="datetime-local"
                       {...register("dueDate")}
-                      className="h-10 bg-[#fcfcfd] border-gray-200"
+                      className="h-10 border-gray-200 bg-[#fcfcfd]"
                     />
                   </div>
 
                   {/* Invited Users */}
-                  <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
-                    <label className="flex items-center gap-2 text-sm font-medium text-black/70 mb-2">
+                  <div className="rounded-lg border border-gray-100 bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)]">
+                    <label className="mb-2 flex items-center gap-2 text-sm font-medium text-black/70">
                       <Users className="h-4 w-4" />
                       Assignees
                     </label>
@@ -629,7 +671,7 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                           <div className="relative" ref={dropdownRef}>
                             <button
                               type="button"
-                              className="flex min-h-[40px] w-full flex-wrap items-center gap-2 rounded-lg border border-gray-200 bg-[#fcfcfd] px-3 py-2 text-left transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-theme/20"
+                              className="focus:ring-theme/20 flex min-h-[40px] w-full flex-wrap items-center gap-2 rounded-lg border border-gray-200 bg-[#fcfcfd] px-3 py-2 text-left transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2"
                               onClick={() => setDropdownOpen(!dropdownOpen)}
                             >
                               {selectedUsers.length === 0 ? (
@@ -698,10 +740,10 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                   </div>
 
                   {/* Creation Info */}
-                  <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
-                    <h4 className="text-sm font-medium text-black/70 mb-3">Created</h4>
+                  <div className="rounded-lg border border-gray-100 bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)]">
+                    <h4 className="mb-3 text-sm font-medium text-black/70">Created</h4>
                     {task?.createdBy && (
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="mb-2 flex items-center gap-2">
                         <UserAvatar user={task.createdBy} size="sm" />
                         <span className="text-sm text-gray-600">{task.createdBy.username}</span>
                       </div>
@@ -715,8 +757,8 @@ export function TaskDialog({ task, openTaskDialog, setOpenTaskDialog }: TaskDial
                   </div>
                 </div>
               ) : (
-                <div className="rounded-lg bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] border border-gray-100">
-                  <h4 className="text-sm font-medium text-black/70 mb-4">Recent Activity</h4>
+                <div className="rounded-lg border border-gray-100 bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)]">
+                  <h4 className="mb-4 text-sm font-medium text-black/70">Recent Activity</h4>
                   <div className="space-y-3 text-sm text-gray-600">
                     <div className="flex items-center gap-2">
                       <div className="h-2 w-2 rounded-full bg-theme"></div>
@@ -861,7 +903,7 @@ function ChecklistSection({
             value={newChecklistItem}
             onChange={e => setNewChecklistItem(e.target.value)}
             placeholder="Add an item..."
-            className="h-10 bg-[#fcfcfd] border-gray-200"
+            className="h-10 border-gray-200 bg-[#fcfcfd]"
             onKeyDown={e => {
               if (e.key === "Enter") {
                 e.preventDefault();
@@ -874,7 +916,7 @@ function ChecklistSection({
           type="button"
           onClick={addChecklistItem}
           size="sm"
-          className="bg-theme px-4 hover:bg-theme/80 text-white font-light"
+          className="hover:bg-theme/80 bg-theme px-4 font-light text-white"
           disabled={!newChecklistItem.trim()}
         >
           <Plus className="mr-1 h-4 w-4" />
@@ -965,7 +1007,7 @@ function CommentsSection({
             value={newComment}
             onChange={e => setNewComment(e.target.value)}
             placeholder="Write a comment..."
-            className="min-h-[80px] w-full resize-none rounded-lg border border-gray-200 bg-[#fcfcfd] px-3 py-2 text-sm placeholder:text-gray-400 focus:border-theme focus:outline-none focus:ring-2 focus:ring-theme/20"
+            className="focus:ring-theme/20 min-h-[80px] w-full resize-none rounded-lg border border-gray-200 bg-[#fcfcfd] px-3 py-2 text-sm placeholder:text-gray-400 focus:border-theme focus:outline-none focus:ring-2"
             onKeyDown={e => {
               if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                 e.preventDefault();
@@ -980,7 +1022,7 @@ function CommentsSection({
               onClick={addComment}
               size="sm"
               disabled={!newComment.trim()}
-              className="bg-theme hover:bg-theme/80 text-white font-light"
+              className="hover:bg-theme/80 bg-theme font-light text-white"
             >
               <Send className="mr-1 h-4 w-4" />
               Send

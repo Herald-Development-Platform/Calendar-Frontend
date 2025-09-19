@@ -230,7 +230,7 @@ export function BoardColumn({
 
         <CardContent
           className={cn(
-            "scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 max-h-[calc(100vh-340px)] overflow-y-auto bg-white px-2 pb-0 pr-3 pt-0",
+            "scrollbar-thin scrollbar-thumb-gray-300 custom-scrollbar scrollbar-track-transparent hover:scrollbar-thumb-gray-400 max-h-[calc(100vh-340px)] overflow-y-auto bg-white px-2 pb-0 pr-3 pt-0",
             disableDnD && "pb-4",
             isEmpty && "flex items-center justify-center py-8"
           )}

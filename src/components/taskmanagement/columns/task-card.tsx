@@ -74,7 +74,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
   const { userData } = useContext(Context);
 
   // API CALLS
-  const { mutate: updateTask, isPending } = useUpdateTask();
+  const { mutate: updateTask, isPending } =   useUpdateTask();
 
   const [openTaskDialog, setOpenTaskDialog] = useState(false);
 
@@ -127,19 +127,25 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
 
   const onToggleComplete = (taskId: string) => {
     const columnId = task?.column?._id;
-    const queryKey = ["tasks", columnId];
+    const queryKey = disableEditDelete ? ["invited-tasks"] : ["tasks", columnId];
 
     // Get current cached tasks
     const columnTasks: { data: ITask[] } | undefined = queryClient.getQueryData(queryKey);
     const previousTasks = columnTasks?.data;
 
-    // Create updated task
-    const updatedTask = { ...task, isCompleted: !task?.isCompleted };
+   // Create updated task - conditionally include only necessary fields
+    const updatedTask = disableEditDelete 
+      ? { 
+          _id: task._id, 
+          isCompleted: !task?.isCompleted,
+          checklist: task?.checklist 
+        }
+      : { ...task, isCompleted: !task?.isCompleted };
 
     // Create optimistic update
     const updatedTasks = previousTasks?.map((t: ITask) => {
       if (t._id === taskId) {
-        return updatedTask;
+        return disableEditDelete ? { ...t, isCompleted: !t.isCompleted } : updatedTask;
       }
       return t;
     });
@@ -239,7 +245,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
               <GripVertical className="h-4 w-4 text-gray-400" />
             </span>
           )}
-          <div className="flex-1 space-y-1.5">
+          <div className={cn("flex-1 space-y-1.5", disableDnD ? "ml-2" : "")}>
             {task?.priority !== "low" && task?.priority && (
               <Badge
                 variant="secondary"
@@ -350,6 +356,7 @@ export function TaskCard({ task, disableDnD, disableEditDelete }: TaskCardProps)
         task={task}
         openTaskDialog={openTaskDialog}
         setOpenTaskDialog={setOpenTaskDialog}
+        disableEditDelete={disableEditDelete}
       />
     </>
   );

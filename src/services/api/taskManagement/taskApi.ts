@@ -13,7 +13,7 @@ export const useCreateTask = () => {
 
 export const useUpdateTask = () => {
   return useMutation({
-    mutationFn: async (data: ITask) => {
+    mutationFn: async (data: ITask | Partial<ITask>) => {
       const response = await Axios.put(`/task-management/tasks/${data._id}`, data);
       return response.data;
     },

@@ -106,7 +106,7 @@ const TaskPage = () => {
           <div className="mt-6 flex min-h-[calc(100vh-240px)] h-full gap-3 overflow-x-auto pb-1">
             {/* Invited Tasks */}
             {showInvitedColumn && (
-              <div className="sticky left-0 z-[5] flex-shrink-0 border-r border-gray-200 bg-white px-3 pt-2">
+              <div className="sticky left-0 z-[5] flex-shrink-0 border-r border-gray-200 bg-white px-3 pt-0">
                 <BoardColumn
                   key="invited"
                   column={{
