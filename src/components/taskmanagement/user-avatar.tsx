@@ -29,7 +29,7 @@ export function UserAvatar({ user, size = "md", showPopover = false }: UserAvata
   const avatar = (
     <Avatar className={sizeClasses[size]}>
       <AvatarImage src={user.photo || "/placeholder.svg?height=32&width=32"} alt={user.username} />
-      <AvatarFallback>{getInitials(user.username)}</AvatarFallback>
+      <AvatarFallback className="text-black font-medium">{getInitials(user.username)}</AvatarFallback>
     </Avatar>
   );
 

@@ -537,6 +537,7 @@ export function TaskDialog({
                         className="focus:ring-theme/20 min-h-[100px] w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-theme focus:outline-none focus:ring-2"
                         placeholder="Add a detailed description..."
                         onBlur={() => setIsEditingDescription(false)}
+                        readOnly={disableEditDelete}
                         autoFocus
                       />
                     ) : (
@@ -671,7 +672,7 @@ export function TaskDialog({
                           <div className="relative" ref={dropdownRef}>
                             <button
                               type="button"
-                              className="focus:ring-theme/20 flex min-h-[40px] w-full flex-wrap items-center gap-2 rounded-lg border border-gray-200 bg-[#fcfcfd] px-3 py-2 text-left transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2"
+                              className="focus:ring-theme/20 flex min-h-[40px] w-full flex-wrap items-center gap-2 rounded-lg border border-gray-200 bg-[#fcfcfd] px-2 py-2 text-left transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2"
                               onClick={() => setDropdownOpen(!dropdownOpen)}
                             >
                               {selectedUsers.length === 0 ? (
@@ -681,7 +682,7 @@ export function TaskDialog({
                                   {selectedUsers.map(user => (
                                     <div
                                       key={user._id}
-                                      className="flex items-center gap-1 rounded-sm bg-theme px-1 py-0.5 text-[11px] font-light text-white"
+                                      className="flex items-center gap-1 rounded-full bg-theme px-1 py-1 text-[11px] font-light text-white"
                                     >
                                       <UserAvatar user={user} size="sm" />
                                       {user.username}
