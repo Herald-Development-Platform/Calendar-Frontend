@@ -106,13 +106,13 @@ export function AddTaskDialog({ open, onOpenChange, selectedDate }: AddTaskDialo
     };
 
     createTask(taskData as any, {
-      onSuccess: (response) => {
+      onSuccess: response => {
         toast.success("Task created successfully!");
-        
+
         // Invalidate queries to refresh the data
         queryClient.invalidateQueries({ queryKey: ["tasks"] });
         queryClient.invalidateQueries({ queryKey: ["tasks", data.column] });
-        
+
         // Reset form and close dialog
         reset();
         onOpenChange(false);
@@ -152,9 +152,7 @@ export function AddTaskDialog({ open, onOpenChange, selectedDate }: AddTaskDialo
               placeholder="Enter task title..."
               className={errors.title ? "border-red-500" : ""}
             />
-            {errors.title && (
-              <p className="text-sm text-red-500">{errors.title.message}</p>
-            )}
+            {errors.title && <p className="text-sm text-red-500">{errors.title.message}</p>}
           </div>
 
           {/* Description */}
@@ -169,7 +167,7 @@ export function AddTaskDialog({ open, onOpenChange, selectedDate }: AddTaskDialo
 
           {/* Priority */}
           <div className="space-y-2">
-            <label className="text-sm font-medium flex items-center gap-2">
+            <label className="flex items-center gap-2 text-sm font-medium">
               <Flag className="h-4 w-4" />
               Priority
             </label>
@@ -181,23 +179,29 @@ export function AddTaskDialog({ open, onOpenChange, selectedDate }: AddTaskDialo
                   <SelectTrigger>
                     <SelectValue placeholder="Select priority" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-green-500" />
-                        Low
+                  <SelectContent className="w-48 p-1">
+                    <SelectItem
+                      value="low"
+                      className="rounded-md px-3 py-2.5 transition-colors hover:bg-green-50 focus:bg-green-50"
+                    >
+                      <div className="flex items-center gap-3 pl-4">
+                        <span className="text-sm font-medium text-slate-900">Low Priority</span>
                       </div>
                     </SelectItem>
-                    <SelectItem value="medium">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                        Medium
+                    <SelectItem
+                      value="medium"
+                      className="rounded-md px-3 py-2.5 transition-colors hover:bg-orange-50 focus:bg-orange-50"
+                    >
+                      <div className="flex items-center gap-3 pl-4 ">
+                        <span className="text-sm font-medium text-slate-900">Medium Priority</span>
                       </div>
                     </SelectItem>
-                    <SelectItem value="high">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-red-500" />
-                        High
+                    <SelectItem
+                      value="high"
+                      className="rounded-md px-3 py-2.5 transition-colors hover:bg-red-50 focus:bg-red-50"
+                    >
+                      <div className="flex items-center gap-3 pl-4">
+                        <span className="text-sm font-medium text-slate-900">High Priority</span>
                       </div>
                     </SelectItem>
                   </SelectContent>
@@ -208,15 +212,11 @@ export function AddTaskDialog({ open, onOpenChange, selectedDate }: AddTaskDialo
 
           {/* Due Date */}
           <div className="space-y-2">
-            <label className="text-sm font-medium flex items-center gap-2">
+            <label className="flex items-center gap-2 text-sm font-medium">
               <Clock className="h-4 w-4" />
               Due Date & Time
             </label>
-            <Input
-              {...register("dueDate")}
-              type="datetime-local"
-              className="w-full"
-            />
+            <Input {...register("dueDate")} type="datetime-local" className="w-full" />
           </div>
 
           {/* Column Selection */}
@@ -241,19 +241,12 @@ export function AddTaskDialog({ open, onOpenChange, selectedDate }: AddTaskDialo
                 </Select>
               )}
             />
-            {errors.column && (
-              <p className="text-sm text-red-500">{errors.column.message}</p>
-            )}
+            {errors.column && <p className="text-sm text-red-500">{errors.column.message}</p>}
           </div>
 
           {/* Action Buttons */}
           <div className="flex justify-end gap-2 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleClose}
-              disabled={isCreatingTask}
-            >
+            <Button type="button" variant="outline" onClick={handleClose} disabled={isCreatingTask}>
               Cancel
             </Button>
             <Button type="submit" disabled={isCreatingTask}>

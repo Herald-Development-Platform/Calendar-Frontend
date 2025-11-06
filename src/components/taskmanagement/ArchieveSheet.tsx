@@ -19,6 +19,8 @@ import {
   AlertCircle,
   CheckCircle2,
   MoreHorizontal,
+  CheckSquare,
+  Check,
 } from "lucide-react";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
@@ -47,6 +49,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../ui/alert-dialog";
+import { cn } from "@/lib/utils";
 
 interface ArchivedTasksSheetProps {
   children: React.ReactNode;
@@ -209,18 +212,47 @@ const ArchieveSheet = () => {
                     )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem onClick={() => setFilterPriority("")}>
-                    All priorities
+                <DropdownMenuContent className="w-48 p-1">
+                  <DropdownMenuItem 
+                    onClick={() => setFilterPriority("")}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors hover:bg-slate-50 focus:bg-slate-50"
+                  >
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100">
+                      <Filter className="h-3 w-3 text-slate-600" />
+                    </div>
+                    <span className="text-sm font-medium text-slate-900">All priorities</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFilterPriority("high")}>
-                    🔴 High
+                  
+                  <div className="my-1 h-px bg-slate-200" />
+                  
+                  <DropdownMenuItem 
+                    onClick={() => setFilterPriority("high")}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors hover:bg-red-50 focus:bg-red-50"
+                  >
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-100">
+                      <div className="h-2 w-2 rounded-full bg-red-500" />
+                    </div>
+                    <span className="text-sm font-medium text-slate-900">High Priority</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFilterPriority("medium")}>
-                    🟡 Medium
+                  
+                  <DropdownMenuItem 
+                    onClick={() => setFilterPriority("medium")}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors hover:bg-orange-50 focus:bg-orange-50"
+                  >
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-orange-100">
+                      <div className="h-2 w-2 rounded-full bg-orange-500" />
+                    </div>
+                    <span className="text-sm font-medium text-slate-900">Medium Priority</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFilterPriority("low")}>
-                    🟢 Low
+                  
+                  <DropdownMenuItem 
+                    onClick={() => setFilterPriority("low")}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors hover:bg-green-50 focus:bg-green-50"
+                  >
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-100">
+                      <div className="h-2 w-2 rounded-full bg-green-500" />
+                    </div>
+                    <span className="text-sm font-medium text-slate-900">Low Priority</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -254,88 +286,120 @@ const ArchieveSheet = () => {
                 filteredTasks.map((task: ITask) => (
                   <Card
                     key={task._id}
-                    className="group relative overflow-hidden border-slate-200/60 transition-all duration-200 hover:bg-slate-50"
+                    className="group cursor-pointer rounded-lg bg-[#fcfcfd] py-1 pb-1.5 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)] transition-shadow hover:border-black/40 hover:shadow-sm"
                   >
-                    <CardContent className="p-3">
-                      <div className="mb-2 flex items-start justify-between">
-                        <div className="min-w-0 flex-1">
-                          <h3
-                            className={`mb-1 text-sm font-medium leading-5 ${
-                              task.isCompleted ? "text-slate-500 line-through" : "text-slate-900"
+                    <CardContent className="relative flex flex-row items-start gap-2 p-0">
+                      <div className="ml-2 flex-1 space-y-1.5">
+                        {task?.priority !== "low" && task?.priority && (
+                          <Badge
+                            variant="secondary"
+                            className={`rounded-sm px-1 py-0 text-[10px] font-light capitalize text-white hover:${
+                              task.priority === "medium"
+                                ? "bg-[#ed9200]"
+                                : task.priority === "high"
+                                  ? "bg-[#ae2e24]"
+                                  : "bg-green-500"
+                            } ${
+                              task.priority === "medium"
+                                ? "bg-[#ed9200]"
+                                : task.priority === "high"
+                                  ? "bg-[#ae2e24]"
+                                  : "bg-green-500"
                             }`}
                           >
-                            {task.title}
+                            {task.priority} Priority
+                          </Badge>
+                        )}
+
+                        <div className="flex items-center gap-1">
+                          <button
+                            className={cn(
+                              "flex h-4 w-4 cursor-pointer items-center justify-center rounded bg-white p-0.5 text-white",
+                              task?.isCompleted ? "bg-theme" : "border border-[#7e7e7f]"
+                            )}
+                            onClick={e => {
+                              e.stopPropagation();
+                            }}
+                            onMouseDown={e => e.stopPropagation()}
+                          >
+                            {task?.isCompleted && <Check />}
+                          </button>
+                          <h3
+                            className={`text-[13px] font-medium text-black/70 ${
+                              task?.isCompleted ? "text-gray-500 line-through" : ""
+                            }`}
+                          >
+                            {task?.title}
                           </h3>
-                          {task.description && (
-                            <p className="line-clamp-2 text-xs leading-4 text-slate-600">
-                              {task.description}
-                            </p>
-                          )}
                         </div>
 
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="h-6 w-6 p-0 opacity-0 transition-opacity group-hover:opacity-100"
-                            >
-                              <MoreHorizontal className="h-3 w-3" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => handleRestore(task)}
-                              disabled={isRestoring === task._id}
-                              className="text-blue-600"
-                            >
-                              <RotateCcw className="mr-2 h-3 w-3" />
-                              {isRestoring === task._id ? "Restoring..." : "Restore"}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => setTaskToDelete(task._id)}
-                              className="text-red-600"
-                            >
-                              <Trash2 className="mr-2 h-3 w-3" />
-                              Delete permanently
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
+                        {task?.description && (
+                          <p className="mb-2 line-clamp-2 text-xs text-muted-foreground">
+                            {task?.description}
+                          </p>
+                        )}
 
-                      <div className="flex items-center justify-between">
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          {task.priority && (
-                            <Badge
-                              variant="outline"
-                              className={`h-5 px-2 text-xs font-medium ${priorityColors[task.priority]}`}
-                            >
-                              {priorityIcons[task.priority]} {task.priority}
-                            </Badge>
-                          )}
-                          {task.isCompleted && (
-                            <Badge
-                              variant="outline"
-                              className="h-5 border-emerald-200 bg-emerald-50 px-2 text-xs text-emerald-700"
-                            >
-                              <CheckCircle2 className="mr-1 h-3 w-3" />
-                              Completed
-                            </Badge>
-                          )}
+                        <div className="flex items-center justify-between pr-1.5">
+                          <div className="flex items-center gap-1">
+                            {task?.checklist && task.checklist.length > 0 && (
+                              <div className="flex items-center gap-1 rounded-sm bg-theme px-1 py-0.5 text-[11px] font-light text-white">
+                                <CheckSquare className="h-3 w-3" />
+                                <span>
+                                  {task.checklist.filter(item => item.isCompleted).length}/
+                                  {task.checklist.length}
+                                </span>
+                              </div>
+                            )}
+                            {task?.dueDate && (
+                              <div className="flex items-center gap-1 rounded-sm bg-theme px-1 py-0.5 text-[11px] font-light text-white">
+                                <Calendar className="h-3 w-3" />
+                                <span>{formatDate(task?.dueDate)}</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 text-xs">
+                            {task?.createdBy && (
+                              <div
+                                className="flex items-center gap-1"
+                                title={`Created by ${task.createdBy.username}`}
+                              >
+                                <UserAvatar user={task.createdBy} size="sm" showPopover />
+                              </div>
+                            )}
+                          </div>
                         </div>
 
-                        <div className="flex items-center gap-2 text-xs text-slate-500">
-                          {task.dueDate && (
-                            <div className="flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              <span>{formatDate(task.dueDate)}</span>
-                            </div>
-                          )}
-                          {/* {task.assignee && (
-                            <div className="flex items-center gap-1">
-                              <UserAvatar user={task.assignee} size="sm" />
-                            </div>
-                          )} */}
+                        {/* Hover Actions */}
+                        <div className="absolute right-2 top-0 flex gap-0 opacity-0 transition-opacity group-hover:opacity-100">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 w-6 cursor-pointer bg-white p-0"
+                                onClick={e => e.stopPropagation()}
+                              >
+                                <MoreHorizontal className="h-3 w-3" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => handleRestore(task)}
+                                disabled={isRestoring === task._id}
+                                className="text-blue-600"
+                              >
+                                <RotateCcw className="mr-2 h-3 w-3" />
+                                {isRestoring === task._id ? "Restoring..." : "Restore"}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => setTaskToDelete(task._id)}
+                                className="text-red-600"
+                              >
+                                <Trash2 className="mr-2 h-3 w-3" />
+                                Delete permanently
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         </div>
                       </div>
                     </CardContent>
