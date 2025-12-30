@@ -30,6 +30,7 @@ import {
   Check,
   AlertCircle,
   CheckCircle2,
+  AppWindow,
 } from "lucide-react";
 import { ChecklistItem, ITask, Comment } from "@/types/taskmanagement/task.types";
 import { ITaskColumnBase } from "@/types/taskmanagement/column.types";
@@ -377,123 +378,127 @@ export function TaskDialog({
 
   return (
     <Dialog open={openTaskDialog} onOpenChange={setOpenTaskDialog}>
-      <DialogContent className="max-h-[95vh] overflow-y-auto bg-[#fcfcfd] p-0 sm:max-w-[900px]">
+      <DialogContent className="max-h-[95vh] overflow-y-auto bg-white p-0 sm:max-w-[900px]">
         <form onSubmit={handleSubmit(onSubmit)} className="flex h-full flex-col">
           {/* Header */}
-          <div className="rounded-t-lg border-b bg-[#fcfcfd] px-6 py-4">
-            <div className="flex items-start justify-between">
-              <div className="flex-1 space-y-3">
-                <Controller
-                  name="title"
-                  control={control}
-                  rules={{ required: true }}
-                  render={({ field }) => (
-                    <Input
-                      {...field}
-                      readOnly={disableEditDelete}
-                      className="h-auto border-none bg-transparent p-0 text-lg font-medium text-black/70 placeholder:text-gray-400 focus-visible:ring-0"
-                      placeholder="Task title..."
-                    />
-                  )}
-                />
-                <div className="flex items-center justify-between gap-2 text-sm">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    {!disableEditDelete && (
-                      <>
-                        <span className="text-xs">in</span>
-                        <Controller
-                          name="column"
-                          control={control}
-                          rules={{ required: true }}
-                          render={({ field }) => (
-                            <Select
-                              value={typeof field.value === "string" ? field.value : ""}
-                              onValueChange={field.onChange}
-                            >
-                              <SelectTrigger className="hover:bg-theme/80 h-auto w-auto rounded-sm border-none bg-theme px-2 py-0.5 text-[11px] font-light text-white">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {columnData?.data?.map((column: ITaskColumnBase) => (
-                                  <SelectItem key={column._id} value={column._id}>
-                                    {column.title}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          )}
-                        />
-                      </>
+          <div className="rounded-t-lg  bg-white px-6 py-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3 flex-1">
+                <AppWindow  className="mt-0.5"/>
+                <div className="flex-1 space-y-3">
+                  <Controller
+                    name="title"
+                    control={control}
+                    rules={{ required: true }}
+                    render={({ field }) => (
+                      <Input
+                        {...field}
+                        readOnly={disableEditDelete}
+                        className="h-auto border-none bg-transparent p-0 text-lg font-medium text-black/70 placeholder:text-gray-400 focus-visible:ring-0"
+                        placeholder="Task title..."
+                      />
                     )}
-                    <Controller
-                      name="priority"
-                      control={control}
-                      render={({ field }) => {
-                        const priority = field.value || "medium";
-                        if (priority !== "low") {
-                          return (
-                            <Badge
-                              variant="secondary"
-                              className={`rounded-sm px-1 py-0 text-[10px] font-light capitalize text-white hover:${priorityColors[priority as keyof typeof priorityColors]} ${
-                                priorityColors[priority as keyof typeof priorityColors]
-                              }`}
-                            >
-                              {priority} Priority
-                            </Badge>
-                          );
-                        }
-                        return <span></span>;
-                      }}
-                    />
-                    {watch("dueDate") && (
-                      <div className="flex items-center gap-1 rounded-sm bg-theme px-1 py-0.5 text-[11px] font-light text-white">
-                        <Calendar className="h-3 w-3" />
-                        <span>
-                          {new Date(watch("dueDate") || "").toLocaleDateString("en-US", {
-                            month: "short",
-                            day: "numeric",
-                          })}
-                        </span>
-                      </div>
-                    )}
-                    {checklistProgress && checklistProgress.total > 0 && (
-                      <div className="flex items-center gap-1 rounded-sm bg-theme px-1 py-0.5 text-[11px] font-light text-white">
-                        <CheckSquare className="h-3 w-3" />
-                        <span>
-                          {checklistProgress.isCompleted}/{checklistProgress.total}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Quick indicators */}
-                  <div className="flex items-center gap-1">
-                    {/* Action Buttons */}
-                    <div className="ml-auto flex items-center gap-1">
-                      <Button
-                        type="submit"
-                        size="sm"
-                        className="hover:bg-theme/80 h-6 bg-theme px-2 text-[11px] font-light text-white"
-                        disabled={isUpdatingTask}
-                      >
-                        {isUpdatingTask ? "Saving..." : "Save Changes"}
-                      </Button>
-                      {task && (
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={handleDelete}
-                          className="h-6 w-6 border-red-200 p-0 text-red-600 hover:bg-red-50"
-                          title="Delete Task"
-                        >
-                          <Trash2 className="h-3 w-3" />
-                        </Button>
+                  />
+                  <div className="flex items-center justify-between gap-2 text-sm">
+                    <div className="flex items-center gap-2 text-gray-600">
+                      {!disableEditDelete && (
+                        <>
+                          <span className="text-xs">in</span>
+                          <Controller
+                            name="column"
+                            control={control}
+                            rules={{ required: true }}
+                            render={({ field }) => (
+                              <Select
+                                value={typeof field.value === "string" ? field.value : ""}
+                                onValueChange={field.onChange}
+                              >
+                                <SelectTrigger className="hover:bg-theme/80 h-auto w-auto rounded-sm border-none bg-theme px-2 py-0.5 text-[11px] font-light text-white">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  {columnData?.data?.map((column: ITaskColumnBase) => (
+                                    <SelectItem key={column._id} value={column._id}>
+                                      {column.title}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            )}
+                          />
+                        </>
                       )}
+                      <Controller
+                        name="priority"
+                        control={control}
+                        render={({ field }) => {
+                          const priority = field.value || "medium";
+                          if (priority !== "low") {
+                            return (
+                              <Badge
+                                variant="secondary"
+                                className={`rounded-sm px-1 py-0 text-[10px] font-light capitalize text-white hover:${priorityColors[priority as keyof typeof priorityColors]} ${
+                                  priorityColors[priority as keyof typeof priorityColors]
+                                }`}
+                              >
+                                {priority} Priority
+                              </Badge>
+                            );
+                          }
+                          return <span></span>;
+                        }}
+                      />
+                      {watch("dueDate") && (
+                        <div className="flex items-center gap-1 rounded-sm bg-theme px-1 py-0.5 text-[11px] font-light text-white">
+                          <Calendar className="h-3 w-3" />
+                          <span>
+                            {new Date(watch("dueDate") || "").toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            })}
+                          </span>
+                        </div>
+                      )}
+                      {checklistProgress && checklistProgress.total > 0 && (
+                        <div className="flex items-center gap-1 rounded-sm bg-theme px-1 py-0.5 text-[11px] font-light text-white">
+                          <CheckSquare className="h-3 w-3" />
+                          <span>
+                            {checklistProgress.isCompleted}/{checklistProgress.total}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Quick indicators */}
+                    <div className="flex items-center gap-1">
+                      {/* Action Buttons */}
+                      <div className="ml-auto flex items-center gap-1">
+                        <Button
+                          type="submit"
+                          size="sm"
+                          className="hover:bg-theme/80 h-6 bg-theme px-2 text-[11px] font-light text-white"
+                          disabled={isUpdatingTask}
+                        >
+                          {isUpdatingTask ? "Saving..." : "Save Changes"}
+                        </Button>
+                        {task && (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={handleDelete}
+                            className="h-6 w-6 border-red-200 p-0 text-red-600 hover:bg-red-50"
+                            title="Delete Task"
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+
               <Button
                 type="button"
                 variant="ghost"
@@ -507,11 +512,11 @@ export function TaskDialog({
           </div>
 
           {/* Content */}
-          <div className="flex flex-1 overflow-hidden bg-[#fcfcfd]">
+          <div className="flex flex-1 overflow-hidden bg-white">
             {/* Main Content */}
             <div className="flex-1 space-y-4 overflow-y-auto p-6">
               {/* Description */}
-              <div className="rounded-lg border border-gray-100 bg-white p-4 shadow-[0_1.6px_8px_rgba(0,0,0,0.03)]">
+              <div className="rounded-lg bg-white">
                 <div className="mb-3 flex items-center justify-between">
                   <h3 className="flex items-center gap-2 text-sm font-medium text-black/70">
                     <Edit3 className="h-4 w-4" />
