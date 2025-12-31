@@ -16,7 +16,7 @@ interface BoardFormData {
 
 interface BoardFormPopoverProps {
   board?: BoardFormData;
-  onSubmit: (data: BoardFormData) => void;
+  onSubmit: (data: BoardFormData) => Promise<void>;
   children?: React.ReactNode;
   side?: "top" | "bottom" | "left" | "right";
   align?: "start" | "center" | "end";
@@ -69,8 +69,8 @@ const BoardFormPopover: React.FC<BoardFormPopoverProps> = ({
 
   const selectedColor = watch("color");
 
-  const onFormSubmit = (data: BoardFormData) => {
-    onSubmit(data);
+  const onFormSubmit = async (data: BoardFormData) => {
+    await onSubmit(data);
     setOpen(false);
     reset();
   };

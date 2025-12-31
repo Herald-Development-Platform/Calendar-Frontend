@@ -9,6 +9,7 @@ interface InvitedMember {
 }
 
 interface BoardCardProps {
+  boardId: string;
   name: string;
   invitedMembers: InvitedMember[];
   color: string;
@@ -23,7 +24,7 @@ const getInitials = (fullName: string) => {
     .slice(0, 2);
 };
 
-const BoardCard = ({ name, invitedMembers, color }: BoardCardProps) => {
+const BoardCard = ({boardId, name, invitedMembers, color }: BoardCardProps) => {
   const displayedMembers = invitedMembers.slice(0, 3);
   const remainingCount = invitedMembers.length - 3;
   const [imageErrors, setImageErrors] = useState<Set<number>>(new Set());
@@ -33,9 +34,9 @@ const BoardCard = ({ name, invitedMembers, color }: BoardCardProps) => {
   };
 
   return (
-    <Link href={"#"} title={name}>
+    <Link href={`/task/${boardId}`} title={name}>
       <div className="flex h-40 flex-col rounded-xl border border-neutral-200 hover:shadow-md transition-shadow">
-        <div className={`flex-1 rounded-t-xl ${color} p-2`}></div>
+        <div className="flex-1 rounded-t-xl p-2" style={{ backgroundColor: color }}></div>
         <div className="rounded-b-xl p-3 py-4 flex flex-col justify-between">
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm font-medium truncate">{name}</p>
