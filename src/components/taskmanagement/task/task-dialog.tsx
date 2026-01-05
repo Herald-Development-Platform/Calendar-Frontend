@@ -93,7 +93,7 @@ export function TaskDialog({
     },
   });
 
-  const { data: columnData, isLoading: isColumnsLoading } = useGetColumns();
+  const { data: columnData, isLoading: isColumnsLoading } = useGetColumns("");
 
   const { data: allUsers, isLoading: allUsersLoading } = useQuery({
     queryKey: ["AllUsers"],

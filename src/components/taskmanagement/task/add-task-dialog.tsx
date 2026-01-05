@@ -45,7 +45,7 @@ const formatDateTimeLocal = (date: Date) => {
 export function AddTaskDialog({ open, onOpenChange, selectedDate }: AddTaskDialogProps) {
   const queryClient = useQueryClient();
   const { mutate: createTask, isPending: isCreatingTask } = useCreateTask();
-  const { data: columnsData } = useGetColumns();
+  const { data: columnsData } = useGetColumns("");
 
   const {
     register,

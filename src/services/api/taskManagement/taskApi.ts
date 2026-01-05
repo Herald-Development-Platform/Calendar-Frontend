@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 
 export const useCreateTask = () => {
   return useMutation({
-    mutationFn: async (data: { title: string; column: string }) => {
+    mutationFn: async (data: { title: string; column: string, board: string }) => {
       const response = await Axios.post("/task-management/tasks", data);
       return response.data;
     },

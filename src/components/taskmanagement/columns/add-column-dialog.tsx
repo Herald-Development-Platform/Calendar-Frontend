@@ -17,7 +17,7 @@ import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { ITaskColumnBase } from "@/types/taskmanagement/column.types";
 
-export function AddColumnDialog() {
+export function AddColumnDialog({ boardId }: { boardId: string }) {
   const queryClient = useQueryClient();
 
   const [title, setTitle] = useState("");
@@ -31,14 +31,19 @@ export function AddColumnDialog() {
 
     const trimmedTitle = title.trim();
 
-    createColumn(trimmedTitle, {
+    const postData = {
+      title: trimmedTitle,
+      board: boardId,
+    };
+
+    createColumn(postData, {
       onSuccess: response => {
         const newColumn = response?.data;
         toast.success("Column added successfully!");
         setTitle("");
         setShowAddColumnDialog(false);
 
-        const queryKey = ["columns"];
+        const queryKey = ["columns",boardId];
         const existing = queryClient.getQueryData<{ data: ITaskColumnBase[] }>(queryKey);
         const previousColumns = existing?.data || [];
 

@@ -32,6 +32,7 @@ interface BoardColumnProps {
   invitedTasks?: ITask[];
   disableEditDelete?: boolean;
   disableDnD?: boolean;
+  boardId: string;
 }
 
 // Minimalist design - single neutral color scheme
@@ -64,6 +65,7 @@ export function BoardColumn({
   invitedTasks,
   disableEditDelete,
   disableDnD,
+  boardId,
 }: BoardColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id: column._id,
@@ -120,7 +122,7 @@ export function BoardColumn({
     if (isCreatingTask) return;
 
     createTask(
-      { title, column: column._id },
+      { title, column: column._id, board: boardId },
       {
         onSuccess: data => {
           const newTask = data?.data;

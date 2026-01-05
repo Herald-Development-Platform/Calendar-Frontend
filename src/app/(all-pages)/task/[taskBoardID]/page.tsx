@@ -15,14 +15,16 @@ import { useGetInvitedTasks } from "@/services/api/taskManagement/taskApi";
 import { Button } from "@/components/ui/button";
 import { UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useParams } from "next/navigation";
 
 const TaskPage = () => {
   const { sidebarOpen } = useContext(Context);
+  const { taskBoardID } = useParams();
 
   const [showInvitedColumn, setShowInvitedColumn] = useState(false);
 
   // API CALLS
-  const { data: columnsData, isLoading: isColumnsLoading } = useGetColumns();
+  const { data: columnsData, isLoading: isColumnsLoading } = useGetColumns(taskBoardID as string);
   const { data: invitedTasksData, isLoading: isInvitedLoading } = useGetInvitedTasks();
 
   // Local state for columns and tasks for optimistic UI
@@ -92,20 +94,23 @@ const TaskPage = () => {
             onClick={() => setShowInvitedColumn(prev => !prev)}
             variant="outline"
             size="sm"
-            className={cn("relative font-normal",
-              showInvitedColumn ? "border-theme text-theme bg-[#f4faf0] hover:text-theme hover:bg-[#f4faf0]" : ""
+            className={cn(
+              "relative font-normal",
+              showInvitedColumn
+                ? "border-theme bg-[#f4faf0] text-theme hover:bg-[#f4faf0] hover:text-theme"
+                : ""
             )}
           >
             <UserPlus className="mr-2 h-5 w-5" />
             View Invited List
           </Button>
-          <AddColumnDialog />
+          <AddColumnDialog boardId={taskBoardID as string} />
         </div>
 
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-          <div className="mt-6 flex min-h-[calc(100vh-240px)] h-full gap-3 overflow-x-auto pb-1">
+          <div className="mt-6 flex h-full min-h-[calc(100vh-240px)] gap-3 overflow-x-auto pb-1">
             {/* Invited Tasks */}
-            {showInvitedColumn && (
+            {/* {showInvitedColumn && (
               <div className="sticky left-0 z-[5] flex-shrink-0 border-r border-gray-200 bg-white px-3 pt-0">
                 <BoardColumn
                   key="invited"
@@ -114,6 +119,7 @@ const TaskPage = () => {
                     title: "Invited Column",
                     position: 9999,
                     isArchived: false,
+
                     createdAt: new Date().toISOString(),
                   }}
                   invitedTasks={invitedTasksData?.data || []}
@@ -121,11 +127,12 @@ const TaskPage = () => {
                   disableDnD
                 />
               </div>
-            )}
+            )} */}
             {columns.map((column: ITaskColumnBase) => (
               <BoardColumn
                 key={column._id}
                 column={column}
+                boardId={taskBoardID as string}
                 // tasks={column.tasks ? [...column.tasks].sort((a, b) => a.position - b.position) : []}
               />
             ))}

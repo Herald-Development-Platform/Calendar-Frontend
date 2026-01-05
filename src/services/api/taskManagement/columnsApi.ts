@@ -3,18 +3,20 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const useCreateColumn = () => {
   return useMutation({
-    mutationFn: async (title: string) => {
-      const response = await Axios.post("/task-management/columns", { title });
+    mutationFn: async (data: { title: string, board: string}) => {
+      const response = await Axios.post("/task-management/columns", data);
       return response.data;
     },
   });
 };
 
-export const useGetColumns = () => {
+export const useGetColumns = (boardId: string) => {
   return useQuery({
-    queryKey: ["columns"],
+    queryKey: ["columns", boardId],
     queryFn: async () => {
-      const response = await Axios.get("/task-management/columns");
+      const response = await Axios.get("/task-management/columns",{
+        params: { board: boardId}
+      });
       return response.data;
     },
     refetchOnWindowFocus: false,

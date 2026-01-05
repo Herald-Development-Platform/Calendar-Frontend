@@ -16,6 +16,7 @@ export interface ITask {
     title: string;
   };
   position: number;
+  board: string;
 }
 
 export interface ChecklistItem {

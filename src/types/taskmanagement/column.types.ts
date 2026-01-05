@@ -5,8 +5,9 @@ export interface ITaskColumnBase {
   position: number;
   isArchived: boolean;
   createdAt: string;
+  board: string;
 }
 
-export type ITaskColumnForm = Pick<ITaskColumnBase, "title"> & {
+export type ITaskColumnForm = Pick<ITaskColumnBase, "title" | "board"> & {
   _id?: ITaskColumnBase["_id"];
 };
